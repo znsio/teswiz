@@ -73,8 +73,13 @@ public class Drivers {
 
         WebDriver driver = new ChromeDriver(chromeOptions);
 
-        String jioBaseUrl = Session.environmentConfiguration.get("JIO_BASE_URL");
-        driver.get(jioBaseUrl);
+        String providedBaseUrl = System.getenv(TEST_CONTEXT.BASE_URL);
+        if (null == providedBaseUrl) {
+            throw new InvalidTestDataException("baseUrl not provided as an environment variable");
+        }
+        String baseUrl = Session.environmentConfiguration.get(providedBaseUrl);
+        System.out.println("baseUrl: " + baseUrl);
+        driver.get(baseUrl);
         return driver;
     }
 

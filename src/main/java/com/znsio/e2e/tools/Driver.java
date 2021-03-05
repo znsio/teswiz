@@ -5,6 +5,7 @@ import com.applitools.eyes.RectangleSize;
 import com.applitools.eyes.StdoutLogHandler;
 import com.applitools.eyes.selenium.Eyes;
 import com.znsio.e2e.context.Session;
+import com.znsio.e2e.entities.TEST_CONTEXT;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.TouchAction;
@@ -44,14 +45,16 @@ public class Driver {
 
     private WebDriver instantiateEyes (String testName, WebDriver innerDriver) {
         if (Session.isVisualTestingEnabled) {
-            String appName = "JioMeet-" + Session.platform;
+            String applicationName = System.getenv(TEST_CONTEXT.APPLICATION_NAME) == null? "unified-e2e" : System.getenv(TEST_CONTEXT.APPLICATION_NAME);
+            System.out.println("applicationName: " + applicationName);
+            String appName = applicationName + "-" + Session.platform;
             Eyes eyes = new Eyes();
             Visual visually = new Visual(eyes);
             this.visually = visually;
             eyes.setApiKey(System.getenv("APPLITOOLS_API_KEY"));
             eyes.setBatch(Session.batchName);
             eyes.setLogHandler(new StdoutLogHandler(true));
-            eyes.setEnvName(Session.jioMeetEnvironment);
+            eyes.setEnvName(Session.targetEnvironment);
             eyes.setMatchLevel(MatchLevel.STRICT);
 
             return this.type.equals(Driver.WEB_DRIVER)

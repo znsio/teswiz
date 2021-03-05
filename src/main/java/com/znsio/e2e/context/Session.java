@@ -23,9 +23,9 @@ import java.util.Map;
 public class Session extends SessionContext {
 
     public static final Platform platform = Platform.valueOf(System.getenv("Platform"));
-    public static final String jioMeetEnvironment = System.getenv("targetEnvironment");
-    public static final Map<String, String> environmentConfiguration = loadEnvironmentConfiguration(jioMeetEnvironment);
-    public static final Map<String, String> testDataForEnvironment = loadTestDataForEnvironment(jioMeetEnvironment);
+    public static final String targetEnvironment = System.getenv("targetEnvironment");
+    public static final Map<String, String> environmentConfiguration = loadEnvironmentConfiguration(targetEnvironment);
+    public static final Map<String, String> testDataForEnvironment = loadTestDataForEnvironment(targetEnvironment);
     private static final String launchName = System.getenv("rp.launch");
     private static final String TESTDATA = "./src/test/resources/testData.json";
     private static final String ENVIRONMENT_CONFIG = "./src/test/resources/environments.json";
@@ -35,7 +35,7 @@ public class Session extends SessionContext {
     }
 
     private static final List<String> envs = Arrays.asList("replica", "stage1", "stage2");
-    public static final BatchInfo batchName = new BatchInfo(launchName + "-" + jioMeetEnvironment);
+    public static final BatchInfo batchName = new BatchInfo(launchName + "-" + targetEnvironment);
     public static final boolean isVisualTestingEnabled = Boolean.parseBoolean(System.getenv("Visual"));
 
     public static Driver fetchDriver (long threadId) {
