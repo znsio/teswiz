@@ -63,3 +63,15 @@ dependencies {
         exclude group: 'eyes-connectivity-java3-jersey2x'
     }
 }
+
+clean.doFirst {
+    println "********************* Clean.doFirst - start *********************"
+    delete "${buildDir}"
+    println "Deleted dir - ${buildDir}"
+    println "********************* Clean.doFirst - finish *********************"
+    println ""
+}
+
+wrapper {
+    gradleVersion = project.gradleVersion // version from gradle.properties
+}
