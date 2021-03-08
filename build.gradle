@@ -77,8 +77,17 @@ clean.doFirst {
     println ""
 }
 
+build.finalizedBy shadowJar
+
 wrapper {
     gradleVersion = project.gradleVersion // version from gradle.properties
+}
+
+shadowJar {
+    archiveBaseName.set("${project.name}")
+    archiveClassifier.set("")
+    archiveVersion.set("${project.version}")
+    archiveExtension.set("jar")
 }
 
 task fatJar(type: Jar) {
