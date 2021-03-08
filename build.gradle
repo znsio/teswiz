@@ -19,7 +19,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.1'
+version '0.0.2'
 project.ext.currentDateTime = new Date().format('MM-dd-HH-mm-ss')
 project.ext.log4jProperties = "src/test/resources/log4j2.properties"
 
