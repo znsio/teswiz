@@ -1,4 +1,4 @@
-[![Release](https://jitpack.io/v/User/Repo.svg)]
+[![0.0.1](https://jitpack.io/v/User/Repo.svg)]
 (https://jitpack.io/#znsio/unified-e2e)
 
 # What is this repository about?
