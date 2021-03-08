@@ -19,7 +19,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.2'
+version '0.0.01'
 project.ext.currentDateTime = new Date().format('MM-dd-HH-mm-ss')
 project.ext.log4jProperties = "src/test/resources/log4j2.properties"
 
@@ -77,28 +77,21 @@ clean.doFirst {
     println ""
 }
 
-build.finalizedBy shadowJar
 
-wrapper {
-    gradleVersion = project.gradleVersion // version from gradle.properties
-}
-
-shadowJar {
-    archiveBaseName.set("${project.name}")
-    archiveClassifier.set("")
-    archiveVersion.set("${project.version}")
-    archiveExtension.set("jar")
-}
-
-task fatJar(type: Jar) {
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+task fatJar(type: ShadowJar) {
     manifest {
         attributes 'Implementation-Title': 'unified-e2e framework with support for Native App and Browser automation',
                 'Implementation-Version': "$project.version"
     }
     from {
-        from configurations.cucumberRuntime
-        from sourceSets.test.output
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        from sourceSets.main.output
+        configurations = [project.configurations.cucumberRuntime, project.configurations.compile]
     }
     with jar
+}
+build.finalizedBy fatJar
+
+wrapper {
+    gradleVersion = project.gradleVersion // version from gradle.properties
 }
