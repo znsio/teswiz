@@ -19,7 +19,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.01'
+version '0.0.3'
 project.ext.currentDateTime = new Date().format('MM-dd-HH-mm-ss')
 project.ext.log4jProperties = "src/test/resources/log4j2.properties"
 
@@ -79,6 +79,12 @@ clean.doFirst {
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
+shadowJar {
+    archiveBaseName.set("$project.name")
+    archiveClassifier.set('')
+    archiveVersion.set("$version")
+}
+
 task fatJar(type: ShadowJar) {
     manifest {
         attributes 'Implementation-Title': 'unified-e2e framework with support for Native App and Browser automation',
@@ -96,24 +102,10 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
 artifacts {
     archives sourcesJar
-//    archives javadocJar
-//    archives fatJar
+    archives shadowJar
 }
-
-task getFileSize(type: Exec) {
-    executable "sh"
-    args "-c", "ls -lR build"
-}
-
-fatJar.finalizedBy getFileSize
-build.finalizedBy fatJar
 
 wrapper {
     gradleVersion = project.gradleVersion // version from gradle.properties
