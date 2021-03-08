@@ -77,7 +77,6 @@ clean.doFirst {
     println ""
 }
 
-
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 task fatJar(type: ShadowJar) {
     manifest {
@@ -90,7 +89,7 @@ task fatJar(type: ShadowJar) {
     }
     with jar
 }
-build.finalizedBy fatJar
+install.finalizedBy fatJar
 
 wrapper {
     gradleVersion = project.gradleVersion // version from gradle.properties
