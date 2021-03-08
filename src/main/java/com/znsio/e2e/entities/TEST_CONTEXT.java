@@ -11,6 +11,6 @@ public class TEST_CONTEXT {
     public static final String CURRENT_DRIVER = "currentDriver";
     public static final String ALL_DRIVERS = "allDrivers";
     public static final String CURRENT_USER_PERSONA = "currentUserPersona";
-    public static final String APPLICATION_NAME = "applicationName";
-    public static final String BASE_URL = "baseUrl";
+    public static final String APPLITOOLS_APPLICATION_NAME = "applitoolsApplicationName";
+    public static final String WEB_BASE_URL = "webBaseUrl";
 }

@@ -45,7 +45,7 @@ public class Driver {
 
     private WebDriver instantiateEyes (String testName, WebDriver innerDriver) {
         if (Session.isVisualTestingEnabled) {
-            String applicationName = System.getenv(TEST_CONTEXT.APPLICATION_NAME) == null? "unified-e2e" : System.getenv(TEST_CONTEXT.APPLICATION_NAME);
+            String applicationName = System.getenv(TEST_CONTEXT.APPLITOOLS_APPLICATION_NAME) == null? "unified-e2e" : System.getenv(TEST_CONTEXT.APPLITOOLS_APPLICATION_NAME);
             System.out.println("applicationName: " + applicationName);
             String appName = applicationName + "-" + Session.platform;
             Eyes eyes = new Eyes();

@@ -36,7 +36,7 @@ public class Session extends SessionContext {
 
     private static final List<String> envs = Arrays.asList("replica", "stage1", "stage2");
     public static final BatchInfo batchName = new BatchInfo(launchName + "-" + targetEnvironment);
-    public static final boolean isVisualTestingEnabled = Boolean.parseBoolean(System.getenv("Visual"));
+    public static final boolean isVisualTestingEnabled = Boolean.parseBoolean(System.getenv("ApplitoolsApplicationName"));
 
     public static Driver fetchDriver (long threadId) {
         String userPersona = getTestExecutionContext(threadId).getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);

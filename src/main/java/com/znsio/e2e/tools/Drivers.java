@@ -73,7 +73,7 @@ public class Drivers {
 
         WebDriver driver = new ChromeDriver(chromeOptions);
 
-        String providedBaseUrl = System.getenv(TEST_CONTEXT.BASE_URL);
+        String providedBaseUrl = System.getenv(TEST_CONTEXT.WEB_BASE_URL);
         if (null == providedBaseUrl) {
             throw new InvalidTestDataException("baseUrl not provided as an environment variable");
         }
