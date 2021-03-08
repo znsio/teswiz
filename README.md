@@ -1,3 +1,6 @@
+[![Release](https://jitpack.io/v/User/Repo.svg)]
+(https://jitpack.io/#User/Repo)
+
 # What is this repository about?
 
 This repository implements automated tests for Android & iOS apps, specified using cucumber-jvm and
