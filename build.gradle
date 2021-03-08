@@ -113,7 +113,7 @@ task getFileSize(type: Exec) {
 }
 
 fatJar.finalizedBy getFileSize
-install.finalizedBy fatJar
+build.finalizedBy fatJar
 
 wrapper {
     gradleVersion = project.gradleVersion // version from gradle.properties

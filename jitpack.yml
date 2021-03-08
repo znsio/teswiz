@@ -2,4 +2,4 @@ jdk:
   - openjdk9
 install:
   - echo "Create a uber jar for unified-e2e"
-  - ./gradlew --debug clean install
+  - ./gradlew --debug clean build
