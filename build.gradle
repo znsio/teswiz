@@ -78,6 +78,7 @@ clean.doFirst {
 }
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 task fatJar(type: ShadowJar) {
     manifest {
         attributes 'Implementation-Title': 'unified-e2e framework with support for Native App and Browser automation',
@@ -89,6 +90,29 @@ task fatJar(type: ShadowJar) {
     }
     with jar
 }
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+//    archives javadocJar
+//    archives fatJar
+}
+
+task getFileSize(type: Exec) {
+    executable "sh"
+    args "-c", "ls -lR build"
+}
+
+fatJar.finalizedBy getFileSize
 install.finalizedBy fatJar
 
 wrapper {
