@@ -1,6 +1,6 @@
 package com.znsio.e2e.entities;
 
-public enum TEST_CONTEXT {
+public class TEST_CONTEXT {
     ;
     public static final String SCREENSHOT_MANAGER = "screenShotManager";
     public static final String SOFT_ASSERTIONS = "softAssertions";
