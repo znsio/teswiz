@@ -1,27 +1,14 @@
-buildscript {
-    repositories {
-        jcenter()
-        maven { url 'https://jitpack.io' }
-    }
-    dependencies {
-        classpath "com.github.vidstige:jadb:$project.jadbVersion"
-        classpath fileTree(dir: 'libs', include: ['*.jar'])
-    }
-}
-
 plugins {
     id "org.sonarqube" version "2.8"
     id "java"
     id "idea"
     id "maven"
-    id "groovy"
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
-group = 'com.github.znsio'
-version '0.0.3'
-project.ext.currentDateTime = new Date().format('MM-dd-HH-mm-ss')
-project.ext.log4jProperties = "src/test/resources/log4j2.properties"
+group = 'com.znsio'
+version '0.0.4'
+project.ext.logDir = "${rootDir}/target"
 
 repositories {
     mavenLocal()
@@ -29,7 +16,6 @@ repositories {
         dirs 'libs'
     }
     maven { url "http://repo.bodar.com" }
-    maven { url 'https://jitpack.io' }
     maven { url "https://dl.bintray.com/epam/reportportal" }
     maven { url 'https://jitpack.io' }
     jcenter()
@@ -47,8 +33,6 @@ dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
     implementation files("$buildDir/classes/main")
     implementation files("$buildDir/classes/test")
-
-    implementation "org.codehaus.groovy:groovy-all:+"
     implementation "com.googlecode.json-simple:json-simple:$project.googleCodeJsonSimpleVersion"
     implementation "org.jsoup:jsoup:$project.jsoupVersion"
     implementation "com.mashape.unirest:unirest-java:$project.unirestVersion"
@@ -74,32 +58,11 @@ dependencies {
     }
 }
 
-clean.doFirst {
-    println "********************* Clean.doFirst - start *********************"
-    delete "${buildDir}"
-    println "Deleted dir - ${buildDir}"
-    println "********************* Clean.doFirst - finish *********************"
-    println ""
-}
-
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 shadowJar {
     archiveBaseName.set("$project.name")
     archiveClassifier.set('')
-    archiveVersion.set("$version")
-}
-
-task fatJar(type: ShadowJar) {
-    manifest {
-        attributes 'Implementation-Title': 'unified-e2e framework with support for Native App and Browser automation',
-                'Implementation-Version': "$project.version"
-    }
-    from {
-        from sourceSets.main.output
-        configurations = [project.configurations.cucumberRuntime, project.configurations.compile]
-    }
-    with jar
+    archiveVersion.set("$project.version")
+    zip64 true
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
