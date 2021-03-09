@@ -82,6 +82,11 @@ public class Visual {
         return this;
     }
 
+    @NotNull
+    private String getFormattedTagName (String fromScreen, String tag) {
+        return fromScreen + " : " + tag;
+    }
+
     public Visual check (String fromScreen, String tag, SeleniumCheckSettings checkSettings) {
         String formattedTagName = getFormattedTagName(fromScreen, tag);
         System.out.printf("check: fromScreen: '%s', tag: '%s'%n", fromScreen, formattedTagName);
@@ -91,11 +96,6 @@ public class Visual {
         eyesOnApp.check(formattedTagName, checkSettings);
         screenShotManager.takeScreenShot(formattedTagName);
         return this;
-    }
-
-    @NotNull
-    private String getFormattedTagName (String fromScreen, String tag) {
-        return fromScreen + " : " + tag;
     }
 
     public Visual checkWindow (String fromScreen, String tag, MatchLevel level) {
@@ -119,21 +119,21 @@ public class Visual {
         getVisualResultsFromApp(userPersona);
     }
 
-    private String getVisualResultsFromApp (String userPersona) {
-        System.out.println("getVisualResultsFromApp: user: " + userPersona);
-        TestResults visualResults = eyesOnApp.close(false);
-        String reportUrl = handleTestResults(visualResults);
-        String message = String.format("App Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
-        System.out.println(message);
-        ReportPortal.emitLog(message, "DEBUG", new Date());
-        return reportUrl;
-    }
-
     private String getVisualResultsFromWeb (String userPersona) {
         System.out.println("getVisualResultsFromWeb: user: " + userPersona);
         TestResults visualResults = eyesOnWeb.close(false);
         String reportUrl = handleTestResults(visualResults);
         String message = String.format("Web Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
+        System.out.println(message);
+        ReportPortal.emitLog(message, "DEBUG", new Date());
+        return reportUrl;
+    }
+
+    private String getVisualResultsFromApp (String userPersona) {
+        System.out.println("getVisualResultsFromApp: user: " + userPersona);
+        TestResults visualResults = eyesOnApp.close(false);
+        String reportUrl = handleTestResults(visualResults);
+        String message = String.format("App Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
         System.out.println(message);
         ReportPortal.emitLog(message, "DEBUG", new Date());
         return reportUrl;

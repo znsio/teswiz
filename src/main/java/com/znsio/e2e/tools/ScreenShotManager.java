@@ -46,12 +46,12 @@ public class ScreenShotManager {
         }
     }
 
-    private int getPrefix () {
-        return ++counter;
-    }
-
     private String normaliseScenarioName (String scenarioName) {
         return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_");
+    }
+
+    private int getPrefix () {
+        return ++counter;
     }
 
     private File createScreenshotFile (String dirName, String fileName) {

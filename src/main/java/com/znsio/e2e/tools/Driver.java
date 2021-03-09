@@ -1,9 +1,5 @@
 package com.znsio.e2e.tools;
 
-import com.applitools.eyes.MatchLevel;
-import com.applitools.eyes.RectangleSize;
-import com.applitools.eyes.StdoutLogHandler;
-import com.applitools.eyes.selenium.Eyes;
 import com.znsio.e2e.context.Session;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import io.appium.java_client.AppiumDriver;
@@ -37,17 +33,17 @@ public class Driver {
         instantiateEyes(testName, appiumDriver);
     }
 
-    public Driver (String testName, WebDriver webDriver) {
-        this.driver = webDriver;
-        this.type = WEB_DRIVER;
-        instantiateEyes(testName, webDriver);
-    }
-
     private void instantiateEyes (String testName, WebDriver innerDriver) {
         String applicationName = System.getenv(TEST_CONTEXT.APPLITOOLS_APPLICATION_NAME) == null ? "unified-e2e" : System.getenv(TEST_CONTEXT.APPLITOOLS_APPLICATION_NAME);
         System.out.println("applicationName: " + applicationName);
         String appName = applicationName + "-" + Session.platform;
         this.visually = new Visual(this.type, innerDriver, appName, testName, Session.isVisualTestingEnabled);
+    }
+
+    public Driver (String testName, WebDriver webDriver) {
+        this.driver = webDriver;
+        this.type = WEB_DRIVER;
+        instantiateEyes(testName, webDriver);
     }
 
     public WebElement waitForVisibilityOf (By elementId) {
@@ -56,6 +52,10 @@ public class Driver {
 
     public WebElement waitForVisibilityOf (String elementId) {
         return (new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(findElementByAccessibilityId(elementId)));
+    }
+
+    public WebElement findElementByAccessibilityId (String locator) {
+        return ((AppiumDriver) driver).findElementByAccessibilityId(locator);
     }
 
     public void waitForAlert () {
@@ -77,10 +77,6 @@ public class Driver {
 
     public WebElement findElementById (String locator) {
         return driver.findElement(By.id(locator));
-    }
-
-    public WebElement findElementByAccessibilityId (String locator) {
-        return ((AppiumDriver) driver).findElementByAccessibilityId(locator);
     }
 
     public WebElement findElementByXpath (String locator) {
@@ -132,6 +128,17 @@ public class Driver {
         }
     }
 
+    private void tapOnMiddleOfScreenOnDevice () {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        Dimension screenSize = appiumDriver.manage().window().getSize();
+        int midHeight = screenSize.height / 2;
+        int midWidth = screenSize.width / 2;
+        System.out.printf("tapOnMiddleOfScreen: Screen dimensions: '%s'. Tapping on coordinates: %d:%d%n", screenSize.toString(), midWidth, midHeight);
+        TouchAction touchAction = new TouchAction(appiumDriver);
+        touchAction.tap(PointOption.point(midWidth, midHeight)).perform();
+        waitFor(1);
+    }
+
     private void simulateMouseMovementOnBrowser () {
         Actions actions = new Actions(this.driver);
         Dimension windowSize = driver.manage().window().getSize();
@@ -144,15 +151,13 @@ public class Driver {
         waitFor(1);
     }
 
-    private void tapOnMiddleOfScreenOnDevice () {
-        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
-        Dimension screenSize = appiumDriver.manage().window().getSize();
-        int midHeight = screenSize.height / 2;
-        int midWidth = screenSize.width / 2;
-        System.out.printf("tapOnMiddleOfScreen: Screen dimensions: '%s'. Tapping on coordinates: %d:%d%n", screenSize.toString(), midWidth, midHeight);
-        TouchAction touchAction = new TouchAction(appiumDriver);
-        touchAction.tap(PointOption.point(midWidth, midHeight)).perform();
-        waitFor(1);
+    public void swipeRight () {
+        int height = getWindowHeight() / 2;
+        int fromWidth = (int) (getWindowWidth() * 0.5);
+        int toWidth = (int) (getWindowWidth() * 0.9);
+        System.out.printf("height: %s, from width: %s, to width: %s", height, fromWidth, toWidth);
+
+        swipe(height, fromWidth, toWidth);
     }
 
     private int getWindowHeight () {
@@ -165,15 +170,6 @@ public class Driver {
     private int getWindowWidth () {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         return appiumDriver.manage().window().getSize().width;
-    }
-
-    public void swipeRight () {
-        int height = getWindowHeight() / 2;
-        int fromWidth = (int) (getWindowWidth() * 0.5);
-        int toWidth = (int) (getWindowWidth() * 0.9);
-        System.out.printf("height: %s, from width: %s, to width: %s", height, fromWidth, toWidth);
-
-        swipe(height, fromWidth, toWidth);
     }
 
     private void swipe (int height, int fromWidth, int toWidth) {

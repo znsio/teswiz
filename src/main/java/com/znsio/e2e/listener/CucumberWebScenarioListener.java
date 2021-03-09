@@ -56,19 +56,6 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
                         + File.separator);
     }
 
-    private String normaliseScenarioName (String scenarioName) {
-        return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_");
-    }
-
-    private Integer getScenarioRunCount (String scenarioName) {
-        if (scenarioRunCounts.containsKey(scenarioName)) {
-            scenarioRunCounts.put(scenarioName, scenarioRunCounts.get(scenarioName) + 1);
-        } else {
-            scenarioRunCounts.put(scenarioName, 1);
-        }
-        return scenarioRunCounts.get(scenarioName);
-    }
-
     private void webCaseFinishedHandler (TestCaseFinished event) {
         LOGGER.info("webCaseFinishedHandler Name: " + event.getTestCase().toString());
         LOGGER.info("webCaseFinishedHandler Result: " + event.getResult().getStatus().toString());
@@ -82,5 +69,18 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
     private void webRunFinishedHandler (TestRunFinished event) {
         LOGGER.info("webRunFinishedHandler: " + event.getResult().toString());
         LOGGER.info(String.format("ThreadID: %d: afterSuite: \n", Thread.currentThread().getId()));
+    }
+
+    private Integer getScenarioRunCount (String scenarioName) {
+        if (scenarioRunCounts.containsKey(scenarioName)) {
+            scenarioRunCounts.put(scenarioName, scenarioRunCounts.get(scenarioName) + 1);
+        } else {
+            scenarioRunCounts.put(scenarioName, 1);
+        }
+        return scenarioRunCounts.get(scenarioName);
+    }
+
+    private String normaliseScenarioName (String scenarioName) {
+        return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_");
     }
 }

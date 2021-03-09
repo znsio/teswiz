@@ -32,6 +32,93 @@ public class Drivers {
     private int numberOfAndroidDriversUsed = 0;
     private int numberOfWebDriversUsed = 0;
 
+    public Driver setDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
+        System.out.println(String.format("getDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
+        if (!userPersonaDrivers.containsKey(userPersona)) {
+            String message = String.format("ERROR: Driver for user persona: '%s' DOES NOT EXIST\nAvailable drivers: '%s'", userPersona, userPersonaDrivers.keySet());
+            throw new InvalidTestDataException(message);
+        }
+        Driver currentDriver = userPersonaDrivers.get(userPersona);
+        context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
+        context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
+        return currentDriver;
+    }
+
+    public Driver createDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
+        System.out.println(String.format("allocateDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
+        Driver currentDriver = null;
+        if (userPersonaDrivers.containsKey(userPersona)) {
+            String message = String.format("ERROR: Driver for user persona: '%s' ALREADY EXISTS\nAvailable drivers: '%s'", userPersona, userPersonaDrivers.keySet());
+            throw new InvalidTestDataException(message);
+        }
+
+        switch (forPlatform) {
+            case android:
+                currentDriver = createAndroidDriverForUser(userPersona, forPlatform, context);
+                break;
+            case web:
+                currentDriver = createWebDriverForUser(userPersona, forPlatform, context);
+                break;
+            default:
+                throw new InvalidTestDataException(String.format("Unexpected platform value: '%s' provided to assign Driver for user: '%s': ", forPlatform, userPersona));
+        }
+        context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
+        context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
+        userPersonaDrivers.put(userPersona, currentDriver);
+        userPersonaPlatforms.put(userPersona, forPlatform);
+        System.out.println(String.format("allocateDriverFor: done: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
+
+        return currentDriver;
+    }
+
+    @NotNull
+    private Driver createAndroidDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
+        System.out.println(String.format("getAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'", userPersona, forPlatform.name(), numberOfAndroidDriversUsed));
+        Driver currentDriver;
+        if (Platform.android.equals(forPlatform) && numberOfAndroidDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
+            throw new InvalidTestDataException(
+                    String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
+                            numberOfAndroidDriversUsed,
+                            userPersona,
+                            forPlatform.name())
+            );
+        }
+        currentDriver = new Driver(context.getTestName() + "-" + userPersona, (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER));
+        numberOfAndroidDriversUsed++;
+        System.out.println(String.format("getAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'", userPersona, forPlatform.name(), numberOfAndroidDriversUsed));
+        return currentDriver;
+    }
+
+    @NotNull
+    private Driver createWebDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
+        System.out.println(String.format("getWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'", userPersona, forPlatform.name(), numberOfWebDriversUsed));
+
+        Driver currentDriver;
+        if (Platform.web.equals(forPlatform) && numberOfWebDriversUsed == MAX_NUMBER_OF_WEB_DRIVERS) {
+            throw new InvalidTestDataException(
+                    String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
+                            numberOfWebDriversUsed,
+                            userPersona,
+                            forPlatform.name())
+            );
+        }
+        String updatedTestName = context.getTestName() + "-" + userPersona;
+        if (numberOfWebDriversUsed < MAX_NUMBER_OF_WEB_DRIVERS) {
+            currentDriver = new Driver(updatedTestName, createNewWebDriver(userPersona, context));
+        } else {
+            throw new InvalidTestDataException(
+                    String.format("Current number of WebDriver instances used: '%d'. Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
+                            numberOfWebDriversUsed,
+                            MAX_NUMBER_OF_WEB_DRIVERS,
+                            userPersona,
+                            forPlatform.name())
+            );
+        }
+        numberOfWebDriversUsed++;
+        System.out.println(String.format("getWebDriverForUser: done: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'", userPersona, forPlatform.name(), numberOfWebDriversUsed));
+        return currentDriver;
+    }
+
     @NotNull
     private WebDriver createNewWebDriver (String forUserPersona, TestExecutionContext testExecutionContext) {
         WebDriverManager.chromedriver().setup();
@@ -96,93 +183,6 @@ public class Drivers {
 
 //        System.setProperty("webdriver.chrome.verboseLogging", "true");
         return logFile;
-    }
-
-    public Driver setDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.println(String.format("getDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
-        if (!userPersonaDrivers.containsKey(userPersona)) {
-            String message = String.format("ERROR: Driver for user persona: '%s' DOES NOT EXIST\nAvailable drivers: '%s'", userPersona, userPersonaDrivers.keySet());
-            throw new InvalidTestDataException(message);
-        }
-        Driver currentDriver = userPersonaDrivers.get(userPersona);
-        context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
-        context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
-        return currentDriver;
-    }
-
-    public Driver createDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.println(String.format("allocateDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
-        Driver currentDriver = null;
-        if (userPersonaDrivers.containsKey(userPersona)) {
-            String message = String.format("ERROR: Driver for user persona: '%s' ALREADY EXISTS\nAvailable drivers: '%s'", userPersona, userPersonaDrivers.keySet());
-            throw new InvalidTestDataException(message);
-        }
-
-        switch (forPlatform) {
-            case android:
-                currentDriver = createAndroidDriverForUser(userPersona, forPlatform, context);
-                break;
-            case web:
-                currentDriver = createWebDriverForUser(userPersona, forPlatform, context);
-                break;
-            default:
-                throw new InvalidTestDataException(String.format("Unexpected platform value: '%s' provided to assign Driver for user: '%s': ", forPlatform, userPersona));
-        }
-        context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
-        context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
-        userPersonaDrivers.put(userPersona, currentDriver);
-        userPersonaPlatforms.put(userPersona, forPlatform);
-        System.out.println(String.format("allocateDriverFor: done: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
-
-        return currentDriver;
-    }
-
-    @NotNull
-    private Driver createWebDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.println(String.format("getWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'", userPersona, forPlatform.name(), numberOfWebDriversUsed));
-
-        Driver currentDriver;
-        if (Platform.web.equals(forPlatform) && numberOfWebDriversUsed == MAX_NUMBER_OF_WEB_DRIVERS) {
-            throw new InvalidTestDataException(
-                    String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
-                            numberOfWebDriversUsed,
-                            userPersona,
-                            forPlatform.name())
-            );
-        }
-        String updatedTestName = context.getTestName() + "-" + userPersona;
-        if (numberOfWebDriversUsed < MAX_NUMBER_OF_WEB_DRIVERS) {
-            currentDriver = new Driver(updatedTestName, createNewWebDriver(userPersona, context));
-        } else {
-            throw new InvalidTestDataException(
-                    String.format("Current number of WebDriver instances used: '%d'. Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
-                            numberOfWebDriversUsed,
-                            MAX_NUMBER_OF_WEB_DRIVERS,
-                            userPersona,
-                            forPlatform.name())
-            );
-        }
-        numberOfWebDriversUsed++;
-        System.out.println(String.format("getWebDriverForUser: done: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'", userPersona, forPlatform.name(), numberOfWebDriversUsed));
-        return currentDriver;
-    }
-
-    @NotNull
-    private Driver createAndroidDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.println(String.format("getAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'", userPersona, forPlatform.name(), numberOfAndroidDriversUsed));
-        Driver currentDriver;
-        if (Platform.android.equals(forPlatform) && numberOfAndroidDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
-            throw new InvalidTestDataException(
-                    String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
-                            numberOfAndroidDriversUsed,
-                            userPersona,
-                            forPlatform.name())
-            );
-        }
-        currentDriver = new Driver(context.getTestName() + "-" + userPersona, (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER));
-        numberOfAndroidDriversUsed++;
-        System.out.println(String.format("getAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'", userPersona, forPlatform.name(), numberOfAndroidDriversUsed));
-        return currentDriver;
     }
 
     public Driver getDriverForUser (String userPersona) {
