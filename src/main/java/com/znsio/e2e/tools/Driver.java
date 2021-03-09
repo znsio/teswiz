@@ -43,29 +43,11 @@ public class Driver {
         instantiateEyes(testName, webDriver);
     }
 
-    private WebDriver instantiateEyes (String testName, WebDriver innerDriver) {
-        if (Session.isVisualTestingEnabled) {
-            String applicationName = System.getenv(TEST_CONTEXT.APPLITOOLS_APPLICATION_NAME) == null? "unified-e2e" : System.getenv(TEST_CONTEXT.APPLITOOLS_APPLICATION_NAME);
-            System.out.println("applicationName: " + applicationName);
-            String appName = applicationName + "-" + Session.platform;
-            Eyes eyes = new Eyes();
-            Visual visually = new Visual(eyes);
-            this.visually = visually;
-            eyes.setApiKey(System.getenv("APPLITOOLS_API_KEY"));
-            eyes.setBatch(Session.batchName);
-            eyes.setLogHandler(new StdoutLogHandler(true));
-            eyes.setEnvName(Session.targetEnvironment);
-            eyes.setMatchLevel(MatchLevel.STRICT);
-
-            return this.type.equals(Driver.WEB_DRIVER)
-                    ? eyes.open((WebDriver) innerDriver, appName, testName, new RectangleSize(1024, 800))
-                    : eyes.open((AppiumDriver) innerDriver, appName, testName);
-        } else {
-            System.out.println("Visual Testing is NOT enabled for test: " + testName);
-            Visual visually = new Visual();
-            this.visually = visually;
-            return innerDriver;
-        }
+    private void instantiateEyes (String testName, WebDriver innerDriver) {
+        String applicationName = System.getenv(TEST_CONTEXT.APPLITOOLS_APPLICATION_NAME) == null ? "unified-e2e" : System.getenv(TEST_CONTEXT.APPLITOOLS_APPLICATION_NAME);
+        System.out.println("applicationName: " + applicationName);
+        String appName = applicationName + "-" + Session.platform;
+        this.visually = new Visual(this.type, innerDriver, appName, testName, Session.isVisualTestingEnabled);
     }
 
     public WebElement waitForVisibilityOf (By elementId) {

@@ -1,49 +1,95 @@
 package com.znsio.e2e.tools;
 
 import com.applitools.eyes.MatchLevel;
+import com.applitools.eyes.RectangleSize;
+import com.applitools.eyes.StdoutLogHandler;
 import com.applitools.eyes.TestResults;
-import com.applitools.eyes.selenium.Eyes;
 import com.applitools.eyes.selenium.fluent.SeleniumCheckSettings;
 import com.applitools.eyes.selenium.fluent.Target;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
+import com.znsio.e2e.context.Session;
 import com.znsio.e2e.entities.TEST_CONTEXT;
+import io.appium.java_client.AppiumDriver;
 import org.jetbrains.annotations.NotNull;
+import org.openqa.selenium.WebDriver;
 
 import java.util.Date;
 
 public class Visual {
     private final String visualTestNotEnabledMessage = "Visual Test is not enabled";
-    private final Eyes eyes;
+    private final com.applitools.eyes.selenium.Eyes eyesOnWeb;
+    private final com.applitools.eyes.appium.Eyes eyesOnApp;
     private final TestExecutionContext context;
     private final ScreenShotManager screenShotManager;
+    private final RectangleSize viewportSize = new RectangleSize(1024, 800);
 
-    public Visual (Eyes eyes) {
-        this.eyes = eyes;
+    public Visual (String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
+        System.out.printf("Visual constructor: Driver type: '%s', appName: '%s', testName: '%s', isVisualTestingEnabled: '%s'%n", driverType, appName, testName, isVisualTestingEnabled);
+        eyesOnApp = instantiateAppiumEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
+        eyesOnWeb = instantiateWebEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
         this.context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         this.screenShotManager = (ScreenShotManager) context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
     }
 
-    public Visual () {
-        this.eyes = null;
-        this.context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
-        this.screenShotManager = (ScreenShotManager) context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
+    private com.applitools.eyes.appium.Eyes instantiateAppiumEyes (String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
+        if (driverType.equals(Driver.WEB_DRIVER)) {
+            isVisualTestingEnabled = false;
+        }
+        System.out.println("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
+        com.applitools.eyes.appium.Eyes eyes = new com.applitools.eyes.appium.Eyes();
+        eyes.setApiKey(System.getenv("APPLITOOLS_API_KEY"));
+        eyes.setBatch(Session.batchName);
+        eyes.setLogHandler(new StdoutLogHandler(true));
+        eyes.setEnvName(Session.targetEnvironment);
+        eyes.setIsDisabled(!isVisualTestingEnabled);
+        eyes.setMatchLevel(MatchLevel.STRICT);
+        if (isVisualTestingEnabled) {
+            eyes.open((AppiumDriver) innerDriver, appName, testName);
+        }
+        System.out.println("instantiateAppiumEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
+        return eyes;
+    }
+
+    private com.applitools.eyes.selenium.Eyes instantiateWebEyes (String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
+        if (driverType.equals(Driver.APPIUM_DRIVER)) {
+            isVisualTestingEnabled = false;
+        }
+        System.out.println("instantiateWebEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
+        com.applitools.eyes.selenium.Eyes eyes = new com.applitools.eyes.selenium.Eyes();
+        eyes.setApiKey(System.getenv("APPLITOOLS_API_KEY"));
+        eyes.setBatch(Session.batchName);
+        eyes.setLogHandler(new StdoutLogHandler(true));
+        eyes.setEnvName(Session.targetEnvironment);
+        eyes.setIsDisabled(!isVisualTestingEnabled);
+        eyes.setMatchLevel(MatchLevel.STRICT);
+        if (isVisualTestingEnabled) {
+            eyes.open((WebDriver) innerDriver, appName, testName, viewportSize);
+        }
+        System.out.println("instantiateWebEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
+        return eyes;
     }
 
     public Visual checkWindow (String fromScreen, String tag) {
-        if (null != eyes) {
-            eyes.check(getFormattedTagName(fromScreen, tag), Target.window());
-        }
-        screenShotManager.takeScreenShot(getFormattedTagName(fromScreen, tag));
+        String formattedTagName = getFormattedTagName(fromScreen, tag);
+        System.out.printf("checkWindow: fromScreen: '%s', tag: '%s'%n", fromScreen, formattedTagName);
+        System.out.println("checkWindow: eyesOnWeb.getIsDisabled(): " + eyesOnWeb.getIsDisabled());
+        System.out.println("checkWindow: eyesOnApp.getIsDisabled(): " + eyesOnApp.getIsDisabled());
+        eyesOnWeb.checkWindow(formattedTagName);
+        eyesOnApp.checkWindow(formattedTagName);
+        screenShotManager.takeScreenShot(formattedTagName);
         return this;
     }
 
     public Visual check (String fromScreen, String tag, SeleniumCheckSettings checkSettings) {
-        if (null != eyes) {
-            eyes.check(getFormattedTagName(fromScreen, tag), checkSettings);
-        }
-        screenShotManager.takeScreenShot(getFormattedTagName(fromScreen, tag));
+        String formattedTagName = getFormattedTagName(fromScreen, tag);
+        System.out.printf("check: fromScreen: '%s', tag: '%s'%n", fromScreen, formattedTagName);
+        System.out.println("check: eyesOnWeb.getIsDisabled(): " + eyesOnWeb.getIsDisabled());
+        System.out.println("check: eyesOnApp.getIsDisabled(): " + eyesOnApp.getIsDisabled());
+        eyesOnWeb.check(formattedTagName, checkSettings);
+        eyesOnApp.check(formattedTagName, checkSettings);
+        screenShotManager.takeScreenShot(formattedTagName);
         return this;
     }
 
@@ -53,9 +99,12 @@ public class Visual {
     }
 
     public Visual checkWindow (String fromScreen, String tag, MatchLevel level) {
-        if (null != eyes) {
-            eyes.check(getFormattedTagName(fromScreen, tag), Target.window().matchLevel(level));
-        }
+        String formattedTagName = getFormattedTagName(fromScreen, tag);
+        System.out.printf("checkWindow: fromScreen: '%s', MatchLevel: '%s', tag: '%s'%n", fromScreen, level, formattedTagName);
+        System.out.println("checkWindow: eyesOnWeb.getIsDisabled(): " + eyesOnWeb.getIsDisabled());
+        System.out.println("checkWindow: eyesOnApp.getIsDisabled(): " + eyesOnApp.getIsDisabled());
+        eyesOnWeb.check(getFormattedTagName(fromScreen, tag), Target.window().matchLevel(level));
+        eyesOnApp.check(getFormattedTagName(fromScreen, tag), Target.window().matchLevel(level));
         screenShotManager.takeScreenShot(getFormattedTagName(fromScreen, tag));
         return this;
     }
@@ -65,19 +114,29 @@ public class Visual {
         return this;
     }
 
-    public String handleTestResults (String userPersona) {
-        if (null == eyes) {
-            String message = "Eyes is null. Visual Testing was skipped";
-            System.out.println(message);
-            return message;
-        } else {
-            TestResults visualResults = eyes.close(false);
-            String reportUrl = handleTestResults(visualResults);
-            String message = String.format("Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
-            System.out.println(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
-            return reportUrl;
-        }
+    public void handleTestResults (String userPersona) {
+        getVisualResultsFromWeb(userPersona);
+        getVisualResultsFromApp(userPersona);
+    }
+
+    private String getVisualResultsFromApp (String userPersona) {
+        System.out.println("getVisualResultsFromApp: user: " + userPersona);
+        TestResults visualResults = eyesOnApp.close(false);
+        String reportUrl = handleTestResults(visualResults);
+        String message = String.format("App Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
+        System.out.println(message);
+        ReportPortal.emitLog(message, "DEBUG", new Date());
+        return reportUrl;
+    }
+
+    private String getVisualResultsFromWeb (String userPersona) {
+        System.out.println("getVisualResultsFromWeb: user: " + userPersona);
+        TestResults visualResults = eyesOnWeb.close(false);
+        String reportUrl = handleTestResults(visualResults);
+        String message = String.format("Web Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
+        System.out.println(message);
+        ReportPortal.emitLog(message, "DEBUG", new Date());
+        return reportUrl;
     }
 
     private String handleTestResults (TestResults result) {
@@ -88,20 +147,7 @@ public class Visual {
                 result.getMissing(),
                 result.isNew(),
                 result.isPassed());
-//        System.out.printf("\t\tName = '%s', \nDevice = %s,OS = %s, viewport = %dx%d, matched = %d, mismatched = %d, missing = %d, aborted = %s%n",
-//                result.getName(),
-//                result.getHostApp(),
-//                result.getHostOS(),
-//                result.getHostDisplaySize().getWidth(),
-//                result.getHostDisplaySize().getHeight(),
-//                result.getMatches(),
-//                result.getMismatches(),
-//                result.getMissing(),
-//                (result.isAborted() ? "aborted" : "no"),
-//                result.getAccessibilityStatus(),
-//                result.getDuration());
         System.out.println("Visual Testing results available here: " + result.getUrl());
-//        boolean hasMismatches = result.getMismatches() != 0 || result.isAborted();
         boolean hasMismatches = result.getMismatches() != 0;
         System.out.println("Visual testing differences found? - " + hasMismatches);
         return result.getUrl();

@@ -67,6 +67,11 @@ dependencies {
         exclude group: 'selenium-java'
         exclude group: 'eyes-connectivity-java3-jersey2x'
     }
+    implementation("com.applitools:eyes-appium-java3:$project.applitoolsVersion") {
+        exclude group: 'java-client'
+        exclude group: 'selenium-java'
+        exclude group: 'eyes-connectivity-java3-jersey2x'
+    }
 }
 
 clean.doFirst {

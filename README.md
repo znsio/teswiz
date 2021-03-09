@@ -95,8 +95,8 @@ You can run these tests as below:
 
 ### Running the tests with Applitools Visual AI
 To enable Applitools Visual Testing in your test execution, the following additional environment variables need to be provided:
+* `Visual=true` - to enable Visual Testing using Applitools
 * `APPLITOOLS_API_KEY=<API_KEY>` - Sets the API key as provided by Applitools
-* `ApplitoolsApplicationName=<MyApplicationName>` - Enable visual testing using Applitools and the application name will be used as provided
 
 ### Running a subset of tests:
 To run a subset of tests, for a given platform, the following additional environment variables need to be provided:
