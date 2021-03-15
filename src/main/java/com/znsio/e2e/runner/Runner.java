@@ -40,6 +40,9 @@ public class Runner {
     public static final boolean IS_MAC = OS_NAME.toLowerCase().startsWith("mac");
     public static final String USER_DIRECTORY = System.getProperty("user.dir");
     public static final String USER_NAME = System.getProperty("user.name");
+    public static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
+    private static final String APP_NAME = "APP_NAME";
+    private static final String IS_VISUAL = "IS_VISUAL";
     private static final String CHROME = "chrome";
     private static final String PLUGIN = "--plugin";
     private static final String tempDirectory = "temp";
@@ -50,19 +53,13 @@ public class Runner {
     private static final String BRANCH_NAME = NOT_SET;
     private static final String LOG_PROPERTIES_FILE = NOT_SET;
     private static final String DEFAULT_LOG_DIR = "target";
-    public static Platform platform = Platform.android;
-    public static boolean isVisualTestingEnabled = false;
-    public static BatchInfo batchName;
-    private static final String APP_NAME = "APP_NAME";
     private static final String APP_PATH = "APP_PATH";
-    private static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     private static final String BROWSER = "BROWSER";
     private static final String CAPS = "CAPS";
     private static final String CONFIG_FILE = "CONFIG_FILE";
     private static final String DEVICE_LAB_URL = "DEVICE_LAB_URL";
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
     private static final String EXECUTED_ON = NOT_SET;
-    private static final String IS_VISUAL = "IS_VISUAL";
     private static final String INFERRED_TAGS = "INFERRED_TAGS";
     private static final String LAUNCH_NAME = "LAUNCH_NAME";
     private static final String LOG_DIR = "LOG_DIR";
@@ -72,11 +69,13 @@ public class Runner {
     private static final String TAG = "TAG";
     private static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
-    private static Map<String, Map> environmentConfiguration;
-    private static Map<String, Map> testDataForEnvironment;
     private static final Map<String, String> configs = new HashMap();
     private static final Map<String, Boolean> configsBoolean = new HashMap();
     private static final Map<String, Integer> configsInteger = new HashMap();
+    public static Platform platform = Platform.android;
+    public static BatchInfo batchName;
+    private static Map<String, Map> environmentConfiguration;
+    private static Map<String, Map> testDataForEnvironment;
     private final Properties properties;
 
     public Runner () {
@@ -135,40 +134,8 @@ public class Runner {
         run(cukeArgs, stepDefDirName, featuresDirName);
     }
 
-    private void setBranchName () {
-        String[] listOfDevices = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
-        CommandLineResponse response = CommandLineExecutor.execCommand(listOfDevices);
-        String branchName = response.getStdOut();
-        System.out.println("BRANCH_NAME: " + branchName);
-        configs.put(BRANCH_NAME, branchName);
-    }
-
-    private void loadAndUpdateConfigParameters (String configFilePath, String logPropertiesFile) {
-        configs.put(CONFIG_FILE, configFilePath);
-        configs.put(LOG_PROPERTIES_FILE, logPropertiesFile);
-        buildMapOfRequiredProperties();
-
-        configs.forEach((k, v) -> {
-            if (NOT_SET.equalsIgnoreCase(v) && properties.containsKey(k.toUpperCase())) {
-                configs.put(k, properties.getProperty(k.toUpperCase()));
-            }
-        });
-
-        configsBoolean.forEach((k, v) -> {
-            if (properties.containsKey(k.toUpperCase())) {
-                configsBoolean.put(k, Boolean.valueOf(properties.getProperty(k.toUpperCase())));
-            }
-        });
-
-        configsInteger.forEach((k, v) -> {
-            if (properties.containsKey(k.toUpperCase())) {
-                configsInteger.put(k, Integer.valueOf(properties.getProperty(k.toUpperCase())));
-            }
-        });
-
-        System.out.println("updated string values from property file for missing properties: \n" + configs);
-        System.out.println("updated boolean values from property file for missing properties: \n" + configsBoolean);
-        System.out.println("updated integer values from property file for missing properties: \n" + configsInteger);
+    public static boolean isVisualTestingEnabled () {
+        return configsBoolean.get(IS_VISUAL);
     }
 
     public static void remove (long threadId) {
@@ -253,6 +220,50 @@ public class Runner {
         return (NOT_SET.equalsIgnoreCase(testDataFile)) ? new HashMap<>() : JsonFile.getNodeValueAsMapFromJsonFile(environment, testDataFile);
     }
 
+    public static String getTargetEnvironment () {
+        return configs.get(TARGET_ENVIRONMENT);
+    }
+
+    public static String getAppName () {
+        return configs.get(APP_NAME);
+    }
+
+    private void setBranchName () {
+        String[] listOfDevices = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
+        CommandLineResponse response = CommandLineExecutor.execCommand(listOfDevices);
+        String branchName = response.getStdOut();
+        System.out.println("BRANCH_NAME: " + branchName);
+        configs.put(BRANCH_NAME, branchName);
+    }
+
+    private void loadAndUpdateConfigParameters (String configFilePath, String logPropertiesFile) {
+        configs.put(CONFIG_FILE, configFilePath);
+        configs.put(LOG_PROPERTIES_FILE, logPropertiesFile);
+        buildMapOfRequiredProperties();
+
+        configs.forEach((k, v) -> {
+            if (NOT_SET.equalsIgnoreCase(v) && properties.containsKey(k.toUpperCase())) {
+                configs.put(k, properties.getProperty(k.toUpperCase()));
+            }
+        });
+
+        configsBoolean.forEach((k, v) -> {
+            if (properties.containsKey(k.toUpperCase())) {
+                configsBoolean.put(k, Boolean.valueOf(properties.getProperty(k.toUpperCase())));
+            }
+        });
+
+        configsInteger.forEach((k, v) -> {
+            if (properties.containsKey(k.toUpperCase())) {
+                configsInteger.put(k, Integer.valueOf(properties.getProperty(k.toUpperCase())));
+            }
+        });
+
+        System.out.println("Updated string values from property file for missing properties: \n" + configs);
+        System.out.println("Updated boolean values from property file for missing properties: \n" + configsBoolean);
+        System.out.println("Updated integer values from property file for missing properties: \n" + configsInteger);
+    }
+
     public void run (ArrayList<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);
@@ -260,7 +271,8 @@ public class Runner {
         System.out.println("Begin running tests...");
         System.out.println("Args: " + args);
         String[] array = args.stream().toArray(String[]::new);
-        Main.main(array);
+        byte exitStatus = Main.run(array);
+        System.out.println("Output of test run: " + exitStatus);
     }
 
     private void buildMapOfRequiredProperties () {

@@ -15,7 +15,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class JsonFile {
-    private JsonFile() {}
+    private JsonFile () {
+    }
 
     public static void saveJsonToFile (Map<String, Map> jsonMap, String fileName) {
         System.out.printf("Save the following json to file: '%s'%n'%s'%n", fileName, jsonMap);
@@ -33,7 +34,7 @@ public class JsonFile {
         Map<String, Map> envMap = map.get(node);
         System.out.println("Loaded map: " + envMap);
         if (null == envMap) {
-            throw new InvalidTestDataException(String.format("Node: '%s' not found in file: '%s'",node, fileName ));
+            throw new InvalidTestDataException(String.format("Node: '%s' not found in file: '%s'", node, fileName));
         }
         return envMap;
     }
@@ -60,7 +61,7 @@ public class JsonFile {
             nodePath += nodeTree[nodeCount] + " -> ";
             map = map.get(nodeTree[nodeCount]);
             if (null == map) {
-                throw new InvalidTestDataException(String.format("Node: '%s' not found in file: '%s'",nodePath, fileName ));
+                throw new InvalidTestDataException(String.format("Node: '%s' not found in file: '%s'", nodePath, fileName));
             }
         }
         String retValue = String.valueOf(map.get(nodeTree[nodeTree.length - 1]));

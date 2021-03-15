@@ -3,7 +3,6 @@ package com.znsio.e2e.screen.android;
 import com.znsio.e2e.screen.LoginScreen;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;
-import io.appium.java_client.MobileElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -32,6 +31,7 @@ public class LoginScreenAndroid extends LoginScreen {
         driver.findElementByAccessibilityId(passwordId).sendKeys(password);
         driver.waitForVisibilityOf(passwordId).sendKeys(username);
         visually.takeScreenshot(screenName, "enterLoginDetails");
+        visually.checkWindow(screenName, "entered login details");
         return this;
     }
 
@@ -46,6 +46,7 @@ public class LoginScreenAndroid extends LoginScreen {
     public String getInvalidLoginError () {
         WebElement alertText = driver.waitForVisibilityOf(errorMessageId);
         visually.takeScreenshot(screenName, "Invalid Login alert");
+        visually.checkWindow(screenName, "Invalid Login alert");
         return alertText.getText();
     }
 

@@ -1,7 +1,7 @@
 package com.znsio.e2e.screen;
 
-import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.entities.Platform;
+import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.screen.android.HomeScreenAndroid;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;

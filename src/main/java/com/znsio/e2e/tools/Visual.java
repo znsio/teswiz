@@ -1,5 +1,6 @@
 package com.znsio.e2e.tools;
 
+import com.appium.utils.Variable;
 import com.applitools.eyes.MatchLevel;
 import com.applitools.eyes.RectangleSize;
 import com.applitools.eyes.StdoutLogHandler;
@@ -24,6 +25,8 @@ public class Visual {
     private final TestExecutionContext context;
     private final ScreenShotManager screenShotManager;
     private final RectangleSize viewportSize = new RectangleSize(1024, 800);
+    private final String applitoolsApiKey = Variable.getOverriddenStringValue("APPLITOOLS_API_KEY");
+    private final String targetEnvironment = Runner.getTargetEnvironment();
 
     public Visual (String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
         System.out.printf("Visual constructor: Driver type: '%s', appName: '%s', testName: '%s', isVisualTestingEnabled: '%s'%n", driverType, appName, testName, isVisualTestingEnabled);
@@ -39,14 +42,14 @@ public class Visual {
         }
         System.out.println("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         com.applitools.eyes.appium.Eyes eyes = new com.applitools.eyes.appium.Eyes();
-        eyes.setApiKey(System.getenv("APPLITOOLS_API_KEY"));
+        eyes.setApiKey(applitoolsApiKey);
         eyes.setBatch(Runner.batchName);
         eyes.setLogHandler(new StdoutLogHandler(true));
-//        eyes.setEnvName(Runner.targetEnvironment);
+        eyes.setEnvName(targetEnvironment);
         eyes.setIsDisabled(!isVisualTestingEnabled);
         eyes.setMatchLevel(MatchLevel.STRICT);
         if (isVisualTestingEnabled) {
-            eyes.open((AppiumDriver) innerDriver, appName, testName);
+            eyes.open(innerDriver, appName, testName);
         }
         System.out.println("instantiateAppiumEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
         return eyes;
@@ -58,14 +61,14 @@ public class Visual {
         }
         System.out.println("instantiateWebEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         com.applitools.eyes.selenium.Eyes eyes = new com.applitools.eyes.selenium.Eyes();
-        eyes.setApiKey(System.getenv("APPLITOOLS_API_KEY"));
+        eyes.setApiKey(applitoolsApiKey);
         eyes.setBatch(Runner.batchName);
         eyes.setLogHandler(new StdoutLogHandler(true));
-//        eyes.setEnvName(Runner.targetEnvironment);
+        eyes.setEnvName(targetEnvironment);
         eyes.setIsDisabled(!isVisualTestingEnabled);
         eyes.setMatchLevel(MatchLevel.STRICT);
         if (isVisualTestingEnabled) {
-            eyes.open((WebDriver) innerDriver, appName, testName, viewportSize);
+            eyes.open(innerDriver, appName, testName, viewportSize);
         }
         System.out.println("instantiateWebEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
         return eyes;

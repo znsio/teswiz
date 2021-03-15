@@ -6,8 +6,6 @@ import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Drivers;
 import com.znsio.e2e.tools.ScreenShotManager;
-import com.znsio.e2e.tools.cmd.CommandLineExecutor;
-import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import io.cucumber.java.Scenario;
 import org.assertj.core.api.SoftAssertions;
 

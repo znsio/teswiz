@@ -1,8 +1,8 @@
 package com.znsio.e2e.businessLayer;
 
 import com.context.TestExecutionContext;
-import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.entities.Platform;
+import com.znsio.e2e.runner.Runner;
 import org.assertj.core.api.SoftAssertions;
 
 public class LoginBL {

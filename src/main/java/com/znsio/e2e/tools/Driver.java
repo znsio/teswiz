@@ -1,6 +1,5 @@
 package com.znsio.e2e.tools;
 
-import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
@@ -33,10 +32,10 @@ public class Driver {
     }
 
     private void instantiateEyes (String testName, WebDriver innerDriver) {
-        String applicationName = System.getenv(TEST_CONTEXT.APPLITOOLS_APPLICATION_NAME) == null ? "unified-e2e" : System.getenv(TEST_CONTEXT.APPLITOOLS_APPLICATION_NAME);
+        String applicationName = Runner.getAppName();
         System.out.println("applicationName: " + applicationName);
         String appName = applicationName + "-" + Runner.platform;
-        this.visually = new Visual(this.type, innerDriver, appName, testName, Runner.isVisualTestingEnabled);
+        this.visually = new Visual(this.type, innerDriver, appName, testName, Runner.isVisualTestingEnabled());
     }
 
     public Driver (String testName, WebDriver webDriver) {
@@ -91,7 +90,7 @@ public class Driver {
     }
 
     public WebElement scrollToAnElementByText (String text) {
-        return ((AppiumDriver) driver).findElement(MobileBy.AndroidUIAutomator("new UiScrollable(new UiSelector())" +
+        return driver.findElement(MobileBy.AndroidUIAutomator("new UiScrollable(new UiSelector())" +
                 ".scrollIntoView(new UiSelector().text(\"" + text + "\"));"));
     }
 

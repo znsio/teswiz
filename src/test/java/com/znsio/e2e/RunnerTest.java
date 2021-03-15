@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class RunnerTest {
-    private String stepDefDir = "com/znsio/e2e/steps";
-    private String logDir = "target";
+    private final String stepDefDir = "com/znsio/e2e/steps";
+    private final String logDir = "target";
 
     @Test
     void mainLocalDefault () {
