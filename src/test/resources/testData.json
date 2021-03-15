@@ -1,0 +1,6 @@
+{
+  "prod": {
+    "GMAIL_USER_1_EMAIL": "mytestemail@gmail.com",
+    "GMAIL_USER_1_PASSWORD": "Invalid passw0rd"
+  }
+}

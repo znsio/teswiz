@@ -41,6 +41,7 @@ dependencies {
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
+    implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
     implementation 'com.epam.reportportal:agent-java-cucumber6:5.0.1'
     implementation('com.epam.reportportal:agent-java-testng:5.0.7') {
         exclude group: 'com.fasterxml.jackson.core'
@@ -63,6 +64,9 @@ shadowJar {
     archiveClassifier.set('')
     archiveVersion.set("$project.version")
     zip64 true
+    manifest {
+        attributes "Main-Class": "com.znsio.e2e.Runner"
+    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

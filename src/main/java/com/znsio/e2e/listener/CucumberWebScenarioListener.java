@@ -2,8 +2,8 @@ package com.znsio.e2e.listener;
 
 import com.appium.filelocations.FileLocations;
 import com.context.TestExecutionContext;
-import com.znsio.e2e.context.Session;
 import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.runner.Runner;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -63,7 +63,7 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
         LOGGER.info(
                 String.format("ThreadID: %d: afterScenario: for scenario: %s\n",
                         threadId, event.getTestCase().toString()));
-        Session.remove(threadId);
+        Runner.remove(threadId);
     }
 
     private void webRunFinishedHandler (TestRunFinished event) {

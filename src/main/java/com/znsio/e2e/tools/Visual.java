@@ -9,8 +9,8 @@ import com.applitools.eyes.selenium.fluent.Target;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
-import com.znsio.e2e.context.Session;
 import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.AppiumDriver;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.WebDriver;
@@ -40,7 +40,7 @@ public class Visual {
         System.out.println("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         com.applitools.eyes.appium.Eyes eyes = new com.applitools.eyes.appium.Eyes();
         eyes.setApiKey(System.getenv("APPLITOOLS_API_KEY"));
-        eyes.setBatch(Session.batchName);
+        eyes.setBatch(Runner.batchName);
         eyes.setLogHandler(new StdoutLogHandler(true));
         eyes.setEnvName(Session.targetEnvironment);
         eyes.setIsDisabled(!isVisualTestingEnabled);
@@ -59,7 +59,7 @@ public class Visual {
         System.out.println("instantiateWebEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         com.applitools.eyes.selenium.Eyes eyes = new com.applitools.eyes.selenium.Eyes();
         eyes.setApiKey(System.getenv("APPLITOOLS_API_KEY"));
-        eyes.setBatch(Session.batchName);
+        eyes.setBatch(Runner.batchName);
         eyes.setLogHandler(new StdoutLogHandler(true));
         eyes.setEnvName(Session.targetEnvironment);
         eyes.setIsDisabled(!isVisualTestingEnabled);

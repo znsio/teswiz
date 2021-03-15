@@ -1,0 +1,33 @@
+{
+  "android": {
+    "automationName": "UiAutomator2",
+    "appPackage": "io.cloudgrey.the_app",
+    "appActivity": "io.cloudgrey.the_app.MainActivity",
+    "newCommandTimeout": 600,
+    "launchTimeout": 90000,
+    "platformVersion": "10.0.0",
+    "platformName": "Android",
+    "autoGrantPermissions": true,
+    "pCloudy_DurationInMinutes": 10,
+    "pCloudy_DeviceManafacturer": "Samsung",
+    "pCloudy_DeviceVersion": "10.0.0",
+    "pCloudy_WildNet": "false",
+    "pCloudy_EnableVideo": "true",
+    "pCloudy_EnablePerformanceData": "true",
+    "pCloudy_EnableDeviceLogs": "true",
+    "app": {
+      "local": "./src/test/resources/sampleApps/TheApp-VR-v1.apk"
+    }
+  },
+  "cloud": {
+    "android": [
+    ]
+  },
+  "hostMachines": [
+    {
+      "machineIP": "mobilab.ril.com/appiumcloud",
+      "isCloud": true,
+      "cloudName": "pCloudy"
+    }
+  ]
+}

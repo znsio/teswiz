@@ -1,0 +1,6 @@
+{
+  "prod": {
+    "BASE_URL_API": "https://github.com/znsio/unified-e2e/api/",
+    "BASE_URL": "https://github.com/znsio/unified-e2e/"
+  }
+}

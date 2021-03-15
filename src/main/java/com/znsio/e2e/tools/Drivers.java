@@ -2,10 +2,10 @@ package com.znsio.e2e.tools;
 
 import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
-import com.znsio.e2e.context.Session;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
+import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.AppiumDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.jetbrains.annotations.NotNull;
@@ -164,7 +164,7 @@ public class Drivers {
         if (null == providedBaseUrl) {
             throw new InvalidTestDataException("baseUrl not provided as an environment variable");
         }
-        String baseUrl = Session.environmentConfiguration.get(providedBaseUrl);
+        String baseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrl));
         System.out.println("baseUrl: " + baseUrl);
         driver.get(baseUrl);
         return driver;

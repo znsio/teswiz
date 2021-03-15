@@ -1,0 +1,23 @@
+{
+  "android": {
+    "platformName": "android",
+    "platformVersion": "11.0",
+    "automationName": "UiAutomator2",
+    "autoGrantPermissions": true,
+    "uiautomator2ServerInstallTimeout": 10000,
+    "adbExecTimeout": 15000,
+    "eventTimings": true,
+    "enablePerformanceLogging": true,
+    "printPageSourceOnFindFailure": true,
+    "app": {
+      "local": "./src/test/resources/sampleApps/TheApp-VR-v1.apk"
+    },
+    "deviceName": "android",
+    "noSign": true
+  },
+  "hostMachines": [
+    {
+      "machineIP": "127.0.0.1"
+    }
+  ]
+}
