@@ -42,7 +42,7 @@ public class Visual {
         eyes.setApiKey(System.getenv("APPLITOOLS_API_KEY"));
         eyes.setBatch(Runner.batchName);
         eyes.setLogHandler(new StdoutLogHandler(true));
-        eyes.setEnvName(Session.targetEnvironment);
+//        eyes.setEnvName(Runner.targetEnvironment);
         eyes.setIsDisabled(!isVisualTestingEnabled);
         eyes.setMatchLevel(MatchLevel.STRICT);
         if (isVisualTestingEnabled) {
@@ -61,7 +61,7 @@ public class Visual {
         eyes.setApiKey(System.getenv("APPLITOOLS_API_KEY"));
         eyes.setBatch(Runner.batchName);
         eyes.setLogHandler(new StdoutLogHandler(true));
-        eyes.setEnvName(Session.targetEnvironment);
+//        eyes.setEnvName(Runner.targetEnvironment);
         eyes.setIsDisabled(!isVisualTestingEnabled);
         eyes.setMatchLevel(MatchLevel.STRICT);
         if (isVisualTestingEnabled) {
