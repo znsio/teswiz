@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.znsio'
-version '0.0.4'
+version '0.0.5'
 project.ext.logDir = "${rootDir}/target"
 
 repositories {
