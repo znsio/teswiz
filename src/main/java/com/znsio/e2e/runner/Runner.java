@@ -13,6 +13,7 @@ import com.znsio.e2e.tools.Drivers;
 import com.znsio.e2e.tools.JsonFile;
 import com.znsio.e2e.tools.Visual;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
+import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import io.cucumber.core.cli.Main;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.SoftAssertions;
@@ -38,6 +39,7 @@ public class Runner {
     public static final boolean IS_WINDOWS = OS_NAME.toLowerCase().startsWith("windows");
     public static final boolean IS_MAC = OS_NAME.toLowerCase().startsWith("mac");
     public static final String USER_DIRECTORY = System.getProperty("user.dir");
+    public static final String USER_NAME = System.getProperty("user.name");
     private static final String CHROME = "chrome";
     private static final String PLUGIN = "--plugin";
     private static final String tempDirectory = "temp";
@@ -45,16 +47,21 @@ public class Runner {
     private static final Platform DEFAULT_PLATFORM = Platform.android;
     private static final int DEFAULT_PARALLEL = 1;
     private static final ArrayList<String> cukeArgs = new ArrayList<>();
+    private static final String BRANCH_NAME = NOT_SET;
+    private static final String LOG_PROPERTIES_FILE = NOT_SET;
+    private static final String DEFAULT_LOG_DIR = "target";
     public static Platform platform = Platform.android;
     public static boolean isVisualTestingEnabled = false;
     public static BatchInfo batchName;
     private static final String APP_NAME = "APP_NAME";
     private static final String APP_PATH = "APP_PATH";
+    private static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     private static final String BROWSER = "BROWSER";
     private static final String CAPS = "CAPS";
     private static final String CONFIG_FILE = "CONFIG_FILE";
     private static final String DEVICE_LAB_URL = "DEVICE_LAB_URL";
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
+    private static final String EXECUTED_ON = NOT_SET;
     private static final String IS_VISUAL = "IS_VISUAL";
     private static final String INFERRED_TAGS = "INFERRED_TAGS";
     private static final String LAUNCH_NAME = "LAUNCH_NAME";
@@ -76,18 +83,70 @@ public class Runner {
         throw new InvalidTestDataException("Required args not provided to Runner");
     }
 
-    public Runner (String configFilePath, String stepDefDirName, String featuresDirName, String logDirName) {
+    public Runner (String configFilePath, String stepDefDirName, String featuresDirName, String logPropertiesFile) {
         System.out.printf("Runner called from user directory: '%s'%n", Runner.USER_DIRECTORY);
         Path path = Paths.get(configFilePath);
         if (!Files.exists(path)) {
             throw new InvalidTestDataException(String.format("Invalid path ('%s') provided for config", configFilePath));
         }
-        configs.put(CONFIG_FILE, configFilePath);
-        configs.put(LOG_DIR, logDirName);
-        buildMapOfRequiredProperties();
-
         properties = loadProperties(configFilePath);
-        printLoadedConfigProperties();
+        printLoadedConfigProperties(configFilePath);
+
+        loadAndUpdateConfigParameters(configFilePath, logPropertiesFile);
+
+        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(configs.get(CAPS));
+        System.out.println("loadedCapabilityFile: " + loadedCapabilityFile);
+
+        environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
+        testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
+
+        cleanupDirectories();
+        setupDirectories();
+
+        getPlatformTagsAndLaunchName();
+        addCucumberPlugsToArgs();
+        setupAndroidExecution();
+        setupWebExecution();
+
+        setBranchName();
+
+        System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
+        System.setProperty("CAPS", configs.get(CAPS));
+        System.setProperty("Platform", platform.name());
+        System.setProperty("atd_" + platform.name() + "_app_local", configs.get(APP_PATH));
+        System.setProperty("rp.description", configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
+        System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
+
+        String rpAttributes = "Username:" + USER_NAME + "; " +
+                "Platform:" + platform.name() + "; " +
+                "Installer:" + configs.get(APP_PATH) + "; " +
+                "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " +
+                "ExecutedOn:" + configs.get(EXECUTED_ON) + "; " +
+                "VisualEnabled:" + configs.get(IS_VISUAL) + "; " +
+                "AutomationBranch:" + configs.get(BRANCH_NAME) + "; " +
+                "OS:" + OS_NAME + "; " +
+                "ParallelCount:" + configsInteger.get(PARALLEL) + "; " +
+                "Tags:" + configs.get(TAG) + "; ";
+
+        System.setProperty("rp.attributes", rpAttributes);
+
+        batchName = new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
+
+        run(cukeArgs, stepDefDirName, featuresDirName);
+    }
+
+    private void setBranchName () {
+        String[] listOfDevices = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
+        CommandLineResponse response = CommandLineExecutor.execCommand(listOfDevices);
+        String branchName = response.getStdOut();
+        System.out.println("BRANCH_NAME: " + branchName);
+        configs.put(BRANCH_NAME, branchName);
+    }
+
+    private void loadAndUpdateConfigParameters (String configFilePath, String logPropertiesFile) {
+        configs.put(CONFIG_FILE, configFilePath);
+        configs.put(LOG_PROPERTIES_FILE, logPropertiesFile);
+        buildMapOfRequiredProperties();
 
         configs.forEach((k, v) -> {
             if (NOT_SET.equalsIgnoreCase(v) && properties.containsKey(k.toUpperCase())) {
@@ -110,31 +169,6 @@ public class Runner {
         System.out.println("updated string values from property file for missing properties: \n" + configs);
         System.out.println("updated boolean values from property file for missing properties: \n" + configsBoolean);
         System.out.println("updated integer values from property file for missing properties: \n" + configsInteger);
-
-        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(configs.get(CAPS));
-        System.out.println("loadedCapabilityFile: " + loadedCapabilityFile);
-
-        System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
-        System.setProperty("CAPS", configs.get(CAPS));
-        System.setProperty("Platform", platform.name());
-
-        // TODO
-        // set reportportal properties file path
-        // System.setProperty("launchName", launchName);
-
-        environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
-        testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
-
-        cleanupDirectories();
-        setupDirectories();
-
-        getPlatformTagsAndLaunchName();
-        addCucumberPlugsToArgs();
-        setupAndroidExecution();
-        setupWebExecution();
-        batchName = new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
-
-        run(cukeArgs, stepDefDirName, featuresDirName);
     }
 
     public static void remove (long threadId) {
@@ -233,10 +267,12 @@ public class Runner {
         configs.put(APP_NAME, getOverriddenStringValue(APP_NAME, NOT_SET));
         configs.put(APP_PATH, NOT_SET);
         configs.put(BROWSER, getOverriddenStringValue(BROWSER, CHROME));
+        configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB, NOT_SET));
         configs.put(CAPS, getOverriddenStringValue(CAPS, NOT_SET));
         configs.put(DEVICE_LAB_URL, getOverriddenStringValue(DEVICE_LAB_URL, NOT_SET));
         configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE, NOT_SET));
         configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL, false));
+        configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR, DEFAULT_LOG_DIR));
         platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, Platform.android.name()));
         configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, DEFAULT_PARALLEL));
         configsBoolean.put(RUN_ON_CLOUD, getOverriddenBooleanValue(RUN_ON_CLOUD, false));
@@ -257,7 +293,8 @@ public class Runner {
         return properties;
     }
 
-    private void printLoadedConfigProperties () {
+    private void printLoadedConfigProperties (String configFilePath) {
+        System.out.println("Loaded property file: " + configFilePath);
         properties.keySet().forEach(key -> {
             System.out.println(key + " :: " + properties.get(key));
         });
@@ -272,6 +309,7 @@ public class Runner {
             cukeArgs.add("com.znsio.e2e.listener.CucumberWebScenarioListener");
             cukeArgs.add(PLUGIN);
             cukeArgs.add("com.znsio.e2e.listener.CucumberWebScenarioReporterListener");
+            configs.put(EXECUTED_ON, "Local Browsers");
         }
     }
 
@@ -361,6 +399,7 @@ public class Runner {
             throw new EnvironmentSetupException("No devices available to run the tests");
         }
         configsInteger.put(PARALLEL, parallelCount);
+        configs.put(EXECUTED_ON, "Local Devices");
     }
 
     private List<Device> getDevices () {
@@ -417,6 +456,7 @@ public class Runner {
         String authenticationKey = System.getenv("CLOUD_KEY");
 //        uploadAPKToMobilab(labUrl, emailID, authenticationKey, appPath);
         updateCapabilities(emailID, authenticationKey);
+        configs.put(EXECUTED_ON, "Cloud Devices");
     }
 
     private void getPlatformTagsAndLaunchName () {
