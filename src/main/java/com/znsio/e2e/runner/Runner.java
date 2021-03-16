@@ -478,7 +478,7 @@ public class Runner {
         updateAppPath();
         String emailID = System.getenv("CLOUD_USER");
         String authenticationKey = System.getenv("CLOUD_KEY");
-        uploadAPKTopCloudy(emailID, authenticationKey);
+//        uploadAPKTopCloudy(emailID, authenticationKey);
         updateCapabilities(emailID, authenticationKey);
         configs.put(EXECUTED_ON, "Cloud Devices");
     }
