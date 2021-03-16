@@ -13,10 +13,11 @@ class RunnerTest {
     @Test
     void mainLocalDefault () {
         String featuresDir = "./src/test/resources";
-        System.setProperty("TARGET_ENVIRONMENT", "prod");
+        System.setProperty("TargetEnvironment", "prod");
         System.setProperty("environmentConfig", "src/test/resources/environments.json");
         System.setProperty("testDataFile", "src/test/resources/testData.json");
-        System.setProperty("IS_VISUAL", "true");
+        System.setProperty("IsVisual", "true");
+        System.setProperty("Parallel", "3");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/android/configs/config.properties", stepDefDir, featuresDir, logDir);
         String baseUrl = Runner.getFromEnvironmentConfiguration("BASE_URL");
         assertThat(baseUrl)

@@ -42,7 +42,7 @@ public class Runner {
     public static final String USER_NAME = System.getProperty("user.name");
     private static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     private static final String APP_NAME = "APP_NAME";
-    private static final String IS_VISUAL = "IS_VISUAL";
+    private static final String IS_VISUAL = "IsVisual";
     private static final String CHROME = "chrome";
     private static final String PLUGIN = "--plugin";
     private static final String tempDirectory = "temp";
@@ -51,23 +51,22 @@ public class Runner {
     private static final int DEFAULT_PARALLEL = 1;
     private static final ArrayList<String> cukeArgs = new ArrayList<>();
     private static final String BRANCH_NAME = NOT_SET;
-    private static final String LOG_PROPERTIES_FILE = NOT_SET;
+    private static final String LOG_PROPERTIES_FILE = "logPropertiesFile";
     private static final String DEFAULT_LOG_DIR = "target";
     private static final String APP_PATH = "APP_PATH";
-    private static final String BROWSER = "BROWSER";
+    private static final String BROWSER = "Browser";
     private static final String CAPS = "CAPS";
     private static final String CONFIG_FILE = "CONFIG_FILE";
     private static final String DEVICE_LAB_URL = "DEVICE_LAB_URL";
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
     private static final String EXECUTED_ON = NOT_SET;
-    private static final String INFERRED_TAGS = "INFERRED_TAGS";
     private static final String LAUNCH_NAME = "LAUNCH_NAME";
     private static final String LOG_DIR = "LOG_DIR";
-    private static final String PARALLEL = "PARALLEL";
+    private static final String PARALLEL = "Parallel";
     private static final String PLATFORM = "Platform";
-    private static final String IS_RUN_ON_CLOUD = "RUN_ON_CLOUD";
-    private static final String TAG = "TAG";
-    private static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
+    private static final String IS_RUN_ON_CLOUD = "RunOnCloud";
+    private static final String TAG = "Tag";
+    private static final String TARGET_ENVIRONMENT = "TargetEnvironment";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
     private static final Map<String, String> configs = new HashMap();
     private static final Map<String, Boolean> configsBoolean = new HashMap();
@@ -121,7 +120,8 @@ public class Runner {
                 "Installer:" + configs.get(APP_PATH) + "; " +
                 "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " +
                 "ExecutedOn:" + configs.get(EXECUTED_ON) + "; " +
-                "VisualEnabled:" + configs.get(IS_VISUAL) + "; " +
+                "VisualEnabled:" + configsBoolean.get(IS_VISUAL) + "; " +
+                "RunOnCloud:" + configsBoolean.get(IS_RUN_ON_CLOUD) + "; " +
                 "AutomationBranch:" + configs.get(BRANCH_NAME) + "; " +
                 "OS:" + OS_NAME + "; " +
                 "ParallelCount:" + configsInteger.get(PARALLEL) + "; " +
@@ -249,24 +249,6 @@ public class Runner {
         configs.put(LOG_PROPERTIES_FILE, logPropertiesFile);
         buildMapOfRequiredProperties();
 
-        configs.forEach((k, v) -> {
-            if (NOT_SET.equalsIgnoreCase(v) && properties.containsKey(k.toUpperCase())) {
-                configs.put(k, properties.getProperty(k.toUpperCase()));
-            }
-        });
-
-        configsBoolean.forEach((k, v) -> {
-            if (properties.containsKey(k.toUpperCase())) {
-                configsBoolean.put(k, Boolean.valueOf(properties.getProperty(k.toUpperCase())));
-            }
-        });
-
-        configsInteger.forEach((k, v) -> {
-            if (properties.containsKey(k.toUpperCase())) {
-                configsInteger.put(k, Integer.valueOf(properties.getProperty(k.toUpperCase())));
-            }
-        });
-
         System.out.println("Updated string values from property file for missing properties: \n" + configs);
         System.out.println("Updated boolean values from property file for missing properties: \n" + configsBoolean);
         System.out.println("Updated integer values from property file for missing properties: \n" + configsInteger);
@@ -284,21 +266,29 @@ public class Runner {
     }
 
     private void buildMapOfRequiredProperties () {
-        configs.put(APP_NAME, getOverriddenStringValue(APP_NAME, NOT_SET));
+        configs.put(APP_NAME, getOverriddenStringValue(APP_NAME, getStringValueFromPropertiesIfAvailable(APP_NAME, NOT_SET)));
         configs.put(APP_PATH, NOT_SET);
-        configs.put(BROWSER, getOverriddenStringValue(BROWSER, CHROME));
-        configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB, NOT_SET));
-        configs.put(CAPS, getOverriddenStringValue(CAPS, NOT_SET));
-        configs.put(DEVICE_LAB_URL, getOverriddenStringValue(DEVICE_LAB_URL, NOT_SET));
-        configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE, NOT_SET));
-        configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL, false));
-        configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR, DEFAULT_LOG_DIR));
-        platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, Platform.android.name()));
-        configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, DEFAULT_PARALLEL));
-        configsBoolean.put(IS_RUN_ON_CLOUD, getOverriddenBooleanValue(IS_RUN_ON_CLOUD, false));
-        configs.put(TAG, getOverriddenStringValue(TAG, NOT_SET));
-        configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, NOT_SET));
-        configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, NOT_SET));
+        configs.put(BROWSER, getOverriddenStringValue(BROWSER, getStringValueFromPropertiesIfAvailable(BROWSER, CHROME)));
+        configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB, getStringValueFromPropertiesIfAvailable(BASE_URL_FOR_WEB, NOT_SET)));
+        configs.put(CAPS, getOverriddenStringValue(CAPS, getStringValueFromPropertiesIfAvailable(CAPS, NOT_SET)));
+        configs.put(DEVICE_LAB_URL, getOverriddenStringValue(DEVICE_LAB_URL, getStringValueFromPropertiesIfAvailable(DEVICE_LAB_URL, NOT_SET)));
+        configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE, getStringValueFromPropertiesIfAvailable(ENVIRONMENT_CONFIG_FILE, NOT_SET)));
+        configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL, getBooleanValueFromPropertiesIfAvailable(IS_VISUAL, false)));
+        configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR, getStringValueFromPropertiesIfAvailable(LOG_DIR, DEFAULT_LOG_DIR)));
+        platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, getStringValueFromPropertiesIfAvailable(PLATFORM, Platform.android.name())));
+        configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, Integer.parseInt(getStringValueFromPropertiesIfAvailable(PLATFORM, String.valueOf(DEFAULT_PARALLEL)))));
+        configsBoolean.put(IS_RUN_ON_CLOUD, getOverriddenBooleanValue(IS_RUN_ON_CLOUD, getBooleanValueFromPropertiesIfAvailable(IS_RUN_ON_CLOUD, false)));
+        configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
+        configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
+        configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
+    }
+
+    private String getStringValueFromPropertiesIfAvailable (String key, String defaultValue) {
+        return properties.getProperty(key, String.valueOf(defaultValue));
+    }
+
+    private boolean getBooleanValueFromPropertiesIfAvailable (String key, boolean defaultValue) {
+        return Boolean.parseBoolean(properties.getProperty(key, String.valueOf(defaultValue)));
     }
 
     @NotNull
@@ -512,7 +502,7 @@ public class Runner {
         String launchName = configs.get(APP_NAME) + " Tests";
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);
-        if (providedTags.isEmpty()) {
+        if (providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
             System.out.println("Tags not specified");
             launchName += " - " + platform;
         } else {
@@ -533,7 +523,7 @@ public class Runner {
 
         configs.put(PLATFORM, platform.name());
         configs.put(LAUNCH_NAME, launchName);
-        configs.put(INFERRED_TAGS, inferredTags);
+        configs.put(TAG, inferredTags);
         cukeArgs.add("--tags");
         cukeArgs.add(inferredTags);
     }
