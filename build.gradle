@@ -6,8 +6,8 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
-group = 'com.znsio'
-version '0.0.52'
+group = 'com.github.znsio'
+version '0.0.53'
 project.ext.logDir = "${rootDir}/target"
 
 repositories {

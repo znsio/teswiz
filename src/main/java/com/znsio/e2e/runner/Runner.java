@@ -44,7 +44,7 @@ public class Runner {
     public static final boolean IS_MAC = OS_NAME.toLowerCase().startsWith("mac");
     public static final String USER_DIRECTORY = System.getProperty("user.dir");
     public static final String USER_NAME = System.getProperty("user.name");
-    public static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
+    private static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     private static final String APP_NAME = "APP_NAME";
     private static final String IS_VISUAL = "IS_VISUAL";
     private static final String CHROME = "chrome";
@@ -69,7 +69,7 @@ public class Runner {
     private static final String LOG_DIR = "LOG_DIR";
     private static final String PARALLEL = "PARALLEL";
     private static final String PLATFORM = "Platform";
-    private static final String RUN_ON_CLOUD = "RUN_ON_CLOUD";
+    private static final String IS_RUN_ON_CLOUD = "RUN_ON_CLOUD";
     private static final String TAG = "TAG";
     private static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
@@ -77,7 +77,7 @@ public class Runner {
     private static final Map<String, Boolean> configsBoolean = new HashMap();
     private static final Map<String, Integer> configsInteger = new HashMap();
     public static Platform platform = Platform.android;
-    public static BatchInfo batchName;
+    private static BatchInfo batchName;
     private static Map<String, Map> environmentConfiguration;
     private static Map<String, Map> testDataForEnvironment;
     private final Properties properties;
@@ -232,6 +232,14 @@ public class Runner {
         return configs.get(APP_NAME);
     }
 
+    public static String getBaseURLForWeb () {
+        return configs.get(BASE_URL_FOR_WEB);
+    }
+
+    public static BatchInfo getApplitoolsBatchName () {
+        return batchName;
+    }
+
     private void setBranchName () {
         String[] listOfDevices = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(listOfDevices);
@@ -291,7 +299,7 @@ public class Runner {
         configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR, DEFAULT_LOG_DIR));
         platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, Platform.android.name()));
         configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, DEFAULT_PARALLEL));
-        configsBoolean.put(RUN_ON_CLOUD, getOverriddenBooleanValue(RUN_ON_CLOUD, false));
+        configsBoolean.put(IS_RUN_ON_CLOUD, getOverriddenBooleanValue(IS_RUN_ON_CLOUD, false));
         configs.put(TAG, getOverriddenStringValue(TAG, NOT_SET));
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, NOT_SET));
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, NOT_SET));
@@ -331,7 +339,7 @@ public class Runner {
 
     private void setupAndroidExecution () {
         if (platform.equals(Platform.android)) {
-            if (configsBoolean.get(RUN_ON_CLOUD)) {
+            if (configsBoolean.get(IS_RUN_ON_CLOUD)) {
                 setupCloudExecution();
             } else {
                 setupLocalExecution();
