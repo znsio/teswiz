@@ -489,10 +489,10 @@ public class Runner {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
         String authToken = getpCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
-        uploadAPKToPCloudy(appPath, deviceLabURL, authToken);
+        configs.put(APP_PATH, uploadAPKToPCloudy(appPath, deviceLabURL, authToken));
     }
 
-    private void uploadAPKToPCloudy (String appPath, String deviceLabURL, String authToken) {
+    private String uploadAPKToPCloudy (String appPath, String deviceLabURL, String authToken) {
         System.out.println("uploadAPKTopCloudy: Start: " + appPath);
         String[] listOfDevices = new String[]{
                 "curl",
@@ -505,17 +505,20 @@ public class Runner {
                 "-F",
                 "\"token=" + authToken + "\"",
                 "-F",
-                "\"filter=all\"",
+                "\"filter=apk\"",
                 deviceLabURL + "/api/upload_file"};
 
         CommandLineResponse uploadResponse = CommandLineExecutor.execCommand(listOfDevices);
         System.out.println("uploadResponse: " + uploadResponse.getStdOut());
-        int uploadStatus = JsonFile.convertToMap(uploadResponse.getStdOut()).getAsJsonObject("result").get("code").getAsInt();
+        JsonObject result = JsonFile.convertToMap(uploadResponse.getStdOut()).getAsJsonObject("result");
+        int uploadStatus = result.get("code").getAsInt();
         System.out.println("uploadResponse code: " + uploadStatus);
         if (200 != uploadStatus) {
             throw new EnvironmentSetupException(String.format("Unable to upload app: '%s' to '%s'%n%s", appPath, deviceLabURL, uploadResponse));
         }
-        System.out.println("uploadAPKTopCloudy: Uploaded: " + appPath);
+        String uploadedFileName = result.get("file").getAsString();
+        System.out.println("uploadAPKTopCloudy: Uploaded: " + uploadedFileName);
+        return uploadedFileName;
     }
 
     private String getpCloudyAuthToken (String emailID, String authenticationKey, String appPath, String deviceLabURL) {
