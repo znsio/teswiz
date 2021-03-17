@@ -2,6 +2,8 @@ package com.znsio.e2e.tools;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 
@@ -75,5 +77,12 @@ public class JsonFile {
         ArrayList<Map> envMap = (ArrayList<Map>) map.get(node);
         System.out.println("Loaded arraylist: " + envMap);
         return envMap;
+    }
+
+    public static JsonObject convertToMap (String jsonAsString) {
+        Gson gson = new GsonBuilder().create();
+        JsonObject jsonObject = new JsonParser().parse(jsonAsString).getAsJsonObject();
+        System.out.printf("Converted jsonString: '%s' to json: '%s'%n", jsonAsString, jsonObject);
+        return jsonObject;
     }
 }

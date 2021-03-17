@@ -4,6 +4,8 @@ import com.applitools.eyes.BatchInfo;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.github.device.Device;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
@@ -392,7 +394,7 @@ public class Runner {
         loadedCloudCapability.put(platformName, listOfAndroidDevices);
         System.out.println("Updated cloud capability: " + loadedCloudCapability);
 
-        System.out.println("Updated Mobilab Capabilities file: \n" + loadedCapabilityFile);
+        System.out.println("Updated Device Lab Capabilities file: \n" + loadedCapabilityFile);
 
         String updatedCapabilitesFile = getTempPathForFile(capabilityFile);
         JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitesFile);
@@ -473,38 +475,62 @@ public class Runner {
         updateAppPath();
         String emailID = System.getenv("CLOUD_USER");
         String authenticationKey = System.getenv("CLOUD_KEY");
-//        uploadAPKTopCloudy(emailID, authenticationKey);
+        uploadAPKTopCloudy(emailID, authenticationKey);
         updateCapabilities(emailID, authenticationKey);
         configs.put(EXECUTED_ON, "Cloud Devices");
     }
 
-//    private void uploadAPKTopCloudy (String emailID, String authenticationKey) {
-//        String labUrl = configs.get(DEVICE_LAB_URL);
-//        String apkPath = configs.get(APP_PATH);
-//        System.out.println("uploadAPKTopCloudy: Url: " + labUrl + ", apkFile: " + apkPath + ", user: " + emailID);
-//        Connector connector = new Connector(labUrl);
-//        String authToken = null;
-//        try {
-//            authToken = connector.authenticateUser(emailID, authenticationKey);
-//            System.out.println("AuthToken: (after establishing connection)" + authToken);
-//
-//            File fileToBeUploaded = new File(apkPath);
-//            PDriveFileDTO alreadyUploadedApp = null;
-//            alreadyUploadedApp = connector.getAvailableAppIfUploaded(authToken, fileToBeUploaded.getName());
-//            if (alreadyUploadedApp == null) {
-//                System.out.println("Uploading Apk: " + fileToBeUploaded.getAbsolutePath());
-//                PDriveFileDTO uploadedApp = connector.uploadApp(authToken, fileToBeUploaded, true);
-//                System.out.println("Apk uploaded");
-//                alreadyUploadedApp = new PDriveFileDTO();
-//                alreadyUploadedApp.file = uploadedApp.file;
-//                System.out.println("Verified Apk uploaded");
-//            } else {
-//                System.out.println("Apk already present. Not uploading... ");
-//            }
-//        } catch (IOException | ConnectError e) {
-//            throw new RuntimeException("Unable to upload APK to pCloudy", e);
-//        }
-//    }
+    private void uploadAPKTopCloudy (String emailID, String authenticationKey) {
+        String appPath = configs.get(APP_PATH);
+        String deviceLabURL = configs.get(DEVICE_LAB_URL);
+
+        String authToken = getpCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
+        uploadAPKToPCloudy(appPath, deviceLabURL, authToken);
+    }
+
+    private void uploadAPKToPCloudy (String appPath, String deviceLabURL, String authToken) {
+        System.out.println("uploadAPKTopCloudy: Start: " + appPath);
+        String[] listOfDevices = new String[]{
+                "curl",
+                "-X",
+                "POST",
+                "-F",
+                "file=@\"" + appPath + "\"",
+                "-F",
+                "\"source_type=raw\"",
+                "-F",
+                "\"token=" + authToken + "\"",
+                "-F",
+                "\"filter=all\"",
+                deviceLabURL + "/api/upload_file"};
+
+        CommandLineResponse uploadResponse = CommandLineExecutor.execCommand(listOfDevices);
+        System.out.println("uploadResponse: " + uploadResponse.getStdOut());
+        int uploadStatus = JsonFile.convertToMap(uploadResponse.getStdOut()).getAsJsonObject("result").get("code").getAsInt();
+        System.out.println("uploadResponse code: " + uploadStatus);
+        if (200 != uploadStatus) {
+            throw new EnvironmentSetupException(String.format("Unable to upload app: '%s' to '%s'%n%s", appPath, deviceLabURL, uploadResponse));
+        }
+        System.out.println("uploadAPKTopCloudy: Uploaded: " + appPath);
+    }
+
+    private String getpCloudyAuthToken (String emailID, String authenticationKey, String appPath, String deviceLabURL) {
+        System.out.println("Get pCloudy Auth Token");
+        String[] getAppToken = new String[]{
+                "curl",
+                "-u",
+                "\"" + emailID + ":" + authenticationKey + "\"",
+                deviceLabURL + "/api/access"
+        };
+        CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken);
+        System.out.println("authTokenResponse: " + authTokenResponse.getStdOut());
+        if (authTokenResponse.getStdOut().contains("error")) {
+            throw new EnvironmentSetupException(String.format("Unable to get auth: '%s' to '%s'%n%s", appPath, deviceLabURL, authTokenResponse));
+        }
+        String authToken = JsonFile.convertToMap(authTokenResponse.getStdOut()).getAsJsonObject("result").get("token").getAsString();
+        System.out.println("authToken: " + authToken);
+        return authToken;
+    }
 
     private void getPlatformTagsAndLaunchName () {
         System.out.println("getPlatformTagsAndLaunchName");
