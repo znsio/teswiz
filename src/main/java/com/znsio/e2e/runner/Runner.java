@@ -373,22 +373,24 @@ public class Runner {
         System.out.println("loadedCapabilityFile: " + loadedCapabilityFile);
 
         String platformName = platform.name();
-        Map platformMap = loadedCapabilityFile.get(platformName);
-        System.out.println("platformMap: " + platformMap);
-        platformMap.remove("app");
-        platformMap.put("pCloudy_Username", emailID);
-        platformMap.put("pCloudy_ApiKey", authenticationKey);
+        Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
+        System.out.println("loadedPlatformCapability: " + loadedPlatformCapability);
+        loadedPlatformCapability.remove("app");
+        loadedPlatformCapability.put("pCloudy_Username", emailID);
+        loadedPlatformCapability.put("pCloudy_ApiKey", authenticationKey);
         String[] splitAppPath = appPath.split("/");
-        platformMap.put("pCloudy_ApplicationName", splitAppPath[splitAppPath.length - 1]);
-        String osVersion = (String) platformMap.get("pCloudy_DeviceVersion");
+        loadedPlatformCapability.put("pCloudy_ApplicationName", splitAppPath[splitAppPath.length - 1]);
+        String osVersion = (String) loadedPlatformCapability.get("pCloudy_DeviceVersion");
         ArrayList listOfAndroidDevices = new ArrayList();
         for (int numDevices = 0; numDevices < configsInteger.get(PARALLEL); numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", osVersion);
             listOfAndroidDevices.add(deviceInfo);
         }
-        Map cloudMap = loadedCapabilityFile.get("cloud");
-        cloudMap.put(platformName, listOfAndroidDevices);
+        Map loadedCloudCapability = loadedCapabilityFile.get("cloud");
+        System.out.println("Existing cloud capability: " + loadedCloudCapability);
+        loadedCloudCapability.put(platformName, listOfAndroidDevices);
+        System.out.println("Updated cloud capability: " + loadedCloudCapability);
 
         System.out.println("Updated Mobilab Capabilities file: \n" + loadedCapabilityFile);
 
