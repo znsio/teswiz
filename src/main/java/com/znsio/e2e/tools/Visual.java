@@ -24,7 +24,7 @@ public class Visual {
     private final TestExecutionContext context;
     private final ScreenShotManager screenShotManager;
     private final RectangleSize viewportSize = new RectangleSize(1024, 800);
-    private final String applitoolsApiKey = Variable.getOverriddenStringValue("APPLITOOLS_API_KEY");
+    private final String applitoolsApiKey = Variable.getOverriddenStringValue("APPLITOOLS_API_KEY", Runner.NOT_SET);
     private final String targetEnvironment = Runner.getTargetEnvironment();
 
     public Visual (String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {

@@ -46,7 +46,7 @@ public class Runner {
     private static final String CHROME = "chrome";
     private static final String PLUGIN = "--plugin";
     private static final String tempDirectory = "temp";
-    private static final String NOT_SET = "not-set";
+    public static final String NOT_SET = "not-set";
     private static final Platform DEFAULT_PLATFORM = Platform.android;
     private static final int DEFAULT_PARALLEL = 1;
     private static final ArrayList<String> cukeArgs = new ArrayList<>();
