@@ -388,12 +388,13 @@ public class Runner {
             listOfAndroidDevices.add(deviceInfo);
         }
         Map cloudMap = loadedCapabilityFile.get("cloud");
-        cloudMap.remove(platformName);
         cloudMap.put(platformName, listOfAndroidDevices);
 
         System.out.println("Updated Mobilab Capabilities file: \n" + loadedCapabilityFile);
 
-        JsonFile.saveJsonToFile(loadedCapabilityFile, getTempPathForFile(capabilityFile));
+        String updatedCapabilitesFile = getTempPathForFile(capabilityFile);
+        JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitesFile);
+        configs.put(CAPS, updatedCapabilitesFile);
     }
 
     private String getTempPathForFile (String fullFilePath) {
@@ -404,7 +405,7 @@ public class Runner {
         String fileName = path.getFileName().toString();
         System.out.println(fileName);
 
-        return "./temp/" + fileName;
+        return configs.get(LOG_DIR) + "/" + fileName;
     }
 
     private void setupLocalExecution () {
