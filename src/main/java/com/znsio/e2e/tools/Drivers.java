@@ -6,6 +6,8 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.runner.Runner;
+import com.znsio.e2e.tools.cmd.CommandLineExecutor;
+import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.appmanagement.ApplicationState;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -104,7 +106,25 @@ public class Drivers {
                 userPersona,
                 forPlatform.name(),
                 numberOfAndroidDriversUsed);
+        disableNotificationsAndToastsOnDevice(currentDriver);
         return currentDriver;
+    }
+
+    private void disableNotificationsAndToastsOnDevice (Driver currentDriver) {
+        if (Runner.isRunningInPCloudy()) {
+            Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW deny");
+            System.out.println("@disableToastsCommandResponse: " + disableToasts);
+            Object disableNotifications = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell settings put global heads_up_notifications_enabled 0");
+            System.out.println("@disableNotificationsCommandResponse: " + disableNotifications);
+        } else {
+            String[] disableToastsCommand = new String[] {"adb", "-s", "${device.SERIAL}", "shell", "appops", "set", Runner.getAppPackageName(), "TOAST_WINDOW", "deny"};
+            String[] disableNotificationsCommand = new String[] {"adb", "-s", "${device.SERIAL}", "shell", "settings", "put", "global", "heads_up_notifications_enabled", "0"};
+
+            CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand);
+            System.out.println("disableToastsCommandResponse: " + disableToastsCommandResponse);
+            CommandLineResponse disableNotificationsCommandResponse = CommandLineExecutor.execCommand(disableNotificationsCommand);
+            System.out.println("disableNotificationsCommandResponse: " + disableNotificationsCommandResponse);
+        }
     }
 
     @NotNull

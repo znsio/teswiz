@@ -243,6 +243,10 @@ public class Runner {
         return configs.get(APP_PACKAGE_NAME);
     }
 
+    public static boolean isRunningInPCloudy () {
+        return configsBoolean.get(IS_RUN_ON_CLOUD);
+    }
+
     private void setBranchName () {
         String[] listOfDevices = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(listOfDevices);
