@@ -7,6 +7,7 @@ import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.appmanagement.ApplicationState;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.WebDriver;
@@ -35,7 +36,9 @@ public class Drivers {
     public Driver setDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
         System.out.println(String.format("getDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
         if (!userPersonaDrivers.containsKey(userPersona)) {
-            String message = String.format("ERROR: Driver for user persona: '%s' DOES NOT EXIST\nAvailable drivers: '%s'", userPersona, userPersonaDrivers.keySet());
+            String message = String.format("ERROR: Driver for user persona: '%s' DOES NOT EXIST%nAvailable drivers: '%s'",
+                    userPersona,
+                    userPersonaDrivers.keySet());
             throw new InvalidTestDataException(message);
         }
         Driver currentDriver = userPersonaDrivers.get(userPersona);
@@ -48,7 +51,9 @@ public class Drivers {
         System.out.println(String.format("allocateDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
         Driver currentDriver = null;
         if (userPersonaDrivers.containsKey(userPersona)) {
-            String message = String.format("ERROR: Driver for user persona: '%s' ALREADY EXISTS\nAvailable drivers: '%s'", userPersona, userPersonaDrivers.keySet());
+            String message = String.format("ERROR: Driver for user persona: '%s' ALREADY EXISTS%nAvailable drivers: '%s'",
+                    userPersona,
+                    userPersonaDrivers.keySet());
             throw new InvalidTestDataException(message);
         }
 
@@ -60,20 +65,28 @@ public class Drivers {
                 currentDriver = createWebDriverForUser(userPersona, forPlatform, context);
                 break;
             default:
-                throw new InvalidTestDataException(String.format("Unexpected platform value: '%s' provided to assign Driver for user: '%s': ", forPlatform, userPersona));
+                throw new InvalidTestDataException(
+                        String.format("Unexpected platform value: '%s' provided to assign Driver for user: '%s': ",
+                                forPlatform,
+                                userPersona));
         }
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
         userPersonaDrivers.put(userPersona, currentDriver);
         userPersonaPlatforms.put(userPersona, forPlatform);
-        System.out.println(String.format("allocateDriverFor: done: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
+        System.out.printf("allocateDriverFor: done: userPersona: '%s', Platform: '%s'%n",
+                userPersona,
+                forPlatform.name());
 
         return currentDriver;
     }
 
     @NotNull
     private Driver createAndroidDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.println(String.format("getAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'", userPersona, forPlatform.name(), numberOfAndroidDriversUsed));
+        System.out.printf("getAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
+                userPersona,
+                forPlatform.name(),
+                numberOfAndroidDriversUsed);
         Driver currentDriver;
         if (Platform.android.equals(forPlatform) && numberOfAndroidDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
             throw new InvalidTestDataException(
@@ -83,15 +96,23 @@ public class Drivers {
                             forPlatform.name())
             );
         }
-        currentDriver = new Driver(context.getTestName() + "-" + userPersona, (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER));
+        currentDriver = new Driver(
+                context.getTestName() + "-" + userPersona,
+                (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER));
         numberOfAndroidDriversUsed++;
-        System.out.println(String.format("getAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'", userPersona, forPlatform.name(), numberOfAndroidDriversUsed));
+        System.out.printf("getAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
+                userPersona,
+                forPlatform.name(),
+                numberOfAndroidDriversUsed);
         return currentDriver;
     }
 
     @NotNull
     private Driver createWebDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.println(String.format("getWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'", userPersona, forPlatform.name(), numberOfWebDriversUsed));
+        System.out.printf("getWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
+                userPersona,
+                forPlatform.name(),
+                numberOfWebDriversUsed);
 
         Driver currentDriver;
         if (Platform.web.equals(forPlatform) && numberOfWebDriversUsed == MAX_NUMBER_OF_WEB_DRIVERS) {
@@ -223,14 +244,41 @@ public class Drivers {
     private void attachLogsAndCloseWebDriver (String key) {
         Driver driver = userPersonaDrivers.get(key);
         if (driver.getType().equals(Driver.WEB_DRIVER)) {
-            ReportPortal.emitLog("Chrome browser logs for user: " + key, "DEBUG", new Date(), new File(userPersonaBrowserLogs.get(key)));
-            WebDriver webDriver = driver.getInnerDriver();
-            if (null == webDriver) {
-                System.out.println(String.format("Strange. But WebDriver for user: '%s' already closed", key));
-            } else {
-                System.out.println(String.format("Closing WebDriver for user: '%s'", key));
-                webDriver.quit();
-            }
+            closeWebDriver(key, driver);
+        } else {
+            closeAppOnDevice(driver);
+        }
+    }
+
+    private void closeAppOnDevice (Driver driver) {
+        String appPackageName = Runner.getAppPackageName();
+        System.out.println("Terminate app: " + appPackageName);
+        AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
+        boolean isAppTerminated = appiumDriver.terminateApp(appPackageName);
+        System.out.println("App terminated? " + isAppTerminated);
+        ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
+        System.out.println("Application State: " + applicationState);
+        appiumDriver.closeApp();
+        ReportPortal.emitLog(
+                String.format("App: '%s' termiated? '%s'. Current application state: '%s'%n",
+                        appPackageName,
+                        isAppTerminated,
+                        applicationState),
+                "DEBUG",
+                new Date());
+    }
+
+    private void closeWebDriver (String key, Driver driver) {
+        ReportPortal.emitLog(
+                "Chrome browser logs for user: " + key,
+                "DEBUG",
+                new Date(), new File(userPersonaBrowserLogs.get(key)));
+        WebDriver webDriver = driver.getInnerDriver();
+        if (null == webDriver) {
+            System.out.println(String.format("Strange. But WebDriver for user: '%s' already closed", key));
+        } else {
+            System.out.println(String.format("Closing WebDriver for user: '%s'", key));
+            webDriver.quit();
         }
     }
 }

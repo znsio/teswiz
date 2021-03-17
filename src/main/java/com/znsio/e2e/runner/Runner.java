@@ -71,6 +71,7 @@ public class Runner {
     private static final Map<String, String> configs = new HashMap();
     private static final Map<String, Boolean> configsBoolean = new HashMap();
     private static final Map<String, Integer> configsInteger = new HashMap();
+    private static final String APP_PACKAGE_NAME = "APP_PACKAGE_NAME";
     public static Platform platform = Platform.android;
     private static BatchInfo batchName;
     private static Map<String, Map> environmentConfiguration;
@@ -236,6 +237,10 @@ public class Runner {
         return batchName;
     }
 
+    public static String getAppPackageName () {
+        return configs.get(APP_PACKAGE_NAME);
+    }
+
     private void setBranchName () {
         String[] listOfDevices = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(listOfDevices);
@@ -267,6 +272,7 @@ public class Runner {
 
     private void buildMapOfRequiredProperties () {
         configs.put(APP_NAME, getOverriddenStringValue(APP_NAME, getStringValueFromPropertiesIfAvailable(APP_NAME, NOT_SET)));
+        configs.put(APP_PACKAGE_NAME, getOverriddenStringValue(APP_PACKAGE_NAME, getStringValueFromPropertiesIfAvailable(APP_PACKAGE_NAME, NOT_SET)));
         configs.put(APP_PATH, NOT_SET);
         configs.put(BROWSER, getOverriddenStringValue(BROWSER, getStringValueFromPropertiesIfAvailable(BROWSER, CHROME)));
         configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB, getStringValueFromPropertiesIfAvailable(BASE_URL_FOR_WEB, NOT_SET)));
