@@ -16,7 +16,6 @@ import com.znsio.e2e.tools.JsonFile;
 import com.znsio.e2e.tools.Visual;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
-import io.cucumber.core.cli.Main;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.SoftAssertions;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +52,7 @@ public class Runner {
     private static final Platform DEFAULT_PLATFORM = Platform.android;
     private static final int DEFAULT_PARALLEL = 1;
     private static final ArrayList<String> cukeArgs = new ArrayList<>();
-    private static final String BRANCH_NAME = NOT_SET;
+    private static final String BRANCH_NAME = "BRANCH_NAME";
     private static final String LOG_PROPERTIES_FILE = "logPropertiesFile";
     private static final String DEFAULT_LOG_DIR = "target";
     private static final String APP_PATH = "AppPath";
@@ -62,7 +61,7 @@ public class Runner {
     private static final String CONFIG_FILE = "CONFIG_FILE";
     private static final String DEVICE_LAB_URL = "DEVICE_LAB_URL";
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
-    private static final String EXECUTED_ON = NOT_SET;
+    private static final String EXECUTED_ON = "EXECUTED_ON";
     private static final String LAUNCH_NAME = "LAUNCH_NAME";
     private static final String LOG_DIR = "LOG_DIR";
     private static final String PARALLEL = "Parallel";
@@ -97,7 +96,6 @@ public class Runner {
         loadAndUpdateConfigParameters(configFilePath, logPropertiesFile);
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(configs.get(CAPS));
-        System.out.println("loadedCapabilityFile: " + loadedCapabilityFile);
 
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
@@ -110,7 +108,7 @@ public class Runner {
         setupAndroidExecution();
         setupWebExecution();
 
-        setBranchName();
+        getBranchName();
 
         System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
         System.setProperty("CAPS", configs.get(CAPS));
@@ -119,17 +117,20 @@ public class Runner {
         System.setProperty("rp.description", configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
         System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
 
-        String rpAttributes = "Username:" + USER_NAME + "; " +
-                "Platform:" + platform.name() + "; " +
-                "Installer:" + configs.get(APP_PATH) + "; " +
-                "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " +
-                "ExecutedOn:" + configs.get(EXECUTED_ON) + "; " +
-                "VisualEnabled:" + configsBoolean.get(IS_VISUAL) + "; " +
-                "RunOnCloud:" + configsBoolean.get(IS_RUN_ON_CLOUD) + "; " +
+        String rpAttributes =
                 "AutomationBranch:" + configs.get(BRANCH_NAME) + "; " +
-                "OS:" + OS_NAME + "; " +
-                "ParallelCount:" + configsInteger.get(PARALLEL) + "; " +
-                "Tags:" + configs.get(TAG) + "; ";
+                        "ExecutedOn:" + configs.get(EXECUTED_ON) + "; " +
+                        "Installer:" + configs.get(APP_PATH) + "; " +
+                        "OS:" + OS_NAME + "; " +
+                        "ParallelCount:" + configsInteger.get(PARALLEL) + "; " +
+                        "Platform:" + platform.name() + "; " +
+                        "RunOnCloud:" + configsBoolean.get(IS_RUN_ON_CLOUD) + "; " +
+                        "Tags:" + configs.get(TAG) + "; " +
+                        "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " +
+                        "Username:" + USER_NAME + "; " +
+                        "VisualEnabled:" + configsBoolean.get(IS_VISUAL) + "; ";
+
+        System.out.println("ReportPortal Test Execution Attributes: " + rpAttributes);
 
         System.setProperty("rp.attributes", rpAttributes);
 
@@ -166,7 +167,7 @@ public class Runner {
         System.out.println("unified-e2e Runner");
         System.out.println("Provided parameters:");
         for (int i = 0; i < args.length; i++) {
-            System.out.println(args[i]);
+            System.out.println("\t" + args[i]);
         }
         if (args.length != 4) {
             throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName, String logDirName");
@@ -192,9 +193,12 @@ public class Runner {
 
     private static Map<String, Map> loadEnvironmentConfiguration (String environment) {
         String envConfigFile = configs.get(ENVIRONMENT_CONFIG_FILE);
-        System.out.printf("Loading environment configuration from ENVIRONMENT_CONFIG_FILE: '%s' for environment: '%s'%n", envConfigFile, environment);
-        System.out.println("ENVIRONMENT_CONFIG_FILE: " + envConfigFile);
-        return (NOT_SET.equalsIgnoreCase(envConfigFile)) ? new HashMap<>() : JsonFile.getNodeValueAsMapFromJsonFile(environment, envConfigFile);
+        System.out.printf("Loading environment configuration from ENVIRONMENT_CONFIG_FILE: '%s' for environment: '%s'%n",
+                envConfigFile,
+                environment);
+        return (NOT_SET.equalsIgnoreCase(envConfigFile))
+                ? new HashMap<>()
+                : JsonFile.getNodeValueAsMapFromJsonFile(environment, envConfigFile);
     }
 
     public static SoftAssertions getSoftAssertion (long threadId) {
@@ -248,7 +252,7 @@ public class Runner {
         return configsBoolean.get(IS_RUN_ON_CLOUD);
     }
 
-    private void setBranchName () {
+    private void getBranchName () {
         String[] listOfDevices = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(listOfDevices);
         String branchName = response.getStdOut();
@@ -273,8 +277,8 @@ public class Runner {
         System.out.println("Begin running tests...");
         System.out.println("Args: " + args);
         String[] array = args.stream().toArray(String[]::new);
-        byte exitStatus = Main.run(array);
-        System.out.println("Output of test run: " + exitStatus);
+//        byte exitStatus = Main.run(array);
+//        System.out.println("Output of test run: " + exitStatus);
     }
 
     private void buildMapOfRequiredProperties () {
@@ -317,9 +321,9 @@ public class Runner {
     }
 
     private void printLoadedConfigProperties (String configFilePath) {
-        System.out.println("Loaded property file: " + configFilePath);
+        System.out.println("\nLoaded property file: " + configFilePath);
         properties.keySet().forEach(key -> {
-            System.out.println(key + " :: " + properties.get(key));
+            System.out.println("\t" + key + " :: " + properties.get(key));
         });
     }
 
@@ -354,34 +358,29 @@ public class Runner {
 
     private void updateAppPath () {
         String appPath = String.valueOf(configs.get(APP_PATH));
-        System.out.println("getAppPath: " + appPath);
+        System.out.println("Update path to Apk: " + appPath);
         if (appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
-            String capabilitiesFile = configs.get(CAPS);
-            System.out.println("Update App Path as obtained from capabilities file: " + capabilitiesFile);
             configs.put(APP_PATH, appPath);
-            System.out.printf("Using AppPath: '%s' in file: '%s'::'%s'%n", appPath, capabilitiesFile, platform);
+            String capabilitiesFile = configs.get(CAPS);
+            System.out.printf("\tUsing AppPath: '%s' in file: '%s'::'%s'%n", appPath, capabilitiesFile, platform);
         } else {
-            System.out.printf("Using AppPath provided as environment variable - '%s'%n", appPath);
+            System.out.printf("\tUsing AppPath provided as environment variable - '%s'%n", appPath);
         }
     }
 
     private String getAppPathFromCapabilities () {
         String capabilityFile = configs.get(CAPS);
-        System.out.println("getAppPathFromCapabilities: from file: " + capabilityFile);
-        String appPathFromCapabilities = JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile, new String[]{platform.name(), "app", "local"});
-        return appPathFromCapabilities;
+        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile, new String[]{platform.name(), "app", "local"});
     }
 
     private void updateCapabilities (String emailID, String authenticationKey) {
         String capabilityFile = configs.get(CAPS);
         String appPath = configs.get(APP_PATH);
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
-        System.out.println("loadedCapabilityFile: " + loadedCapabilityFile);
 
         String platformName = platform.name();
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        System.out.println("loadedPlatformCapability: " + loadedPlatformCapability);
         loadedPlatformCapability.remove("app");
         loadedPlatformCapability.put("pCloudy_Username", emailID);
         loadedPlatformCapability.put("pCloudy_ApiKey", authenticationKey);
@@ -395,9 +394,7 @@ public class Runner {
             listOfAndroidDevices.add(deviceInfo);
         }
         Map loadedCloudCapability = loadedCapabilityFile.get("cloud");
-        System.out.println("Existing cloud capability: " + loadedCloudCapability);
         loadedCloudCapability.put(platformName, listOfAndroidDevices);
-        System.out.println("Updated cloud capability: " + loadedCloudCapability);
 
         System.out.println("Updated Device Lab Capabilities file: \n" + loadedCapabilityFile);
 
@@ -407,14 +404,12 @@ public class Runner {
     }
 
     private String getTempPathForFile (String fullFilePath) {
-        System.out.println("getTempPathForFile: fullFilePath: " + fullFilePath);
+        System.out.println("\tgetTempPathForFile: fullFilePath: " + fullFilePath);
         Path path = Paths.get(fullFilePath);
-
-        // call getFileName() and get FileName path object
         String fileName = path.getFileName().toString();
-        System.out.println(fileName);
-
-        return configs.get(LOG_DIR) + "/" + fileName;
+        String tempFileName = configs.get(LOG_DIR) + "/" + fileName;
+        System.out.println("\tTemp file available here: " + tempFileName);
+        return tempFileName;
     }
 
     private void setupLocalExecution () {
@@ -454,7 +449,6 @@ public class Runner {
             }
         });
 
-        System.out.println("Devices connected: " + connectedDevices);
         System.out.println("Number of Devices connected: " + connectedDevices.size());
         return connectedDevices;
     }
@@ -462,18 +456,16 @@ public class Runner {
     @NotNull
     private String getAdbCommandOutput (JadbDevice device, String command, String args) throws IOException, JadbException {
         InputStream inputStream = device.executeShell(command, args);
-        System.out.printf("adb command: '%s', args: '%s', ", command, args);
+        System.out.printf("\tadb command: '%s', args: '%s', ", command, args);
         String adbCommandOutput = Stream.readAll(inputStream, StandardCharsets.UTF_8).replaceAll("\n$", "");
-        System.out.printf("Output: '%s'%n", adbCommandOutput);
+        System.out.printf("\tOutput: '%s'%n", adbCommandOutput);
         return adbCommandOutput;
     }
 
     private void startADBServer () {
-        System.out.println("------------------------------------------------");
         System.out.println("Start ADB server");
         String[] listOfDevices = new String[]{"adb", "devices"};
         CommandLineExecutor.execCommand(listOfDevices);
-        System.out.println("------------------------------------------------");
     }
 
     private void setupCloudExecution () {
@@ -491,9 +483,9 @@ public class Runner {
 
         String authToken = getpCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
         if (isAPKAlreadyAvailableInCloud(authToken, appPath)) {
-            System.out.println("APK is already available in cloud. No need to upload it again");
+            System.out.println("\tAPK is already available in cloud. No need to upload it again");
         } else {
-            System.out.println("APK is NOT available in cloud. Upload it");
+            System.out.println("\tAPK is NOT available in cloud. Upload it");
             configs.put(APP_PATH, uploadAPKToPCloudy(appPath, deviceLabURL, authToken));
         }
     }
@@ -507,11 +499,9 @@ public class Runner {
         JsonObject result = JsonFile.convertToMap(uploadResponse.getStdOut()).getAsJsonObject("result");
         JsonArray availableFiles = result.getAsJsonArray("files");
         AtomicBoolean isFileAlreadyUploaded = new AtomicBoolean(false);
-        System.out.println("isAPKAlreadyAvailableInCloud: Start: " + appNameFromPath);
-
         availableFiles.forEach(file -> {
             String fileName = ((JsonObject) file).get("file").getAsString();
-            System.out.println("This file is available in Device Farm: " + fileName);
+            System.out.println("\tThis file is available in Device Farm: " + fileName);
             if (appNameFromPath.equals(fileName)) {
                 isFileAlreadyUploaded.set(true);
             }
@@ -531,13 +521,13 @@ public class Runner {
                 "'{\"token\":\"" + authToken + "\",\"limit\": 15, \"filter\": \"all\"}'",
                 deviceLabURL + "/api/drive"};
 
-        CommandLineResponse uploadResponse = CommandLineExecutor.execCommand(listOfDevices);
-        System.out.println("uploadResponse: " + uploadResponse.getStdOut());
-        return uploadResponse;
+        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfDevices);
+        System.out.println("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
+        return listFilesInPCloudyResponse;
     }
 
     private String uploadAPKToPCloudy (String appPath, String deviceLabURL, String authToken) {
-        System.out.println("uploadAPKTopCloudy: Start: " + appPath);
+        System.out.println("uploadAPKTopCloudy: " + appPath);
         String[] listOfDevices = new String[]{
                 "curl",
                 "-X",
@@ -552,16 +542,16 @@ public class Runner {
                 "\"filter=apk\"",
                 deviceLabURL + "/api/upload_file"};
 
-        CommandLineResponse uploadResponse = CommandLineExecutor.execCommand(listOfDevices);
-        System.out.println("uploadResponse: " + uploadResponse.getStdOut());
-        JsonObject result = JsonFile.convertToMap(uploadResponse.getStdOut()).getAsJsonObject("result");
+        CommandLineResponse uploadApkResponse = CommandLineExecutor.execCommand(listOfDevices);
+        System.out.println("\tuploadApkResponse: " + uploadApkResponse.getStdOut());
+        JsonObject result = JsonFile.convertToMap(uploadApkResponse.getStdOut()).getAsJsonObject("result");
         int uploadStatus = result.get("code").getAsInt();
-        System.out.println("uploadResponse code: " + uploadStatus);
         if (200 != uploadStatus) {
-            throw new EnvironmentSetupException(String.format("Unable to upload app: '%s' to '%s'%n%s", appPath, deviceLabURL, uploadResponse));
+            throw new EnvironmentSetupException(String.format("Unable to upload app: '%s' to '%s'%n%s",
+                    appPath, deviceLabURL, uploadApkResponse));
         }
         String uploadedFileName = result.get("file").getAsString();
-        System.out.println("uploadAPKTopCloudy: Uploaded: " + uploadedFileName);
+        System.out.println("\tuploadAPKToPCloudy: Uploaded: " + uploadedFileName);
         return uploadedFileName;
     }
 
@@ -574,17 +564,17 @@ public class Runner {
                 deviceLabURL + "/api/access"
         };
         CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken);
-        System.out.println("authTokenResponse: " + authTokenResponse.getStdOut());
+        System.out.println("\tauthTokenResponse: " + authTokenResponse.getStdOut());
         if (authTokenResponse.getStdOut().contains("error")) {
             throw new EnvironmentSetupException(String.format("Unable to get auth: '%s' to '%s'%n%s", appPath, deviceLabURL, authTokenResponse));
         }
         String authToken = JsonFile.convertToMap(authTokenResponse.getStdOut()).getAsJsonObject("result").get("token").getAsString();
-        System.out.println("authToken: " + authToken);
+        System.out.println("\tauthToken: " + authToken);
         return authToken;
     }
 
     private void getPlatformTagsAndLaunchName () {
-        System.out.println("getPlatformTagsAndLaunchName");
+        System.out.println("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME) + " Tests";
         if (configsBoolean.get(IS_RUN_ON_CLOUD)) {
             launchName += " on Device Farm";
@@ -592,7 +582,7 @@ public class Runner {
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);
         if (providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
-            System.out.println("Tags not specified");
+            System.out.println("\tTags not specified");
             launchName += " - " + platform;
         } else {
             if (providedTags.contains("multiuser-android-web")) {
@@ -607,8 +597,8 @@ public class Runner {
                 launchName += " - " + platform;
             }
         }
-        System.out.printf("Running tests with platform: '%s' and the following tag criteria : '%s'%n", platform, inferredTags);
-        System.out.printf("ReportPortal Tests Launch name: '%s'%n", launchName);
+        System.out.printf("\tRunning tests with platform: '%s' and the following tag criteria : '%s'%n", platform, inferredTags);
+        System.out.printf("\tReportPortal Tests Launch name: '%s'%n", launchName);
 
         configs.put(PLATFORM, platform.name());
         configs.put(LAUNCH_NAME, launchName);
@@ -642,7 +632,7 @@ public class Runner {
             }
             customTags = providedTags + " and " + customTags;
         }
-        System.out.printf("Computed tags: '%s'%n", customTags);
+        System.out.printf("\tComputed tags: '%s'%n", customTags);
         return customTags;
     }
 
@@ -669,9 +659,9 @@ public class Runner {
 
     private void cleanupDirectories () {
         List<String> files = listOfDirectoriesToDelete();
-        System.out.println("cleanupDirectories: " + files);
+        System.out.println("Delete Directories: " + files);
         for (String file : files) {
-            System.out.println("Deleting directory: " + file);
+            System.out.println("\tDeleting directory: " + file);
             try {
                 FileUtils.deleteDirectory(new java.io.File(file));
             } catch (IOException e) {
@@ -682,9 +672,9 @@ public class Runner {
 
     private void setupDirectories () {
         List<String> files = listOfDirectoriesToCreate();
-        System.out.println("setupDirectories: " + files);
+        System.out.println("Create Directories: " + files);
         for (String file : files) {
-            System.out.println("Creating directory: " + file);
+            System.out.println("\tCreating directory: " + file);
             try {
                 FileUtils.forceMkdir(new java.io.File(file));
             } catch (IOException e) {

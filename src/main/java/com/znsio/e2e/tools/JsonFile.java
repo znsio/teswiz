@@ -21,7 +21,7 @@ public class JsonFile {
     }
 
     public static void saveJsonToFile (Map<String, Map> jsonMap, String fileName) {
-        System.out.printf("Save the following json to file: '%s'%n'%s'%n", fileName, jsonMap);
+        System.out.printf("\tSave the following json to file: '%s'%n'%s'%n", fileName, jsonMap);
         try (Writer writer = new FileWriter(fileName)) {
             Gson gson = new GsonBuilder().create();
             gson.toJson(jsonMap, writer);
@@ -32,9 +32,9 @@ public class JsonFile {
 
     public static Map<String, Map> getNodeValueAsMapFromJsonFile (String node, String fileName) {
         Map<String, Map> map = loadJsonFile(fileName);
-        System.out.printf("Platform: '%s'%n", node);
+        System.out.printf("\tPlatform: '%s'%n", node);
         Map<String, Map> envMap = map.get(node);
-        System.out.println("Loaded map: " + envMap);
+        System.out.println("\tLoaded map: " + envMap);
         if (null == envMap) {
             throw new InvalidTestDataException(String.format("Node: '%s' not found in file: '%s'", node, fileName));
         }
@@ -42,7 +42,7 @@ public class JsonFile {
     }
 
     public static Map<String, Map> loadJsonFile (String fileName) {
-        System.out.printf("Loading Json file: '%s'%n", fileName);
+        System.out.printf("\tLoading Json file: '%s'%n", fileName);
         try {
             Gson gson = new Gson();
             Reader reader = Files.newBufferedReader(Paths.get(fileName));
@@ -59,7 +59,7 @@ public class JsonFile {
 
         String nodePath = "";
         for (int nodeCount = 0; nodeCount < nodeTree.length - 1; nodeCount++) {
-            System.out.printf("Finding node: '%s'%n", nodeTree[nodeCount]);
+            System.out.printf("\tFinding node: '%s'%n", nodeTree[nodeCount]);
             nodePath += nodeTree[nodeCount] + " -> ";
             map = map.get(nodeTree[nodeCount]);
             if (null == map) {
@@ -67,22 +67,19 @@ public class JsonFile {
             }
         }
         String retValue = String.valueOf(map.get(nodeTree[nodeTree.length - 1]));
-        System.out.println("Found value: " + retValue);
+        System.out.println("\tFound value: " + retValue);
         return retValue;
     }
 
     public static ArrayList<Map> getNodeValueAsArrayListFromJsonFile (String node, String fileName) {
         Map<String, Map> map = loadJsonFile(fileName);
-        System.out.printf("Platform: '%s'%n", node);
+        System.out.printf("\tPlatform: '%s'%n", node);
         ArrayList<Map> envMap = (ArrayList<Map>) map.get(node);
-        System.out.println("Loaded arraylist: " + envMap);
+        System.out.println("\tLoaded arraylist: " + envMap);
         return envMap;
     }
 
     public static JsonObject convertToMap (String jsonAsString) {
-        Gson gson = new GsonBuilder().create();
-        JsonObject jsonObject = new JsonParser().parse(jsonAsString).getAsJsonObject();
-        System.out.printf("Converted jsonString: '%s' to json: '%s'%n", jsonAsString, jsonObject);
-        return jsonObject;
+        return JsonParser.parseString(jsonAsString).getAsJsonObject();
     }
 }

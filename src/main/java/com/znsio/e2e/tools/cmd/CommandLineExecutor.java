@@ -10,7 +10,7 @@ public class CommandLineExecutor {
 
     public static CommandLineResponse execCommand (final String[] command) {
         String jointCommand = String.join(" ", command);
-        String message = "Executing Command : " + jointCommand;
+        String message = "\tExecuting Command : " + jointCommand;
         System.out.println(message);
         try {
             CommandLineResponse response = new CommandLineResponse();
@@ -25,7 +25,7 @@ public class CommandLineExecutor {
             response.setStdOut(IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8).trim());
             response.setErrOut(IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8).trim());
             response.setExitCode(process.exitValue());
-            System.out.println(response.getStdOut());
+            System.out.println("\t" + response.getStdOut());
             return response;
         } catch (Exception e) {
             throw new RuntimeException("Error " + message, e);
