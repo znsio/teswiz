@@ -4,7 +4,7 @@ import com.applitools.eyes.BatchInfo;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.github.device.Device;
-import com.google.gson.JsonElement;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
@@ -33,6 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.appium.utils.Variable.*;
 
@@ -489,7 +490,50 @@ public class Runner {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
         String authToken = getpCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
-        configs.put(APP_PATH, uploadAPKToPCloudy(appPath, deviceLabURL, authToken));
+        if (isAPKAlreadyAvailableInCloud(authToken, appPath)) {
+            System.out.println("APK is already available in cloud. No need to upload it again");
+        } else {
+            System.out.println("APK is NOT available in cloud. Upload it");
+            configs.put(APP_PATH, uploadAPKToPCloudy(appPath, deviceLabURL, authToken));
+        }
+    }
+
+    private boolean isAPKAlreadyAvailableInCloud (String authToken, String appPath) {
+        Path path = Paths.get(appPath);
+        String appNameFromPath = path.getFileName().toString();
+        System.out.println("isAPKAlreadyAvailableInCloud: Start: " + appPath);
+
+        CommandLineResponse uploadResponse = getListOfUploadedFilesInDeviceFarm(authToken);
+        JsonObject result = JsonFile.convertToMap(uploadResponse.getStdOut()).getAsJsonObject("result");
+        JsonArray availableFiles = result.getAsJsonArray("files");
+        AtomicBoolean isFileAlreadyUploaded = new AtomicBoolean(false);
+        System.out.println("isAPKAlreadyAvailableInCloud: Start: " + appNameFromPath);
+
+        availableFiles.forEach(file -> {
+            String fileName = ((JsonObject) file).get("file").getAsString();
+            System.out.println("This file is available in Device Farm: " + fileName);
+            if (appNameFromPath.equals(fileName)) {
+                isFileAlreadyUploaded.set(true);
+            }
+        });
+
+        return isFileAlreadyUploaded.get();
+    }
+
+    @NotNull
+    private CommandLineResponse getListOfUploadedFilesInDeviceFarm (String authToken) {
+        String deviceLabURL = configs.get(DEVICE_LAB_URL);
+        String[] listOfDevices = new String[]{
+                "curl",
+                "-H",
+                "Content-Type:application/json",
+                "-d",
+                "'{\"token\":\"" + authToken + "\",\"limit\": 15, \"filter\": \"all\"}'",
+                deviceLabURL + "/api/drive"};
+
+        CommandLineResponse uploadResponse = CommandLineExecutor.execCommand(listOfDevices);
+        System.out.println("uploadResponse: " + uploadResponse.getStdOut());
+        return uploadResponse;
     }
 
     private String uploadAPKToPCloudy (String appPath, String deviceLabURL, String authToken) {
