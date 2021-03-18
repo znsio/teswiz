@@ -16,6 +16,7 @@ import com.znsio.e2e.tools.JsonFile;
 import com.znsio.e2e.tools.Visual;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
+import io.cucumber.core.cli.Main;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.SoftAssertions;
 import org.jetbrains.annotations.NotNull;
@@ -277,8 +278,8 @@ public class Runner {
         System.out.println("Begin running tests...");
         System.out.println("Args: " + args);
         String[] array = args.stream().toArray(String[]::new);
-//        byte exitStatus = Main.run(array);
-//        System.out.println("Output of test run: " + exitStatus);
+        byte exitStatus = Main.run(array);
+        System.out.println("Output of test run: " + exitStatus);
     }
 
     private void buildMapOfRequiredProperties () {
