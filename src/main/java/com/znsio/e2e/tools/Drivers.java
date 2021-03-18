@@ -117,8 +117,8 @@ public class Drivers {
             Object disableNotifications = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell settings put global heads_up_notifications_enabled 0");
             System.out.println("@disableNotificationsCommandResponse: " + disableNotifications);
         } else {
-            String[] disableToastsCommand = new String[] {"adb", "-s", "${device.SERIAL}", "shell", "appops", "set", Runner.getAppPackageName(), "TOAST_WINDOW", "deny"};
-            String[] disableNotificationsCommand = new String[] {"adb", "-s", "${device.SERIAL}", "shell", "settings", "put", "global", "heads_up_notifications_enabled", "0"};
+            String[] disableToastsCommand = new String[]{"adb", "-s", "${device.SERIAL}", "shell", "appops", "set", Runner.getAppPackageName(), "TOAST_WINDOW", "deny"};
+            String[] disableNotificationsCommand = new String[]{"adb", "-s", "${device.SERIAL}", "shell", "settings", "put", "global", "heads_up_notifications_enabled", "0"};
 
             CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand);
             System.out.println("disableToastsCommandResponse: " + disableToastsCommandResponse);
@@ -252,7 +252,7 @@ public class Drivers {
         userPersonaDrivers.keySet().forEach(key -> {
             System.out.println("\tUser Persona: " + key);
             validateVisualTestResults(key);
-            attachLogsAndCloseWebDriver(key);
+            attachLogsAndCloseDriver(key);
         });
     }
 
@@ -261,7 +261,7 @@ public class Drivers {
         driver.getVisual().handleTestResults(key);
     }
 
-    private void attachLogsAndCloseWebDriver (String key) {
+    private void attachLogsAndCloseDriver (String key) {
         Driver driver = userPersonaDrivers.get(key);
         if (driver.getType().equals(Driver.WEB_DRIVER)) {
             closeWebDriver(key, driver);
@@ -272,20 +272,27 @@ public class Drivers {
 
     private void closeAppOnDevice (Driver driver) {
         String appPackageName = Runner.getAppPackageName();
-        System.out.println("Terminate app: " + appPackageName);
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
-        boolean isAppTerminated = appiumDriver.terminateApp(appPackageName);
-        System.out.println("App terminated? " + isAppTerminated);
-        ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
-        System.out.println("Application State: " + applicationState);
-        appiumDriver.closeApp();
-        ReportPortal.emitLog(
-                String.format("App: '%s' termiated? '%s'. Current application state: '%s'%n",
-                        appPackageName,
-                        isAppTerminated,
-                        applicationState),
-                "DEBUG",
-                new Date());
+        if (Runner.isRunningInPCloudy()) {
+            String message = "Skip terminating & closing app on Cloud device";
+            System.out.println(message);
+            ReportPortal.emitLog(message, "DEBUG", new Date());
+        } else {
+
+            System.out.println("Terminate app: " + appPackageName);
+            boolean isAppTerminated = appiumDriver.terminateApp(appPackageName);
+            System.out.println("App terminated? " + isAppTerminated);
+            ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
+            System.out.println("Application State: " + applicationState);
+            appiumDriver.closeApp();
+            ReportPortal.emitLog(
+                    String.format("App: '%s' termiated? '%s'. Current application state: '%s'%n",
+                            appPackageName,
+                            isAppTerminated,
+                            applicationState),
+                    "DEBUG",
+                    new Date());
+        }
     }
 
     private void closeWebDriver (String key, Driver driver) {

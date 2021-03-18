@@ -55,7 +55,7 @@ public class Runner {
     private static final String BRANCH_NAME = NOT_SET;
     private static final String LOG_PROPERTIES_FILE = "logPropertiesFile";
     private static final String DEFAULT_LOG_DIR = "target";
-    private static final String APP_PATH = "APP_PATH";
+    private static final String APP_PATH = "AppPath";
     private static final String BROWSER = "Browser";
     private static final String CAPS = "CAPS";
     private static final String CONFIG_FILE = "CONFIG_FILE";

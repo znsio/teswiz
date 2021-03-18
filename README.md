@@ -30,16 +30,22 @@ variable: `REPORT_PORTAL_FILE`
 
 ## Prerequisites
 
-* Install JDK and set JAVA_HOME environment variable
-* Setup Android Command-line tools and SDK and set ANDROID_HOME environment variable
-* Install appium - https://applitools.com/blog/automatic-appium-setup/
+* JDK
+  * **Minimum JDK version: 11**
+  * **Set JAVA_HOME environment variable**
+  * You can install JDK from here: https://adoptopenjdk.net/
+* Setup the Android environment for test execution:
+  * **Set ANDROID_HOME environment variable**
+  * **Refer to this post for instructions how to automatically setup your environment - https://applitools.com/blog/automatic-appium-setup/**
+  * Additional References:
+    * Setup Android Command-line tools and SDK - https://developer.android.com/studio#command-tools
+    * Install appium - https://appium.io
 * Appium Desktop App is a great way to identify locators, and the recorder is quite helpful to quickly identify multiple
   locators for your tests - https://github.com/appium/appium-desktop/releases/tag/v1.20.2. You can also use Katalon
   Studio for locator identification (especially helpful for Windows platform)
 * To verify appium installation is successful, run
   `appium-doctor` - it should not report any errors
-* Install reportportal (Docker setup is the easiest way to proceed: https://reportportal.io/installation)
-* Set `APPLITOOLS_API_KEY` as an environment variable
+* To install reportportal on local machine, refer to https://reportportal.io/installation. (Docker setup is the easiest way to proceed).
 
 ## Running the tests
 
@@ -47,16 +53,16 @@ variable: `REPORT_PORTAL_FILE`
 
 To run all the tests against the Android platform, run the following command:
 
-    Platform=android ./gradlew clean cucumber
+    Platform=android ./gradlew run
 
 #### Run on Local devices:
 
 The framework, by default, automatically figures out if there are multiple devices connected to the machine, and if so,
 will run the tests in parallel
 
-#### Run on Device Farm:
+#### Run on pCloudy's Device Farm:
 
-To enable running the tests on pCloudy's Mobilab, the following additional environment variables need to be provided:
+**To enable running the tests on pCloudy's Device Farm, the following additional environment variables need to be provided:**
 
 * `RunOnCloud=true` - Default is `false`
 * `CLOUD_USER` - Mobilab username
@@ -64,21 +70,21 @@ To enable running the tests on pCloudy's Mobilab, the following additional envir
 
 Sample command:
 
-    Platform=android RunOnCloud=true CLOUD_USER=myusername CLOUD_KEY=abcd1234abcd ./gradlew clean cucumber
+    Platform=android RunOnCloud=true CLOUD_USER=myusername CLOUD_KEY=abcd1234abcd ./gradlew run
 
 For other cloud configurations, refer here: https://github.com/AppiumTestDistribution/AppiumTestDistribution
 
 ### Run on iOS
 
-    Platform=windows ./gradlew clean cucumber
+    Platform=windows ./gradlew run
 
 ### Run on Windows
 
-    Platform=windows ./gradlew clean cucumber
+    Platform=windows ./gradlew run
 
 ### Run on Web
 
-    Platform=web ./gradlew clean cucumber
+    Platform=web ./gradlew run
 
 ### Running Real Meeting simulations
 
@@ -102,10 +108,10 @@ You can run these tests as below:
 
 ### Running the tests with Applitools Visual AI
 
-To enable Applitools Visual Testing in your test execution, the following additional environment variables need to be
-provided:
+**To enable Applitools Visual Testing in your test execution, the following additional environment variables need to be
+provided:**
 
-* `Visual=true` - to enable Visual Testing using Applitools
+* `IsVisual=true` - to enable Visual Testing using Applitools
 * `APPLITOOLS_API_KEY=<API_KEY>` - Sets the API key as provided by Applitools
 
 ### Running a subset of tests:
@@ -120,11 +126,11 @@ To run a subset of tests, for a given platform, the following additional environ
 
 Sample commands:
 
-    Platform=android Tag=@schedule ./gradlew clean cucumber`
+    Platform=android Tag=@schedule ./gradlew run`
 
-    Platform=android Tag="@schedule and @signup" ./gradlew clean cucumber`
+    Platform=android Tag="@schedule and @signup" ./gradlew run`
 
-    Platform=android Tag="@schedule or @signup" ./gradlew clean cucumber`
+    Platform=android Tag="@schedule or @signup" ./gradlew run`
 
 ### Using a different apk for execution (Android):
 
@@ -135,7 +141,7 @@ caps/mobilab_capabilties.json, the following additional environment variable nee
 
 Sample command:
 
-    AppPath=~/Downloads/MyLatestApp.apk Platform=android ./gradlew clean cucumber
+    AppPath=~/Downloads/MyLatestApp.apk Platform=android ./gradlew run
 
 ## Troubleshooting / FAQs
 
