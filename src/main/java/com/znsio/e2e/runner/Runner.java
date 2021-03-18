@@ -542,6 +542,9 @@ public class Runner {
     private void getPlatformTagsAndLaunchName () {
         System.out.println("getPlatformTagsAndLaunchName");
         String launchName = configs.get(APP_NAME) + " Tests";
+        if (configsBoolean.get(IS_RUN_ON_CLOUD)) {
+            launchName += " on Device Farm";
+        }
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);
         if (providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
