@@ -15,8 +15,6 @@ repositories {
     flatDir {
         dirs 'libs'
     }
-//    maven { url "http://repo.bodar.com" }
-//    maven { url "https://dl.bintray.com/epam/reportportal" }
     maven { url 'https://jitpack.io' }
     jcenter()
 }
@@ -34,7 +32,6 @@ dependencies {
     implementation files("$buildDir/classes/main")
     implementation files("$buildDir/classes/test")
     implementation "com.googlecode.json-simple:json-simple:$project.googleCodeJsonSimpleVersion"
-    implementation "org.jsoup:jsoup:$project.jsoupVersion"
     implementation "com.mashape.unirest:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
     implementation "com.github.znsio:AppiumTestDistribution:$project.atdVersion"
@@ -42,10 +39,7 @@ dependencies {
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
-    implementation 'com.epam.reportportal:agent-java-cucumber6:5.0.1'
-    implementation('com.epam.reportportal:agent-java-testng:5.0.7') {
-        exclude group: 'com.fasterxml.jackson.core'
-    }
+    implementation "com.epam.reportportal:agent-java-cucumber6:$project.reportPortalVersion"
     implementation "com.applitools:eyes-connectivity-java3-jersey1x:$project.applitoolsVersion"
     implementation("com.applitools:eyes-selenium-java3:$project.applitoolsVersion") {
         exclude group: 'java-client'
