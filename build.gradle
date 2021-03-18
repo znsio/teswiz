@@ -15,8 +15,8 @@ repositories {
     flatDir {
         dirs 'libs'
     }
-    maven { url "http://repo.bodar.com" }
-    maven { url "https://dl.bintray.com/epam/reportportal" }
+//    maven { url "http://repo.bodar.com" }
+//    maven { url "https://dl.bintray.com/epam/reportportal" }
     maven { url 'https://jitpack.io' }
     jcenter()
 }
