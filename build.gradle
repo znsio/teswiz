@@ -33,9 +33,12 @@ dependencies {
     implementation files("$buildDir/classes/main")
     implementation files("$buildDir/classes/test")
     implementation "com.googlecode.json-simple:json-simple:$project.googleCodeJsonSimpleVersion"
+    implementation "org.testng:testng:${project.testngVersion}"
     implementation "com.mashape.unirest:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation "com.github.znsio:AppiumTestDistribution:$project.atdVersion"
+    implementation("com.github.znsio:AppiumTestDistribution:$project.atdVersion") {
+        exclude group: 'org.testng'
+    }
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
