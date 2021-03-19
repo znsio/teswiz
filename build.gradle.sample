@@ -1,0 +1,57 @@
+buildscript {
+    ext {
+        gradleVersion = '6.7.1'
+        unifiedE2EVersion = '0.0.57'
+    }
+    repositories {
+        mavenLocal()
+    }
+}
+
+plugins {
+    id "java"
+    id "idea"
+    id "maven"
+}
+
+version '0.0.1'
+project.ext.log4jProperties = "src/test/resources/log4j2.properties"
+
+repositories {
+    mavenLocal()
+    maven { url 'https://jitpack.io' }
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+compileJava { options.encoding = "UTF-8" }
+
+dependencies {
+    implementation("com.github.znsio:unified-e2e:${project.unifiedE2EVersion}") {
+        transitive = false
+    }
+}
+
+task run(type: JavaExec) {
+    doFirst {
+        def configFile = System.getenv("RunOnCloud") ? "./configs/mobilab_config.properties" : "./configs/config.properties"
+        systemProperties = System.properties
+        def runnerArgs = [
+                "${configFile}",
+                "<pathToStepDef>",
+                "<pathToFeaturesDir>",
+                "<pathToLogProperties>"
+        ]
+        args = runnerArgs
+    }
+    main = "com.znsio.e2e.runner.Runner"
+    classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+}
+
+wrapper {
+    gradleVersion = project.gradleVersion // version from gradle.properties
+}

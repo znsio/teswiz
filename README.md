@@ -28,6 +28,15 @@ variable: `REPORT_PORTAL_FILE`
 * reportportal.io (https://reportportal.io)
 * Applitools (https://applitools.com)
 
+## How can you use unified-e2e?
+It is very easy to use unified-e2e in your framework.
+Follow these steps:
+1. Setup the prerequisites mentioned below
+1. Provide capabilities in capabilities.json - refer to src/test/resources/com/znsio/e2e/features/android/caps/capabilities.json
+1. Provide defaults in config.properties file - refer to src/test/resources/com/znsio/e2e/features/android/configs/config.properties
+1. Refer to build.gradle.sample file and update your project's build.gradle accordingly
+1. Refer to the **Running the tests** section
+
 ## Prerequisites
 
 * JDK
