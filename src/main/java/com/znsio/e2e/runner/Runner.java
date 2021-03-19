@@ -10,6 +10,7 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
+import com.znsio.e2e.exceptions.TestExecutionFailedException;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Drivers;
 import com.znsio.e2e.tools.JsonFile;
@@ -80,6 +81,7 @@ public class Runner {
     private static Map<String, Map> environmentConfiguration;
     private static Map<String, Map> testDataForEnvironment;
     private final Properties properties;
+    private List<Device> devices;
 
     public Runner () {
         throw new InvalidTestDataException("Required args not provided to Runner");
@@ -280,6 +282,9 @@ public class Runner {
         String[] array = args.stream().toArray(String[]::new);
         byte exitStatus = Main.run(array);
         System.out.println("Output of test run: " + exitStatus);
+        if (exitStatus!=0) {
+            throw new TestExecutionFailedException("Test execution failed. Exit status: " + exitStatus);
+        }
     }
 
     private void buildMapOfRequiredProperties () {
@@ -415,7 +420,7 @@ public class Runner {
 
     private void setupLocalExecution () {
         updateAppPath();
-        List<Device> devices = getDevices();
+        setupLocalDevices();
         int parallelCount = devices.size();
         if (parallelCount == 0) {
             throw new EnvironmentSetupException("No devices available to run the tests");
@@ -424,34 +429,47 @@ public class Runner {
         configs.put(EXECUTED_ON, "Local Devices");
     }
 
-    private List<Device> getDevices () {
+    private List<Device> setupLocalDevices () {
         startADBServer();
-        JadbConnection jadb = new JadbConnection();
-        List<JadbDevice> deviceList = new ArrayList<>();
-        List<Device> connectedDevices = new ArrayList<>();
-        try {
-            deviceList = jadb.getDevices();
-        } catch (IOException | JadbException e) {
-            throw new EnvironmentSetupException("Unable to get devices information", e);
-        }
+        if (null == devices) {
+            JadbConnection jadb = new JadbConnection();
+            List<JadbDevice> deviceList = new ArrayList<>();
+            devices = new ArrayList<>();
+            try {
+                deviceList = jadb.getDevices();
+            } catch (IOException | JadbException e) {
+                throw new EnvironmentSetupException("Unable to get devices information", e);
+            }
 
+            extractInfoFromEachDevice(deviceList);
+
+            System.out.println("Number of Devices connected: " + devices.size());
+        }
+        return devices;
+    }
+
+    private void extractInfoFromEachDevice (List<JadbDevice> deviceList) {
         deviceList.forEach(jadbDevice -> {
             try {
                 Device device = new Device();
                 device.setName(jadbDevice.getSerial());
-                device.setUdid(getAdbCommandOutput(jadbDevice, "getprop", "ro.serialno"));
+                device.setUdid(jadbDevice.getSerial());
+//                    device.setUdid(getAdbCommandOutput(jadbDevice, "getprop", "ro.serialno"));
                 device.setApiLevel(getAdbCommandOutput(jadbDevice, "getprop", "ro.build.version.sdk"));
                 device.setDeviceManufacturer(getAdbCommandOutput(jadbDevice, "getprop", "ro.product.brand"));
                 device.setDeviceModel(getAdbCommandOutput(jadbDevice, "getprop", "ro.product.model"));
                 device.setOsVersion(getAdbCommandOutput(jadbDevice, "getprop", "ro.build.version.release"));
-                connectedDevices.add(device);
+                devices.add(device);
+                uninstallAppFromDevice(device, configs.get(APP_PACKAGE_NAME));
             } catch (IOException | JadbException e) {
                 throw new EnvironmentSetupException("Unable to get devices information", e);
             }
         });
+    }
 
-        System.out.println("Number of Devices connected: " + connectedDevices.size());
-        return connectedDevices;
+    private void uninstallAppFromDevice (Device device, String appPackageName) {
+        String[] listOfDevices = new String[]{"adb", "-s", device.getUdid(), "uninstall", appPackageName};
+        CommandLineExecutor.execCommand(listOfDevices);
     }
 
     @NotNull
