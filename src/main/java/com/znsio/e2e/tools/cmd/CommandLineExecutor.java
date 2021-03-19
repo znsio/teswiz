@@ -16,7 +16,7 @@ public class CommandLineExecutor {
             CommandLineResponse response = new CommandLineResponse();
             ProcessBuilder builder = new ProcessBuilder(command);
             if (Runner.IS_WINDOWS) {
-                builder.command("cmd.exe", jointCommand);
+                builder.command("cmd.exe", "/c", jointCommand);
             } else {
                 builder.command("sh", "-c", jointCommand);
             }
