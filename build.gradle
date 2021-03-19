@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.56'
+version '0.0.57'
 project.ext.logDir = "${rootDir}/target"
 
 repositories {
@@ -43,7 +43,7 @@ dependencies {
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
-    implementation "com.epam.reportportal:agent-java-cucumber6:$project.reportPortalVersion"
+    implementation "com.epam.reportportal:agent-java-cucumber6:5.0.1"
     implementation('com.epam.reportportal:agent-java-testng:5.0.7') {
         exclude group: 'com.fasterxml.jackson.core'
     }
@@ -66,7 +66,7 @@ shadowJar {
     archiveVersion.set("$project.version")
     zip64 true
     manifest {
-        attributes "Main-Class": "com.znsio.e2e.Runner"
+        attributes "Main-Class": "com.znsio.e2e.runner.Runner"
     }
 }
 
