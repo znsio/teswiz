@@ -468,8 +468,12 @@ public class Runner {
     }
 
     private void uninstallAppFromDevice (Device device, String appPackageName) {
-        String[] listOfDevices = new String[]{"adb", "-s", device.getUdid(), "uninstall", appPackageName};
-        CommandLineExecutor.execCommand(listOfDevices);
+        String[] uninstallAppiumAutomator2Server = new String[]{"adb", "-s", device.getUdid(), "uninstall", "io.appium.uiautomator2.server"};
+        CommandLineExecutor.execCommand(uninstallAppiumAutomator2Server);
+        String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall", "io.appium.settings"};
+        CommandLineExecutor.execCommand(uninstallAppiumSettings);
+        String[] uninstallApp = new String[]{"adb", "-s", device.getUdid(), "uninstall", appPackageName};
+        CommandLineExecutor.execCommand(uninstallApp);
     }
 
     @NotNull
