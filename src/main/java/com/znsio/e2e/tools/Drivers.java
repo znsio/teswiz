@@ -213,8 +213,8 @@ public class Drivers {
 
     private String setChromeLogDirectory (TestExecutionContext testExecutionContext) {
         String forUserPersona = testExecutionContext.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
-        String scenarioLogDir = System.getProperty(USER_DIR) + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
-        String logFile = scenarioLogDir + File.separator + "chrome-" + forUserPersona + ".log";
+        String scenarioLogDir = Runner.USER_DIRECTORY + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+        String logFile = scenarioLogDir + File.separator + "deviceLogs" + File.separator + "chrome-" + forUserPersona + ".log";
 
         File file = new File(logFile);
         file.getParentFile().mkdirs();

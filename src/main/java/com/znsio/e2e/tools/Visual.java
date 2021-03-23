@@ -29,10 +29,10 @@ public class Visual {
 
     public Visual (String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
         System.out.printf("Visual constructor: Driver type: '%s', appName: '%s', testName: '%s', isVisualTestingEnabled: '%s'%n", driverType, appName, testName, isVisualTestingEnabled);
-        eyesOnApp = instantiateAppiumEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
-        eyesOnWeb = instantiateWebEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
         this.context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         this.screenShotManager = (ScreenShotManager) context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
+        eyesOnApp = instantiateAppiumEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
+        eyesOnWeb = instantiateWebEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
     }
 
     private com.applitools.eyes.appium.Eyes instantiateAppiumEyes (String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
@@ -43,7 +43,8 @@ public class Visual {
         com.applitools.eyes.appium.Eyes eyes = new com.applitools.eyes.appium.Eyes();
         eyes.setApiKey(applitoolsApiKey);
         eyes.setBatch(Runner.getApplitoolsBatchName());
-        eyes.setLogHandler(new StdoutLogHandler(true));
+        eyes.setLogHandler(new FileLogger(getApplitoolsLogFileNameFor("app"), true, true));
+//        eyes.setLogHandler(new StdoutLogHandler(true));
         eyes.setEnvName(targetEnvironment);
         eyes.setIsDisabled(!isVisualTestingEnabled);
         eyes.setMatchLevel(MatchLevel.STRICT);
@@ -54,6 +55,13 @@ public class Visual {
         return eyes;
     }
 
+    @NotNull
+    private String getApplitoolsLogFileNameFor (String appType) {
+        String scenarioLogDir = Runner.USER_DIRECTORY + context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+        String eyesAppLogFile = scenarioLogDir + File.separator + "deviceLogs" + File.separator + "applitools-" + appType + ".log";
+        return eyesAppLogFile;
+    }
+
     private com.applitools.eyes.selenium.Eyes instantiateWebEyes (String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
         if (driverType.equals(Driver.APPIUM_DRIVER)) {
             isVisualTestingEnabled = false;
@@ -62,7 +70,8 @@ public class Visual {
         com.applitools.eyes.selenium.Eyes eyes = new com.applitools.eyes.selenium.Eyes();
         eyes.setApiKey(applitoolsApiKey);
         eyes.setBatch(Runner.getApplitoolsBatchName());
-        eyes.setLogHandler(new StdoutLogHandler(true));
+        eyes.setLogHandler(new FileLogger(getApplitoolsLogFileNameFor("web"), true, true));
+//        eyes.setLogHandler(new StdoutLogHandler(true));
         eyes.setEnvName(targetEnvironment);
         eyes.setIsDisabled(!isVisualTestingEnabled);
         eyes.setMatchLevel(MatchLevel.STRICT);
