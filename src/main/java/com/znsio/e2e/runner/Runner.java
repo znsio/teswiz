@@ -4,8 +4,10 @@ import com.applitools.eyes.BatchInfo;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.github.device.Device;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
@@ -536,12 +538,16 @@ public class Runner {
     @NotNull
     private CommandLineResponse getListOfUploadedFilesInDeviceFarm (String authToken) {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
+        Map payload = new HashMap();
+        payload.put("token", authToken);
+        payload.put("limit", 15);
+        payload.put("filter", "all");
         String[] listOfDevices = new String[]{
                 "curl",
                 "-H",
                 "Content-Type:application/json",
                 "-d",
-                "\"{\"token\":\"" + authToken + "\",\"limit\": \"15\", \"filter\": \"all\"}\"",
+                "'" + JsonParser.parseString(payload.toString()) + "'",
                 deviceLabURL + "/api/drive"};
 
         CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfDevices);
