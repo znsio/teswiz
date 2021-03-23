@@ -1,9 +1,9 @@
 package com.znsio.e2e.tools;
 
 import com.appium.utils.Variable;
+import com.applitools.eyes.FileLogger;
 import com.applitools.eyes.MatchLevel;
 import com.applitools.eyes.RectangleSize;
-import com.applitools.eyes.StdoutLogHandler;
 import com.applitools.eyes.TestResults;
 import com.applitools.eyes.selenium.fluent.SeleniumCheckSettings;
 import com.applitools.eyes.selenium.fluent.Target;
@@ -15,6 +15,7 @@ import com.znsio.e2e.runner.Runner;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.WebDriver;
 
+import java.io.File;
 import java.util.Date;
 
 public class Visual {
