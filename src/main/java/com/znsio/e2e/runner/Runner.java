@@ -541,7 +541,7 @@ public class Runner {
                 "-H",
                 "Content-Type:application/json",
                 "-d",
-                "'{\"token\":\"" + authToken + "\",\"limit\": 15, \"filter\": \"all\"}'",
+                "\"{\"token\":\"" + authToken + "\",\"limit\": \"15\", \"filter\": \"all\"}\"",
                 deviceLabURL + "/api/drive"};
 
         CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfDevices);
