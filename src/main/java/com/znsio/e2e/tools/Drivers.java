@@ -19,6 +19,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.File;
 import java.util.*;
@@ -199,7 +200,7 @@ public class Drivers {
 
         System.out.println("ChromeOptions: " + chromeOptions.asMap());
 
-        WebDriver driver = new ChromeDriver(chromeOptions);
+        WebDriver driver = Runner.isRunningInPCloudy() ? new RemoteWebDriver(chromeOptions) : new ChromeDriver(chromeOptions);
 
         String providedBaseUrl = Runner.getBaseURLForWeb();
         if (null == providedBaseUrl) {
