@@ -4,6 +4,7 @@ import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.exceptions.EnvironmentSetupException;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
@@ -22,6 +23,8 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -200,7 +203,7 @@ public class Drivers {
 
         System.out.println("ChromeOptions: " + chromeOptions.asMap());
 
-        WebDriver driver = Runner.isRunningInPCloudy() ? new RemoteWebDriver(chromeOptions) : new ChromeDriver(chromeOptions);
+        WebDriver driver = Runner.isRunningInPCloudy() ? createRemoteWebDriver(chromeOptions) : new ChromeDriver(chromeOptions);
 
         String providedBaseUrl = Runner.getBaseURLForWeb();
         if (null == providedBaseUrl) {
@@ -210,6 +213,15 @@ public class Drivers {
         System.out.println("baseUrl: " + baseUrl);
         driver.get(baseUrl);
         return driver;
+    }
+
+    @NotNull
+    private RemoteWebDriver createRemoteWebDriver (ChromeOptions chromeOptions) {
+        try {
+            return new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), chromeOptions);
+        } catch (MalformedURLException e) {
+            throw new EnvironmentSetupException("Unable to create a new RemoteWebDriver", e);
+        }
     }
 
     private String setChromeLogDirectory (TestExecutionContext testExecutionContext) {
