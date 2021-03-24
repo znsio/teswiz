@@ -552,6 +552,14 @@ public class Runner {
 
         CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfDevices);
         System.out.println("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
+        JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut()).getAsJsonObject("result");
+        JsonElement resultCode = result.get("code");
+        int uploadStatus = (null == resultCode) ? 400 : resultCode.getAsInt();
+        if (200 != uploadStatus) {
+            throw new EnvironmentSetupException(String.format("Unable to get list of uploaded files%n%s",
+                    listFilesInPCloudyResponse));
+        }
+
         return listFilesInPCloudyResponse;
     }
 
