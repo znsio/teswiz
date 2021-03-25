@@ -48,7 +48,7 @@ public class Runner {
     public static final String USER_NAME = System.getProperty("user.name");
     private static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     private static final String APP_NAME = "APP_NAME";
-    private static final String IS_VISUAL = "IsVisual";
+    private static final String IS_VISUAL = "IS_VISUAL";
     private static final String CHROME = "chrome";
     private static final String PLUGIN = "--plugin";
     private static final String tempDirectory = "temp";
@@ -57,10 +57,10 @@ public class Runner {
     private static final int DEFAULT_PARALLEL = 1;
     private static final ArrayList<String> cukeArgs = new ArrayList<>();
     private static final String BRANCH_NAME = "BRANCH_NAME";
-    private static final String LOG_PROPERTIES_FILE = "logPropertiesFile";
+    private static final String LOG_PROPERTIES_FILE = "LOG_PROPERTIES_FILE";
     private static final String DEFAULT_LOG_DIR = "target";
-    private static final String APP_PATH = "AppPath";
-    private static final String BROWSER = "Browser";
+    private static final String APP_PATH = "APP_PATH";
+    private static final String BROWSER = "BROWSER";
     private static final String CAPS = "CAPS";
     private static final String CONFIG_FILE = "CONFIG_FILE";
     private static final String DEVICE_LAB_URL = "DEVICE_LAB_URL";
@@ -68,11 +68,11 @@ public class Runner {
     private static final String EXECUTED_ON = "EXECUTED_ON";
     private static final String LAUNCH_NAME = "LAUNCH_NAME";
     private static final String LOG_DIR = "LOG_DIR";
-    private static final String PARALLEL = "Parallel";
-    private static final String PLATFORM = "Platform";
-    private static final String IS_RUN_ON_CLOUD = "RunOnCloud";
-    private static final String TAG = "Tag";
-    private static final String TARGET_ENVIRONMENT = "TargetEnvironment";
+    private static final String PARALLEL = "PARALLEL";
+    private static final String PLATFORM = "PLATFORM";
+    private static final String RUN_ON_CLOUD = "RUN_ON_CLOUD";
+    private static final String TAG = "TAG";
+    private static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
     private static final Map<String, String> configs = new HashMap();
     private static final Map<String, Boolean> configsBoolean = new HashMap();
@@ -129,7 +129,7 @@ public class Runner {
                         "OS:" + OS_NAME + "; " +
                         "ParallelCount:" + configsInteger.get(PARALLEL) + "; " +
                         "Platform:" + platform.name() + "; " +
-                        "RunOnCloud:" + configsBoolean.get(IS_RUN_ON_CLOUD) + "; " +
+                        "RunOnCloud:" + configsBoolean.get(RUN_ON_CLOUD) + "; " +
                         "Tags:" + configs.get(TAG) + "; " +
                         "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " +
                         "Username:" + USER_NAME + "; " +
@@ -254,7 +254,7 @@ public class Runner {
     }
 
     public static boolean isRunningInPCloudy () {
-        return configsBoolean.get(IS_RUN_ON_CLOUD);
+        return configsBoolean.get(RUN_ON_CLOUD);
     }
 
     private void getBranchName () {
@@ -302,7 +302,7 @@ public class Runner {
         configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR, getStringValueFromPropertiesIfAvailable(LOG_DIR, DEFAULT_LOG_DIR)));
         platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, getStringValueFromPropertiesIfAvailable(PLATFORM, Platform.android.name())));
         configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, Integer.parseInt(getStringValueFromPropertiesIfAvailable(PARALLEL, String.valueOf(DEFAULT_PARALLEL)))));
-        configsBoolean.put(IS_RUN_ON_CLOUD, getOverriddenBooleanValue(IS_RUN_ON_CLOUD, getBooleanValueFromPropertiesIfAvailable(IS_RUN_ON_CLOUD, false)));
+        configsBoolean.put(RUN_ON_CLOUD, getOverriddenBooleanValue(RUN_ON_CLOUD, getBooleanValueFromPropertiesIfAvailable(RUN_ON_CLOUD, false)));
         configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
@@ -350,7 +350,7 @@ public class Runner {
 
     private void setupAndroidExecution () {
         if (platform.equals(Platform.android)) {
-            if (configsBoolean.get(IS_RUN_ON_CLOUD)) {
+            if (configsBoolean.get(RUN_ON_CLOUD)) {
                 setupCloudExecution();
             } else {
                 setupLocalExecution();
@@ -613,7 +613,7 @@ public class Runner {
     private void getPlatformTagsAndLaunchName () {
         System.out.println("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME) + " Tests";
-        if (configsBoolean.get(IS_RUN_ON_CLOUD)) {
+        if (configsBoolean.get(RUN_ON_CLOUD)) {
             launchName += " on Device Farm";
         }
         String inferredTags = getCustomTags();
