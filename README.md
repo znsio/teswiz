@@ -62,7 +62,7 @@ Follow these steps:
 
 To run all the tests against the Android platform, run the following command:
 
-    Platform=android ./gradlew run
+    PLATFORM=android ./gradlew run
 
 #### Run on Local devices:
 
@@ -73,27 +73,27 @@ will run the tests in parallel
 
 **To enable running the tests on pCloudy's Device Farm, the following additional environment variables need to be provided:**
 
-* `RunOnCloud=true` - Default is `false`
+* `RUN_IN_CI=true` - Default is `false`
 * `CLOUD_USER` - Mobilab username
 * `CLOUD_KEY` - Mobilab password
 
 Sample command:
 
-    Platform=android RunOnCloud=true CLOUD_USER=myusername CLOUD_KEY=abcd1234abcd ./gradlew run
+    PLATFORM=android RUN_IN_CI=true CLOUD_USER=myusername CLOUD_KEY=abcd1234abcd ./gradlew run
 
 For other cloud configurations, refer here: https://github.com/AppiumTestDistribution/AppiumTestDistribution
 
 ### Run on iOS
 
-    Platform=windows ./gradlew run
+    PLATFORM=windows ./gradlew run
 
 ### Run on Windows
 
-    Platform=windows ./gradlew run
+    PLATFORM=windows ./gradlew run
 
 ### Run on Web
 
-    Platform=web ./gradlew run
+    PLATFORM=web ./gradlew run
 
 ### Running Real Meeting simulations
 
@@ -103,13 +103,13 @@ You can run these tests as below:
 
 #### To run tests on **android & web** platforms
 
-    Tag=@multiuser-android-web
+    TAG=@multiuser-android-web
 
 **_Current restriction - 1 android device & max 2 web browsers_**
 
 #### To run tests on **web** platforms
 
-    Tag=@multiuser-web-web 
+    TAG=@multiuser-web-web 
 
 **_Current restriction - max 2 web browsers_**
 
@@ -120,37 +120,37 @@ You can run these tests as below:
 **To enable Applitools Visual Testing in your test execution, the following additional environment variables need to be
 provided:**
 
-* `IsVisual=true` - to enable Visual Testing using Applitools
+* `IS_VISUAL=true` - to enable Visual Testing using Applitools
 * `APPLITOOLS_API_KEY=<API_KEY>` - Sets the API key as provided by Applitools
 
 ### Running a subset of tests:
 
 To run a subset of tests, for a given platform, the following additional environment variables need to be provided:
 
-* `Tag=@schedule` - This will run all tests tagged with the platform name provided, except tests tagged as "@wip"
-* `Tag="@schedule and @signup"` - This will run all tests tagged with the name **schedule AND signup** for the platform
+* `TAG=@schedule` - This will run all tests tagged with the platform name provided, except tests tagged as "@wip"
+* `TAG="@schedule and @signup"` - This will run all tests tagged with the name **schedule AND signup** for the platform
   name provided, except tests tagged as "@wip"
-* `Tag="@schedule or @signup"` - This will run all tests tagged with the name **schedule OR signup** for the platform
+* `TAG="@schedule or @signup"` - This will run all tests tagged with the name **schedule OR signup** for the platform
   name provided, except tests tagged as "@wip"
 
 Sample commands:
 
-    Platform=android Tag=@schedule ./gradlew run`
+    PLATFORM=android TAG=@schedule ./gradlew run`
 
-    Platform=android Tag="@schedule and @signup" ./gradlew run`
+    PLATFORM=android TAG="@schedule and @signup" ./gradlew run`
 
-    Platform=android Tag="@schedule or @signup" ./gradlew run`
+    PLATFORM=android TAG="@schedule or @signup" ./gradlew run`
 
 ### Using a different apk for execution (Android):
 
 To run tests using a specific apk (instead of the one specified in caps/capabilities.json, OR,
 caps/mobilab_capabilties.json, the following additional environment variable need to be provided:
 
-* `AppPath='<path to apk>'`
+* `APP_PATH='<path to apk>'`
 
 Sample command:
 
-    AppPath=~/Downloads/MyLatestApp.apk Platform=android ./gradlew run
+    APP_PATH=~/Downloads/MyLatestApp.apk PLATFORM=android ./gradlew run
 
 ## Troubleshooting / FAQs
 
@@ -160,8 +160,8 @@ You can set environment variables
 
 From Mac OSX or Linux:
 
-    export Platform=android
+    export PLATFORM=android
 
 From Windows:
 
-    set Platform=android
+    set PLATFORM=android
