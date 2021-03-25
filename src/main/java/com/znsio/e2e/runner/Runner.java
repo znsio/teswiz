@@ -89,7 +89,7 @@ public class Runner {
         throw new InvalidTestDataException("Required args not provided to Runner");
     }
 
-    public Runner (String configFilePath, String stepDefDirName, String featuresDirName, String logPropertiesFile) {
+    public Runner (String configFilePath, String stepDefDirName, String featuresDirName) {
         System.out.printf("Runner called from user directory: '%s'%n", Runner.USER_DIRECTORY);
         Path path = Paths.get(configFilePath);
         if (!Files.exists(path)) {
@@ -97,8 +97,7 @@ public class Runner {
         }
         properties = loadProperties(configFilePath);
         printLoadedConfigProperties(configFilePath);
-
-        loadAndUpdateConfigParameters(configFilePath, logPropertiesFile);
+        loadAndUpdateConfigParameters(configFilePath);
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(configs.get(CAPS));
 
@@ -177,7 +176,7 @@ public class Runner {
         if (args.length != 4) {
             throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName, String logDirName");
         }
-        new Runner(args[0], args[1], args[2], args[3]);
+        new Runner(args[0], args[1], args[2]);
     }
 
     public static Driver fetchDriver (long threadId) {
@@ -265,9 +264,8 @@ public class Runner {
         configs.put(BRANCH_NAME, branchName);
     }
 
-    private void loadAndUpdateConfigParameters (String configFilePath, String logPropertiesFile) {
+    private void loadAndUpdateConfigParameters (String configFilePath) {
         configs.put(CONFIG_FILE, configFilePath);
-        configs.put(LOG_PROPERTIES_FILE, logPropertiesFile);
         buildMapOfRequiredProperties();
 
         System.out.println("Updated string values from property file for missing properties: \n" + configs);
@@ -300,6 +298,7 @@ public class Runner {
         configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE, getStringValueFromPropertiesIfAvailable(ENVIRONMENT_CONFIG_FILE, NOT_SET)));
         configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL, getBooleanValueFromPropertiesIfAvailable(IS_VISUAL, false)));
         configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR, getStringValueFromPropertiesIfAvailable(LOG_DIR, DEFAULT_LOG_DIR)));
+        configs.put(LOG_PROPERTIES_FILE, getStringValueFromPropertiesIfAvailable(LOG_PROPERTIES_FILE, NOT_SET));
         platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, getStringValueFromPropertiesIfAvailable(PLATFORM, Platform.android.name())));
         configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, Integer.parseInt(getStringValueFromPropertiesIfAvailable(PARALLEL, String.valueOf(DEFAULT_PARALLEL)))));
         configsBoolean.put(RUN_ON_CLOUD, getOverriddenBooleanValue(RUN_ON_CLOUD, getBooleanValueFromPropertiesIfAvailable(RUN_ON_CLOUD, false)));
