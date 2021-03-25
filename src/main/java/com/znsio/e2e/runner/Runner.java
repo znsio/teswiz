@@ -99,8 +99,6 @@ public class Runner {
         printLoadedConfigProperties(configFilePath);
         loadAndUpdateConfigParameters(configFilePath);
 
-        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(configs.get(CAPS));
-
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
 
