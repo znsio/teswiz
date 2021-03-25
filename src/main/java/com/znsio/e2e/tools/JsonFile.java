@@ -7,10 +7,7 @@ import com.google.gson.JsonParser;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -22,6 +19,17 @@ public class JsonFile {
 
     public static void saveJsonToFile (Map<String, Map> jsonMap, String fileName) {
         System.out.printf("\tSave the following json to file: '%s'%n'%s'%n", fileName, jsonMap);
+        File file = new File(fileName);
+        if (file.exists()) {
+            System.out.printf("File '%s' exists. Delete it first%n", file);
+            boolean isFileDeleted = file.delete();
+            System.out.println("File deleted? " + isFileDeleted);
+            if (!isFileDeleted) {
+                throw new EnvironmentSetupException("Unable to delete older, already existing capabilities file: " + fileName);
+            }
+        } else {
+            System.out.printf("File '%s' does not exist. Create it%n", file);
+        }
         try (Writer writer = new FileWriter(fileName)) {
             Gson gson = new GsonBuilder().create();
             gson.toJson(jsonMap, writer);

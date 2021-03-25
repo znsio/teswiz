@@ -115,7 +115,7 @@ public class Drivers {
     }
 
     private void disableNotificationsAndToastsOnDevice (Driver currentDriver) {
-        if (Runner.isRunningInPCloudy()) {
+        if (Runner.isRunningInCI()) {
             Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW deny");
             System.out.println("@disableToastsCommandResponse: " + disableToasts);
             Object disableNotifications = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell settings put global heads_up_notifications_enabled 0");
@@ -203,7 +203,7 @@ public class Drivers {
 
         System.out.println("ChromeOptions: " + chromeOptions.asMap());
 
-        WebDriver driver = Runner.isRunningInPCloudy() ? createRemoteWebDriver(chromeOptions) : new ChromeDriver(chromeOptions);
+        WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions) : new ChromeDriver(chromeOptions);
 
         String providedBaseUrl = Runner.getBaseURLForWeb();
         if (null == providedBaseUrl) {
@@ -286,7 +286,7 @@ public class Drivers {
     private void closeAppOnDevice (Driver driver) {
         String appPackageName = Runner.getAppPackageName();
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
-        if (Runner.isRunningInPCloudy()) {
+        if (Runner.isRunningInCI()) {
             String message = "Skip terminating & closing app on Cloud device";
             System.out.println(message);
             ReportPortal.emitLog(message, "DEBUG", new Date());

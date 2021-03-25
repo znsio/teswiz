@@ -70,7 +70,7 @@ public class Runner {
     private static final String LOG_DIR = "LOG_DIR";
     private static final String PARALLEL = "PARALLEL";
     private static final String PLATFORM = "PLATFORM";
-    private static final String RUN_ON_CLOUD = "RUN_ON_CLOUD";
+    private static final String RUN_IN_CI = "RUN_IN_CI";
     private static final String TAG = "TAG";
     private static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
@@ -128,7 +128,7 @@ public class Runner {
                         "OS:" + OS_NAME + "; " +
                         "ParallelCount:" + configsInteger.get(PARALLEL) + "; " +
                         "Platform:" + platform.name() + "; " +
-                        "RunOnCloud:" + configsBoolean.get(RUN_ON_CLOUD) + "; " +
+                        "RunOnCloud:" + configsBoolean.get(RUN_IN_CI) + "; " +
                         "Tags:" + configs.get(TAG) + "; " +
                         "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " +
                         "Username:" + USER_NAME + "; " +
@@ -173,7 +173,7 @@ public class Runner {
         for (int i = 0; i < args.length; i++) {
             System.out.println("\t" + args[i]);
         }
-        if (args.length != 4) {
+        if (args.length != 3) {
             throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName, String logDirName");
         }
         new Runner(args[0], args[1], args[2]);
@@ -252,8 +252,8 @@ public class Runner {
         return configs.get(APP_PACKAGE_NAME);
     }
 
-    public static boolean isRunningInPCloudy () {
-        return configsBoolean.get(RUN_ON_CLOUD);
+    public static boolean isRunningInCI () {
+        return configsBoolean.get(RUN_IN_CI);
     }
 
     private void getBranchName () {
@@ -301,7 +301,7 @@ public class Runner {
         configs.put(LOG_PROPERTIES_FILE, getStringValueFromPropertiesIfAvailable(LOG_PROPERTIES_FILE, NOT_SET));
         platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, getStringValueFromPropertiesIfAvailable(PLATFORM, Platform.android.name())));
         configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, Integer.parseInt(getStringValueFromPropertiesIfAvailable(PARALLEL, String.valueOf(DEFAULT_PARALLEL)))));
-        configsBoolean.put(RUN_ON_CLOUD, getOverriddenBooleanValue(RUN_ON_CLOUD, getBooleanValueFromPropertiesIfAvailable(RUN_ON_CLOUD, false)));
+        configsBoolean.put(RUN_IN_CI, getOverriddenBooleanValue(RUN_IN_CI, getBooleanValueFromPropertiesIfAvailable(RUN_IN_CI, false)));
         configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
@@ -349,7 +349,7 @@ public class Runner {
 
     private void setupAndroidExecution () {
         if (platform.equals(Platform.android)) {
-            if (configsBoolean.get(RUN_ON_CLOUD)) {
+            if (configsBoolean.get(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
                 setupLocalExecution();
@@ -612,7 +612,7 @@ public class Runner {
     private void getPlatformTagsAndLaunchName () {
         System.out.println("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME) + " Tests";
-        if (configsBoolean.get(RUN_ON_CLOUD)) {
+        if (configsBoolean.get(RUN_IN_CI)) {
             launchName += " on Device Farm";
         }
         String inferredTags = getCustomTags();
