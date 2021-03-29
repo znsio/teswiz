@@ -1,6 +1,9 @@
 package com.znsio.e2e.runner;
 
+import com.appium.utils.Variable;
 import com.applitools.eyes.BatchInfo;
+import com.applitools.eyes.MatchLevel;
+import com.applitools.eyes.RectangleSize;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.github.device.Device;
@@ -8,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.znsio.e2e.entities.APPLITOOLS;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
@@ -78,10 +82,11 @@ public class Runner {
     private static final Map<String, Boolean> configsBoolean = new HashMap();
     private static final Map<String, Integer> configsInteger = new HashMap();
     private static final String APP_PACKAGE_NAME = "APP_PACKAGE_NAME";
+    private static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
     public static Platform platform = Platform.android;
-    private static BatchInfo batchName;
     private static Map<String, Map> environmentConfiguration;
     private static Map<String, Map> testDataForEnvironment;
+    private static Map applitoolsConfiguration = new HashMap();
     private final Properties properties;
     private List<Device> devices;
 
@@ -136,7 +141,7 @@ public class Runner {
 
         System.setProperty("rp.attributes", rpAttributes);
 
-        batchName = new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
+        initialiseApplitoolsConfiguration();
 
         run(cukeArgs, stepDefDirName, featuresDirName);
     }
@@ -242,16 +247,61 @@ public class Runner {
         return configs.get(BASE_URL_FOR_WEB);
     }
 
-    public static BatchInfo getApplitoolsBatchName () {
-        return batchName;
-    }
-
     public static String getAppPackageName () {
         return configs.get(APP_PACKAGE_NAME);
     }
 
     public static boolean isRunningInCI () {
         return configsBoolean.get(RUN_IN_CI);
+    }
+
+    public static Map initialiseApplitoolsConfiguration () {
+        if (applitoolsConfiguration.isEmpty()) {
+            getApplitoolsConfigFromProvidedConfigFile();
+            applitoolsConfiguration.put(APPLITOOLS.API_KEY, Variable.getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
+            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT)));
+            applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());
+            applitoolsConfiguration.put(APPLITOOLS.RECTANGLE_SIZE, getViewportSize());
+            applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED, isBenchmarkingEnabled());
+        }
+        System.out.println("applitoolsConfiguration: " + applitoolsConfiguration);
+        return applitoolsConfiguration;
+    }
+
+    private static boolean isBenchmarkingEnabled () {
+        return Boolean.parseBoolean(String.valueOf(applitoolsConfiguration.get(APPLITOOLS.ENABLE_BENCHMARK_PER_VALIDATION)));
+    }
+
+    private static void getApplitoolsConfigFromProvidedConfigFile () {
+        String applitoolsConfigurationFileName = configs.get(APPLITOOLS_CONFIGURATION);
+        if (applitoolsConfigurationFileName.equals(NOT_SET)) {
+            System.out.printf("Applitools configuration not provided. Will use defaults%n");
+        } else {
+            System.out.printf("Loading Applitools configuration from: '%s'%n", applitoolsConfigurationFileName);
+            applitoolsConfiguration = JsonFile.loadJsonFile(applitoolsConfigurationFileName);
+        }
+    }
+
+    private static MatchLevel getMatchLevel () {
+        MatchLevel matchLevel;
+        try {
+            matchLevel = MatchLevel.valueOf(String.valueOf(applitoolsConfiguration.get(APPLITOOLS.DEFAULT_MATCH_LEVEL)));
+        } catch (IllegalArgumentException | NullPointerException e) {
+            matchLevel = MatchLevel.STRICT;
+        }
+        return matchLevel;
+    }
+
+    @NotNull
+    private static RectangleSize getViewportSize () {
+        RectangleSize viewportSize = new RectangleSize(1280, 960);
+        try {
+            String[] viewP = ((String) applitoolsConfiguration.get(APPLITOOLS.VIEWPORT_SIZE)).split("x");
+            viewportSize = new RectangleSize(Integer.parseInt(viewP[0]), Integer.parseInt(viewP[1]));
+        } catch (NullPointerException e) {
+            System.out.println("Unable to get viewport size from Applitools configuration. Using default: 1280x960");
+        }
+        return viewportSize;
     }
 
     private void getBranchName () {
@@ -280,7 +330,7 @@ public class Runner {
         String[] array = args.stream().toArray(String[]::new);
         byte exitStatus = Main.run(array);
         System.out.println("Output of test run: " + exitStatus);
-        if (exitStatus!=0) {
+        if (exitStatus != 0) {
             throw new TestExecutionFailedException("Test execution failed. Exit status: " + exitStatus);
         }
     }
@@ -289,6 +339,7 @@ public class Runner {
         configs.put(APP_NAME, getOverriddenStringValue(APP_NAME, getStringValueFromPropertiesIfAvailable(APP_NAME, NOT_SET)));
         configs.put(APP_PACKAGE_NAME, getOverriddenStringValue(APP_PACKAGE_NAME, getStringValueFromPropertiesIfAvailable(APP_PACKAGE_NAME, NOT_SET)));
         configs.put(APP_PATH, NOT_SET);
+        configs.put(APPLITOOLS_CONFIGURATION, getStringValueFromPropertiesIfAvailable(APPLITOOLS_CONFIGURATION, NOT_SET));
         configs.put(BROWSER, getOverriddenStringValue(BROWSER, getStringValueFromPropertiesIfAvailable(BROWSER, CHROME)));
         configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB, getStringValueFromPropertiesIfAvailable(BASE_URL_FOR_WEB, NOT_SET)));
         configs.put(CAPS, getOverriddenStringValue(CAPS, getStringValueFromPropertiesIfAvailable(CAPS, NOT_SET)));
