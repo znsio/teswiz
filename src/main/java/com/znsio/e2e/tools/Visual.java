@@ -25,17 +25,21 @@ public class Visual {
     private final com.applitools.eyes.appium.Eyes eyesOnApp;
     private final TestExecutionContext context;
     private final ScreenShotManager screenShotManager;
-    //    private RectangleSize viewportSize = new RectangleSize(1024, 800);
     private final String targetEnvironment = Runner.getTargetEnvironment();
     private final Map applitoolsConfig;
     private final boolean isEnableBenchmarkPerValidation;
+    private final boolean isVerboseLoggingEnabled;
+    private String applitoolsLogFileNameForWeb = Runner.NOT_SET;
+    private String applitoolsLogFileNameForApp = Runner.NOT_SET;
 
-    public Visual (String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
-        System.out.printf("Visual constructor: Driver type: '%s', appName: '%s', testName: '%s', isVisualTestingEnabled: '%s'%n", driverType, appName, testName, isVisualTestingEnabled);
+    public Visual (String driverType, WebDriver innerDriver, String testName, boolean isVisualTestingEnabled) {
+        System.out.printf("Visual constructor: Driver type: '%s', testName: '%s', isVisualTestingEnabled: '%s'%n", driverType, testName, isVisualTestingEnabled);
         this.context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         this.screenShotManager = (ScreenShotManager) context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
         this.applitoolsConfig = Runner.initialiseApplitoolsConfiguration();
         this.isEnableBenchmarkPerValidation = Boolean.parseBoolean(String.valueOf(this.applitoolsConfig.get(APPLITOOLS.ENABLE_BENCHMARK_PER_VALIDATION)));
+        this.isVerboseLoggingEnabled = (boolean) getValueFromConfig(APPLITOOLS.ENABLE_VERBOSE_LOGS, true);
+        String appName = this.applitoolsConfig.get(APPLITOOLS.APP_NAME) + "-" + Runner.platform;
         eyesOnApp = instantiateAppiumEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
         eyesOnWeb = instantiateWebEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
     }
@@ -53,9 +57,9 @@ public class Visual {
         eyes.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
         eyes.setIsDisabled(!isVisualTestingEnabled);
 
-        if ((boolean) getValueFromConfig(APPLITOOLS.ENABLE_VERBOSE_LOGS, true)) {
-            eyes.setLogHandler(new FileLogger(getApplitoolsLogFileNameFor("app"), true, true));
-        }
+        applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
+        eyes.setLogHandler(new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
+
         if (isVisualTestingEnabled) {
             eyes.open(innerDriver, appName, testName);
         }
@@ -79,9 +83,8 @@ public class Visual {
         eyes.setStitchMode(StitchMode.valueOf(String.valueOf(getValueFromConfig(APPLITOOLS.STITCH_MODE, StitchMode.CSS)).toUpperCase()));
         eyes.setForceFullPageScreenshot((boolean) getValueFromConfig(APPLITOOLS.TAKE_FULL_PAGE_SCREENSHOT, true));
 
-        if ((boolean) getValueFromConfig(APPLITOOLS.ENABLE_VERBOSE_LOGS, true)) {
-            eyes.setLogHandler(new FileLogger(getApplitoolsLogFileNameFor("web"), true, true));
-        }
+        applitoolsLogFileNameForWeb = getApplitoolsLogFileNameFor("web");
+        eyes.setLogHandler(new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
         if (isVisualTestingEnabled) {
             eyes.open(innerDriver, appName, testName, (RectangleSize) getValueFromConfig(APPLITOOLS.RECTANGLE_SIZE));
         }
@@ -100,8 +103,8 @@ public class Visual {
     @NotNull
     private String getApplitoolsLogFileNameFor (String appType) {
         String scenarioLogDir = Runner.USER_DIRECTORY + context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
-        String eyesAppLogFile = scenarioLogDir + File.separator + "deviceLogs" + File.separator + "applitools-" + appType + ".log";
-        return eyesAppLogFile;
+        String eyesLogFile = scenarioLogDir + File.separator + "deviceLogs" + File.separator + "applitools-" + appType + ".log";
+        return eyesLogFile;
     }
 
     public Visual checkWindow (String fromScreen, String tag) {
@@ -204,7 +207,8 @@ public class Visual {
         String reportUrl = handleTestResults(visualResults);
         String message = String.format("Web Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
         System.out.println(message);
-        ReportPortal.emitLog(message, "DEBUG", new Date());
+        System.out.println("Applitools logs available here: " + applitoolsLogFileNameForWeb);
+        ReportPortal.emitLog(message, "DEBUG", new Date(), new File(applitoolsLogFileNameForWeb));
         return reportUrl;
     }
 
@@ -214,7 +218,8 @@ public class Visual {
         String reportUrl = handleTestResults(visualResults);
         String message = String.format("App Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
         System.out.println(message);
-        ReportPortal.emitLog(message, "DEBUG", new Date());
+        System.out.println("Applitools logs available here: " + applitoolsLogFileNameForApp);
+        ReportPortal.emitLog(message, "DEBUG", new Date(), new File(applitoolsLogFileNameForApp));
         return reportUrl;
     }
 

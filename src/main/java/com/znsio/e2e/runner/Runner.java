@@ -103,26 +103,24 @@ public class Runner {
         properties = loadProperties(configFilePath);
         printLoadedConfigProperties(configFilePath);
         loadAndUpdateConfigParameters(configFilePath);
-
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
 
         cleanupDirectories();
         setupDirectories();
 
+        setupExecutionEnvironment();
+
+        run(cukeArgs, stepDefDirName, featuresDirName);
+    }
+
+    private void setupExecutionEnvironment () {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
         setupAndroidExecution();
         setupWebExecution();
-
         getBranchName();
-
-        System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
-        System.setProperty("CAPS", configs.get(CAPS));
-        System.setProperty("Platform", platform.name());
-        System.setProperty("atd_" + platform.name() + "_app_local", configs.get(APP_PATH));
-        System.setProperty("rp.description", configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
-        System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
+        initialiseApplitoolsConfiguration();
 
         String rpAttributes =
                 "AutomationBranch:" + configs.get(BRANCH_NAME) + "; " +
@@ -139,11 +137,13 @@ public class Runner {
 
         System.out.println("ReportPortal Test Execution Attributes: " + rpAttributes);
 
+        System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
+        System.setProperty("CAPS", configs.get(CAPS));
+        System.setProperty("Platform", platform.name());
+        System.setProperty("atd_" + platform.name() + "_app_local", configs.get(APP_PATH));
+        System.setProperty("rp.description", configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
+        System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
         System.setProperty("rp.attributes", rpAttributes);
-
-        initialiseApplitoolsConfiguration();
-
-        run(cukeArgs, stepDefDirName, featuresDirName);
     }
 
     public static boolean isVisualTestingEnabled () {
@@ -239,10 +239,6 @@ public class Runner {
         return configs.get(TARGET_ENVIRONMENT);
     }
 
-    public static String getAppName () {
-        return configs.get(APP_NAME);
-    }
-
     public static String getBaseURLForWeb () {
         return configs.get(BASE_URL_FOR_WEB);
     }
@@ -258,6 +254,7 @@ public class Runner {
     public static Map initialiseApplitoolsConfiguration () {
         if (applitoolsConfiguration.isEmpty()) {
             getApplitoolsConfigFromProvidedConfigFile();
+            applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(Runner.APP_NAME));
             applitoolsConfiguration.put(APPLITOOLS.API_KEY, Variable.getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
             applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT)));
             applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());

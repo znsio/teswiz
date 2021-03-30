@@ -32,10 +32,7 @@ public class Driver {
     }
 
     private void instantiateEyes (String testName, WebDriver innerDriver) {
-        String applicationName = Runner.getAppName();
-        System.out.println("applicationName: " + applicationName);
-        String appName = applicationName + "-" + Runner.platform;
-        this.visually = new Visual(this.type, innerDriver, appName, testName, Runner.isVisualTestingEnabled());
+        this.visually = new Visual(this.type, innerDriver, testName, Runner.isVisualTestingEnabled());
     }
 
     public Driver (String testName, WebDriver webDriver) {
