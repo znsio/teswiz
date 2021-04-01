@@ -1,0 +1,9 @@
+{
+  "defaultMatchLevel": "strict",
+  "enableBenchmarkPerValidation": true,
+  "enableVerboseLogs": true,
+  "sendDOM": true,
+  "stitchMode": "css",
+  "takeFullPageScreenShot": true,
+  "viewportSize": "1280x900"
+}
