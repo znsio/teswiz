@@ -197,7 +197,7 @@ public class Drivers {
         chromeOptions.setExperimentalOption("prefs", prefs);
 
         LoggingPreferences logPrefs = new LoggingPreferences();
-        logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
+        logPrefs.enable(LogType.BROWSER, Level.ALL);
 
         chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
