@@ -588,7 +588,7 @@ public class Runner {
         payload.put("limit", 15);
         payload.put("filter", "all");
         String[] listOfDevices = new String[]{
-                "curl",
+                "curl --insecure",
                 "-H",
                 "Content-Type:application/json",
                 "-d",
@@ -611,7 +611,7 @@ public class Runner {
     private String uploadAPKToPCloudy (String appPath, String deviceLabURL, String authToken) {
         System.out.println("uploadAPKTopCloudy: " + appPath);
         String[] listOfDevices = new String[]{
-                "curl",
+                "curl --insecure",
                 "-X",
                 "POST",
                 "-F",
