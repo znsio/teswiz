@@ -592,7 +592,7 @@ public class Runner {
     private String getpCloudyAuthToken (String emailID, String authenticationKey, String appPath, String deviceLabURL) {
         System.out.println("Get pCloudy Auth Token");
         String[] getAppToken = new String[]{
-                "curl",
+                "curl --insecure",
                 "-u",
                 "\"" + emailID + ":" + authenticationKey + "\"",
                 deviceLabURL + "/api/access"
