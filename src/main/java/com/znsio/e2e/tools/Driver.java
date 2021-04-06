@@ -8,6 +8,7 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.StartsActivity;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.PointOption;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -24,6 +25,7 @@ public class Driver {
     private final String type;
     private final WebDriver driver;
     private Visual visually;
+    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
 
     public Driver (String testName, AppiumDriver<WebElement> appiumDriver) {
         this.driver = appiumDriver;
@@ -102,7 +104,7 @@ public class Driver {
     public void scrollDownByScreenSize () {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage().window().getSize();
-        System.out.println("dimension: " + windowSize.toString());
+        LOGGER.info("dimension: " + windowSize.toString());
         int width = windowSize.width / 2;
         int fromHeight = (int) (windowSize.height * 0.9);
         int toHeight = (int) (windowSize.height * 0.5);
@@ -158,7 +160,7 @@ public class Driver {
     private int getWindowHeight () {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage().window().getSize();
-        System.out.println("dimension: " + windowSize.toString());
+        LOGGER.info("dimension: " + windowSize.toString());
         return windowSize.height;
     }
 
@@ -186,7 +188,7 @@ public class Driver {
     }
 
     public void openNotifications () {
-        System.out.println("Fetching the NOTIFICATIONS on the device: ");
+        LOGGER.info("Fetching the NOTIFICATIONS on the device: ");
         waitFor(3);
         ((AndroidDriver<WebElement>) driver).openNotifications();
         waitFor(2);
@@ -195,11 +197,11 @@ public class Driver {
     public void selectNotification (By selectNotificationLocator) {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         WebElement selectNotificationElement = driver.findElement(selectNotificationLocator);
-        System.out.println("Notification found: " + selectNotificationElement.getText());
+        LOGGER.info("Notification found: " + selectNotificationElement.getText());
         Point notificationCoordinates = selectNotificationElement.getLocation();
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.tap(PointOption.point(notificationCoordinates)).perform();
-        System.out.println("Tapped on notification. Go back to meeting");
+        LOGGER.info("Tapped on notification. Go back to meeting");
         waitFor(3);
     }
 

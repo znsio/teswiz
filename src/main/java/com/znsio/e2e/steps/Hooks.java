@@ -7,16 +7,19 @@ import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Drivers;
 import com.znsio.e2e.tools.ScreenShotManager;
 import io.cucumber.java.Scenario;
+import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 
 import java.util.Date;
 
 public class Hooks {
+    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+
     public void beforeScenario (Scenario scenario) {
         long threadId = Thread.currentThread().getId();
         TestExecutionContext testExecutionContext = Runner.getTestExecutionContext(threadId);
-        System.out.printf("ThreadId: '%d': In RunCukes - Before: '%s'%n", threadId, scenario.getName());
-        System.out.printf("Running test: '%s' on '%s'%n", testExecutionContext.getTestName(), Runner.platform);
+        LOGGER.info("ThreadId :  " + threadId + " In RunCukes - Before:  " +scenario.getName());
+        LOGGER.info("Running test  "+ testExecutionContext.getTestName() + " on  " + Runner.platform);
         testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
         testExecutionContext.addTestState(TEST_CONTEXT.ALL_DRIVERS, new Drivers());
         SoftAssertions softly = new SoftAssertions();
@@ -26,7 +29,7 @@ public class Hooks {
 
     public void afterScenario (Scenario scenario) {
         long threadId = Thread.currentThread().getId();
-        System.out.printf("ThreadId: '%d': In RunCukes - After: '%s'%n", threadId, scenario.getName());
+        LOGGER.info("ThreadId:  "+ threadId + "  In RunCukes - After: "+scenario.getName());
         TestExecutionContext testExecutionContext = Runner.getTestExecutionContext(threadId);
         ScreenShotManager screenShotManager = (ScreenShotManager) testExecutionContext.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
         takeScreenShotOnTestCompletion(scenario, screenShotManager);

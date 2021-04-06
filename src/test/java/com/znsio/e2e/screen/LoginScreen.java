@@ -6,17 +6,19 @@ import com.znsio.e2e.screen.android.LoginScreenAndroid;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.log4j.Logger;
 
 import static com.znsio.e2e.runner.Runner.fetchDriver;
 import static com.znsio.e2e.runner.Runner.fetchEyes;
 
 public abstract class LoginScreen {
     private static final String screenName = LoginScreen.class.getSimpleName();
+    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
 
     public static LoginScreen get () {
         Driver driver = fetchDriver(Thread.currentThread().getId());
         Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
-        System.out.println(screenName + ": Driver type: " + driver.getType() + ": Platform: " + platform);
+        LOGGER.info(screenName + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = fetchEyes(Thread.currentThread().getId());
 
         switch (platform) {

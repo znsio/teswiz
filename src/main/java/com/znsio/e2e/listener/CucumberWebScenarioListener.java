@@ -7,11 +7,11 @@ import com.znsio.e2e.runner.Runner;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class CucumberWebScenarioListener implements ConcurrentEventListener {
     private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
@@ -37,6 +37,7 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
 
     private void webCaseStartedHandler (TestCaseStarted event) {
         String scenarioName = event.getTestCase().getName();
+        LOGGER.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   Test case  -- "+ scenarioName +"  started   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         LOGGER.info("webCaseStartedHandler: " + scenarioName);
         Integer scenarioRunCount = getScenarioRunCount(scenarioName);
         LOGGER.info(
@@ -54,16 +55,26 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
                         + File.separator
                         + "screenshot"
                         + File.separator);
+        String testLogFileName= FileLocations.REPORTS_DIRECTORY
+                + normalisedScenarioName
+                + File.separator
+                + FileLocations.TEST_LOGS_DIRECTORY
+                + "/run-"+ scenarioRunCount;
+
+        testExecutionContext.addTestState("testLog", testLogFileName);
+        System.setProperty("log_dir", testLogFileName);
     }
 
     private void webCaseFinishedHandler (TestCaseFinished event) {
-        LOGGER.info("webCaseFinishedHandler Name: " + event.getTestCase().toString());
+        String scenarioName = event.getTestCase().getName();
+        LOGGER.info("webCaseFinishedHandler Name: " + scenarioName);
         LOGGER.info("webCaseFinishedHandler Result: " + event.getResult().getStatus().toString());
         long threadId = Thread.currentThread().getId();
         LOGGER.info(
                 String.format("ThreadID: %d: afterScenario: for scenario: %s\n",
-                        threadId, event.getTestCase().toString()));
+                        threadId, scenarioName));
         Runner.remove(threadId);
+        LOGGER.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   Test case  -- "+ scenarioName +"  started   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
     }
 
     private void webRunFinishedHandler (TestRunFinished event) {

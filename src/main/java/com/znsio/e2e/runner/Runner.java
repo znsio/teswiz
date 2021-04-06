@@ -25,6 +25,7 @@ import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import io.cucumber.core.cli.Main;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 import org.jetbrains.annotations.NotNull;
 import se.vidstige.jadb.JadbConnection;
@@ -89,6 +90,7 @@ public class Runner {
     private static Map applitoolsConfiguration = new HashMap();
     private final Properties properties;
     private List<Device> devices;
+    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
 
     public Runner () {
         throw new InvalidTestDataException("Required args not provided to Runner");
@@ -135,7 +137,7 @@ public class Runner {
                         "Username:" + USER_NAME + "; " +
                         "VisualEnabled:" + configsBoolean.get(IS_VISUAL) + "; ";
 
-        System.out.println("ReportPortal Test Execution Attributes: " + rpAttributes);
+        LOGGER.info("ReportPortal Test Execution Attributes: " + rpAttributes);
 
         System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
         System.setProperty("CAPS", configs.get(CAPS));
@@ -171,10 +173,10 @@ public class Runner {
     }
 
     public static void main (String[] args) {
-        System.out.println("unified-e2e Runner");
-        System.out.println("Provided parameters:");
+        LOGGER.info("unified-e2e Runner");
+        LOGGER.info("Provided parameters:");
         for (int i = 0; i < args.length; i++) {
-            System.out.println("\t" + args[i]);
+            LOGGER.info("\t" + args[i]);
         }
         if (args.length != 3) {
             throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName, String logDirName");
@@ -261,7 +263,7 @@ public class Runner {
             applitoolsConfiguration.put(APPLITOOLS.RECTANGLE_SIZE, getViewportSize());
             applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED, isBenchmarkingEnabled());
         }
-        System.out.println("applitoolsConfiguration: " + applitoolsConfiguration);
+        LOGGER.info("applitoolsConfiguration: " + applitoolsConfiguration);
         return applitoolsConfiguration;
     }
 
@@ -296,7 +298,7 @@ public class Runner {
             String[] viewP = ((String) applitoolsConfiguration.get(APPLITOOLS.VIEWPORT_SIZE)).split("x");
             viewportSize = new RectangleSize(Integer.parseInt(viewP[0]), Integer.parseInt(viewP[1]));
         } catch (NullPointerException e) {
-            System.out.println("Unable to get viewport size from Applitools configuration. Using default: 1280x960");
+            LOGGER.info("Unable to get viewport size from Applitools configuration. Using default: 1280x960");
         }
         return viewportSize;
     }
@@ -305,7 +307,7 @@ public class Runner {
         String[] listOfDevices = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(listOfDevices);
         String branchName = response.getStdOut();
-        System.out.println("BRANCH_NAME: " + branchName);
+        LOGGER.info("BRANCH_NAME: " + branchName);
         configs.put(BRANCH_NAME, branchName);
     }
 
@@ -313,20 +315,20 @@ public class Runner {
         configs.put(CONFIG_FILE, configFilePath);
         buildMapOfRequiredProperties();
 
-        System.out.println("Updated string values from property file for missing properties: \n" + configs);
-        System.out.println("Updated boolean values from property file for missing properties: \n" + configsBoolean);
-        System.out.println("Updated integer values from property file for missing properties: \n" + configsInteger);
+        LOGGER.info("Updated string values from property file for missing properties: \n" + configs);
+        LOGGER.info("Updated boolean values from property file for missing properties: \n" + configsBoolean);
+        LOGGER.info("Updated integer values from property file for missing properties: \n" + configsInteger);
     }
 
     public void run (ArrayList<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);
         args.add(featuresDir);
-        System.out.println("Begin running tests...");
-        System.out.println("Args: " + args);
+        LOGGER.info("Begin running tests...");
+        LOGGER.info("Args: " + args);
         String[] array = args.stream().toArray(String[]::new);
         byte exitStatus = Main.run(array);
-        System.out.println("Output of test run: " + exitStatus);
+        LOGGER.info("Output of test run: " + exitStatus);
         if (exitStatus != 0) {
             throw new TestExecutionFailedException("Test execution failed. Exit status: " + exitStatus);
         }
@@ -374,9 +376,9 @@ public class Runner {
     }
 
     private void printLoadedConfigProperties (String configFilePath) {
-        System.out.println("\nLoaded property file: " + configFilePath);
+        LOGGER.info("\nLoaded property file: " + configFilePath);
         properties.keySet().forEach(key -> {
-            System.out.println("\t" + key + " :: " + properties.get(key));
+            LOGGER.info("\t" + key + " :: " + properties.get(key));
         });
     }
 
@@ -411,7 +413,7 @@ public class Runner {
 
     private void updateAppPath () {
         String appPath = String.valueOf(configs.get(APP_PATH));
-        System.out.println("Update path to Apk: " + appPath);
+        LOGGER.info("Update path to Apk: " + appPath);
         if (appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
             configs.put(APP_PATH, appPath);
@@ -449,7 +451,7 @@ public class Runner {
         Map loadedCloudCapability = loadedCapabilityFile.get("cloud");
         loadedCloudCapability.put(platformName, listOfAndroidDevices);
 
-        System.out.println("Updated Device Lab Capabilities file: \n" + loadedCapabilityFile);
+        LOGGER.info("Updated Device Lab Capabilities file: \n" + loadedCapabilityFile);
 
         String updatedCapabilitesFile = getTempPathForFile(capabilityFile);
         JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitesFile);
@@ -457,11 +459,11 @@ public class Runner {
     }
 
     private String getTempPathForFile (String fullFilePath) {
-        System.out.println("\tgetTempPathForFile: fullFilePath: " + fullFilePath);
+        LOGGER.info("\tgetTempPathForFile: fullFilePath: " + fullFilePath);
         Path path = Paths.get(fullFilePath);
         String fileName = path.getFileName().toString();
         String tempFileName = configs.get(LOG_DIR) + "/" + fileName;
-        System.out.println("\tTemp file available here: " + tempFileName);
+        LOGGER.info("\tTemp file available here: " + tempFileName);
         return tempFileName;
     }
 
@@ -490,7 +492,7 @@ public class Runner {
 
             extractInfoFromEachDevice(deviceList);
 
-            System.out.println("Number of Devices connected: " + devices.size());
+            LOGGER.info("Number of Devices connected: " + devices.size());
         }
         return devices;
     }
@@ -533,7 +535,7 @@ public class Runner {
     }
 
     private void startADBServer () {
-        System.out.println("Start ADB server");
+        LOGGER.info("Start ADB server");
         String[] listOfDevices = new String[]{"adb", "devices"};
         CommandLineExecutor.execCommand(listOfDevices);
     }
@@ -553,9 +555,9 @@ public class Runner {
 
         String authToken = getpCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
         if (isAPKAlreadyAvailableInCloud(authToken, appPath)) {
-            System.out.println("\tAPK is already available in cloud. No need to upload it again");
+            LOGGER.info("\tAPK is already available in cloud. No need to upload it again");
         } else {
-            System.out.println("\tAPK is NOT available in cloud. Upload it");
+            LOGGER.info("\tAPK is NOT available in cloud. Upload it");
             configs.put(APP_PATH, uploadAPKToPCloudy(appPath, deviceLabURL, authToken));
         }
     }
@@ -563,7 +565,7 @@ public class Runner {
     private boolean isAPKAlreadyAvailableInCloud (String authToken, String appPath) {
         Path path = Paths.get(appPath);
         String appNameFromPath = path.getFileName().toString();
-        System.out.println("isAPKAlreadyAvailableInCloud: Start: " + appPath);
+        LOGGER.info("isAPKAlreadyAvailableInCloud: Start: " + appPath);
 
         CommandLineResponse uploadResponse = getListOfUploadedFilesInDeviceFarm(authToken);
         JsonObject result = JsonFile.convertToMap(uploadResponse.getStdOut()).getAsJsonObject("result");
@@ -571,7 +573,7 @@ public class Runner {
         AtomicBoolean isFileAlreadyUploaded = new AtomicBoolean(false);
         availableFiles.forEach(file -> {
             String fileName = ((JsonObject) file).get("file").getAsString();
-            System.out.println("\tThis file is available in Device Farm: " + fileName);
+            LOGGER.info("\tThis file is available in Device Farm: " + fileName);
             if (appNameFromPath.equals(fileName)) {
                 isFileAlreadyUploaded.set(true);
             }
@@ -596,7 +598,7 @@ public class Runner {
                 deviceLabURL + "/api/drive"};
 
         CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfDevices);
-        System.out.println("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
+        LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut()).getAsJsonObject("result");
         JsonElement resultCode = result.get("code");
         int uploadStatus = (null == resultCode) ? 400 : resultCode.getAsInt();
@@ -609,7 +611,7 @@ public class Runner {
     }
 
     private String uploadAPKToPCloudy (String appPath, String deviceLabURL, String authToken) {
-        System.out.println("uploadAPKTopCloudy: " + appPath);
+        LOGGER.info("uploadAPKTopCloudy: " + appPath);
         String[] listOfDevices = new String[]{
                 "curl --insecure",
                 "-X",
@@ -625,7 +627,7 @@ public class Runner {
                 deviceLabURL + "/api/upload_file"};
 
         CommandLineResponse uploadApkResponse = CommandLineExecutor.execCommand(listOfDevices);
-        System.out.println("\tuploadApkResponse: " + uploadApkResponse.getStdOut());
+        LOGGER.info("\tuploadApkResponse: " + uploadApkResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(uploadApkResponse.getStdOut()).getAsJsonObject("result");
         int uploadStatus = result.get("code").getAsInt();
         if (200 != uploadStatus) {
@@ -633,12 +635,12 @@ public class Runner {
                     appPath, deviceLabURL, uploadApkResponse));
         }
         String uploadedFileName = result.get("file").getAsString();
-        System.out.println("\tuploadAPKToPCloudy: Uploaded: " + uploadedFileName);
+        LOGGER.info("\tuploadAPKToPCloudy: Uploaded: " + uploadedFileName);
         return uploadedFileName;
     }
 
     private String getpCloudyAuthToken (String emailID, String authenticationKey, String appPath, String deviceLabURL) {
-        System.out.println("Get pCloudy Auth Token");
+        LOGGER.info("Get pCloudy Auth Token");
         String[] getAppToken = new String[]{
                 "curl --insecure",
                 "-u",
@@ -646,17 +648,17 @@ public class Runner {
                 deviceLabURL + "/api/access"
         };
         CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken);
-        System.out.println("\tauthTokenResponse: " + authTokenResponse.getStdOut());
+        LOGGER.info("\tauthTokenResponse: " + authTokenResponse.getStdOut());
         if (authTokenResponse.getStdOut().contains("error")) {
             throw new EnvironmentSetupException(String.format("Unable to get auth: '%s' to '%s'%n%s", appPath, deviceLabURL, authTokenResponse));
         }
         String authToken = JsonFile.convertToMap(authTokenResponse.getStdOut()).getAsJsonObject("result").get("token").getAsString();
-        System.out.println("\tauthToken: " + authToken);
+        LOGGER.info("\tauthToken: " + authToken);
         return authToken;
     }
 
     private void getPlatformTagsAndLaunchName () {
-        System.out.println("Get Platform, Tags and LaunchName");
+        LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME) + " Tests";
         if (configsBoolean.get(RUN_IN_CI)) {
             launchName += " on Device Farm";
@@ -664,7 +666,7 @@ public class Runner {
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);
         if (providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
-            System.out.println("\tTags not specified");
+            LOGGER.info("\tTags not specified");
             launchName += " - " + platform;
         } else {
             if (providedTags.contains("multiuser-android-web")) {
@@ -719,31 +721,31 @@ public class Runner {
     }
 
     private void printArguments (String[] args) {
-        System.out.println("Passed args: " + args.length);
+        LOGGER.info("Passed args: " + args.length);
         for (int i = 0; i < args.length; i++) {
-            System.out.println("\targ: " + (i + 1) + " :: " + args[i]);
+            LOGGER.info("\targ: " + (i + 1) + " :: " + args[i]);
         }
     }
 
     private void printSystemProperties () {
-        System.out.println("system properties");
+        LOGGER.info("system properties");
         System.getProperties().forEach((key, value) -> {
-            System.out.println("\t" + key + "\t:: " + value);
+            LOGGER.info("\t" + key + "\t:: " + value);
         });
     }
 
     private void printEnvironmentVariables () {
-        System.out.println("environment variables");
+        LOGGER.info("environment variables");
         System.getenv().forEach((key, value) -> {
-            System.out.println("\t" + key + "\t:: " + value);
+            LOGGER.info("\t" + key + "\t:: " + value);
         });
     }
 
     private void cleanupDirectories () {
         List<String> files = listOfDirectoriesToDelete();
-        System.out.println("Delete Directories: " + files);
+        LOGGER.info("Delete Directories: " + files);
         for (String file : files) {
-            System.out.println("\tDeleting directory: " + file);
+            LOGGER.info("\tDeleting directory: " + file);
             try {
                 FileUtils.deleteDirectory(new java.io.File(file));
             } catch (IOException e) {
@@ -754,9 +756,9 @@ public class Runner {
 
     private void setupDirectories () {
         List<String> files = listOfDirectoriesToCreate();
-        System.out.println("Create Directories: " + files);
+        LOGGER.info("Create Directories: " + files);
         for (String file : files) {
-            System.out.println("\tCreating directory: " + file);
+            LOGGER.info("\tCreating directory: " + file);
             try {
                 FileUtils.forceMkdir(new java.io.File(file));
             } catch (IOException e) {

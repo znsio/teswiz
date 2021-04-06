@@ -5,6 +5,7 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.screen.HomeScreen;
 import com.znsio.e2e.screen.LoginScreen;
+import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -14,6 +15,7 @@ public class AppBL {
     private final SoftAssertions softly;
     private final String currentUserPersona;
     private final Platform currentPlatform;
+    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
 
     public AppBL (String userPersona, Platform forPlatform) {
         long threadId = Thread.currentThread().getId();
@@ -32,7 +34,7 @@ public class AppBL {
                 .login();
         String actualErrorMessage = loginScreen
                 .getInvalidLoginError();
-        System.out.println("actualErrorMessage: " + actualErrorMessage);
+        LOGGER.info("actualErrorMessage: " + actualErrorMessage);
 
         loginScreen.dismissAlert();
 

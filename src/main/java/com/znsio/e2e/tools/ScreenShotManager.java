@@ -5,6 +5,7 @@ import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 
@@ -18,6 +19,7 @@ public class ScreenShotManager {
     private final TestExecutionContext context;
     private final String directoryPath;
     private int counter;
+    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
 
     public ScreenShotManager () {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
@@ -33,16 +35,16 @@ public class ScreenShotManager {
             File screenshot = ((TakesScreenshot) driver.getInnerDriver()).getScreenshotAs(OutputType.FILE);
             fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
-            System.out.println("The screenshot is placed in : " + destinationFile.getAbsolutePath());
+            LOGGER.info("The screenshot is placed in : " + destinationFile.getAbsolutePath());
             try {
                 FileUtils.copyFile(screenshot, destinationFile);
                 ReportPortal.emitLog(fileName, "DEBUG", new Date(), destinationFile);
             } catch (IOException e) {
-                System.out.printf("ERROR: Unable to save or upload screenshot: '%s' or upload sceeenshot to ReportPortal%n", destinationFile.getAbsolutePath());
+                LOGGER.info("ERROR: Unable to save or upload screenshot: "+ destinationFile.getAbsolutePath()  +" or upload sceeenshot to ReportPortal%n" );
                 e.printStackTrace();
             }
         } else {
-            System.out.println("Driver is not instantiated for this test");
+            LOGGER.info("Driver is not instantiated for this test");
         }
     }
 
