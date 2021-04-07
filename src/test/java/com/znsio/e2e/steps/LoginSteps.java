@@ -13,7 +13,7 @@ public class LoginSteps {
     private final TestExecutionContext context;
     private final Drivers allDrivers;
     private String userPersona;
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LoginSteps.class.getName());
 
     public LoginSteps () {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());

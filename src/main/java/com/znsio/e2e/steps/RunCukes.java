@@ -13,7 +13,7 @@ import org.testng.annotations.DataProvider;
 public class RunCukes extends AbstractTestNGCucumberTests {
     private final TestExecutionContext context;
     private final ScreenShotManager screenShotManager;
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(RunCukes.class.getName());
 
     public RunCukes () {
         long threadId = Thread.currentThread().getId();

@@ -91,29 +91,32 @@ public class Runner {
     private static Map<String, Map> testDataForEnvironment;
     private static Map applitoolsConfiguration = new HashMap();
     private final Properties properties;
+    private final String DEFAULT_LOG_PROPERTIES_FILE = "src/main/resources/log4j.properties";
     private List<Device> devices;
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
 
     public Runner () {
-        PropertyConfigurator.configure("src/test/resources/log4j.properties");
         throw new InvalidTestDataException("Required args not provided to Runner");
     }
 
     public Runner (String configFilePath, String stepDefDirName, String featuresDirName) {
-        LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
         Path path = Paths.get(configFilePath);
         if (!Files.exists(path)) {
             throw new InvalidTestDataException(String.format("Invalid path ('%s') provided for config", configFilePath));
         }
         properties = loadProperties(configFilePath);
-        printLoadedConfigProperties(configFilePath);
         loadAndUpdateConfigParameters(configFilePath);
-        environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
-        testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
+
+        PropertyConfigurator.configure(configs.get(LOG_PROPERTIES_FILE));
+        System.setProperty(LOG_DIR, configs.get(LOG_DIR));
+        LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
+        printLoadedConfigProperties(configFilePath);
 
         cleanupDirectories();
         setupDirectories();
 
+        environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
+        testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
         setupExecutionEnvironment();
 
         run(cukeArgs, stepDefDirName, featuresDirName);
@@ -205,9 +208,10 @@ public class Runner {
 
     private static Map<String, Map> loadEnvironmentConfiguration (String environment) {
         String envConfigFile = configs.get(ENVIRONMENT_CONFIG_FILE);
-        System.out.printf("Loading environment configuration from ENVIRONMENT_CONFIG_FILE: '%s' for environment: '%s'%n",
-                envConfigFile,
-                environment);
+        LOGGER.info("Loading environment configuration from ENVIRONMENT_CONFIG_FILE: "
+                + envConfigFile
+                +" for environment: "
+                + environment);
         return (NOT_SET.equalsIgnoreCase(envConfigFile))
                 ? new HashMap<>()
                 : JsonFile.getNodeValueAsMapFromJsonFile(environment, envConfigFile);
@@ -236,7 +240,10 @@ public class Runner {
 
     private static Map<String, Map> loadTestDataForEnvironment (String environment) {
         String testDataFile = configs.get(TEST_DATA_FILE);
-        System.out.printf("Loading test data from TEST_DATA_FILE: '%s' for environment: '%s'%n", testDataFile, environment);
+        LOGGER.info("Loading test data from TEST_DATA_FILE: "
+                + testDataFile
+                +" for environment: "
+                + environment);
         return (NOT_SET.equalsIgnoreCase(testDataFile)) ? new HashMap<>() : JsonFile.getNodeValueAsMapFromJsonFile(environment, testDataFile);
     }
 
@@ -277,9 +284,9 @@ public class Runner {
     private static void getApplitoolsConfigFromProvidedConfigFile () {
         String applitoolsConfigurationFileName = configs.get(APPLITOOLS_CONFIGURATION);
         if (applitoolsConfigurationFileName.equals(NOT_SET)) {
-            System.out.printf("Applitools configuration not provided. Will use defaults%n");
+            LOGGER.info("Applitools configuration not provided. Will use defaults%n");
         } else {
-            System.out.printf("Loading Applitools configuration from: '%s'%n", applitoolsConfigurationFileName);
+            LOGGER.info("Loading Applitools configuration from: "+  applitoolsConfigurationFileName);
             applitoolsConfiguration = JsonFile.loadJsonFile(applitoolsConfigurationFileName);
         }
     }
@@ -349,7 +356,7 @@ public class Runner {
         configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE, getStringValueFromPropertiesIfAvailable(ENVIRONMENT_CONFIG_FILE, NOT_SET)));
         configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL, getBooleanValueFromPropertiesIfAvailable(IS_VISUAL, false)));
         configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR, getStringValueFromPropertiesIfAvailable(LOG_DIR, DEFAULT_LOG_DIR)));
-        configs.put(LOG_PROPERTIES_FILE, getStringValueFromPropertiesIfAvailable(LOG_PROPERTIES_FILE, NOT_SET));
+        configs.put(LOG_PROPERTIES_FILE, getStringValueFromPropertiesIfAvailable(LOG_PROPERTIES_FILE, DEFAULT_LOG_PROPERTIES_FILE));
         platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, getStringValueFromPropertiesIfAvailable(PLATFORM, Platform.android.name())));
         configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, Integer.parseInt(getStringValueFromPropertiesIfAvailable(PARALLEL, String.valueOf(DEFAULT_PARALLEL)))));
         configsBoolean.put(RUN_IN_CI, getOverriddenBooleanValue(RUN_IN_CI, getBooleanValueFromPropertiesIfAvailable(RUN_IN_CI, false)));
@@ -421,9 +428,9 @@ public class Runner {
             appPath = getAppPathFromCapabilities();
             configs.put(APP_PATH, appPath);
             String capabilitiesFile = configs.get(CAPS);
-            System.out.printf("\tUsing AppPath: '%s' in file: '%s'::'%s'%n", appPath, capabilitiesFile, platform);
+            LOGGER.info("\tUsing AppPath: "+ appPath +" in file: "+ capabilitiesFile +":: " +  platform);
         } else {
-            System.out.printf("\tUsing AppPath provided as environment variable - '%s'%n", appPath);
+            LOGGER.info("\tUsing AppPath provided as environment variable -  "+ appPath);
         }
     }
 
@@ -531,9 +538,9 @@ public class Runner {
     @NotNull
     private String getAdbCommandOutput (JadbDevice device, String command, String args) throws IOException, JadbException {
         InputStream inputStream = device.executeShell(command, args);
-        System.out.printf("\tadb command: '%s', args: '%s', ", command, args);
+        LOGGER.info("\tadb command: "+  command +", args: "+ args +", ");
         String adbCommandOutput = Stream.readAll(inputStream, StandardCharsets.UTF_8).replaceAll("\n$", "");
-        System.out.printf("\tOutput: '%s'%n", adbCommandOutput);
+        LOGGER.info("\tOutput: "+ adbCommandOutput);
         return adbCommandOutput;
     }
 
@@ -684,8 +691,8 @@ public class Runner {
                 launchName += " - " + platform;
             }
         }
-        System.out.printf("\tRunning tests with platform: '%s' and the following tag criteria : '%s'%n", platform, inferredTags);
-        System.out.printf("\tReportPortal Tests Launch name: '%s'%n", launchName);
+        LOGGER.info("\tRunning tests with platform: "+ platform +" and the following tag criteria : "+  inferredTags);
+        LOGGER.info("\tReportPortal Tests Launch name: " + launchName);
 
         configs.put(PLATFORM, platform.name());
         configs.put(LAUNCH_NAME, launchName);
@@ -719,7 +726,7 @@ public class Runner {
             }
             customTags = providedTags + " and " + customTags;
         }
-        System.out.printf("\tComputed tags: '%s'%n", customTags);
+        LOGGER.info("\tComputed tags: " + customTags);
         return customTags;
     }
 

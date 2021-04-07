@@ -13,7 +13,7 @@ import static com.znsio.e2e.runner.Runner.fetchEyes;
 
 public abstract class LoginScreen {
     private static final String screenName = LoginScreen.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LoginScreen.class.getName());
 
     public static LoginScreen get () {
         Driver driver = fetchDriver(Thread.currentThread().getId());

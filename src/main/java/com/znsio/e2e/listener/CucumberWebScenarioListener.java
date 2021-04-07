@@ -8,24 +8,17 @@ import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 
 public class CucumberWebScenarioListener implements ConcurrentEventListener {
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CucumberWebScenarioListener.class.getName());
     private final Map<String, Integer> scenarioRunCounts = new HashMap<String, Integer>();
 
     public CucumberWebScenarioListener () throws IOException {
-        Properties props = new Properties();
-        props.load(new FileInputStream("src/test/resources/log4j.properties"));
-        PropertyConfigurator.configure(props);
         LOGGER.info(String.format("ThreadID: %d: CucumberWebScenarioListener\n",
                 Thread.currentThread().getId()));
     }
@@ -51,13 +44,6 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
         LOGGER.info("webCaseStartedHandler: " + scenarioName);
         Integer scenarioRunCount = getScenarioRunCount(scenarioName);
         String normalisedScenarioName = normaliseScenarioName(scenarioName);
-        String testLogFileName= FileLocations.REPORTS_DIRECTORY
-                + normalisedScenarioName
-                + File.separator
-                + FileLocations.TEST_LOGS_DIRECTORY
-                + "/run-"+ scenarioRunCount;
-        testExecutionContext.addTestState("testLog", testLogFileName);
-        System.setProperty("log_dir", testLogFileName);
 
         LOGGER.info(
                 String.format("ThreadID: %d: beforeScenario: for scenario: %s\n",

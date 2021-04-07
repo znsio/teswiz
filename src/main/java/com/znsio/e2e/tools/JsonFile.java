@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class JsonFile {
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(JsonFile.class.getName());
 
     private JsonFile () {
     }

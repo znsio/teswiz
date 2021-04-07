@@ -25,7 +25,7 @@ public class Driver {
     private final String type;
     private final WebDriver driver;
     private Visual visually;
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Driver.class.getName());
 
     public Driver (String testName, AppiumDriver<WebElement> appiumDriver) {
         this.driver = appiumDriver;

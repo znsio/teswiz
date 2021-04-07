@@ -13,7 +13,7 @@ import static com.znsio.e2e.runner.Runner.fetchEyes;
 
 public abstract class HomeScreen {
     private static final String screenName = HomeScreen.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(HomeScreen.class.getName());
 
     public static HomeScreen get () {
         Driver driver = fetchDriver(Thread.currentThread().getId());

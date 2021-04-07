@@ -34,7 +34,7 @@ public class Drivers {
     private final Map<String, Driver> userPersonaDrivers = new HashMap<>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
 
     private final int MAX_NUMBER_OF_APPIUM_DRIVERS = 1;
     private final int MAX_NUMBER_OF_WEB_DRIVERS = 2;

@@ -32,7 +32,7 @@ public class Visual {
     private final boolean isVerboseLoggingEnabled;
     private String applitoolsLogFileNameForWeb = Runner.NOT_SET;
     private String applitoolsLogFileNameForApp = Runner.NOT_SET;
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Visual.class.getName());
 
     public Visual (String driverType, WebDriver innerDriver, String testName, boolean isVisualTestingEnabled) {
         LOGGER.info("Visual constructor: Driver type: "+ driverType +", testName: "+ testName +", isVisualTestingEnabled:  " + isVisualTestingEnabled);

@@ -9,7 +9,7 @@ import rp.com.google.common.base.Suppliers;
 import java.util.Calendar;
 
 public class CucumberWebScenarioReporterListener extends ScenarioReporter {
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CucumberWebScenarioReporterListener.class.getName());
 
     public CucumberWebScenarioReporterListener () throws Exception {
         LOGGER.info("CucumberWebScenarioReporterListener");

@@ -19,7 +19,7 @@ public class ScreenShotManager {
     private final TestExecutionContext context;
     private final String directoryPath;
     private int counter;
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ScreenShotManager.class.getName());
 
     public ScreenShotManager () {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());

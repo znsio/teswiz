@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 public class CommandLineExecutor {
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CommandLineExecutor.class.getName());
 
     public static CommandLineResponse execCommand (final String[] command) {
         String jointCommand = String.join(" ", command);

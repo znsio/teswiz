@@ -15,7 +15,7 @@ public class AppBL {
     private final SoftAssertions softly;
     private final String currentUserPersona;
     private final Platform currentPlatform;
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AppBL.class.getName());
 
     public AppBL (String userPersona, Platform forPlatform) {
         long threadId = Thread.currentThread().getId();

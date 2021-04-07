@@ -13,7 +13,7 @@ import org.assertj.core.api.SoftAssertions;
 import java.util.Date;
 
 public class Hooks {
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Hooks.class.getName());
 
     public void beforeScenario (Scenario scenario) {
         long threadId = Thread.currentThread().getId();
