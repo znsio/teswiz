@@ -26,6 +26,7 @@ import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import io.cucumber.core.cli.Main;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.assertj.core.api.SoftAssertions;
 import org.jetbrains.annotations.NotNull;
 import se.vidstige.jadb.JadbConnection;
@@ -34,6 +35,7 @@ import se.vidstige.jadb.JadbException;
 import se.vidstige.jadb.Stream;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -93,11 +95,12 @@ public class Runner {
     private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
 
     public Runner () {
+        PropertyConfigurator.configure("src/test/resources/log4j.properties");
         throw new InvalidTestDataException("Required args not provided to Runner");
     }
 
     public Runner (String configFilePath, String stepDefDirName, String featuresDirName) {
-        System.out.printf("Runner called from user directory: '%s'%n", Runner.USER_DIRECTORY);
+        LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
         Path path = Paths.get(configFilePath);
         if (!Files.exists(path)) {
             throw new InvalidTestDataException(String.format("Invalid path ('%s') provided for config", configFilePath));
