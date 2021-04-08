@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -14,21 +15,23 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class JsonFile {
+    private static final Logger LOGGER = Logger.getLogger(JsonFile.class.getName());
+
     private JsonFile () {
     }
 
     public static void saveJsonToFile (Map<String, Map> jsonMap, String fileName) {
-        System.out.printf("\tSave the following json to file: '%s'%n'%s'%n", fileName, jsonMap);
+        LOGGER.info("\tSave the following json to file: "+  fileName + "   with jsonmap:  " + jsonMap);
         File file = new File(fileName);
         if (file.exists()) {
-            System.out.printf("File '%s' exists. Delete it first%n", file);
+            LOGGER.info("File: "+ file + "  exixts.  Delete it first");
             boolean isFileDeleted = file.delete();
-            System.out.println("File deleted? " + isFileDeleted);
+            LOGGER.info("File deleted? " + isFileDeleted);
             if (!isFileDeleted) {
                 throw new EnvironmentSetupException("Unable to delete older, already existing capabilities file: " + fileName);
             }
         } else {
-            System.out.printf("File '%s' does not exist. Create it%n", file);
+            LOGGER.info("File " + file + " does not exist. Create it%n");
         }
         try (Writer writer = new FileWriter(fileName)) {
             Gson gson = new GsonBuilder().create();
@@ -40,9 +43,9 @@ public class JsonFile {
 
     public static Map<String, Map> getNodeValueAsMapFromJsonFile (String node, String fileName) {
         Map<String, Map> map = loadJsonFile(fileName);
-        System.out.printf("\tPlatform: '%s'%n", node);
+        LOGGER.info("\tPlatform: " + node);
         Map<String, Map> envMap = map.get(node);
-        System.out.println("\tLoaded map: " + envMap);
+        LOGGER.info("\tLoaded map: " + envMap);
         if (null == envMap) {
             throw new InvalidTestDataException(String.format("Node: '%s' not found in file: '%s'", node, fileName));
         }
@@ -50,7 +53,7 @@ public class JsonFile {
     }
 
     public static Map<String, Map> loadJsonFile (String fileName) {
-        System.out.printf("\tLoading Json file: '%s'%n", fileName);
+        LOGGER.info("\tLoading Json file: "+ fileName);
         try {
             Gson gson = new Gson();
             Reader reader = Files.newBufferedReader(Paths.get(fileName));
@@ -67,7 +70,7 @@ public class JsonFile {
 
         String nodePath = "";
         for (int nodeCount = 0; nodeCount < nodeTree.length - 1; nodeCount++) {
-            System.out.printf("\tFinding node: '%s'%n", nodeTree[nodeCount]);
+            LOGGER.info("\tFinding node: " + nodeTree[nodeCount]);
             nodePath += nodeTree[nodeCount] + " -> ";
             map = map.get(nodeTree[nodeCount]);
             if (null == map) {
@@ -75,15 +78,15 @@ public class JsonFile {
             }
         }
         String retValue = String.valueOf(map.get(nodeTree[nodeTree.length - 1]));
-        System.out.println("\tFound value: " + retValue);
+        LOGGER.info("\tFound value: " + retValue);
         return retValue;
     }
 
     public static ArrayList<Map> getNodeValueAsArrayListFromJsonFile (String node, String fileName) {
         Map<String, Map> map = loadJsonFile(fileName);
-        System.out.printf("\tPlatform: '%s'%n", node);
+        LOGGER.info("\tPlatform: " + node);
         ArrayList<Map> envMap = (ArrayList<Map>) map.get(node);
-        System.out.println("\tLoaded arraylist: " + envMap);
+        LOGGER.info("\tLoaded arraylist: " + envMap);
         return envMap;
     }
 

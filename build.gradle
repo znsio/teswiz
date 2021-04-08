@@ -41,9 +41,7 @@ dependencies {
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
     implementation "com.epam.reportportal:agent-java-cucumber6:5.0.1"
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    implementation "org.slf4j:slf4j-api:$project.slf4jVersion"
     implementation('com.epam.reportportal:agent-java-testng:5.0.7') {
         exclude group: 'com.fasterxml.jackson.core'
     }

@@ -8,6 +8,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class RunnerTest {
     private final String stepDefDir = "com/znsio/e2e/steps";
+    private final String logDir = "./target/";
 
     @Test
     void mainLocalDefault () {
