@@ -2,6 +2,7 @@ package com.znsio.e2e.tools;
 
 import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
+import com.mashape.unirest.http.Unirest;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
@@ -23,6 +24,7 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -276,10 +278,20 @@ public class Drivers {
 
     private void attachLogsAndCloseDriver (String key) {
         Driver driver = userPersonaDrivers.get(key);
+        shutdownUnirestBackgroundConnections();
         if (driver.getType().equals(Driver.WEB_DRIVER)) {
             closeWebDriver(key, driver);
         } else {
             closeAppOnDevice(driver);
+        }
+    }
+
+    private void shutdownUnirestBackgroundConnections () {
+        try {
+            System.out.println("Unirest: Shutdown background connections");
+            Unirest.shutdown();
+        } catch (IOException e) {
+            System.out.println("Error in shutting down Unirest background connections");
         }
     }
 
