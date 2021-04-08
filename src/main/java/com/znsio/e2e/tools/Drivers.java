@@ -216,6 +216,7 @@ public class Drivers {
         String baseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrl));
         LOGGER.info("baseUrl: " + baseUrl);
         driver.get(baseUrl);
+        driver.manage().window().maximize();
         return driver;
     }
 
