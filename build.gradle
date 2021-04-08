@@ -6,8 +6,9 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
-group = 'com.github.znsio'
-version '0.0.60'
+group = 'com.gi' +
+        'thub.znsio'
+version '0.0.78'
 project.ext.logDir = "${rootDir}/target"
 
 repositories {
@@ -35,15 +36,13 @@ dependencies {
     implementation "com.googlecode.json-simple:json-simple:$project.googleCodeJsonSimpleVersion"
     implementation "com.mashape.unirest:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation "com.github.znsio:AppiumTestDistribution:$project.atdVersion"
+    implementation "com.github.saikrishna321:AppiumTestDistribution:$project.atdVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
     implementation "com.epam.reportportal:agent-java-cucumber6:5.0.1"
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     implementation('com.epam.reportportal:agent-java-testng:5.0.7') {
         exclude group: 'com.fasterxml.jackson.core'
     }

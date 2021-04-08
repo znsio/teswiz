@@ -91,7 +91,7 @@ public class Runner {
     private static Map<String, Map> testDataForEnvironment;
     private static Map applitoolsConfiguration = new HashMap();
     private final Properties properties;
-    private final String DEFAULT_LOG_PROPERTIES_FILE = "src/main/resources/log4j.properties";
+    private final String DEFAULT_LOG_PROPERTIES_FILE = "./src/main/resources/log4j.properties";
     private List<Device> devices;
     private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
 
@@ -185,7 +185,7 @@ public class Runner {
             LOGGER.info("\t" + args[i]);
         }
         if (args.length != 3) {
-            throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName, String logDirName");
+            throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName");
         }
         new Runner(args[0], args[1], args[2]);
     }
