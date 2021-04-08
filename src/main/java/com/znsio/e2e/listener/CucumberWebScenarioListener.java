@@ -7,17 +7,18 @@ import com.znsio.e2e.runner.Runner;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
-
+import org.apache.log4j.Logger;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+
 
 public class CucumberWebScenarioListener implements ConcurrentEventListener {
-    private static final Logger LOGGER = Logger.getLogger(Class.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CucumberWebScenarioListener.class.getName());
     private final Map<String, Integer> scenarioRunCounts = new HashMap<String, Integer>();
 
-    public CucumberWebScenarioListener () {
+    public CucumberWebScenarioListener () throws IOException {
         LOGGER.info(String.format("ThreadID: %d: CucumberWebScenarioListener\n",
                 Thread.currentThread().getId()));
     }
@@ -37,13 +38,16 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
 
     private void webCaseStartedHandler (TestCaseStarted event) {
         String scenarioName = event.getTestCase().getName();
+        TestExecutionContext testExecutionContext = new TestExecutionContext(scenarioName);
+
+        LOGGER.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   TEST-CASE  -- "+ scenarioName +"  STARTED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         LOGGER.info("webCaseStartedHandler: " + scenarioName);
         Integer scenarioRunCount = getScenarioRunCount(scenarioName);
+        String normalisedScenarioName = normaliseScenarioName(scenarioName);
+
         LOGGER.info(
                 String.format("ThreadID: %d: beforeScenario: for scenario: %s\n",
                         Thread.currentThread().getId(), scenarioName));
-        String normalisedScenarioName = normaliseScenarioName(scenarioName);
-        TestExecutionContext testExecutionContext = new TestExecutionContext(scenarioName);
         testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_INFO,
                 "Chrome browser - version: " + WebDriverManager.chromedriver().getDownloadedDriverVersion());
         testExecutionContext.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, FileLocations.REPORTS_DIRECTORY
@@ -57,13 +61,15 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
     }
 
     private void webCaseFinishedHandler (TestCaseFinished event) {
-        LOGGER.info("webCaseFinishedHandler Name: " + event.getTestCase().toString());
+        String scenarioName = event.getTestCase().getName();
+        LOGGER.info("webCaseFinishedHandler Name: " + scenarioName);
         LOGGER.info("webCaseFinishedHandler Result: " + event.getResult().getStatus().toString());
         long threadId = Thread.currentThread().getId();
         LOGGER.info(
                 String.format("ThreadID: %d: afterScenario: for scenario: %s\n",
-                        threadId, event.getTestCase().toString()));
+                        threadId, scenarioName));
         Runner.remove(threadId);
+        LOGGER.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   TEST-CASE  -- "+ scenarioName +"  ENDED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
     }
 
     private void webRunFinishedHandler (TestRunFinished event) {

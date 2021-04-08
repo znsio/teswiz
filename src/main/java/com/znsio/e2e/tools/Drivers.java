@@ -12,6 +12,7 @@ import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.appmanagement.ApplicationState;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -33,6 +34,7 @@ public class Drivers {
     private final Map<String, Driver> userPersonaDrivers = new HashMap<>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
+    private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
 
     private final int MAX_NUMBER_OF_APPIUM_DRIVERS = 1;
     private final int MAX_NUMBER_OF_WEB_DRIVERS = 2;
@@ -40,7 +42,7 @@ public class Drivers {
     private int numberOfWebDriversUsed = 0;
 
     public Driver setDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.println(String.format("getDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
+        LOGGER.info(String.format("getDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
         if (!userPersonaDrivers.containsKey(userPersona)) {
             String message = String.format("ERROR: Driver for user persona: '%s' DOES NOT EXIST%nAvailable drivers: '%s'",
                     userPersona,
@@ -54,7 +56,7 @@ public class Drivers {
     }
 
     public Driver createDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.println(String.format("allocateDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
+        LOGGER.info(String.format("allocateDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
         Driver currentDriver = null;
         if (userPersonaDrivers.containsKey(userPersona)) {
             String message = String.format("ERROR: Driver for user persona: '%s' ALREADY EXISTS%nAvailable drivers: '%s'",
@@ -117,17 +119,17 @@ public class Drivers {
     private void disableNotificationsAndToastsOnDevice (Driver currentDriver) {
         if (Runner.isRunningInCI()) {
             Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW deny");
-            System.out.println("@disableToastsCommandResponse: " + disableToasts);
+            LOGGER.info("@disableToastsCommandResponse: " + disableToasts);
             Object disableNotifications = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell settings put global heads_up_notifications_enabled 0");
-            System.out.println("@disableNotificationsCommandResponse: " + disableNotifications);
+            LOGGER.info("@disableNotificationsCommandResponse: " + disableNotifications);
         } else {
             String[] disableToastsCommand = new String[]{"adb", "-s", "${device.SERIAL}", "shell", "appops", "set", Runner.getAppPackageName(), "TOAST_WINDOW", "deny"};
             String[] disableNotificationsCommand = new String[]{"adb", "-s", "${device.SERIAL}", "shell", "settings", "put", "global", "heads_up_notifications_enabled", "0"};
 
             CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand);
-            System.out.println("disableToastsCommandResponse: " + disableToastsCommandResponse);
+            LOGGER.info("disableToastsCommandResponse: " + disableToastsCommandResponse);
             CommandLineResponse disableNotificationsCommandResponse = CommandLineExecutor.execCommand(disableNotificationsCommand);
-            System.out.println("disableNotificationsCommandResponse: " + disableNotificationsCommandResponse);
+            LOGGER.info("disableNotificationsCommandResponse: " + disableNotificationsCommandResponse);
         }
     }
 
@@ -160,7 +162,7 @@ public class Drivers {
             );
         }
         numberOfWebDriversUsed++;
-        System.out.println(String.format("getWebDriverForUser: done: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'", userPersona, forPlatform.name(), numberOfWebDriversUsed));
+        LOGGER.info(String.format("getWebDriverForUser: done: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'", userPersona, forPlatform.name(), numberOfWebDriversUsed));
         return currentDriver;
     }
 
@@ -201,7 +203,7 @@ public class Drivers {
 
         chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
-        System.out.println("ChromeOptions: " + chromeOptions.asMap());
+        LOGGER.info("ChromeOptions: " + chromeOptions.asMap());
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions) : new ChromeDriver(chromeOptions);
 
@@ -210,7 +212,7 @@ public class Drivers {
             throw new InvalidTestDataException("baseUrl not provided as an environment variable");
         }
         String baseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrl));
-        System.out.println("baseUrl: " + baseUrl);
+        LOGGER.info("baseUrl: " + baseUrl);
         driver.get(baseUrl);
         return driver;
     }
@@ -232,7 +234,7 @@ public class Drivers {
         File file = new File(logFile);
         file.getParentFile().mkdirs();
 
-        System.out.println("Creating Chrome logs in file: " + logFile);
+        LOGGER.info("Creating Chrome logs in file: " + logFile);
         System.setProperty("webdriver.chrome.logfile", logFile);
 
 //        System.setProperty("webdriver.chrome.verboseLogging", "true");
@@ -241,7 +243,7 @@ public class Drivers {
 
     public Driver getDriverForUser (String userPersona) {
         if (!userPersonaDrivers.containsKey(userPersona)) {
-            System.out.println("getDriverForUser: Drivers available for userPersonas: " + userPersonaDrivers.keySet());
+            LOGGER.info("getDriverForUser: Drivers available for userPersonas: " + userPersonaDrivers.keySet());
             throw new InvalidTestDataException(String.format("No Driver found for user persona: '%s'", userPersona));
         }
 
@@ -250,9 +252,9 @@ public class Drivers {
 
     public Platform getPlatformForUser (String userPersona) {
         if (!userPersonaDrivers.containsKey(userPersona)) {
-            System.out.println("getPlatformForUser: Platforms available for userPersonas: ");
+            LOGGER.info("getPlatformForUser: Platforms available for userPersonas: ");
             userPersonaPlatforms.keySet().forEach(key -> {
-                System.out.println("\tUser Persona: " + key + ": Platform: " + userPersonaPlatforms.get(key).name());
+                LOGGER.info("\tUser Persona: " + key + ": Platform: " + userPersonaPlatforms.get(key).name());
             });
             throw new InvalidTestDataException(String.format("No Driver found for user persona: '%s'", userPersona));
         }
@@ -261,9 +263,9 @@ public class Drivers {
     }
 
     public void attachLogsAndCloseAllWebDrivers (TestExecutionContext context) {
-        System.out.println("Close all drivers:");
+        LOGGER.info("Close all drivers:");
         userPersonaDrivers.keySet().forEach(key -> {
-            System.out.println("\tUser Persona: " + key);
+            LOGGER.info("\tUser Persona: " + key);
             validateVisualTestResults(key);
             attachLogsAndCloseDriver(key);
         });
@@ -288,15 +290,15 @@ public class Drivers {
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
         if (Runner.isRunningInCI()) {
             String message = "Skip terminating & closing app on Cloud device";
-            System.out.println(message);
+            LOGGER.info(message);
             ReportPortal.emitLog(message, "DEBUG", new Date());
         } else {
 
-            System.out.println("Terminate app: " + appPackageName);
+            LOGGER.info("Terminate app: " + appPackageName);
             boolean isAppTerminated = appiumDriver.terminateApp(appPackageName);
-            System.out.println("App terminated? " + isAppTerminated);
+            LOGGER.info("App terminated? " + isAppTerminated);
             ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
-            System.out.println("Application State: " + applicationState);
+            LOGGER.info("Application State: " + applicationState);
             appiumDriver.closeApp();
             ReportPortal.emitLog(
                     String.format("App: '%s' termiated? '%s'. Current application state: '%s'%n",
@@ -315,9 +317,9 @@ public class Drivers {
                 new Date(), new File(userPersonaBrowserLogs.get(key)));
         WebDriver webDriver = driver.getInnerDriver();
         if (null == webDriver) {
-            System.out.println(String.format("Strange. But WebDriver for user: '%s' already closed", key));
+            LOGGER.info(String.format("Strange. But WebDriver for user: '%s' already closed", key));
         } else {
-            System.out.println(String.format("Closing WebDriver for user: '%s'", key));
+            LOGGER.info(String.format("Closing WebDriver for user: '%s'", key));
             webDriver.quit();
         }
     }

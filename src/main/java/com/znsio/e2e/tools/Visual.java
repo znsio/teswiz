@@ -10,6 +10,7 @@ import com.epam.reportportal.service.ReportPortal;
 import com.znsio.e2e.entities.APPLITOOLS;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.runner.Runner;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.WebDriver;
 
@@ -31,9 +32,10 @@ public class Visual {
     private final boolean isVerboseLoggingEnabled;
     private String applitoolsLogFileNameForWeb = Runner.NOT_SET;
     private String applitoolsLogFileNameForApp = Runner.NOT_SET;
+    private static final Logger LOGGER = Logger.getLogger(Visual.class.getName());
 
     public Visual (String driverType, WebDriver innerDriver, String testName, boolean isVisualTestingEnabled) {
-        System.out.printf("Visual constructor: Driver type: '%s', testName: '%s', isVisualTestingEnabled: '%s'%n", driverType, testName, isVisualTestingEnabled);
+        LOGGER.info("Visual constructor: Driver type: "+ driverType +", testName: "+ testName +", isVisualTestingEnabled:  " + isVisualTestingEnabled);
         this.context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         this.screenShotManager = (ScreenShotManager) context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
         this.applitoolsConfig = Runner.initialiseApplitoolsConfiguration();
@@ -48,7 +50,7 @@ public class Visual {
         if (driverType.equals(Driver.WEB_DRIVER)) {
             isVisualTestingEnabled = false;
         }
-        System.out.println("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
+        LOGGER.info("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         com.applitools.eyes.appium.Eyes eyes = new com.applitools.eyes.appium.Eyes();
 
         eyes.setApiKey(String.valueOf(getValueFromConfig(APPLITOOLS.API_KEY)));
@@ -63,7 +65,7 @@ public class Visual {
         if (isVisualTestingEnabled) {
             eyes.open(innerDriver, appName, testName);
         }
-        System.out.println("instantiateAppiumEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
+        LOGGER.info("instantiateAppiumEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
         return eyes;
     }
 
@@ -71,7 +73,7 @@ public class Visual {
         if (driverType.equals(Driver.APPIUM_DRIVER)) {
             isVisualTestingEnabled = false;
         }
-        System.out.println("instantiateWebEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
+        LOGGER.info("instantiateWebEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         com.applitools.eyes.selenium.Eyes eyes = new com.applitools.eyes.selenium.Eyes();
         eyes.setApiKey(String.valueOf(getValueFromConfig(APPLITOOLS.API_KEY)));
         eyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
@@ -88,7 +90,7 @@ public class Visual {
         if (isVisualTestingEnabled) {
             eyes.open(innerDriver, appName, testName, (RectangleSize) getValueFromConfig(APPLITOOLS.RECTANGLE_SIZE));
         }
-        System.out.println("instantiateWebEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
+        LOGGER.info("instantiateWebEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
         return eyes;
     }
 
@@ -109,16 +111,16 @@ public class Visual {
 
     public Visual checkWindow (String fromScreen, String tag) {
         String formattedTagName = getFormattedTagName(fromScreen, tag);
-        System.out.printf("checkWindow: fromScreen: '%s', tag: '%s'%n", fromScreen, formattedTagName);
-        System.out.println("checkWindow: eyesOnWeb.getIsDisabled(): " + eyesOnWeb.getIsDisabled());
-        System.out.println("checkWindow: eyesOnApp.getIsDisabled(): " + eyesOnApp.getIsDisabled());
+        LOGGER.info("checkWindow: fromScreen: "+ fromScreen +", tag: "  +  formattedTagName);
+        LOGGER.info("checkWindow: eyesOnWeb.getIsDisabled(): " + eyesOnWeb.getIsDisabled());
+        LOGGER.info("checkWindow: eyesOnApp.getIsDisabled(): " + eyesOnApp.getIsDisabled());
 
         LocalDateTime webStart = LocalDateTime.now();
         eyesOnWeb.checkWindow(formattedTagName);
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
         if (isEnableBenchmarkPerValidation) {
-            System.out.printf("'%s':'%s':: Web: checkWindow: Time taken: '%d' sec%n", fromScreen, tag, webDuration.getSeconds());
+            LOGGER.info(fromScreen + " :"+ tag +":: Web: checkWindow: Time taken: "+ webDuration.getSeconds() +" sec " );
         }
 
         LocalDateTime appStart = LocalDateTime.now();
@@ -126,7 +128,7 @@ public class Visual {
         LocalDateTime appFinish = LocalDateTime.now();
         Duration appDuration = Duration.between(appStart, appFinish);
         if (isEnableBenchmarkPerValidation) {
-            System.out.printf("'%s':'%s':: App: checkWindow: Time taken: '%d' sec%n", fromScreen, tag, appDuration.getSeconds());
+            LOGGER.info(fromScreen + " :"+ tag +":: App: checkWindow: Time taken: "+ appDuration.getSeconds() +" sec " );
         }
 
         screenShotManager.takeScreenShot(formattedTagName);
@@ -140,16 +142,16 @@ public class Visual {
 
     public Visual check (String fromScreen, String tag, SeleniumCheckSettings checkSettings) {
         String formattedTagName = getFormattedTagName(fromScreen, tag);
-        System.out.printf("check: fromScreen: '%s', tag: '%s'%n", fromScreen, formattedTagName);
-        System.out.println("check: eyesOnWeb.getIsDisabled(): " + eyesOnWeb.getIsDisabled());
-        System.out.println("check: eyesOnApp.getIsDisabled(): " + eyesOnApp.getIsDisabled());
+        LOGGER.info("check: fromScreen: "+ fromScreen +", tag: " + formattedTagName);
+        LOGGER.info("check: eyesOnWeb.getIsDisabled(): " + eyesOnWeb.getIsDisabled());
+        LOGGER.info("check: eyesOnApp.getIsDisabled(): " + eyesOnApp.getIsDisabled());
 
         LocalDateTime webStart = LocalDateTime.now();
         eyesOnWeb.check(formattedTagName, checkSettings);
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
         if (isEnableBenchmarkPerValidation) {
-            System.out.printf("'%s':'%s':: Web: check: Time taken: '%d' sec%n", fromScreen, tag, webDuration.getSeconds());
+            LOGGER.info(fromScreen + " :"+ tag +":: Web: checkWindow: Time taken: "+ webDuration.getSeconds() +" sec " );
         }
 
         LocalDateTime appStart = LocalDateTime.now();
@@ -157,7 +159,7 @@ public class Visual {
         LocalDateTime appFinish = LocalDateTime.now();
         Duration appDuration = Duration.between(appStart, appFinish);
         if (isEnableBenchmarkPerValidation) {
-            System.out.printf("'%s':'%s':: App: check: Time taken: '%d' sec%n", fromScreen, tag, appDuration.getSeconds());
+            LOGGER.info(fromScreen + " :"+ tag +":: App: checkWindow: Time taken: "+ appDuration.getSeconds() +" sec " );
         }
 
         screenShotManager.takeScreenShot(formattedTagName);
@@ -166,9 +168,9 @@ public class Visual {
 
     public Visual checkWindow (String fromScreen, String tag, MatchLevel level) {
         String formattedTagName = getFormattedTagName(fromScreen, tag);
-        System.out.printf("checkWindow: fromScreen: '%s', MatchLevel: '%s', tag: '%s'%n", fromScreen, level, formattedTagName);
-        System.out.println("checkWindow: eyesOnWeb.getIsDisabled(): " + eyesOnWeb.getIsDisabled());
-        System.out.println("checkWindow: eyesOnApp.getIsDisabled(): " + eyesOnApp.getIsDisabled());
+        LOGGER.info("checkWindow: fromScreen: "+  fromScreen +", MatchLevel: "+ level +", tag: "+ formattedTagName);
+        LOGGER.info("checkWindow: eyesOnWeb.getIsDisabled(): " + eyesOnWeb.getIsDisabled());
+        LOGGER.info("checkWindow: eyesOnApp.getIsDisabled(): " + eyesOnApp.getIsDisabled());
 
 
         LocalDateTime webStart = LocalDateTime.now();
@@ -176,7 +178,7 @@ public class Visual {
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
         if (isEnableBenchmarkPerValidation) {
-            System.out.printf("'%s':'%s':: Web: checkWindow with MatchLevel: '%s': Time taken: '%d' sec%n", fromScreen, tag, level.name(), webDuration.getSeconds());
+            LOGGER.info(fromScreen + ":"+ tag +":: Web: checkWindow with MatchLevel: "+ level.name() +": Time taken: "+ webDuration.getSeconds() +" sec" );
         }
 
         LocalDateTime appStart = LocalDateTime.now();
@@ -184,7 +186,7 @@ public class Visual {
         LocalDateTime appFinish = LocalDateTime.now();
         Duration appDuration = Duration.between(appStart, appFinish);
         if (isEnableBenchmarkPerValidation) {
-            System.out.printf("'%s':'%s':: App: checkWindow with MatchLevel: '%s': Time taken: '%d' sec%n", fromScreen, tag, level.name(), appDuration.getSeconds());
+            LOGGER.info(fromScreen + ":"+ tag +":: App: checkWindow with MatchLevel: "+ level.name() +": Time taken: "+ appDuration.getSeconds() +" sec" );
         }
 
         screenShotManager.takeScreenShot(getFormattedTagName(fromScreen, tag));
@@ -202,38 +204,37 @@ public class Visual {
     }
 
     private String getVisualResultsFromWeb (String userPersona) {
-        System.out.println("getVisualResultsFromWeb: user: " + userPersona);
+        LOGGER.info("getVisualResultsFromWeb: user: " + userPersona);
         TestResults visualResults = eyesOnWeb.close(false);
         String reportUrl = handleTestResults(visualResults);
         String message = String.format("Web Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
-        System.out.println(message);
-        System.out.println("Applitools logs available here: " + applitoolsLogFileNameForWeb);
+        LOGGER.info(message);
+        LOGGER.info("Applitools logs available here: " + applitoolsLogFileNameForWeb);
         ReportPortal.emitLog(message, "DEBUG", new Date(), new File(applitoolsLogFileNameForWeb));
         return reportUrl;
     }
 
     private String getVisualResultsFromApp (String userPersona) {
-        System.out.println("getVisualResultsFromApp: user: " + userPersona);
+        LOGGER.info("getVisualResultsFromApp: user: " + userPersona);
         TestResults visualResults = eyesOnApp.close(false);
         String reportUrl = handleTestResults(visualResults);
         String message = String.format("App Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
-        System.out.println(message);
-        System.out.println("Applitools logs available here: " + applitoolsLogFileNameForApp);
+        LOGGER.info(message);
+        LOGGER.info("Applitools logs available here: " + applitoolsLogFileNameForApp);
         ReportPortal.emitLog(message, "DEBUG", new Date(), new File(applitoolsLogFileNameForApp));
         return reportUrl;
     }
 
     private String handleTestResults (TestResults result) {
-        System.out.println("\t\t" + result);
-        System.out.printf("\t\tmatched = %d, mismatched = %d, missing = %d, isNew: %s, isPassed: %s%n",
-                result.getMatches(),
-                result.getMismatches(),
-                result.getMissing(),
-                result.isNew(),
-                result.isPassed());
-        System.out.println("Visual Testing results available here: " + result.getUrl());
+        LOGGER.info("\t\t" + result);
+        LOGGER.info("\t\tmatched = "+ result.getMatches()
+                + ", mismatched = "+ result.getMismatches()
+                +", missing = "+ result.getMissing()
+                +", isNew: "+  result.isNew()
+                +", isPassed: ");
+        LOGGER.info("Visual Testing results available here: " + result.getUrl());
         boolean hasMismatches = result.getMismatches() != 0;
-        System.out.println("Visual testing differences found? - " + hasMismatches);
+        LOGGER.info("Visual testing differences found? - " + hasMismatches);
         return result.getUrl();
     }
 }
