@@ -85,7 +85,7 @@ For other cloud configurations, refer here: https://github.com/AppiumTestDistrib
 
 ### Run on iOS
 
-    PLATFORM=windows ./gradlew run
+    PLATFORM=iOS ./gradlew run
 
 ### Run on Windows
 
