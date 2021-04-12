@@ -281,20 +281,10 @@ public class Drivers {
 
     private void attachLogsAndCloseDriver (String key) {
         Driver driver = userPersonaDrivers.get(key);
-        shutdownUnirestBackgroundConnections();
         if (driver.getType().equals(Driver.WEB_DRIVER)) {
             closeWebDriver(key, driver);
         } else {
             closeAppOnDevice(driver);
-        }
-    }
-
-    private void shutdownUnirestBackgroundConnections () {
-        try {
-            LOGGER.info("Unirest: Shutdown background connections");
-            Unirest.shutdown();
-        } catch (IOException e) {
-            LOGGER.info("Error in shutting down Unirest background connections");
         }
     }
 
