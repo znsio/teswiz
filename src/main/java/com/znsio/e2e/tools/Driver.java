@@ -138,12 +138,9 @@ public class Driver {
 
     private void simulateMouseMovementOnBrowser () {
         Actions actions = new Actions(this.driver);
-        Dimension windowSize = driver.manage().window().getSize();
-        int midHeight = windowSize.height / 2;
-        int midWidth = windowSize.width / 2;
         // TODO - how can we avoid providing a locator here?
         By byMeetingInfoXpath = By.xpath("//div[@class=\"icon pointer\"]");
-        actions.moveToElement(driver.findElement(byMeetingInfoXpath), midHeight, midWidth)
+        actions.moveToElement(driver.findElement(byMeetingInfoXpath))
                 .perform();
         waitFor(1);
     }
