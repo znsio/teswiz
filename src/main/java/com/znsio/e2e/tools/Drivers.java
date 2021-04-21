@@ -31,11 +31,10 @@ import java.util.logging.Level;
 
 public class Drivers {
     private static final String USER_DIR = "user.dir";
+    private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
     private final Map<String, Driver> userPersonaDrivers = new HashMap<>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
-    private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
-
     private final int MAX_NUMBER_OF_APPIUM_DRIVERS = 1;
     private final int MAX_NUMBER_OF_WEB_DRIVERS = 2;
     private int numberOfAndroidDriversUsed = 0;
@@ -116,23 +115,6 @@ public class Drivers {
         return currentDriver;
     }
 
-    private void disableNotificationsAndToastsOnDevice (Driver currentDriver) {
-        if (Runner.isRunningInCI()) {
-            Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW deny");
-            LOGGER.info("@disableToastsCommandResponse: " + disableToasts);
-            Object disableNotifications = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell settings put global heads_up_notifications_enabled 0");
-            LOGGER.info("@disableNotificationsCommandResponse: " + disableNotifications);
-        } else {
-            String[] disableToastsCommand = new String[]{"adb", "-s", "${device.SERIAL}", "shell", "appops", "set", Runner.getAppPackageName(), "TOAST_WINDOW", "deny"};
-            String[] disableNotificationsCommand = new String[]{"adb", "-s", "${device.SERIAL}", "shell", "settings", "put", "global", "heads_up_notifications_enabled", "0"};
-
-            CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand);
-            LOGGER.info("disableToastsCommandResponse: " + disableToastsCommandResponse);
-            CommandLineResponse disableNotificationsCommandResponse = CommandLineExecutor.execCommand(disableNotificationsCommand);
-            LOGGER.info("disableNotificationsCommandResponse: " + disableNotificationsCommandResponse);
-        }
-    }
-
     @NotNull
     private Driver createWebDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
         System.out.printf("getWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
@@ -164,6 +146,23 @@ public class Drivers {
         numberOfWebDriversUsed++;
         LOGGER.info(String.format("getWebDriverForUser: done: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'", userPersona, forPlatform.name(), numberOfWebDriversUsed));
         return currentDriver;
+    }
+
+    private void disableNotificationsAndToastsOnDevice (Driver currentDriver) {
+        if (Runner.isRunningInCI()) {
+            Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW deny");
+            LOGGER.info("@disableToastsCommandResponse: " + disableToasts);
+            Object disableNotifications = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell settings put global heads_up_notifications_enabled 0");
+            LOGGER.info("@disableNotificationsCommandResponse: " + disableNotifications);
+        } else {
+            String[] disableToastsCommand = new String[]{"adb", "-s", "${device.SERIAL}", "shell", "appops", "set", Runner.getAppPackageName(), "TOAST_WINDOW", "deny"};
+            String[] disableNotificationsCommand = new String[]{"adb", "-s", "${device.SERIAL}", "shell", "settings", "put", "global", "heads_up_notifications_enabled", "0"};
+
+            CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand);
+            LOGGER.info("disableToastsCommandResponse: " + disableToastsCommandResponse);
+            CommandLineResponse disableNotificationsCommandResponse = CommandLineExecutor.execCommand(disableNotificationsCommand);
+            LOGGER.info("disableNotificationsCommandResponse: " + disableNotificationsCommandResponse);
+        }
     }
 
     @NotNull
@@ -218,15 +217,6 @@ public class Drivers {
         return driver;
     }
 
-    @NotNull
-    private RemoteWebDriver createRemoteWebDriver (ChromeOptions chromeOptions) {
-        try {
-            return new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), chromeOptions);
-        } catch (MalformedURLException e) {
-            throw new EnvironmentSetupException("Unable to create a new RemoteWebDriver", e);
-        }
-    }
-
     private String setChromeLogDirectory (TestExecutionContext testExecutionContext) {
         String forUserPersona = testExecutionContext.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
         String scenarioLogDir = Runner.USER_DIRECTORY + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
@@ -240,6 +230,15 @@ public class Drivers {
 
 //        System.setProperty("webdriver.chrome.verboseLogging", "true");
         return logFile;
+    }
+
+    @NotNull
+    private RemoteWebDriver createRemoteWebDriver (ChromeOptions chromeOptions) {
+        try {
+            return new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), chromeOptions);
+        } catch (MalformedURLException e) {
+            throw new EnvironmentSetupException("Unable to create a new RemoteWebDriver", e);
+        }
     }
 
     public Driver getDriverForUser (String userPersona) {
@@ -286,6 +285,20 @@ public class Drivers {
         }
     }
 
+    private void closeWebDriver (String key, Driver driver) {
+        ReportPortal.emitLog(
+                "Chrome browser logs for user: " + key,
+                "DEBUG",
+                new Date(), new File(userPersonaBrowserLogs.get(key)));
+        WebDriver webDriver = driver.getInnerDriver();
+        if (null == webDriver) {
+            LOGGER.info(String.format("Strange. But WebDriver for user: '%s' already closed", key));
+        } else {
+            LOGGER.info(String.format("Closing WebDriver for user: '%s'", key));
+            webDriver.quit();
+        }
+    }
+
     private void closeAppOnDevice (Driver driver) {
         String appPackageName = Runner.getAppPackageName();
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
@@ -308,20 +321,6 @@ public class Drivers {
                             applicationState),
                     "DEBUG",
                     new Date());
-        }
-    }
-
-    private void closeWebDriver (String key, Driver driver) {
-        ReportPortal.emitLog(
-                "Chrome browser logs for user: " + key,
-                "DEBUG",
-                new Date(), new File(userPersonaBrowserLogs.get(key)));
-        WebDriver webDriver = driver.getInnerDriver();
-        if (null == webDriver) {
-            LOGGER.info(String.format("Strange. But WebDriver for user: '%s' already closed", key));
-        } else {
-            LOGGER.info(String.format("Closing WebDriver for user: '%s'", key));
-            webDriver.quit();
         }
     }
 }

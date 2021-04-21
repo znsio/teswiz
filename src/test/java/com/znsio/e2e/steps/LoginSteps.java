@@ -10,10 +10,10 @@ import io.cucumber.java.en.When;
 import org.apache.log4j.Logger;
 
 public class LoginSteps {
+    private static final Logger LOGGER = Logger.getLogger(LoginSteps.class.getName());
     private final TestExecutionContext context;
     private final Drivers allDrivers;
     private String userPersona;
-    private static final Logger LOGGER = Logger.getLogger(LoginSteps.class.getName());
 
     public LoginSteps () {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());

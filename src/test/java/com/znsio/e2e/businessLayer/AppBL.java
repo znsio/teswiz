@@ -11,11 +11,11 @@ import org.assertj.core.api.SoftAssertions;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class AppBL {
+    private static final Logger LOGGER = Logger.getLogger(AppBL.class.getName());
     private final TestExecutionContext context;
     private final SoftAssertions softly;
     private final String currentUserPersona;
     private final Platform currentPlatform;
-    private static final Logger LOGGER = Logger.getLogger(AppBL.class.getName());
 
     public AppBL (String userPersona, Platform forPlatform) {
         long threadId = Thread.currentThread().getId();

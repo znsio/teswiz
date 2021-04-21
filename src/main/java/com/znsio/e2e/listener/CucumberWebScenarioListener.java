@@ -8,6 +8,7 @@ import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
         String scenarioName = event.getTestCase().getName();
         TestExecutionContext testExecutionContext = new TestExecutionContext(scenarioName);
 
-        LOGGER.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   TEST-CASE  -- "+ scenarioName +"  STARTED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+        LOGGER.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   TEST-CASE  -- " + scenarioName + "  STARTED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         LOGGER.info("webCaseStartedHandler: " + scenarioName);
         Integer scenarioRunCount = getScenarioRunCount(scenarioName);
         String normalisedScenarioName = normaliseScenarioName(scenarioName);
@@ -69,7 +70,7 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
                 String.format("ThreadID: %d: afterScenario: for scenario: %s\n",
                         threadId, scenarioName));
         Runner.remove(threadId);
-        LOGGER.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   TEST-CASE  -- "+ scenarioName +"  ENDED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+        LOGGER.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   TEST-CASE  -- " + scenarioName + "  ENDED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
     }
 
     private void webRunFinishedHandler (TestRunFinished event) {

@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Map;
 
 public class Visual {
+    private static final Logger LOGGER = Logger.getLogger(Visual.class.getName());
     private final String visualTestNotEnabledMessage = "Visual Test is not enabled";
     private final com.applitools.eyes.selenium.Eyes eyesOnWeb;
     private final com.applitools.eyes.appium.Eyes eyesOnApp;
@@ -33,7 +34,6 @@ public class Visual {
     private final boolean isVerboseLoggingEnabled;
     private String applitoolsLogFileNameForWeb = Runner.NOT_SET;
     private String applitoolsLogFileNameForApp = Runner.NOT_SET;
-    private static final Logger LOGGER = Logger.getLogger(Visual.class.getName());
 
     public Visual (String driverType, WebDriver innerDriver, String testName, boolean isVisualTestingEnabled) {
         LOGGER.info("Visual constructor: Driver type: " + driverType + ", testName: " + testName + ", isVisualTestingEnabled:  " + isVisualTestingEnabled);

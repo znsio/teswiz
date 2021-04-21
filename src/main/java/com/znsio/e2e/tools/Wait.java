@@ -6,7 +6,7 @@ public class Wait {
     private static final Logger LOGGER = Logger.getLogger(Wait.class.getName());
 
     public synchronized static void waitFor (int seconds) {
-        LOGGER.info("Wait for "+ seconds +" seconds");
+        LOGGER.info("Wait for " + seconds + " seconds");
         try {
             Thread.sleep(seconds * 1000);
         } catch (InterruptedException e) {

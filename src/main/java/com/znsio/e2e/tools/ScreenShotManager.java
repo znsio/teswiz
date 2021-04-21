@@ -16,10 +16,10 @@ import java.util.Date;
 
 public class ScreenShotManager {
 
+    private static final Logger LOGGER = Logger.getLogger(ScreenShotManager.class.getName());
     private final TestExecutionContext context;
     private final String directoryPath;
     private int counter;
-    private static final Logger LOGGER = Logger.getLogger(ScreenShotManager.class.getName());
 
     public ScreenShotManager () {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
@@ -40,7 +40,7 @@ public class ScreenShotManager {
                 FileUtils.copyFile(screenshot, destinationFile);
                 ReportPortal.emitLog(fileName, "DEBUG", new Date(), destinationFile);
             } catch (IOException e) {
-                LOGGER.info("ERROR: Unable to save or upload screenshot: "+ destinationFile.getAbsolutePath()  +" or upload sceeenshot to ReportPortal%n" );
+                LOGGER.info("ERROR: Unable to save or upload screenshot: " + destinationFile.getAbsolutePath() + " or upload sceeenshot to ReportPortal%n");
                 e.printStackTrace();
             }
         } else {

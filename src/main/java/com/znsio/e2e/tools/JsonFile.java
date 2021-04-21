@@ -21,10 +21,10 @@ public class JsonFile {
     }
 
     public static void saveJsonToFile (Map<String, Map> jsonMap, String fileName) {
-        LOGGER.info("\tSave the following json to file: "+  fileName + "   with jsonmap:  " + jsonMap);
+        LOGGER.info("\tSave the following json to file: " + fileName + "   with jsonmap:  " + jsonMap);
         File file = new File(fileName);
         if (file.exists()) {
-            LOGGER.info("File: "+ file + "  exixts.  Delete it first");
+            LOGGER.info("File: " + file + "  exixts.  Delete it first");
             boolean isFileDeleted = file.delete();
             LOGGER.info("File deleted? " + isFileDeleted);
             if (!isFileDeleted) {
@@ -53,7 +53,7 @@ public class JsonFile {
     }
 
     public static Map<String, Map> loadJsonFile (String fileName) {
-        LOGGER.info("\tLoading Json file: "+ fileName);
+        LOGGER.info("\tLoading Json file: " + fileName);
         try {
             Gson gson = new Gson();
             Reader reader = Files.newBufferedReader(Paths.get(fileName));

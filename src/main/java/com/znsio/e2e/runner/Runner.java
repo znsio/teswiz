@@ -35,7 +35,6 @@ import se.vidstige.jadb.JadbException;
 import se.vidstige.jadb.Stream;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -53,13 +52,13 @@ public class Runner {
     public static final boolean IS_MAC = OS_NAME.toLowerCase().startsWith("mac");
     public static final String USER_DIRECTORY = System.getProperty("user.dir");
     public static final String USER_NAME = System.getProperty("user.name");
+    public static final String NOT_SET = "not-set";
     private static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     private static final String APP_NAME = "APP_NAME";
     private static final String IS_VISUAL = "IS_VISUAL";
     private static final String CHROME = "chrome";
     private static final String PLUGIN = "--plugin";
     private static final String tempDirectory = "temp";
-    public static final String NOT_SET = "not-set";
     private static final Platform DEFAULT_PLATFORM = Platform.android;
     private static final int DEFAULT_PARALLEL = 1;
     private static final ArrayList<String> cukeArgs = new ArrayList<>();
@@ -86,6 +85,7 @@ public class Runner {
     private static final Map<String, Integer> configsInteger = new HashMap();
     private static final String APP_PACKAGE_NAME = "APP_PACKAGE_NAME";
     private static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
+    private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
     public static Platform platform = Platform.android;
     private static Map<String, Map> environmentConfiguration;
     private static Map<String, Map> testDataForEnvironment;
@@ -93,7 +93,6 @@ public class Runner {
     private final Properties properties;
     private final String DEFAULT_LOG_PROPERTIES_FILE = "./src/main/resources/log4j.properties";
     private List<Device> devices;
-    private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
 
     public Runner () {
         throw new InvalidTestDataException("Required args not provided to Runner");
@@ -120,38 +119,6 @@ public class Runner {
         setupExecutionEnvironment();
 
         run(cukeArgs, stepDefDirName, featuresDirName);
-    }
-
-    private void setupExecutionEnvironment () {
-        getPlatformTagsAndLaunchName();
-        addCucumberPlugsToArgs();
-        setupAndroidExecution();
-        setupWebExecution();
-        getBranchName();
-        initialiseApplitoolsConfiguration();
-
-        String rpAttributes =
-                "AutomationBranch:" + configs.get(BRANCH_NAME) + "; " +
-                        "ExecutedOn:" + configs.get(EXECUTED_ON) + "; " +
-                        "Installer:" + configs.get(APP_PATH) + "; " +
-                        "OS:" + OS_NAME + "; " +
-                        "ParallelCount:" + configsInteger.get(PARALLEL) + "; " +
-                        "Platform:" + platform.name() + "; " +
-                        "RunOnCloud:" + configsBoolean.get(RUN_IN_CI) + "; " +
-                        "Tags:" + configs.get(TAG) + "; " +
-                        "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " +
-                        "Username:" + USER_NAME + "; " +
-                        "VisualEnabled:" + configsBoolean.get(IS_VISUAL) + "; ";
-
-        LOGGER.info("ReportPortal Test Execution Attributes: " + rpAttributes);
-
-        System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
-        System.setProperty("CAPS", configs.get(CAPS));
-        System.setProperty("Platform", platform.name());
-        System.setProperty("atd_" + platform.name() + "_app_local", configs.get(APP_PATH));
-        System.setProperty("rp.description", configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
-        System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
-        System.setProperty("rp.attributes", rpAttributes);
     }
 
     public static boolean isVisualTestingEnabled () {
@@ -210,7 +177,7 @@ public class Runner {
         String envConfigFile = configs.get(ENVIRONMENT_CONFIG_FILE);
         LOGGER.info("Loading environment configuration from ENVIRONMENT_CONFIG_FILE: "
                 + envConfigFile
-                +" for environment: "
+                + " for environment: "
                 + environment);
         return (NOT_SET.equalsIgnoreCase(envConfigFile))
                 ? new HashMap<>()
@@ -242,7 +209,7 @@ public class Runner {
         String testDataFile = configs.get(TEST_DATA_FILE);
         LOGGER.info("Loading test data from TEST_DATA_FILE: "
                 + testDataFile
-                +" for environment: "
+                + " for environment: "
                 + environment);
         return (NOT_SET.equalsIgnoreCase(testDataFile)) ? new HashMap<>() : JsonFile.getNodeValueAsMapFromJsonFile(environment, testDataFile);
     }
@@ -286,7 +253,7 @@ public class Runner {
         if (applitoolsConfigurationFileName.equals(NOT_SET)) {
             LOGGER.info("Applitools configuration not provided. Will use defaults%n");
         } else {
-            LOGGER.info("Loading Applitools configuration from: "+  applitoolsConfigurationFileName);
+            LOGGER.info("Loading Applitools configuration from: " + applitoolsConfigurationFileName);
             applitoolsConfiguration = JsonFile.loadJsonFile(applitoolsConfigurationFileName);
         }
     }
@@ -311,6 +278,38 @@ public class Runner {
             LOGGER.info("Unable to get viewport size from Applitools configuration. Using default: 1280x960");
         }
         return viewportSize;
+    }
+
+    private void setupExecutionEnvironment () {
+        getPlatformTagsAndLaunchName();
+        addCucumberPlugsToArgs();
+        setupAndroidExecution();
+        setupWebExecution();
+        getBranchName();
+        initialiseApplitoolsConfiguration();
+
+        String rpAttributes =
+                "AutomationBranch:" + configs.get(BRANCH_NAME) + "; " +
+                        "ExecutedOn:" + configs.get(EXECUTED_ON) + "; " +
+                        "Installer:" + configs.get(APP_PATH) + "; " +
+                        "OS:" + OS_NAME + "; " +
+                        "ParallelCount:" + configsInteger.get(PARALLEL) + "; " +
+                        "Platform:" + platform.name() + "; " +
+                        "RunOnCloud:" + configsBoolean.get(RUN_IN_CI) + "; " +
+                        "Tags:" + configs.get(TAG) + "; " +
+                        "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " +
+                        "Username:" + USER_NAME + "; " +
+                        "VisualEnabled:" + configsBoolean.get(IS_VISUAL) + "; ";
+
+        LOGGER.info("ReportPortal Test Execution Attributes: " + rpAttributes);
+
+        System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
+        System.setProperty("CAPS", configs.get(CAPS));
+        System.setProperty("Platform", platform.name());
+        System.setProperty("atd_" + platform.name() + "_app_local", configs.get(APP_PATH));
+        System.setProperty("rp.description", configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
+        System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
+        System.setProperty("rp.attributes", rpAttributes);
     }
 
     private void getBranchName () {
@@ -428,9 +427,9 @@ public class Runner {
             appPath = getAppPathFromCapabilities();
             configs.put(APP_PATH, appPath);
             String capabilitiesFile = configs.get(CAPS);
-            LOGGER.info("\tUsing AppPath: "+ appPath +" in file: "+ capabilitiesFile +":: " +  platform);
+            LOGGER.info("\tUsing AppPath: " + appPath + " in file: " + capabilitiesFile + ":: " + platform);
         } else {
-            LOGGER.info("\tUsing AppPath provided as environment variable -  "+ appPath);
+            LOGGER.info("\tUsing AppPath provided as environment variable -  " + appPath);
         }
     }
 
@@ -538,9 +537,9 @@ public class Runner {
     @NotNull
     private String getAdbCommandOutput (JadbDevice device, String command, String args) throws IOException, JadbException {
         InputStream inputStream = device.executeShell(command, args);
-        LOGGER.info("\tadb command: "+  command +", args: "+ args +", ");
+        LOGGER.info("\tadb command: " + command + ", args: " + args + ", ");
         String adbCommandOutput = Stream.readAll(inputStream, StandardCharsets.UTF_8).replaceAll("\n$", "");
-        LOGGER.info("\tOutput: "+ adbCommandOutput);
+        LOGGER.info("\tOutput: " + adbCommandOutput);
         return adbCommandOutput;
     }
 
@@ -691,7 +690,7 @@ public class Runner {
                 launchName += " - " + platform;
             }
         }
-        LOGGER.info("\tRunning tests with platform: "+ platform +" and the following tag criteria : "+  inferredTags);
+        LOGGER.info("\tRunning tests with platform: " + platform + " and the following tag criteria : " + inferredTags);
         LOGGER.info("\tReportPortal Tests Launch name: " + launchName);
 
         configs.put(PLATFORM, platform.name());
