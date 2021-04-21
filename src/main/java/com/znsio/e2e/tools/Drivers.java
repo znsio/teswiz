@@ -169,7 +169,7 @@ public class Drivers {
     private WebDriver createNewWebDriver (String forUserPersona, TestExecutionContext testExecutionContext) {
         WebDriverManager.chromedriver().setup();
 
-        userPersonaBrowserLogs.put(forUserPersona, setChromeLogDirectory(testExecutionContext));
+        userPersonaBrowserLogs.put(forUserPersona, setChromeLogDirectory(forUserPersona, testExecutionContext));
 
         ChromeOptions chromeOptions = new ChromeOptions();
         List<String> excludeSwitches = Arrays.asList(
@@ -217,8 +217,7 @@ public class Drivers {
         return driver;
     }
 
-    private String setChromeLogDirectory (TestExecutionContext testExecutionContext) {
-        String forUserPersona = testExecutionContext.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
+    private String setChromeLogDirectory (String forUserPersona, TestExecutionContext testExecutionContext) {
         String scenarioLogDir = Runner.USER_DIRECTORY + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
         String logFile = scenarioLogDir + File.separator + "deviceLogs" + File.separator + "chrome-" + forUserPersona + ".log";
 
@@ -286,10 +285,13 @@ public class Drivers {
     }
 
     private void closeWebDriver (String key, Driver driver) {
+        String message = "Chrome browser logs for user: " + key;
+        String logFileName = userPersonaBrowserLogs.get(key);
+        LOGGER.info(message + ": logFileName: " + logFileName);
         ReportPortal.emitLog(
-                "Chrome browser logs for user: " + key,
+                message,
                 "DEBUG",
-                new Date(), new File(userPersonaBrowserLogs.get(key)));
+                new Date(), new File(logFileName));
         WebDriver webDriver = driver.getInnerDriver();
         if (null == webDriver) {
             LOGGER.info(String.format("Strange. But WebDriver for user: '%s' already closed", key));
