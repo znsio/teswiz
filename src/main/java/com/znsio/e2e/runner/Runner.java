@@ -99,6 +99,8 @@ public class Runner {
     }
 
     public Runner (String configFilePath, String stepDefDirName, String featuresDirName) {
+        cleanupDirectories();
+        setupDirectories();
         Path path = Paths.get(configFilePath);
         if (!Files.exists(path)) {
             throw new InvalidTestDataException(String.format("Invalid path ('%s') provided for config", configFilePath));
@@ -111,8 +113,6 @@ public class Runner {
         LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
         printLoadedConfigProperties(configFilePath);
 
-        cleanupDirectories();
-        setupDirectories();
 
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
@@ -752,9 +752,9 @@ public class Runner {
 
     private void cleanupDirectories () {
         List<String> files = listOfDirectoriesToDelete();
-        LOGGER.info("Delete Directories: " + files);
+        System.out.println("Delete Directories: " + files);
         for (String file : files) {
-            LOGGER.info("\tDeleting directory: " + file);
+            System.out.println("\tDeleting directory: " + file);
             try {
                 FileUtils.deleteDirectory(new java.io.File(file));
             } catch (IOException e) {
@@ -765,9 +765,9 @@ public class Runner {
 
     private void setupDirectories () {
         List<String> files = listOfDirectoriesToCreate();
-        LOGGER.info("Create Directories: " + files);
+        System.out.println("Create Directories: " + files);
         for (String file : files) {
-            LOGGER.info("\tCreating directory: " + file);
+            System.out.println("\tCreating directory: " + file);
             try {
                 FileUtils.forceMkdir(new java.io.File(file));
             } catch (IOException e) {
