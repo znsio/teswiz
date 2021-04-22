@@ -99,8 +99,6 @@ public class Runner {
     }
 
     public Runner (String configFilePath, String stepDefDirName, String featuresDirName) {
-        cleanupDirectories();
-        setupDirectories();
         Path path = Paths.get(configFilePath);
         if (!Files.exists(path)) {
             throw new InvalidTestDataException(String.format("Invalid path ('%s') provided for config", configFilePath));
@@ -108,11 +106,17 @@ public class Runner {
         properties = loadProperties(configFilePath);
         loadAndUpdateConfigParameters(configFilePath);
 
+        cleanupDirectories();
+        setupDirectories();
+
+        LOGGER.info("Updated string values from property file for missing properties: \n" + configs);
+        LOGGER.info("Updated boolean values from property file for missing properties: \n" + configsBoolean);
+        LOGGER.info("Updated integer values from property file for missing properties: \n" + configsInteger);
+
         PropertyConfigurator.configure(configs.get(LOG_PROPERTIES_FILE));
         System.setProperty(LOG_DIR, configs.get(LOG_DIR));
         LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
         printLoadedConfigProperties(configFilePath);
-
 
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
@@ -323,10 +327,6 @@ public class Runner {
     private void loadAndUpdateConfigParameters (String configFilePath) {
         configs.put(CONFIG_FILE, configFilePath);
         buildMapOfRequiredProperties();
-
-        LOGGER.info("Updated string values from property file for missing properties: \n" + configs);
-        LOGGER.info("Updated boolean values from property file for missing properties: \n" + configsBoolean);
-        LOGGER.info("Updated integer values from property file for missing properties: \n" + configsInteger);
     }
 
     public void run (ArrayList<String> args, String stepDefsDir, String featuresDir) {
@@ -752,9 +752,9 @@ public class Runner {
 
     private void cleanupDirectories () {
         List<String> files = listOfDirectoriesToDelete();
-        System.out.println("Delete Directories: " + files);
+        LOGGER.info("Delete Directories: " + files);
         for (String file : files) {
-            System.out.println("\tDeleting directory: " + file);
+            LOGGER.info("\tDeleting directory: " + file);
             try {
                 FileUtils.deleteDirectory(new java.io.File(file));
             } catch (IOException e) {
@@ -765,9 +765,9 @@ public class Runner {
 
     private void setupDirectories () {
         List<String> files = listOfDirectoriesToCreate();
-        System.out.println("Create Directories: " + files);
+        LOGGER.info("Create Directories: " + files);
         for (String file : files) {
-            System.out.println("\tCreating directory: " + file);
+            LOGGER.info("\tCreating directory: " + file);
             try {
                 FileUtils.forceMkdir(new java.io.File(file));
             } catch (IOException e) {
