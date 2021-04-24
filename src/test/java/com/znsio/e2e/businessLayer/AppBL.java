@@ -27,7 +27,10 @@ public class AppBL {
     }
 
     public LoginBL provideValidDetailsForSignup (String username, String password) {
-        String expectedErrorMessage = "Invalid login credentials, please try again";
+        String androidErrorMessage = "Invalid login credentials error message is incorrect";
+        String webErrorMessage = "Your username is invalid!";
+        String expectedErrorMessage = currentPlatform.equals(Platform.android) ? androidErrorMessage : webErrorMessage;
+
         LoginScreen loginScreen = HomeScreen.get()
                 .selectLoginTest()
                 .enterLoginDetails(username, password)
@@ -39,8 +42,8 @@ public class AppBL {
         loginScreen.dismissAlert();
 
         assertThat(actualErrorMessage)
-                .as("Invalid login credentials error message is incorrect")
-                .isEqualTo(expectedErrorMessage);
+                .as(androidErrorMessage)
+                .contains(expectedErrorMessage);
         return new LoginBL(currentUserPersona, currentPlatform);
     }
 }

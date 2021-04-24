@@ -13,7 +13,7 @@ class RunnerTest {
     @Test
     void mainLocalDefault () {
         String featuresDir = "./src/test/resources";
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/android/configs/config.properties", stepDefDir, featuresDir);
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
         String baseUrl = Runner.getFromEnvironmentConfiguration("BASE_URL");
         assertThat(baseUrl)
                 .as("environment config is incorrect")
@@ -27,23 +27,23 @@ class RunnerTest {
 
     @Test
     void mainLocalAndroid () {
-        String featuresDir = "./src/test/resources/com/znsio/e2e/features/android";
-        System.setProperty("Platform", Platform.android.name());
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/android/configs/config.properties", stepDefDir, featuresDir);
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty("PLATFORM", Platform.android.name());
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
 //        runner.printProcessedConfiguration();
     }
 
     @Test
     void mainLocalWeb () {
-        String featuresDir = "./src/test/resources/com/znsio/e2e/features/web";
-        System.setProperty("Platform", Platform.web.name());
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/android/configs/config.properties", stepDefDir, featuresDir);
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty("PLATFORM", Platform.web.name());
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
 //        runner.printProcessedConfiguration();
     }
 
     @Test
     void mainAndroidCloud () {
-        String featuresDir = "./src/test/resources/com/znsio/e2e/features/android";
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/android/configs/mobilab_config.properties", stepDefDir, featuresDir);
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/mobilab_config.properties", stepDefDir, featuresDir);
     }
 }

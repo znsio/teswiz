@@ -67,6 +67,8 @@ public class Runner {
     private static final String DEFAULT_LOG_DIR = "target";
     private static final String APP_PATH = "APP_PATH";
     private static final String BROWSER = "BROWSER";
+    private static final String BROWSER_HEADLESS = "BROWSER_HEADLESS";
+    private static final String BROWSER_VERBOSE_LOGGING = "BROWSER_VERBOSE_LOGGING";
     private static final String CAPS = "CAPS";
     private static final String CONFIG_FILE = "CONFIG_FILE";
     private static final String DEVICE_LAB_URL = "DEVICE_LAB_URL";
@@ -76,6 +78,7 @@ public class Runner {
     private static final String LOG_DIR = "LOG_DIR";
     private static final String PARALLEL = "PARALLEL";
     private static final String PLATFORM = "PLATFORM";
+    private static final String PROXY_KEY = "PROXY_KEY";
     private static final String RUN_IN_CI = "RUN_IN_CI";
     private static final String TAG = "TAG";
     private static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
@@ -284,6 +287,22 @@ public class Runner {
         return viewportSize;
     }
 
+    public static String getBrowser () {
+        return configs.get(BROWSER);
+    }
+
+    public static boolean isRunInHeadlessMode () {
+        return configsBoolean.get(BROWSER_HEADLESS);
+    }
+
+    public static boolean enableVeboseLoggingInBrowser () {
+        return configsBoolean.get(BROWSER_VERBOSE_LOGGING);
+    }
+
+    public static String getProxyURL () {
+        return System.getenv(configs.get(PROXY_KEY));
+    }
+
     private void setupExecutionEnvironment () {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
@@ -349,6 +368,8 @@ public class Runner {
         configs.put(APP_PATH, getOverriddenStringValue(APP_PATH, getStringValueFromPropertiesIfAvailable(APP_PATH, NOT_SET)));
         configs.put(APPLITOOLS_CONFIGURATION, getStringValueFromPropertiesIfAvailable(APPLITOOLS_CONFIGURATION, NOT_SET));
         configs.put(BROWSER, getOverriddenStringValue(BROWSER, getStringValueFromPropertiesIfAvailable(BROWSER, CHROME)));
+        configsBoolean.put(BROWSER_HEADLESS, getOverriddenBooleanValue(BROWSER_HEADLESS, getBooleanValueFromPropertiesIfAvailable(BROWSER_HEADLESS, false)));
+        configsBoolean.put(BROWSER_VERBOSE_LOGGING, getOverriddenBooleanValue(BROWSER_VERBOSE_LOGGING, getBooleanValueFromPropertiesIfAvailable(BROWSER_VERBOSE_LOGGING, false)));
         configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB, getStringValueFromPropertiesIfAvailable(BASE_URL_FOR_WEB, NOT_SET)));
         configs.put(CAPS, getOverriddenStringValue(CAPS, getStringValueFromPropertiesIfAvailable(CAPS, NOT_SET)));
         configs.put(DEVICE_LAB_URL, getOverriddenStringValue(DEVICE_LAB_URL, getStringValueFromPropertiesIfAvailable(DEVICE_LAB_URL, NOT_SET)));
@@ -358,6 +379,7 @@ public class Runner {
         configs.put(LOG_PROPERTIES_FILE, getStringValueFromPropertiesIfAvailable(LOG_PROPERTIES_FILE, DEFAULT_LOG_PROPERTIES_FILE));
         platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, getStringValueFromPropertiesIfAvailable(PLATFORM, Platform.android.name())));
         configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, Integer.parseInt(getStringValueFromPropertiesIfAvailable(PARALLEL, String.valueOf(DEFAULT_PARALLEL)))));
+        configs.put(PROXY_KEY, getOverriddenStringValue(PROXY_KEY, getStringValueFromPropertiesIfAvailable(PROXY_KEY, PROXY_KEY)));
         configsBoolean.put(RUN_IN_CI, getOverriddenBooleanValue(RUN_IN_CI, getBooleanValueFromPropertiesIfAvailable(RUN_IN_CI, false)));
         configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
