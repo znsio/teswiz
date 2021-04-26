@@ -68,6 +68,7 @@ public class Runner {
     private static final String APP_PATH = "APP_PATH";
     private static final String BROWSER = "BROWSER";
     private static final String BROWSER_HEADLESS = "BROWSER_HEADLESS";
+    private static final String BROWSER_MAXIMIZE = "BROWSER_MAXIMIZE";
     private static final String BROWSER_VERBOSE_LOGGING = "BROWSER_VERBOSE_LOGGING";
     private static final String CAPS = "CAPS";
     private static final String CONFIG_FILE = "CONFIG_FILE";
@@ -307,6 +308,10 @@ public class Runner {
         return System.getenv(configs.get(PROXY_KEY));
     }
 
+    public static boolean shouldMaximizeBrowser () {
+        return configsBoolean.get(BROWSER_MAXIMIZE);
+    }
+
     private void setupExecutionEnvironment () {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
@@ -373,6 +378,7 @@ public class Runner {
         configs.put(APPLITOOLS_CONFIGURATION, getStringValueFromPropertiesIfAvailable(APPLITOOLS_CONFIGURATION, NOT_SET));
         configs.put(BROWSER, getOverriddenStringValue(BROWSER, getStringValueFromPropertiesIfAvailable(BROWSER, CHROME)));
         configsBoolean.put(BROWSER_HEADLESS, getOverriddenBooleanValue(BROWSER_HEADLESS, getBooleanValueFromPropertiesIfAvailable(BROWSER_HEADLESS, false)));
+        configsBoolean.put(BROWSER_MAXIMIZE, getOverriddenBooleanValue(BROWSER_MAXIMIZE, getBooleanValueFromPropertiesIfAvailable(BROWSER_MAXIMIZE, false)));
         configsBoolean.put(BROWSER_VERBOSE_LOGGING, getOverriddenBooleanValue(BROWSER_VERBOSE_LOGGING, getBooleanValueFromPropertiesIfAvailable(BROWSER_VERBOSE_LOGGING, false)));
         configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB, getStringValueFromPropertiesIfAvailable(BASE_URL_FOR_WEB, NOT_SET)));
         configs.put(CAPS, getOverriddenStringValue(CAPS, getStringValueFromPropertiesIfAvailable(CAPS, NOT_SET)));

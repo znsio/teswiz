@@ -124,48 +124,32 @@ public class Drivers {
 
     @NotNull
     private Driver createWebDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        String browserType = Runner.getBrowser();
-        boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
-        boolean enableVerboseLogging = Runner.enableVeboseLoggingInBrowser();
-        String proxyUrl = Runner.getProxyURL();
-        System.out.printf("getWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d', Browser: '%s', isHeadless: '%s', Proxy: '%s'%n",
+        System.out.printf("getWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
-                numberOfWebDriversUsed,
-                browserType,
-                isBrowserHeadless,
-                proxyUrl);
+                numberOfWebDriversUsed);
 
         Driver currentDriver;
         if (Platform.web.equals(forPlatform) && numberOfWebDriversUsed == MAX_NUMBER_OF_WEB_DRIVERS) {
             throw new InvalidTestDataException(
-                    String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s', Browser: '%s', isHeadless: '%s', Proxy: '%s'",
+                    String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
                             numberOfWebDriversUsed,
                             userPersona,
-                            forPlatform.name(),
-                            browserType,
-                            isBrowserHeadless,
-                            proxyUrl)
+                            forPlatform.name())
             );
         }
         String updatedTestName = context.getTestName() + "-" + userPersona;
         if (numberOfWebDriversUsed < MAX_NUMBER_OF_WEB_DRIVERS) {
-            currentDriver = new Driver(updatedTestName, createNewWebDriver(userPersona, context, browserType, isBrowserHeadless, enableVerboseLogging, proxyUrl));
+            currentDriver = new Driver(updatedTestName, createNewWebDriver(userPersona, context));
         } else {
             throw new InvalidTestDataException(
                     String.format("Current number of WebDriver instances used: '%d'. " +
                                     "Unable to create more than '%d' drivers for user persona: '%s' " +
-                                    "on platform: '%s', " +
-                                    "Browser: '%s', " +
-                                    "isHeadless: '%s'" +
-                                    "Proxy: '%s'",
+                                    "on platform: '%s'",
                             numberOfWebDriversUsed,
                             MAX_NUMBER_OF_WEB_DRIVERS,
                             userPersona,
-                            forPlatform.name(),
-                            browserType,
-                            isBrowserHeadless,
-                            proxyUrl)
+                            forPlatform.name())
             );
         }
         numberOfWebDriversUsed++;
@@ -192,11 +176,9 @@ public class Drivers {
 
     @NotNull
     private WebDriver createNewWebDriver (String forUserPersona,
-                                          TestExecutionContext testExecutionContext,
-                                          String browserType,
-                                          boolean isBrowserHeadless,
-                                          boolean enableVerboseLogging,
-                                          String proxyUrl) {
+                                          TestExecutionContext testExecutionContext) {
+        String browserType = Runner.getBrowser();
+        boolean shouldMaximizeBrowser = Runner.shouldMaximizeBrowser();
 
         String providedBaseUrl = Runner.getBaseURLForWeb();
         if (null == providedBaseUrl) {
@@ -211,10 +193,10 @@ public class Drivers {
         WebDriver driver = null;
         switch (driverManagerType) {
             case CHROME:
-                driver = createChromeDriver(forUserPersona, testExecutionContext, isBrowserHeadless, enableVerboseLogging, proxyUrl);
+                driver = createChromeDriver(forUserPersona, testExecutionContext);
                 break;
             case FIREFOX:
-                driver = createFirefoxDriver(forUserPersona, testExecutionContext, isBrowserHeadless, enableVerboseLogging, proxyUrl);
+                driver = createFirefoxDriver(forUserPersona, testExecutionContext);
                 break;
             case OPERA:
             case EDGE:
@@ -226,15 +208,18 @@ public class Drivers {
                 throw new InvalidTestDataException(String.format("Browser: '%s' is NOT supported", browserType));
         }
         driver.get(baseUrl);
-        driver.manage().window().maximize();
+        if (shouldMaximizeBrowser) {
+            driver.manage().window().maximize();
+        }
         return driver;
     }
 
     private WebDriver createFirefoxDriver (String forUserPersona,
-                                           TestExecutionContext testExecutionContext,
-                                           boolean isBrowserHeadless,
-                                           boolean enableVerboseLogging,
-                                           String proxyUrl) {
+                                           TestExecutionContext testExecutionContext) {
+
+        boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
+        boolean enableVerboseLogging = Runner.enableVeboseLoggingInBrowser();
+        String proxyUrl = Runner.getProxyURL();
 
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Firefox");
         userPersonaBrowserLogs.put(forUserPersona, logFileName);
@@ -276,10 +261,11 @@ public class Drivers {
 
     @NotNull
     private WebDriver createChromeDriver (String forUserPersona,
-                                          TestExecutionContext testExecutionContext,
-                                          boolean isBrowserHeadless,
-                                          boolean enableVerboseLogging,
-                                          String proxyUrl) {
+                                          TestExecutionContext testExecutionContext) {
+        boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
+        boolean enableVerboseLogging = Runner.enableVeboseLoggingInBrowser();
+        String proxyUrl = Runner.getProxyURL();
+
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Chrome");
         userPersonaBrowserLogs.put(forUserPersona, logFileName);
         LOGGER.info("Creating Chrome logs in file: " + logFileName);
