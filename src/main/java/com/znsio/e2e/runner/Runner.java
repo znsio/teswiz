@@ -71,6 +71,10 @@ public class Runner {
     private static final String BROWSER_VERBOSE_LOGGING = "BROWSER_VERBOSE_LOGGING";
     private static final String CAPS = "CAPS";
     private static final String CONFIG_FILE = "CONFIG_FILE";
+    private static final String CLOUD_USER = "CLOUD_USER";
+    private static final String CLOUD_KEY = "CLOUD_KEY";
+    private static final String CLOUD_UPLOAD_APP = "CLOUD_UPLOAD_APP";
+
     private static final String DEVICE_LAB_URL = "DEVICE_LAB_URL";
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
     private static final String EXECUTED_ON = "EXECUTED_ON";
@@ -372,6 +376,9 @@ public class Runner {
         configsBoolean.put(BROWSER_VERBOSE_LOGGING, getOverriddenBooleanValue(BROWSER_VERBOSE_LOGGING, getBooleanValueFromPropertiesIfAvailable(BROWSER_VERBOSE_LOGGING, false)));
         configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB, getStringValueFromPropertiesIfAvailable(BASE_URL_FOR_WEB, NOT_SET)));
         configs.put(CAPS, getOverriddenStringValue(CAPS, getStringValueFromPropertiesIfAvailable(CAPS, NOT_SET)));
+        configs.put(CLOUD_KEY, getOverriddenStringValue(CLOUD_KEY, getStringValueFromPropertiesIfAvailable(CLOUD_KEY, NOT_SET)));
+        configs.put(CLOUD_USER, getOverriddenStringValue(CLOUD_USER, getStringValueFromPropertiesIfAvailable(CLOUD_USER, NOT_SET)));
+        configsBoolean.put(CLOUD_UPLOAD_APP, getOverriddenBooleanValue(CLOUD_UPLOAD_APP, getBooleanValueFromPropertiesIfAvailable(CLOUD_UPLOAD_APP, false)));
         configs.put(DEVICE_LAB_URL, getOverriddenStringValue(DEVICE_LAB_URL, getStringValueFromPropertiesIfAvailable(DEVICE_LAB_URL, NOT_SET)));
         configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE, getStringValueFromPropertiesIfAvailable(ENVIRONMENT_CONFIG_FILE, NOT_SET)));
         configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL, getBooleanValueFromPropertiesIfAvailable(IS_VISUAL, false)));
@@ -573,14 +580,19 @@ public class Runner {
 
     private void setupCloudExecution () {
         updateAppPath();
-        String emailID = System.getenv("CLOUD_USER");
-        String authenticationKey = System.getenv("CLOUD_KEY");
-        uploadAPKTopCloudy(emailID, authenticationKey);
+        String emailID = configs.get(CLOUD_USER);
+        String authenticationKey = configs.get(CLOUD_KEY);
+        if (configsBoolean.get(CLOUD_UPLOAD_APP)) {
+            uploadAPKTopCloudy(emailID, authenticationKey);
+        } else {
+            LOGGER.info("Skip uploading the apk to Device Farm");
+        }
         updateCapabilities(emailID, authenticationKey);
         configs.put(EXECUTED_ON, "Cloud Devices");
     }
 
     private void uploadAPKTopCloudy (String emailID, String authenticationKey) {
+        LOGGER.info(String.format("uploadAPKTopCloudy for: '%s':'%s'%n", emailID, authenticationKey));
         String appPath = configs.get(APP_PATH);
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
