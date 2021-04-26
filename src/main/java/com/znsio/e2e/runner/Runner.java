@@ -113,7 +113,7 @@ public class Runner {
         properties = loadProperties(configFilePath);
         loadAndUpdateConfigParameters(configFilePath);
 
-        cleanupDirectories();
+//        cleanupDirectories();
         setupDirectories();
 
         LOGGER.info("Updated string values from property file for missing properties: \n" + configs);
