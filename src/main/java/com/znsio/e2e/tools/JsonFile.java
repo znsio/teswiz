@@ -43,7 +43,7 @@ public class JsonFile {
 
     public static Map<String, Map> getNodeValueAsMapFromJsonFile (String node, String fileName) {
         Map<String, Map> map = loadJsonFile(fileName);
-        LOGGER.info("\tPlatform: " + node);
+        LOGGER.info("\tNode: " + node);
         Map<String, Map> envMap = map.get(node);
         LOGGER.info("\tLoaded map: " + envMap);
         if (null == envMap) {
