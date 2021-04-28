@@ -98,6 +98,7 @@ public class Runner {
     private static Map<String, Map> environmentConfiguration;
     private static Map<String, Map> testDataForEnvironment;
     private static Map applitoolsConfiguration = new HashMap();
+    private static String proxyURL = null;
     private final Properties properties;
     private final String DEFAULT_LOG_PROPERTIES_FILE = "./src/main/resources/log4j.properties";
     private List<Device> devices;
@@ -305,7 +306,11 @@ public class Runner {
     }
 
     public static String getProxyURL () {
-        return getOverriddenStringValue(configs.get(PROXY_KEY), NOT_SET);
+        if (null == proxyURL) {
+            proxyURL = getOverriddenStringValue(configs.get(PROXY_KEY));
+        }
+        LOGGER.info("proxyURL: " + proxyURL);
+        return proxyURL;
     }
 
     public static boolean shouldMaximizeBrowser () {
