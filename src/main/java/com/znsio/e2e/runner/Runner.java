@@ -305,7 +305,7 @@ public class Runner {
     }
 
     public static String getProxyURL () {
-        return System.getenv(configs.get(PROXY_KEY));
+        return getOverriddenStringValue(configs.get(PROXY_KEY), NOT_SET);
     }
 
     public static boolean shouldMaximizeBrowser () {
