@@ -150,7 +150,7 @@ public class Driver {
         int offsetX = currentPositionX < midWidth ? 50 : -50;
         int offsetY = currentPositionY < midHeight ? 50 : -50;
 
-        LOGGER.info(String.format("Using offset: '%d':'%d", offsetX, offsetY));
+        LOGGER.info(String.format("Using offset: '%d':'%d'", offsetX, offsetY));
 
         actions.moveByOffset(offsetX, offsetY).perform();
         waitFor(1);
