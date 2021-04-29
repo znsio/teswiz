@@ -98,7 +98,7 @@ public class Runner {
     private static Map<String, Map> environmentConfiguration;
     private static Map<String, Map> testDataForEnvironment;
     private static Map applitoolsConfiguration = new HashMap();
-    private static String proxyURL = null;
+    private static String PROXY_URL;
     private final Properties properties;
     private final String DEFAULT_LOG_PROPERTIES_FILE = "./src/main/resources/log4j.properties";
     private List<Device> devices;
@@ -306,9 +306,7 @@ public class Runner {
     }
 
     public static String getProxyURL () {
-        if (null == proxyURL) {
-            proxyURL = getOverriddenStringValue(configs.get(PROXY_KEY));
-        }
+        String proxyURL = configs.get(PROXY_URL);
         LOGGER.info("proxyURL: " + proxyURL);
         return proxyURL;
     }
@@ -402,6 +400,7 @@ public class Runner {
         configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
+        configs.put(PROXY_URL, getOverriddenStringValue(configs.get(PROXY_KEY)));
     }
 
     private String getStringValueFromPropertiesIfAvailable (String key, String defaultValue) {

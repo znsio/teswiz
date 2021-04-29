@@ -246,7 +246,7 @@ public class Drivers {
             firefoxOptions.setLogLevel(FirefoxDriverLogLevel.INFO);
         }
 
-        if ((null != proxyUrl) && (!proxyUrl.isEmpty())) {
+        if (null != proxyUrl) {
             LOGGER.info("Setting Proxy for browser: " + proxyUrl);
             firefoxOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
         }
@@ -304,7 +304,7 @@ public class Drivers {
             logPrefs.enable(LogType.BROWSER, Level.ALL);
         }
 
-        if ((null != proxyUrl) && (!proxyUrl.isEmpty())) {
+        if (null != proxyUrl) {
             LOGGER.info("Setting Proxy for browser: " + proxyUrl);
             chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
         }
