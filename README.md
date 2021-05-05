@@ -168,7 +168,7 @@ The config.properties file has the following properties. Highlighting the defaul
     APP_PACKAGE_NAME=io.cloudgrey.the_app -> android app package name
     APPLITOOLS_CONFIGURATION=./configs/applitools_config.json -> Applitools configuration 
     BASE_URL_FOR_WEB=BASE_URL -> Key name of the property in TEST_DATA_FILE for environment specific base url
-    BROWSER=chrome -> Which browser to use for Web execution? Supported: chrome || firefox || edge || safari
+    BROWSER=chrome -> Which browser to use for Web execution? Supported: chrome || firefox
                       Browsers should to be installed. Corresponding WebDriver for the browser will be downloaded automatically
     BROWSER_HEADLESS=false -> Should browser be started in headless mode? If yes, set to true
     BROWSER_MAXIMIZE=true -> Should browser be maximised when started? If yes, set to true
