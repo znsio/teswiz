@@ -27,8 +27,9 @@ variable: `REPORT_PORTAL_FILE`
 * WebDriver (https://selenium.dev)
 * reportportal.io (https://reportportal.io)
 * Applitools (https://applitools.com)
+* Build tool: gradle
 
-## How can you use unified-e2e?
+## Getting Started, or how can you use unified-e2e?
 It is very easy to use unified-e2e in your framework.
 Follow these steps:
 1. Setup the prerequisites mentioned below
@@ -151,6 +152,38 @@ caps/mobilab_capabilties.json, the following additional environment variable nee
 Sample command:
 
     APP_PATH=~/Downloads/MyLatestApp.apk PLATFORM=android ./gradlew run
+
+## Configuration parameters
+The config.properties file has the following properties. Highlighting the defaults, and options for each here:
+
+    # ATD properties
+    RUNNER=distribute -> ATD property. We will always use distributed
+    FRAMEWORK=cucumber -> ATD property. We will always use cucumber
+    RUNNER_LEVEL=methods -> ATD property. We will always use methods
+    CAPS=./caps/capabilities.json -> Path to capabilties.json file
+
+    # unified-e2e configuration properties. Can be overridden using environment variables or system properties
+
+    APP_NAME=unified-e2e -> Name of your application
+    APP_PACKAGE_NAME=io.cloudgrey.the_app -> android app package name
+    APPLITOOLS_CONFIGURATION=./configs/applitools_config.json -> Applitools configuration 
+    BASE_URL_FOR_WEB=BASE_URL -> Key name of the property in TEST_DATA_FILE for environment specific base url
+    BROWSER=chrome -> Which browser to use for Web execution? Supported: chrome || firefox || edge || safari
+                      Browsers should to be installed. Corresponding WebDriver for the browser will be downloaded automatically
+    BROWSER_HEADLESS=false -> Should browser be started in headless mode? If yes, set to true
+    BROWSER_MAXIMIZE=true -> Should browser be maximised when started? If yes, set to true
+    BROWSER_VERBOSE_LOGGING=true -> Should browser logs be verbose? If yes, set to true
+    ENVIRONMENT_CONFIG_FILE=./src/test/resources/environments.json -> Environment specific configuration file
+    IS_VISUAL=false -> Should enable Applitools Visual Testing? If yes, set to true
+    LOG_DIR=target -> Where should logs be created?
+    LOG_PROPERTIES_FILE=./src/test/resources/log4j.properties -> log4j configuration file
+    PARALLEL=1 -> How many tests should be run in parallel? 
+    PLATFORM=android -> Run tests against? Supported: android | iOS | windows | web
+    PROXY_KEY=HTTP_PROXY -> If proxy should be set, what is the environment variable specifying the proxy?
+    REPORT_PORTAL_FILE=src/test/resources/reportportal.properties -> ReportPortal.io configuration
+    RUN_IN_CI=false -> Are tests running in CI?
+    TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE 
+    TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
 
 ## Troubleshooting / FAQs
 
