@@ -296,6 +296,7 @@ public class Drivers {
         prefs.put("protocol_handler.excluded_schemes", excludedSchemes);
         chromeOptions.setExperimentalOption("prefs", prefs);
 
+        LOGGER.info("Set Logging preferences");
         LoggingPreferences logPrefs = new LoggingPreferences();
         if (enableVerboseLogging) {
             System.setProperty("webdriver.chrome.verboseLogging", "true");
@@ -304,6 +305,8 @@ public class Drivers {
             logPrefs.enable(LogType.BROWSER, Level.ALL);
         }
 
+        LOGGER.info("Set Proxy:");
+        LOGGER.info(proxyUrl);
         if (null != proxyUrl) {
             LOGGER.info("Setting Proxy for browser: " + proxyUrl);
             chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
