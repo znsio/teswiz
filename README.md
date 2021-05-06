@@ -156,7 +156,9 @@ Sample command:
     APP_PATH=~/Downloads/MyLatestApp.apk PLATFORM=android ./gradlew run
 
 ## Configuration parameters
-The config.properties file has the following properties. Highlighting the defaults, and options for each here:
+The config.properties file has the following properties. Highlighting the defaults, and options for each here. 
+
+These can be overridden by providing the same either as environment variables or system properties. 
 
     # ATD properties
     RUNNER=distribute -> ATD property. We will always use distributed
