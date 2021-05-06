@@ -330,7 +330,7 @@ public class Runner {
                         "OS:" + OS_NAME + "; " +
                         "ParallelCount:" + configsInteger.get(PARALLEL) + "; " +
                         "Platform:" + platform.name() + "; " +
-                        "RunOnCloud:" + configsBoolean.get(RUN_IN_CI) + "; " +
+                        "RunInCI:" + configsBoolean.get(RUN_IN_CI) + "; " +
                         "Tags:" + configs.get(TAG) + "; " +
                         "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " +
                         "Username:" + USER_NAME + "; " +

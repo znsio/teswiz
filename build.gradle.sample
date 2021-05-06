@@ -38,7 +38,7 @@ dependencies {
 
 task run(type: JavaExec) {
     doFirst {
-        def configFile = System.getenv("RunOnCloud") ? "./configs/mobilab_config.properties" : "./configs/config.properties"
+        def configFile = System.getenv("RUN_IN_CI") ? "./configs/mobilab_config.properties" : "./configs/config.properties"
         systemProperties = System.properties
         def runnerArgs = [
                 "${configFile}",
