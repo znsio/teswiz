@@ -26,7 +26,7 @@ public class AppBL {
         Runner.setCurrentDriverForUser(userPersona, forPlatform, context);
     }
 
-    public LoginBL provideValidDetailsForSignup (String username, String password) {
+    public LoginBL provideInvalidDetailsForSignup (String username, String password) {
         String errorMessage = "Invalid login credentials error message is incorrect";
         String androidErrorMessage = "Invalid login credentials, please try again";
         String webErrorMessage = "Your username is invalid!";
@@ -34,6 +34,27 @@ public class AppBL {
 
         LoginScreen loginScreen = HomeScreen.get()
                 .selectLoginTest()
+                .enterLoginDetails(username, password)
+                .login();
+        String actualErrorMessage = loginScreen
+                .getInvalidLoginError();
+        LOGGER.info("actualErrorMessage: " + actualErrorMessage);
+
+        loginScreen.dismissAlert();
+
+        softly.assertThat(actualErrorMessage)
+                .as(errorMessage)
+                .contains(expectedErrorMessage);
+        return new LoginBL(currentUserPersona, currentPlatform);
+    }
+
+    public LoginBL loginAgain (String username, String password) {
+        String errorMessage = "Invalid login credentials error message is incorrect";
+        String androidErrorMessage = "Invalid login credentials, please try again";
+        String webErrorMessage = "Your username is invalid!";
+        String expectedErrorMessage = currentPlatform.equals(Platform.android) ? androidErrorMessage : webErrorMessage;
+
+        LoginScreen loginScreen = LoginScreen.get()
                 .enterLoginDetails(username, password)
                 .login();
         String actualErrorMessage = loginScreen
