@@ -98,10 +98,15 @@ For other cloud configurations, refer here: https://github.com/AppiumTestDistrib
 
     PLATFORM=web ./gradlew run
 
-### Running Real Meeting simulations
+### Running Multi-User simulations
 
-The framework now supports running multiuser scenarios.
+The framework now supports running multiuser scenarios. This means 1 cucumber scenario can orchestrate the interaction between multiple instances of the application-under-test in multiple platforms - ex: Android and Web
 
+Example:
+
+![multi-user-example-annotated.png](multi-user-example-annotated.png)
+
+In the above example
 You can run these tests as below:
 
 #### To run tests on **android & web** platforms
