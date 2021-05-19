@@ -77,8 +77,8 @@ will run the tests in parallel
 **To enable running the tests on pCloudy's Device Farm, the following additional environment variables need to be provided:**
 
 * `RUN_IN_CI=true` - Default is `false`
-* `CLOUD_USER` - Mobilab username
-* `CLOUD_KEY` - Mobilab password
+* `CLOUD_USER` - pCloudy username
+* `CLOUD_KEY` - pCloudy password
 
 Sample command:
 
@@ -147,7 +147,7 @@ Sample commands:
 ### Using a different apk for execution (Android):
 
 To run tests using a specific apk (instead of the one specified in caps/capabilities.json, OR,
-caps/mobilab_capabilties.json, the following additional environment variable need to be provided:
+caps/pcloudy_capabilties.json, the following additional environment variable need to be provided:
 
 * `APP_PATH='<path to apk>'`
 

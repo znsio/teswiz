@@ -3,9 +3,12 @@ package com.znsio.e2e.steps;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.e2e.businessLayer.AppBL;
+import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.SAMPLE_TEST_CONTEXT;
+import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Drivers;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import org.apache.log4j.Logger;
 
@@ -23,10 +26,17 @@ public class LoginSteps {
     }
 
     @When("I login with invalid credentials - {string}, {string}")
-    public void iLoginWithInvalidCredentials (String userPersona, String password) {
+    public void iLoginWithInvalidCredentials (String username, String password) {
         LOGGER.info("iLoginWithInvalidCredentials - " + Runner.platform);
         allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
-        context.addTestState(SAMPLE_TEST_CONTEXT.ME, userPersona);
-        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).provideValidDetailsForSignup(userPersona, password);
+        context.addTestState(SAMPLE_TEST_CONTEXT.ME, username);
+        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).provideValidDetailsForSignup(username, password);
+    }
+
+    @Given("{string} login with invalid credentials - {string}, {string} on {string}")
+    public void loginWithInvalidCredentialsOn (String userPersona, String username, String password, String onPlatform) {
+        context.addTestState(userPersona, username);
+        allDrivers.createDriverFor(userPersona, Platform.valueOf(onPlatform), context);
+        new AppBL(userPersona, Platform.valueOf(onPlatform)).provideValidDetailsForSignup(username, password);
     }
 }

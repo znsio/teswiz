@@ -44,6 +44,13 @@ class RunnerTest {
     @Test
     void mainAndroidCloud () {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/mobilab_config.properties", stepDefDir, featuresDir);
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/pcloudy_config.properties", stepDefDir, featuresDir);
+    }
+
+    @Test
+    void multiUserTest () {
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty("TAG", "@multiuser-android-web");
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
     }
 }
