@@ -13,6 +13,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import com.google.common.collect.ImmutableMap;
 
 import java.time.Duration;
 import java.util.List;
@@ -219,6 +220,14 @@ public class Driver {
 
     public void bringAppInForeground () {
         ((StartsActivity) driver).currentActivity();
+    }
+
+    public void deepLinkingAUrl(String url, String packageName) {
+        LOGGER.info("Deep linking a URL: " + url);
+        ((AppiumDriver) driver).executeScript(
+                "mobile:deepLink",
+                ImmutableMap.of("url", url, "package", packageName)
+        );
     }
 
     public WebDriver getInnerDriver () {
