@@ -222,8 +222,8 @@ public class Driver {
         ((StartsActivity) driver).currentActivity();
     }
 
-    public void deepLinkingAUrl(String url, String packageName) {
-        LOGGER.info("Deep linking a URL: " + url);
+    public void goToDeepLinkUrl(String url, String packageName) {
+        LOGGER.info("Hitting a Deep Link URL: " + url);
         ((AppiumDriver) driver).executeScript(
                 "mobile:deepLink",
                 ImmutableMap.of("url", url, "package", packageName)
