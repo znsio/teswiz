@@ -1,5 +1,5 @@
-[![0.0.3](https://jitpack.io/v/znsio/unified-e2e.svg)](https://jitpack.io/#znsio/unified-e2e)
-[![0.0.3](https://jitci.com/gh/znsio/unified-e2e/svg)](https://jitci.com/gh/znsio/unified-e2e)
+[![0.0.3](https://jitpack.io/v/znsio/teswiz.svg)](https://jitpack.io/#znsio/teswiz)
+[![0.0.3](https://jitci.com/gh/znsio/teswiz/svg)](https://jitci.com/gh/znsio/teswiz)
 
 
 # What is this repository about?
@@ -29,10 +29,10 @@ variable: `REPORT_PORTAL_FILE`
 * Applitools (https://applitools.com)
 * Build tool: gradle
 
-## Getting Started, or how can you use unified-e2e?
-It is very easy to use unified-e2e in your framework.
+## Getting Started, or how can you use teswiz?
+It is very easy to use teswiz in your framework.
 Follow these steps:
-1. Setup the prerequisites mentioned below [https://github.com/znsio/unified-e2e#prerequisites]
+1. Setup the prerequisites mentioned below [https://github.com/znsio/teswiz#prerequisites]
 1. Using your favorite IDE (I use IntelliJ Idea Community Edition), create a new Java-Gradle project 
 1. Copy build.gradle.sample file to your newly created project's root folder and rename it to build.gradle
 1. Create capabilities.json in some folder - ex: ./capabilities - refer to src/test/resources/com/znsio/e2e/features/android/caps/capabilities.json
@@ -171,9 +171,9 @@ These can be overridden by providing the same either as environment variables or
     RUNNER_LEVEL=methods -> ATD property. We will always use methods
     CAPS=./caps/capabilities.json -> Path to capabilties.json file
 
-    # unified-e2e configuration properties. Can be overridden using environment variables or system properties
+    # teswiz configuration properties. Can be overridden using environment variables or system properties
 
-    APP_NAME=unified-e2e -> Name of your application
+    APP_NAME=teswiz -> Name of your application
     APP_PACKAGE_NAME=io.cloudgrey.the_app -> android app package name
     APPLITOOLS_CONFIGURATION=./configs/applitools_config.json -> Applitools configuration 
     BASE_URL_FOR_WEB=BASE_URL -> Key name of the property in TEST_DATA_FILE for environment specific base url
