@@ -160,7 +160,7 @@ public class Runner {
     }
 
     public static void main (String[] args) {
-        LOGGER.info("unified-e2e Runner");
+        LOGGER.info("teswiz Runner");
         LOGGER.info("Provided parameters:");
         for (int i = 0; i < args.length; i++) {
             LOGGER.info("\t" + args[i]);

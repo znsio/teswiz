@@ -17,7 +17,7 @@ class RunnerTest {
         String baseUrl = Runner.getFromEnvironmentConfiguration("BASE_URL");
         assertThat(baseUrl)
                 .as("environment config is incorrect")
-                .isEqualTo("https://github.com/znsio/unified-e2e/");
+                .isEqualTo("https://github.com/znsio/teswiz/");
 
         String actualTestData = Runner.getTestData("GMAIL_USER_1_EMAIL");
         assertThat(actualTestData)

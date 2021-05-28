@@ -1,7 +1,7 @@
 buildscript {
     ext {
         gradleVersion = '6.7.1'
-        unifiedE2EVersion = '0.0.57'
+        teswizVersion = '0.0.57'
     }
     repositories {
         mavenLocal()
@@ -31,7 +31,7 @@ configurations {
 compileJava { options.encoding = "UTF-8" }
 
 dependencies {
-    implementation("com.github.znsio:unified-e2e:${project.unifiedE2EVersion}") {
+    implementation("com.github.znsio:teswiz:${project.teswizVersion}") {
         transitive = false
     }
 }

@@ -1,5 +1,5 @@
 jdk:
   - openjdk11
 install:
-  - echo "Create a uber jar for unified-e2e"
+  - echo "Create a uber jar for teswiz"
   - ./gradlew clean install
