@@ -1,19 +1,23 @@
 package com.znsio.e2e.tools;
 
+import com.google.common.collect.ImmutableMap;
 import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.MobileElement;
+import io.appium.java_client.PerformsTouchActions;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.StartsActivity;
+import io.appium.java_client.touch.LongPressOptions;
 import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import com.google.common.collect.ImmutableMap;
 
 import java.time.Duration;
 import java.util.List;
@@ -240,5 +244,16 @@ public class Driver {
 
     public Visual getVisual () {
         return this.visually;
+    }
+
+    public void longPress (By elementId) {
+        MobileElement elementToBeLongTapped = (MobileElement) new WebDriverWait(driver, 10)
+                .until(ExpectedConditions.elementToBeClickable(elementId));
+
+        TouchAction action = new TouchAction((PerformsTouchActions) driver);
+        action.longPress(LongPressOptions.longPressOptions()
+                .withElement(ElementOption.element(elementToBeLongTapped)))
+                .release()
+                .perform();
     }
 }
