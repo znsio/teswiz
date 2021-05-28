@@ -2,7 +2,11 @@ package com.znsio.e2e.tools;
 
 import com.google.common.collect.ImmutableMap;
 import com.znsio.e2e.runner.Runner;
-import io.appium.java_client.*;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileBy;
+import io.appium.java_client.TouchAction;
+import io.appium.java_client.MobileElement;
+import io.appium.java_client.PerformsTouchActions;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.StartsActivity;
 import io.appium.java_client.touch.LongPressOptions;
@@ -14,7 +18,6 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import com.google.common.collect.ImmutableMap;
 
 import java.time.Duration;
 import java.util.List;
