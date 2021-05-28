@@ -56,6 +56,7 @@ public class Runner {
     private static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     private static final String APP_NAME = "APP_NAME";
     private static final String IS_VISUAL = "IS_VISUAL";
+    private static final String CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = "CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION";
     private static final String CHROME = "chrome";
     private static final String PLUGIN = "--plugin";
     private static final String tempDirectory = "temp";
@@ -391,6 +392,7 @@ public class Runner {
         configs.put(DEVICE_LAB_URL, getOverriddenStringValue(DEVICE_LAB_URL, getStringValueFromPropertiesIfAvailable(DEVICE_LAB_URL, NOT_SET)));
         configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE, getStringValueFromPropertiesIfAvailable(ENVIRONMENT_CONFIG_FILE, NOT_SET)));
         configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL, getBooleanValueFromPropertiesIfAvailable(IS_VISUAL, false)));
+        configsBoolean.put(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION, getOverriddenBooleanValue(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION, getBooleanValueFromPropertiesIfAvailable(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION, true)));
         configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR, getStringValueFromPropertiesIfAvailable(LOG_DIR, DEFAULT_LOG_DIR)));
         configs.put(LOG_PROPERTIES_FILE, getStringValueFromPropertiesIfAvailable(LOG_PROPERTIES_FILE, DEFAULT_LOG_PROPERTIES_FILE));
         platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, getStringValueFromPropertiesIfAvailable(PLATFORM, Platform.android.name())));
@@ -569,8 +571,13 @@ public class Runner {
         CommandLineExecutor.execCommand(uninstallAppiumAutomator2Server);
         String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall", "io.appium.settings"};
         CommandLineExecutor.execCommand(uninstallAppiumSettings);
-        String[] uninstallApp = new String[]{"adb", "-s", device.getUdid(), "uninstall", appPackageName};
-        CommandLineExecutor.execCommand(uninstallApp);
+
+        if (configsBoolean.get(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
+            String[] uninstallApp = new String[]{"adb", "-s", device.getUdid(), "uninstall", appPackageName};
+            CommandLineExecutor.execCommand(uninstallApp);
+        } else {
+            LOGGER.info("skipping uninstalling of apk as the flag CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = false");
+        }
     }
 
     @NotNull

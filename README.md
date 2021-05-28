@@ -193,6 +193,7 @@ These can be overridden by providing the same either as environment variables or
     RUN_IN_CI=false -> Are tests running in CI?
     TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE 
     TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
+    CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> uninstall apk from each device before the test starts
 
 ## Troubleshooting / FAQs
 
