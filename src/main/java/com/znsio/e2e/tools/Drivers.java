@@ -1,5 +1,6 @@
 package com.znsio.e2e.tools;
 
+import com.appium.manager.AppiumDriverManager;
 import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
 import com.znsio.e2e.entities.Platform;
@@ -42,8 +43,8 @@ public class Drivers {
     private final Map<String, Driver> userPersonaDrivers = new HashMap<>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
-    private final int MAX_NUMBER_OF_APPIUM_DRIVERS = 1;
-    private final int MAX_NUMBER_OF_WEB_DRIVERS = 2;
+    private final int MAX_NUMBER_OF_APPIUM_DRIVERS = 5;
+    private final int MAX_NUMBER_OF_WEB_DRIVERS = 5;
     private int numberOfAndroidDriversUsed = 0;
     private int numberOfWebDriversUsed = 0;
 
@@ -110,9 +111,24 @@ public class Drivers {
                             forPlatform.name())
             );
         }
-        currentDriver = new Driver(
-                context.getTestName() + "-" + userPersona,
-                (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER));
+
+        if (numberOfAndroidDriversUsed == 0) {
+            currentDriver = new Driver(
+                    context.getTestName() + "-" + userPersona,
+                    (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER));
+        } else {
+            try {
+                new AppiumDriverManager().startAppiumDriverInstance();
+                AppiumDriver newAppiumDriver = AppiumDriverManager.getDriver();
+                currentDriver = new Driver(context.getTestName() + "-" + userPersona, newAppiumDriver);
+            } catch (Exception e) {
+                throw new EnvironmentSetupException(
+                        String.format("Unable to create Android driver '#%d' for user persona: '%s'",
+                                numberOfAndroidDriversUsed,
+                                userPersona)
+                );
+            }
+        }
         numberOfAndroidDriversUsed++;
         System.out.printf("getAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
                 userPersona,
