@@ -218,7 +218,7 @@ public class Drivers {
                                            TestExecutionContext testExecutionContext) {
 
         boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
-        boolean enableVerboseLogging = Runner.enableVeboseLoggingInBrowser();
+        boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
         String proxyUrl = Runner.getProxyURL();
 
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Firefox");
@@ -263,7 +263,7 @@ public class Drivers {
     private WebDriver createChromeDriver (String forUserPersona,
                                           TestExecutionContext testExecutionContext) {
         boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
-        boolean enableVerboseLogging = Runner.enableVeboseLoggingInBrowser();
+        boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
         String proxyUrl = Runner.getProxyURL();
 
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Chrome");

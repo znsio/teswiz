@@ -302,7 +302,7 @@ public class Runner {
         return configsBoolean.get(BROWSER_HEADLESS);
     }
 
-    public static boolean enableVeboseLoggingInBrowser () {
+    public static boolean enableVerboseLoggingInBrowser () {
         return configsBoolean.get(BROWSER_VERBOSE_LOGGING);
     }
 
@@ -467,10 +467,19 @@ public class Runner {
         if (appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
             configs.put(APP_PATH, appPath);
-            String capabilitiesFile = configs.get(CAPS);
-            LOGGER.info("\tUsing AppPath: " + appPath + " in file: " + capabilitiesFile + ":: " + platform);
+            String capabilitiesFileName = configs.get(CAPS);
+            checkIfApkExistsAtTheMentionedPath(appPath, capabilitiesFileName);
         } else {
             LOGGER.info("\tUsing AppPath provided as environment variable -  " + appPath);
+        }
+    }
+
+    private void checkIfApkExistsAtTheMentionedPath(String appPath, String capabilitiesFileName) {
+        if (Files.exists(Paths.get(appPath))) {
+            LOGGER.info("\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName + ":: " + platform);
+        } else {
+            LOGGER.info("\tAppPath: " + appPath + " not found!");
+            throw new InvalidTestDataException("APK not found at the mentioned path: " + appPath);
         }
     }
 
@@ -503,9 +512,9 @@ public class Runner {
 
         LOGGER.info("Updated Device Lab Capabilities file: \n" + loadedCapabilityFile);
 
-        String updatedCapabilitesFile = getTempPathForFile(capabilityFile);
-        JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitesFile);
-        configs.put(CAPS, updatedCapabilitesFile);
+        String updatedCapabilitiesFile = getTempPathForFile(capabilityFile);
+        JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitiesFile);
+        configs.put(CAPS, updatedCapabilitiesFile);
     }
 
     private String getTempPathForFile (String fullFilePath) {
