@@ -42,7 +42,7 @@ dependencies {
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
     implementation "com.epam.reportportal:agent-java-cucumber6:5.0.1"
     implementation "org.slf4j:slf4j-api:$project.slf4jVersion"
-    implementation('com.epam.reportportal:agent-java-testng:5.0.7') {
+    implementation('com.epam.reportportal:agent-java-testng:5.0.11') {
         exclude group: 'com.fasterxml.jackson.core'
     }
     implementation "com.applitools:eyes-connectivity-java3-jersey1x:$project.applitoolsVersion"
