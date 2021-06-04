@@ -53,4 +53,11 @@ class RunnerTest {
         System.setProperty("TAG", "@multiuser-android-web");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
     }
+
+    @Test
+    void multiUserAndroidTest () {
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty("TAG", "@multiuser-android");
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+    }
 }
