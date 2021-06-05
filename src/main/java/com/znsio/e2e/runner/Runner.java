@@ -1,6 +1,5 @@
 package com.znsio.e2e.runner;
 
-import com.appium.utils.Variable;
 import com.applitools.eyes.BatchInfo;
 import com.applitools.eyes.MatchLevel;
 import com.applitools.eyes.RectangleSize;
@@ -41,10 +40,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.appium.utils.Variable.*;
+import static com.appium.utils.OverriddenVariable.getOverriddenBooleanValue;
+import static com.appium.utils.OverriddenVariable.getOverriddenIntValue;
+import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
 
 public class Runner {
     public static final String OS_NAME = System.getProperty("os.name");
@@ -248,7 +253,7 @@ public class Runner {
         if (applitoolsConfiguration.isEmpty()) {
             getApplitoolsConfigFromProvidedConfigFile();
             applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(Runner.APP_NAME));
-            applitoolsConfiguration.put(APPLITOOLS.API_KEY, Variable.getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
+            applitoolsConfiguration.put(APPLITOOLS.API_KEY, getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
             applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT)));
             applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());
             applitoolsConfiguration.put(APPLITOOLS.RECTANGLE_SIZE, getViewportSize());
@@ -339,10 +344,13 @@ public class Runner {
 
         LOGGER.info("ReportPortal Test Execution Attributes: " + rpAttributes);
 
+        // properties needed for atd
         System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
         System.setProperty("CAPS", configs.get(CAPS));
         System.setProperty("Platform", platform.name());
         System.setProperty("atd_" + platform.name() + "_app_local", configs.get(APP_PATH));
+
+        // properties needed for ReportPortal.io
         System.setProperty("rp.description", configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
         System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
         System.setProperty("rp.attributes", rpAttributes);
@@ -742,6 +750,10 @@ public class Runner {
                 platform = Platform.android;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Android & Web";
+            } else if (providedTags.contains("multiuser-android")) {
+                platform = Platform.android;
+                inferredTags = providedTags + " and not @wip";
+                launchName += " - Real User Simulation on multiple Androids";
             } else if (providedTags.contains("multiuser-web-web")) {
                 platform = Platform.web;
                 inferredTags = providedTags + " and not @wip";
