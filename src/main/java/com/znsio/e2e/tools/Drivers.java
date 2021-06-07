@@ -11,6 +11,7 @@ import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.appmanagement.ApplicationState;
+import io.appium.java_client.windows.WindowsDriver;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
 import org.apache.log4j.Logger;
@@ -46,6 +47,7 @@ public class Drivers {
     private final int MAX_NUMBER_OF_WEB_DRIVERS = 2;
     private int numberOfAndroidDriversUsed = 0;
     private int numberOfWebDriversUsed = 0;
+    private int numberOfWindowsDriversUsed = 0;
 
     public Driver setDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("getDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
@@ -78,6 +80,9 @@ public class Drivers {
             case web:
                 currentDriver = createWebDriverForUser(userPersona, forPlatform, context);
                 break;
+            case windows:
+                currentDriver = createWindowsDriverForUser(userPersona, forPlatform, context);
+                break;
             default:
                 throw new InvalidTestDataException(
                         String.format("Unexpected platform value: '%s' provided to assign Driver for user: '%s': ",
@@ -97,7 +102,7 @@ public class Drivers {
 
     @NotNull
     private Driver createAndroidDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.printf("getAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
+        System.out.printf("createAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
                 numberOfAndroidDriversUsed);
@@ -114,7 +119,7 @@ public class Drivers {
                 context.getTestName() + "-" + userPersona,
                 (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER));
         numberOfAndroidDriversUsed++;
-        System.out.printf("getAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
+        System.out.printf("createAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
                 numberOfAndroidDriversUsed);
@@ -124,7 +129,7 @@ public class Drivers {
 
     @NotNull
     private Driver createWebDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.printf("getWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
+        System.out.printf("createWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
                 numberOfWebDriversUsed);
@@ -153,7 +158,43 @@ public class Drivers {
             );
         }
         numberOfWebDriversUsed++;
-        LOGGER.info(String.format("getWebDriverForUser: done: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'", userPersona, forPlatform.name(), numberOfWebDriversUsed));
+        LOGGER.info(String.format("createWebDriverForUser: done: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'", userPersona, forPlatform.name(), numberOfWebDriversUsed));
+        return currentDriver;
+    }
+
+    @NotNull
+    private Driver createWindowsDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
+        System.out.printf("createWindowsDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
+                userPersona,
+                forPlatform.name(),
+                numberOfWindowsDriversUsed);
+
+        Driver currentDriver;
+        if (Platform.windows.equals(forPlatform) && numberOfWindowsDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
+            throw new InvalidTestDataException(
+                    String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
+                    numberOfWindowsDriversUsed,
+                            userPersona,
+                            forPlatform.name())
+            );
+        }
+        if (numberOfWindowsDriversUsed < MAX_NUMBER_OF_APPIUM_DRIVERS) {
+            currentDriver = new Driver(
+                    context.getTestName() + "-" + userPersona,
+                    (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER));
+        } else {
+            throw new InvalidTestDataException(
+                    String.format("Current number of WebDriver instances used: '%d'. " +
+                                    "Unable to create more than '%d' drivers for user persona: '%s' " +
+                                    "on platform: '%s'",
+                                    numberOfWindowsDriversUsed,
+                                    MAX_NUMBER_OF_APPIUM_DRIVERS,
+                            userPersona,
+                            forPlatform.name())
+            );
+        }
+        numberOfWindowsDriversUsed++;
+        LOGGER.info(String.format("createWindowsDriverForUser: done: userPersona: '%s', Platform: '%s', Number of windowsdrivers: '%d'", userPersona, forPlatform.name(), numberOfWindowsDriversUsed));
         return currentDriver;
     }
 
@@ -378,10 +419,20 @@ public class Drivers {
 
     private void attachLogsAndCloseDriver (String key) {
         Driver driver = userPersonaDrivers.get(key);
-        if (driver.getType().equals(Driver.WEB_DRIVER)) {
-            closeWebDriver(key, driver);
-        } else {
-            closeAppOnDevice(driver);
+
+        switch (driver.getType()) {
+            case Driver.WEB_DRIVER:
+                closeWebDriver(key, driver);
+                break;
+            case Driver.APPIUM_DRIVER:
+                closeAppOnDevice(driver);
+                break;
+//            case Driver.WINDOWS_DRIVER:
+//                closeAppOnMachine(key, driver);
+//                break;
+            default:
+                throw new InvalidTestDataException(
+                        String.format("Unexpected driver type: '%s'", driver.getType()));
         }
     }
 
@@ -418,12 +469,24 @@ public class Drivers {
             LOGGER.info("Application State: " + applicationState);
             appiumDriver.closeApp();
             ReportPortal.emitLog(
-                    String.format("App: '%s' termiated? '%s'. Current application state: '%s'%n",
+                    String.format("App: '%s' terminated? '%s'. Current application state: '%s'%n",
                             appPackageName,
                             isAppTerminated,
                             applicationState),
                     "DEBUG",
                     new Date());
+        }
+    }
+
+    private void closeAppOnMachine (String key, Driver driver) {
+        String appPackageName = Runner.getAppPackageName();
+        WindowsDriver windowsDriver = (WindowsDriver) driver.getInnerDriver();
+        LOGGER.info("Terminate app: " + appPackageName);
+        if (null == windowsDriver) {
+            LOGGER.info(String.format("Strange. But WindowsDriver for user: '%s' already closed", key));
+        } else {
+            LOGGER.info(String.format("Closing WindowsDriver for user: '%s'", key));
+            windowsDriver.quit();
         }
     }
 }

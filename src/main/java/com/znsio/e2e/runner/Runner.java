@@ -321,6 +321,7 @@ public class Runner {
         addCucumberPlugsToArgs();
         setupAndroidExecution();
         setupWebExecution();
+        setupWindowsExecution();
         getBranchName();
         initialiseApplitoolsConfiguration();
 
@@ -461,6 +462,17 @@ public class Runner {
         }
     }
 
+    private void setupWindowsExecution () {
+        if (platform.equals(Platform.windows)) {
+            updateAppPath();
+            cukeArgs.add(PLUGIN);
+            cukeArgs.add("com.znsio.e2e.listener.CucumberScenarioListener");
+            cukeArgs.add(PLUGIN);
+            cukeArgs.add("com.znsio.e2e.listener.CucumberScenarioReporterListener");
+            configs.put(EXECUTED_ON, "Local Desktop Apps");
+        }
+    }
+
     private void updateAppPath () {
         String appPath = String.valueOf(configs.get(APP_PATH));
         LOGGER.info("Update path to Apk: " + appPath);
@@ -468,18 +480,18 @@ public class Runner {
             appPath = getAppPathFromCapabilities();
             configs.put(APP_PATH, appPath);
             String capabilitiesFileName = configs.get(CAPS);
-            checkIfApkExistsAtTheMentionedPath(appPath, capabilitiesFileName);
+            checkIfAppExistsAtTheMentionedPath(appPath, capabilitiesFileName);
         } else {
             LOGGER.info("\tUsing AppPath provided as environment variable -  " + appPath);
         }
     }
 
-    private void checkIfApkExistsAtTheMentionedPath(String appPath, String capabilitiesFileName) {
+    private void checkIfAppExistsAtTheMentionedPath(String appPath, String capabilitiesFileName) {
         if (Files.exists(Paths.get(appPath))) {
             LOGGER.info("\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName + ":: " + platform);
         } else {
             LOGGER.info("\tAppPath: " + appPath + " not found!");
-            throw new InvalidTestDataException("APK not found at the mentioned path: " + appPath);
+            throw new InvalidTestDataException("App file not found at the mentioned path: " + appPath);
         }
     }
 
