@@ -466,9 +466,9 @@ public class Runner {
         if (platform.equals(Platform.windows)) {
             updateAppPath();
             cukeArgs.add(PLUGIN);
-            cukeArgs.add("com.znsio.e2e.listener.CucumberScenarioListener");
+            cukeArgs.add("com.cucumber.listener.CucumberScenarioListener");
             cukeArgs.add(PLUGIN);
-            cukeArgs.add("com.znsio.e2e.listener.CucumberScenarioReporterListener");
+            cukeArgs.add("com.cucumber.listener.CucumberScenarioReporterListener");
             configs.put(EXECUTED_ON, "Local Desktop Apps");
         }
     }
