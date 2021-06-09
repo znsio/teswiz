@@ -1,7 +1,11 @@
 package com.znsio.e2e.tools;
 
+import com.appium.manager.AppiumDevice;
+import com.appium.manager.AppiumDriverManager;
+import com.appium.manager.DeviceAllocationManager;
 import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
+import com.github.device.Device;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
@@ -16,6 +20,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
@@ -34,7 +39,11 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class Drivers {
@@ -43,8 +52,8 @@ public class Drivers {
     private final Map<String, Driver> userPersonaDrivers = new HashMap<>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
-    private final int MAX_NUMBER_OF_APPIUM_DRIVERS = 1;
-    private final int MAX_NUMBER_OF_WEB_DRIVERS = 2;
+    private final int MAX_NUMBER_OF_APPIUM_DRIVERS = 5;
+    private final int MAX_NUMBER_OF_WEB_DRIVERS = 5;
     private int numberOfAndroidDriversUsed = 0;
     private int numberOfWebDriversUsed = 0;
     private int numberOfWindowsDriversUsed = 0;
@@ -115,9 +124,25 @@ public class Drivers {
                             forPlatform.name())
             );
         }
-        currentDriver = new Driver(
-                context.getTestName() + "-" + userPersona,
-                (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER));
+
+        if (numberOfAndroidDriversUsed == 0) {
+            AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
+            Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
+            System.out.println("CAPABILITIES: " + appiumDriverCapabilities);
+            currentDriver = new Driver(
+                    context.getTestName() + "-" + userPersona,
+                    appiumDriver);
+        } else {
+            try {
+                currentDriver = new Driver(context.getTestName() + "-" + userPersona, allocateNewDeviceAndStartAppiumDriver());
+            } catch (Exception e) {
+                throw new EnvironmentSetupException(
+                        String.format("Unable to create Android driver '#%d' for user persona: '%s'",
+                                numberOfAndroidDriversUsed,
+                                userPersona)
+                );
+            }
+        }
         numberOfAndroidDriversUsed++;
         System.out.printf("createAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
                 userPersona,
@@ -125,6 +150,53 @@ public class Drivers {
                 numberOfAndroidDriversUsed);
         disableNotificationsAndToastsOnDevice(currentDriver);
         return currentDriver;
+    }
+
+    private AppiumDriver allocateNewDeviceAndStartAppiumDriver () {
+        try {
+            DeviceAllocationManager deviceAllocationManager = DeviceAllocationManager.getInstance();
+            AppiumDevice availableDevice = deviceAllocationManager.getNextAvailableDevice();
+            deviceAllocationManager.allocateDevice(availableDevice);
+            AppiumDriver driver = new AppiumDriverManager().startAppiumDriverInstance();
+            updateAvailableDeviceInformation(availableDevice);
+            return driver;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private AppiumDevice updateAvailableDeviceInformation (AppiumDevice availableDevice) {
+        org.openqa.selenium.Capabilities capabilities = AppiumDriverManager.getDriver()
+                .getCapabilities();
+        LOGGER.info("allocateDeviceAndStartDriver: "
+                + capabilities);
+
+        String udid = capabilities.is("udid")
+                ? getCapabilityFor(capabilities, "udid")
+                : getCapabilityFor(capabilities, "deviceUDID");
+        Device device = availableDevice.getDevice();
+        device.setUdid(udid);
+        device.setDeviceManufacturer(
+                getCapabilityFor(capabilities, "deviceManufacturer"));
+        device.setDeviceModel(
+                getCapabilityFor(capabilities, "deviceModel"));
+        device.setName(
+                getCapabilityFor(capabilities, "deviceName")
+                        + " "
+                        + getCapabilityFor(capabilities, "deviceModel"));
+        device.setApiLevel(
+                getCapabilityFor(capabilities, "deviceApiLevel"));
+        device.setDeviceType(
+                getCapabilityFor(capabilities, "platformName"));
+        device.setScreenSize(
+                getCapabilityFor(capabilities, "deviceScreenSize"));
+        return availableDevice;
+    }
+
+    private String getCapabilityFor (org.openqa.selenium.Capabilities capabilities, String name) {
+        Object capability = capabilities.getCapability(name);
+        return null == capability ? "" : capability.toString();
     }
 
     @NotNull
