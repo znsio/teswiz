@@ -255,7 +255,7 @@ public class Drivers {
                     (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER));
         } else {
             throw new InvalidTestDataException(
-                    String.format("Current number of WebDriver instances used: '%d'. " +
+                    String.format("Current number of WindowsDriver instances used: '%d'. " +
                                     "Unable to create more than '%d' drivers for user persona: '%s' " +
                                     "on platform: '%s'",
                                     numberOfWindowsDriversUsed,
@@ -265,7 +265,7 @@ public class Drivers {
             );
         }
         numberOfWindowsDriversUsed++;
-        LOGGER.info(String.format("createWindowsDriverForUser: done: userPersona: '%s', Platform: '%s', Number of windowsdrivers: '%d'", userPersona, forPlatform.name(), numberOfWindowsDriversUsed));
+        LOGGER.info(String.format("createWindowsDriverForUser: done: userPersona: '%s', Platform: '%s', Number of windowsDrivers: '%d'", userPersona, forPlatform.name(), numberOfWindowsDriversUsed));
         return currentDriver;
     }
 
@@ -496,7 +496,11 @@ public class Drivers {
                 closeWebDriver(key, driver);
                 break;
             case Driver.APPIUM_DRIVER:
-                closeAppOnDevice(driver);
+                if (Runner.platform.equals(Platform.windows)) {
+                    closeAppOnMachine(driver);
+                } else {
+                    closeAppOnDevice(driver);
+                }
                 break;
             default:
                 throw new InvalidTestDataException(
@@ -529,16 +533,11 @@ public class Drivers {
             LOGGER.info(message);
             ReportPortal.emitLog(message, "DEBUG", new Date());
         } else {
-            boolean isAppTerminated = Boolean.parseBoolean(null);
-            ApplicationState applicationState = null;
-
             LOGGER.info("Terminate app: " + appPackageName);
-            if (!Runner.platform.equals(Platform.windows)) {
-                isAppTerminated = appiumDriver.terminateApp(appPackageName);
-                LOGGER.info("App terminated? " + isAppTerminated);
-                applicationState = appiumDriver.queryAppState(appPackageName);
-                LOGGER.info("Application State: " + applicationState);
-            }
+            boolean isAppTerminated = appiumDriver.terminateApp(appPackageName);
+            LOGGER.info("App terminated? " + isAppTerminated);
+            ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
+            LOGGER.info("Application State: " + applicationState);
             appiumDriver.closeApp();
             ReportPortal.emitLog(
                     String.format("App: '%s' terminated? '%s'. Current application state: '%s'%n",
@@ -548,5 +547,17 @@ public class Drivers {
                     "DEBUG",
                     new Date());
         }
+    }
+
+    private void closeAppOnMachine (Driver driver) {
+        String appPackageName = Runner.getAppPackageName();
+        AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
+        LOGGER.info(String.format("Closing WindowsDriver for App '%s'", appPackageName));
+        appiumDriver.closeApp();
+        ReportPortal.emitLog(
+                String.format("App: '%s' terminated",
+                        appPackageName),
+                "DEBUG",
+                new Date());
     }
 }
