@@ -499,9 +499,6 @@ public class Drivers {
             case Driver.APPIUM_DRIVER:
                 closeAppOnDevice(driver);
                 break;
-//            case Driver.WINDOWS_DRIVER:
-//                closeAppOnMachine(key, driver);
-//                break;
             default:
                 throw new InvalidTestDataException(
                         String.format("Unexpected driver type: '%s'", driver.getType()));
@@ -551,18 +548,6 @@ public class Drivers {
                             applicationState),
                     "DEBUG",
                     new Date());
-        }
-    }
-
-    private void closeAppOnMachine (String key, Driver driver) {
-        String appPackageName = Runner.getAppPackageName();
-        WindowsDriver windowsDriver = (WindowsDriver) driver.getInnerDriver();
-        LOGGER.info("Terminate app: " + appPackageName);
-        if (null == windowsDriver) {
-            LOGGER.info(String.format("Strange. But WindowsDriver for user: '%s' already closed", key));
-        } else {
-            LOGGER.info(String.format("Closing WindowsDriver for user: '%s'", key));
-            windowsDriver.quit();
         }
     }
 }
