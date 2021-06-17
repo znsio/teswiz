@@ -164,6 +164,14 @@ public class Runner {
         }
     }
 
+    public static Map getTestDataAsMap (String key) {
+        try {
+            return testDataForEnvironment.get(key);
+        } catch (NullPointerException npe) {
+            throw new InvalidTestDataException(String.format("Invalid key name ('%s') provided", key), npe);
+        }
+    }
+
     public static void main (String[] args) {
         LOGGER.info("teswiz Runner");
         LOGGER.info("Provided parameters:");
