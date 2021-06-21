@@ -534,8 +534,6 @@ public class Drivers {
             ReportPortal.emitLog(message, "DEBUG", new Date());
         } else {
             LOGGER.info("Terminate app: " + appPackageName);
-//            boolean isAppTerminated = appiumDriver.terminateApp(appPackageName);
-//            LOGGER.info("App terminated? " + isAppTerminated);
             ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
             LOGGER.info("Application State: " + applicationState);
             appiumDriver.closeApp();
