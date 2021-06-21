@@ -540,18 +540,18 @@ public class Runner {
 
         LOGGER.info("Updated Device Lab Capabilities file: \n" + loadedCapabilityFile);
 
-        String updatedCapabilitiesFile = getTempPathForFile(capabilityFile);
+        String updatedCapabilitiesFile = getPathForFileInLogDir(capabilityFile);
         JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitiesFile);
         configs.put(CAPS, updatedCapabilitiesFile);
     }
 
-    private String getTempPathForFile (String fullFilePath) {
-        LOGGER.info("\tgetTempPathForFile: fullFilePath: " + fullFilePath);
+    private String getPathForFileInLogDir (String fullFilePath) {
+        LOGGER.info("\tgetPathForFileInLogDir: fullFilePath: " + fullFilePath);
         Path path = Paths.get(fullFilePath);
         String fileName = path.getFileName().toString();
-        String tempFileName = configs.get(LOG_DIR) + "/" + fileName;
-        LOGGER.info("\tTemp file available here: " + tempFileName);
-        return tempFileName;
+        String newFileName = configs.get(LOG_DIR) + "/" + fileName;
+        LOGGER.info("\tNew file available here: " + newFileName);
+        return newFileName;
     }
 
     private void setupLocalExecution () {
