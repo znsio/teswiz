@@ -106,6 +106,10 @@ public class Driver {
         return driver.findElements(locator).size() > 0;
     }
 
+    public boolean isElementPresentByAccessibilityId (String locator) {
+        return ((AppiumDriver) driver).findElementsByAccessibilityId(locator).size() > 0;
+    }
+
     public boolean isElementPresentWithin (WebElement parentElement, By locator) {
         return parentElement.findElements(locator).size() > 0;
     }
@@ -124,6 +128,24 @@ public class Driver {
                 .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
                 .moveTo(PointOption.point(new Point(width, toHeight)))
                 .release().perform();
+    }
+
+    public void scrollVertically (int fromPercentScreenHeight, int toPercentScreenHeight, int percentScreenWidth) {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        Dimension windowSize = appiumDriver.manage().window().getSize();
+        LOGGER.info("dimension: " + windowSize.toString());
+        int width = windowSize.width * (percentScreenWidth / 100);
+        int fromHeight = windowSize.height * (fromPercentScreenHeight / 100);
+        int toHeight = windowSize.height * (toPercentScreenHeight / 100);
+        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
+        System.out.printf("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight);
+
+        TouchAction touchAction = new TouchAction(appiumDriver);
+        touchAction.press(PointOption.point(new Point(width, fromHeight)))
+                .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
+                .moveTo(PointOption.point(new Point(width, toHeight)))
+                .release()
+                .perform();
     }
 
     public void tapOnMiddleOfScreen () {

@@ -537,6 +537,7 @@ public class Drivers {
             ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
             LOGGER.info("Application State: " + applicationState);
             appiumDriver.closeApp();
+            appiumDriver.quit();
             ReportPortal.emitLog(
                     String.format("App: '%s' Current application state: '%s'%n",
 
@@ -552,6 +553,7 @@ public class Drivers {
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
         LOGGER.info(String.format("Closing WindowsDriver for App '%s'", appPackageName));
         appiumDriver.closeApp();
+        appiumDriver.quit();
         ReportPortal.emitLog(
                 String.format("App: '%s' terminated",
                         appPackageName),
