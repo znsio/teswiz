@@ -489,9 +489,8 @@ public class Drivers {
             LOGGER.info("Application State: " + applicationState);
             appiumDriver.closeApp();
             ReportPortal.emitLog(
-                    String.format("App: '%s' termiated? '%s'. Current application state: '%s'%n",
+                    String.format("App: '%s' Current application state: '%s'%n",
                             appPackageName,
-                            true,
                             applicationState),
                     "DEBUG",
                     new Date());
