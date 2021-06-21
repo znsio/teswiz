@@ -221,15 +221,6 @@ public class Driver {
         waitFor(3);
     }
 
-    public void uploadFile(String fileName) throws IOException {
-        String filePath = System.getProperty("usr.dir") + "/temp" + fileName;
-        if(Runner.platform.equals(Platform.android)) {
-            ((AndroidDriver) driver).pushFile("/data/local/tmp/" + fileName, new File(filePath));
-        }else if(Runner.platform.equals(Platform.web)){
-            driver.findElement(By.xpath("//input[@type='file']")).sendKeys(filePath);
-        }
-    }
-
     public void putAppInBackground (int duration) {
         ((AppiumDriver) driver).runAppInBackground(Duration.ofSeconds(duration));
     }
