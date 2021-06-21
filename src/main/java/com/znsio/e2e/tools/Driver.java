@@ -1,6 +1,7 @@
 package com.znsio.e2e.tools;
 
 import com.google.common.collect.ImmutableMap;
+import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
@@ -9,6 +10,7 @@ import io.appium.java_client.MobileElement;
 import io.appium.java_client.PerformsTouchActions;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.StartsActivity;
+import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.touch.LongPressOptions;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
@@ -19,6 +21,8 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
@@ -165,8 +169,7 @@ public class Driver {
         int height = getWindowHeight() / 2;
         int fromWidth = (int) (getWindowWidth() * 0.5);
         int toWidth = (int) (getWindowWidth() * 0.9);
-        System.out.printf("height: %s, from width: %s, to width: %s", height, fromWidth, toWidth);
-
+        LOGGER.info("height: "+ height +", from width: "+fromWidth +", to width: " + toWidth);
         swipe(height, fromWidth, toWidth);
     }
 
