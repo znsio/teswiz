@@ -17,7 +17,7 @@ class RunnerTest {
         String baseUrl = Runner.getFromEnvironmentConfiguration("BASE_URL");
         assertThat(baseUrl)
                 .as("environment config is incorrect")
-                .isEqualTo("https://github.com/znsio/teswiz/");
+                .isEqualTo("http://the-internet.herokuapp.com/");
 
         String actualTestData = Runner.getTestData("GMAIL_USER_1_EMAIL");
         assertThat(actualTestData)
@@ -51,6 +51,13 @@ class RunnerTest {
     void multiUserTest () {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("TAG", "@multiuser-android-web");
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+    }
+
+    @Test
+    void multiUserAndroidTest () {
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty("TAG", "@multiuser-android");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
     }
 }
