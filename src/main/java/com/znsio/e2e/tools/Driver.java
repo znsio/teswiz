@@ -1,6 +1,7 @@
 package com.znsio.e2e.tools;
 
 import com.google.common.collect.ImmutableMap;
+import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
@@ -9,6 +10,7 @@ import io.appium.java_client.MobileElement;
 import io.appium.java_client.PerformsTouchActions;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.StartsActivity;
+import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.touch.LongPressOptions;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
@@ -19,6 +21,8 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
@@ -102,6 +106,10 @@ public class Driver {
         return driver.findElements(locator).size() > 0;
     }
 
+    public boolean isElementPresentByAccessibilityId (String locator) {
+        return ((AppiumDriver) driver).findElementsByAccessibilityId(locator).size() > 0;
+    }
+
     public boolean isElementPresentWithin (WebElement parentElement, By locator) {
         return parentElement.findElements(locator).size() > 0;
     }
@@ -120,6 +128,24 @@ public class Driver {
                 .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
                 .moveTo(PointOption.point(new Point(width, toHeight)))
                 .release().perform();
+    }
+
+    public void scrollVertically (int fromPercentScreenHeight, int toPercentScreenHeight, int percentScreenWidth) {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        Dimension windowSize = appiumDriver.manage().window().getSize();
+        LOGGER.info("dimension: " + windowSize.toString());
+        int width = windowSize.width * (percentScreenWidth / 100);
+        int fromHeight = windowSize.height * (fromPercentScreenHeight / 100);
+        int toHeight = windowSize.height * (toPercentScreenHeight / 100);
+        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
+        System.out.printf("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight);
+
+        TouchAction touchAction = new TouchAction(appiumDriver);
+        touchAction.press(PointOption.point(new Point(width, fromHeight)))
+                .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
+                .moveTo(PointOption.point(new Point(width, toHeight)))
+                .release()
+                .perform();
     }
 
     public void tapOnMiddleOfScreen () {
@@ -165,8 +191,7 @@ public class Driver {
         int height = getWindowHeight() / 2;
         int fromWidth = (int) (getWindowWidth() * 0.5);
         int toWidth = (int) (getWindowWidth() * 0.9);
-        System.out.printf("height: %s, from width: %s, to width: %s", height, fromWidth, toWidth);
-
+        LOGGER.info("height: "+ height +", from width: "+fromWidth +", to width: " + toWidth);
         swipe(height, fromWidth, toWidth);
     }
 
