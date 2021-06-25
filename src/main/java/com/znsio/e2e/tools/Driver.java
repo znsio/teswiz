@@ -2,6 +2,7 @@ package com.znsio.e2e.tools;
 
 import com.google.common.collect.ImmutableMap;
 import com.znsio.e2e.entities.Platform;
+import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
@@ -106,6 +107,10 @@ public class Driver {
         return driver.findElements(locator).size() > 0;
     }
 
+    public boolean isElementPresentByAccessibilityId (String locator) {
+        return ((AppiumDriver) driver).findElementsByAccessibilityId(locator).size() > 0;
+    }
+
     public boolean isElementPresentWithin (WebElement parentElement, By locator) {
         return parentElement.findElements(locator).size() > 0;
     }
@@ -124,6 +129,24 @@ public class Driver {
                 .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
                 .moveTo(PointOption.point(new Point(width, toHeight)))
                 .release().perform();
+    }
+
+    public void scrollVertically (int fromPercentScreenHeight, int toPercentScreenHeight, int percentScreenWidth) {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        Dimension windowSize = appiumDriver.manage().window().getSize();
+        LOGGER.info("dimension: " + windowSize.toString());
+        int width = windowSize.width * (percentScreenWidth / 100);
+        int fromHeight = windowSize.height * (fromPercentScreenHeight / 100);
+        int toHeight = windowSize.height * (toPercentScreenHeight / 100);
+        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
+        System.out.printf("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight);
+
+        TouchAction touchAction = new TouchAction(appiumDriver);
+        touchAction.press(PointOption.point(new Point(width, fromHeight)))
+                .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
+                .moveTo(PointOption.point(new Point(width, toHeight)))
+                .release()
+                .perform();
     }
 
     public void tapOnMiddleOfScreen () {
@@ -259,4 +282,42 @@ public class Driver {
                 .release()
                 .perform();
     }
+
+    public void pushFileToDevice(String filePathToPush, String devicePath){
+        LOGGER.info("Pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath +"'");
+        try {
+            if(Runner.platform.equals(Platform.android)) {
+                ((AndroidDriver) driver).pushFile(devicePath , new File(filePathToPush));
+            }else if(Runner.platform.equals(Platform.iOS)){
+                ((IOSDriver) driver).pushFile(devicePath , new File(filePathToPush));
+            }
+        } catch (IOException e) {
+            throw new InvalidTestDataException("Error in pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath +"'", e);
+        }
+    }
+
+    public void uploadFile(String filePathOnDevice, By uploadBtn, By allowPermissionElement){
+        // this willl be moved to e2e
+        //waitForVisibilityOf(uploadBtn).click();
+        //allowPermission(allowPermissionElement);
+
+        // click on files
+        By fileElement = By.xpath("//*[@text='Files']");
+        waitForVisibilityOf(fileElement).click();
+
+        //select pdf file from downloads (location of pdf file)
+        By eleDoc = By.id("com.android.documentsui:id/thumbnail");
+        waitForVisibilityOf(eleDoc).click();
+
+        // click on send btn
+
+    }
+
+    public void allowPermission(By element){
+        waitForVisibilityOf(element);
+        if(Runner.platform.equals(Platform.android)) {
+            ((AndroidDriver) driver).findElement(element).click();
+        }
+    }
+
 }

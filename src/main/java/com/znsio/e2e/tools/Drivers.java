@@ -534,11 +534,10 @@ public class Drivers {
             ReportPortal.emitLog(message, "DEBUG", new Date());
         } else {
             LOGGER.info("Terminate app: " + appPackageName);
-//            boolean isAppTerminated = appiumDriver.terminateApp(appPackageName);
-//            LOGGER.info("App terminated? " + isAppTerminated);
             ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
             LOGGER.info("Application State: " + applicationState);
             appiumDriver.closeApp();
+            appiumDriver.quit();
             ReportPortal.emitLog(
                     String.format("App: '%s' Current application state: '%s'%n",
 
@@ -554,6 +553,7 @@ public class Drivers {
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
         LOGGER.info(String.format("Closing WindowsDriver for App '%s'", appPackageName));
         appiumDriver.closeApp();
+        appiumDriver.quit();
         ReportPortal.emitLog(
                 String.format("App: '%s' terminated",
                         appPackageName),
