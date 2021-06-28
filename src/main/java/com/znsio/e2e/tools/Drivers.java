@@ -15,6 +15,7 @@ import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.appmanagement.ApplicationState;
+import io.appium.java_client.remote.MobileCapabilityType;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
 import org.apache.log4j.Logger;
@@ -45,10 +46,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
+
 public class Drivers {
     private static final String USER_DIR = "user.dir";
     private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
     private final Map<String, Driver> userPersonaDrivers = new HashMap<>();
+    private final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<String, Capabilities>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
     private final int MAX_NUMBER_OF_APPIUM_DRIVERS = 5;
@@ -101,19 +105,19 @@ public class Drivers {
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
         userPersonaDrivers.put(userPersona, currentDriver);
         userPersonaPlatforms.put(userPersona, forPlatform);
-        System.out.printf("allocateDriverFor: done: userPersona: '%s', Platform: '%s'%n",
+        LOGGER.info(String.format("allocateDriverFor: done: userPersona: '%s', Platform: '%s'%n",
                 userPersona,
-                forPlatform.name());
+                forPlatform.name()));
 
         return currentDriver;
     }
 
     @NotNull
     private Driver createAndroidDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.printf("createAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
+        LOGGER.info(String.format("createAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
-                numberOfAndroidDriversUsed);
+                numberOfAndroidDriversUsed));
         Driver currentDriver;
         if (Platform.android.equals(forPlatform) && numberOfAndroidDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
             throw new InvalidTestDataException(
@@ -127,13 +131,18 @@ public class Drivers {
         if (numberOfAndroidDriversUsed == 0) {
             AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
             Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
-            System.out.println("CAPABILITIES: " + appiumDriverCapabilities);
+            LOGGER.info("CAPABILITIES: " + appiumDriverCapabilities);
+            userPersonaDriverCapabilities.put(userPersona, appiumDriverCapabilities);
             currentDriver = new Driver(
                     context.getTestName() + "-" + userPersona,
                     appiumDriver);
         } else {
             try {
-                currentDriver = new Driver(context.getTestName() + "-" + userPersona, allocateNewDeviceAndStartAppiumDriver());
+                AppiumDriver appiumDriver = allocateNewDeviceAndStartAppiumDriver();
+                currentDriver = new Driver(context.getTestName() + "-" + userPersona, appiumDriver);
+                Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
+                LOGGER.info("CAPABILITIES: " + appiumDriverCapabilities);
+                userPersonaDriverCapabilities.put(userPersona, appiumDriverCapabilities);
             } catch (Exception e) {
                 throw new EnvironmentSetupException(
                         String.format("Unable to create Android driver '#%d' for user persona: '%s'",
@@ -143,10 +152,10 @@ public class Drivers {
             }
         }
         numberOfAndroidDriversUsed++;
-        System.out.printf("createAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
+        LOGGER.info(String.format("createAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
-                numberOfAndroidDriversUsed);
+                numberOfAndroidDriversUsed));
         disableNotificationsAndToastsOnDevice(currentDriver);
         return currentDriver;
     }
@@ -200,10 +209,10 @@ public class Drivers {
 
     @NotNull
     private Driver createWebDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.printf("createWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
+        LOGGER.info(String.format("createWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
-                numberOfWebDriversUsed);
+                numberOfWebDriversUsed));
 
         Driver currentDriver;
         if (Platform.web.equals(forPlatform) && numberOfWebDriversUsed == MAX_NUMBER_OF_WEB_DRIVERS) {
@@ -235,10 +244,10 @@ public class Drivers {
 
     @NotNull
     private Driver createWindowsDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        System.out.printf("createWindowsDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
+        LOGGER.info(String.format("createWindowsDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
-                numberOfWindowsDriversUsed);
+                numberOfWindowsDriversUsed));
 
         Driver currentDriver;
         if (Platform.windows.equals(forPlatform) && numberOfWindowsDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
@@ -250,9 +259,13 @@ public class Drivers {
             );
         }
         if (numberOfWindowsDriversUsed < MAX_NUMBER_OF_APPIUM_DRIVERS) {
+            AppiumDriver<WebElement> windowsDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
             currentDriver = new Driver(
                     context.getTestName() + "-" + userPersona,
-                    (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER));
+                    windowsDriver);
+            Capabilities windowsDriverCapabilities = windowsDriver.getCapabilities();
+            LOGGER.info("CAPABILITIES: " + windowsDriverCapabilities);
+            userPersonaDriverCapabilities.put(userPersona, windowsDriverCapabilities);
         } else {
             throw new InvalidTestDataException(
                     String.format("Current number of WindowsDriver instances used: '%d'. " +
@@ -368,6 +381,8 @@ public class Drivers {
         LOGGER.info("FirefoxOptions: " + firefoxOptions.asMap());
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(firefoxOptions) : new FirefoxDriver(firefoxOptions);
+        Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities() : ((FirefoxDriver) driver).getCapabilities();
+        userPersonaDriverCapabilities.put(forUserPersona, capabilities);
         return driver;
     }
 
@@ -430,6 +445,8 @@ public class Drivers {
         LOGGER.info("ChromeOptions: " + chromeOptions.asMap());
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions) : new ChromeDriver(chromeOptions);
+        Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities() : ((ChromeDriver) driver).getCapabilities();
+        userPersonaDriverCapabilities.put(forUserPersona, capabilities);
         return driver;
     }
 
@@ -460,6 +477,16 @@ public class Drivers {
         }
 
         return userPersonaDrivers.get(userPersona);
+    }
+
+    public String getDeviceNameForUser (String userPersona) {
+        Capabilities userPersonaCapabilities = userPersonaDriverCapabilities.get(userPersona);
+        String deviceName = (String) userPersonaCapabilities.getCapability(DEVICE_NAME);
+        if (null == deviceName) {
+            LOGGER.info("getDeviceNameForUser: Capabilities available for userPersona: '" + userPersona + "': " + userPersonaCapabilities.asMap().keySet());
+            throw new InvalidTestDataException(String.format(DEVICE_NAME + " capability NOT found for user persona: '%s'\n%s", userPersona, userPersonaCapabilities.asMap().keySet()));
+        }
+        return deviceName;
     }
 
     public Platform getPlatformForUser (String userPersona) {

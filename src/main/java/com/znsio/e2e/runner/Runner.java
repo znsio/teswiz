@@ -134,6 +134,11 @@ public class Runner {
         return allDrivers.getDriverForUser(userPersona);
     }
 
+    public static String fetchDeviceName (long threadId, String forUserPersona) {
+        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.ALL_DRIVERS);
+        return allDrivers.getDeviceNameForUser(forUserPersona);
+    }
+
     public static TestExecutionContext getTestExecutionContext (long threadId) {
         return SessionContext.getTestExecutionContext(threadId);
     }
