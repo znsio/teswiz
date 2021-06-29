@@ -295,23 +295,6 @@ public class Driver {
         }
     }
 
-//    public void uploadFile(String filePathOnDevice, By uploadBtn, By allowPermissionElement){
-//        // this willl be moved to e2e
-//        //waitForVisibilityOf(uploadBtn).click();
-//        //allowPermission(allowPermissionElement);
-//
-//        // click on files
-//        By fileElement = By.xpath("//*[@text='Files']");
-//        waitForVisibilityOf(fileElement).click();
-//
-//        //select pdf file from downloads (location of pdf file)
-//        By eleDoc = By.id("com.android.documentsui:id/thumbnail");
-//        waitForVisibilityOf(eleDoc).click();
-//
-//        // click on send btn
-//
-//    }
-
     public void allowPermission(By element){
         waitForVisibilityOf(element);
         if(Runner.platform.equals(Platform.android)) {
