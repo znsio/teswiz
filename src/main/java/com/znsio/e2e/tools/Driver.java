@@ -2,6 +2,7 @@ package com.znsio.e2e.tools;
 
 import com.google.common.collect.ImmutableMap;
 import com.znsio.e2e.entities.Platform;
+import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileBy;
@@ -121,7 +122,7 @@ public class Driver {
         int width = windowSize.width / 2;
         int fromHeight = (int) (windowSize.height * 0.9);
         int toHeight = (int) (windowSize.height * 0.5);
-        System.out.printf("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight);
+        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
 
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.press(PointOption.point(new Point(width, fromHeight)))
@@ -138,7 +139,7 @@ public class Driver {
         int fromHeight = windowSize.height * (fromPercentScreenHeight / 100);
         int toHeight = windowSize.height * (toPercentScreenHeight / 100);
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
-        System.out.printf("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight);
+        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
 
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.press(PointOption.point(new Point(width, fromHeight)))
@@ -161,7 +162,7 @@ public class Driver {
         Dimension screenSize = appiumDriver.manage().window().getSize();
         int midHeight = screenSize.height / 2;
         int midWidth = screenSize.width / 2;
-        System.out.printf("tapOnMiddleOfScreen: Screen dimensions: '%s'. Tapping on coordinates: %d:%d%n", screenSize.toString(), midWidth, midHeight);
+        LOGGER.info(String.format("tapOnMiddleOfScreen: Screen dimensions: '%s'. Tapping on coordinates: %d:%d%n", screenSize.toString(), midWidth, midHeight));
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.tap(PointOption.point(midWidth, midHeight)).perform();
         waitFor(1);
@@ -220,8 +221,7 @@ public class Driver {
         int height = getWindowHeight() / 2;
         int fromWidth = (int) (getWindowWidth() * 0.9);
         int toWidth = (int) (getWindowWidth() * 0.5);
-        System.out.printf("height: %s, from width: %s, to width: %s", height, fromWidth, toWidth);
-
+        LOGGER.info(String.format("height: %s, from width: %s, to width: %s", height, fromWidth, toWidth));
         swipe(height, fromWidth, toWidth);
     }
 
@@ -281,4 +281,25 @@ public class Driver {
                 .release()
                 .perform();
     }
+
+    public void pushFileToDevice(String filePathToPush, String devicePath){
+        LOGGER.info("Pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath +"'");
+        try {
+            if(Runner.platform.equals(Platform.android)) {
+                ((AndroidDriver) driver).pushFile(devicePath , new File(filePathToPush));
+            }else if(Runner.platform.equals(Platform.iOS)){
+                ((IOSDriver) driver).pushFile(devicePath , new File(filePathToPush));
+            }
+        } catch (IOException e) {
+            throw new InvalidTestDataException("Error in pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath +"'", e);
+        }
+    }
+
+    public void allowPermission(By element){
+        waitForVisibilityOf(element);
+        if(Runner.platform.equals(Platform.android)) {
+            ((AndroidDriver) driver).findElement(element).click();
+        }
+    }
+
 }

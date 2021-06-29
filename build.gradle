@@ -3,10 +3,11 @@ plugins {
     id "java"
     id "idea"
     id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'maven-publish'
 }
 
 group = 'com.github.znsio'
-version '0.0.61'
+version '0.0.62'
 project.ext.logDir = "${rootDir}/target"
 
 repositories {
@@ -14,9 +15,8 @@ repositories {
     flatDir {
         dirs 'libs'
     }
-    maven { url "https://dl.bintray.com/epam/reportportal" }
+    mavenCentral()
     maven { url 'https://jitpack.io' }
-    jcenter()
 }
 
 configurations {
@@ -80,3 +80,14 @@ artifacts {
 wrapper {
     gradleVersion = project.gradleVersion // version from gradle.properties
 }
+
+publishing {
+    publications {
+        testing(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}
+
+task install(dependsOn: publishToMavenLocal)

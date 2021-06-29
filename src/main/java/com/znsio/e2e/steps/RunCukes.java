@@ -25,7 +25,7 @@ public class RunCukes extends AbstractTestNGCucumberTests {
     @Override
     @DataProvider(parallel = true)
     public Object[][] scenarios () {
-        System.out.printf("ThreadID: %d: in overridden scenarios%n", Thread.currentThread().getId());
+        LOGGER.info(String.format("ThreadID: %d: in overridden scenarios%n", Thread.currentThread().getId()));
         Object[][] scenarios = super.scenarios();
         LOGGER.info(scenarios);
         return scenarios;

@@ -1,3 +1,4 @@
+@login
 Feature: Test valid and invalid login
 
   @android @web
