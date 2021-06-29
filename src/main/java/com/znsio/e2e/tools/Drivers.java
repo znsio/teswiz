@@ -15,7 +15,6 @@ import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.appmanagement.ApplicationState;
-import io.appium.java_client.remote.MobileCapabilityType;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
 import org.apache.log4j.Logger;
