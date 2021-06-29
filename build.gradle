@@ -3,6 +3,7 @@ plugins {
     id "java"
     id "idea"
     id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'maven-publish'
 }
 
 group = 'com.github.znsio'
@@ -14,9 +15,11 @@ repositories {
     flatDir {
         dirs 'libs'
     }
-    maven { url "https://dl.bintray.com/epam/reportportal" }
+    mavenCentral()
+//    maven { url "https://dl.bintray.com/epam/reportportal" }
     maven { url 'https://jitpack.io' }
-    jcenter()
+//    maven { url 'https://mvnrepository.com' }
+//    jcenter()
 }
 
 configurations {
