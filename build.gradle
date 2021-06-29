@@ -16,10 +16,7 @@ repositories {
         dirs 'libs'
     }
     mavenCentral()
-//    maven { url "https://dl.bintray.com/epam/reportportal" }
     maven { url 'https://jitpack.io' }
-//    maven { url 'https://mvnrepository.com' }
-//    jcenter()
 }
 
 configurations {
