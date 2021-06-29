@@ -13,6 +13,7 @@ class RunnerTest {
     @Test
     void mainLocalDefault () {
         String featuresDir = "./src/test/resources";
+        System.setProperty("RUN_IN_CI", "false");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
         String baseUrl = Runner.getFromEnvironmentConfiguration("BASE_URL");
         assertThat(baseUrl)
@@ -57,7 +58,7 @@ class RunnerTest {
     @Test
     void multiUserAndroidTest () {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
-        System.setProperty("TAG", "@multiuser-android");
+        System.setProperty("TAG", "@multiuser-android and @login");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
     }
 }
