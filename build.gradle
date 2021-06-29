@@ -83,3 +83,12 @@ artifacts {
 wrapper {
     gradleVersion = project.gradleVersion // version from gradle.properties
 }
+
+publishing {
+    publications {
+        testing(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}
