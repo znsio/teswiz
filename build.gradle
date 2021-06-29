@@ -92,3 +92,5 @@ publishing {
         }
     }
 }
+
+task install(dependsOn: publishToMavenLocal)
