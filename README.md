@@ -29,7 +29,7 @@ variable: `REPORT_PORTAL_FILE`
 * WebDriver (https://selenium.dev)
 * reportportal.io (https://reportportal.io)
 * Applitools (https://applitools.com)
-* Build tool: gradle
+* Build tool: gradle 7.1
 
 ## Getting Started, or how can you use teswiz?
 It is very easy to use teswiz in your framework.
