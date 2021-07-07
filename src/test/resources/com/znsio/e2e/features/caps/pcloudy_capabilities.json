@@ -9,7 +9,6 @@
     "platformName": "Android",
     "autoGrantPermissions": true,
     "pCloudy_DurationInMinutes": 10,
-    "pCloudy_DeviceManafacturer": "Samsung",
     "pCloudy_DeviceVersion": "10.0.0",
     "pCloudy_WildNet": "false",
     "pCloudy_EnableVideo": "true",
@@ -25,7 +24,7 @@
   },
   "hostMachines": [
     {
-      "machineIP": "device.pcloudy.com/appiumcloud",
+      "machineIP": "mobilab.ril.com/appiumcloud",
       "isCloud": true,
       "cloudName": "pCloudy"
     }
