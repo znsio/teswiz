@@ -33,8 +33,17 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.appium.utils.OverriddenVariable.*;
-import static com.znsio.e2e.runner.Runner.*;
+import static com.appium.utils.OverriddenVariable.getOverriddenBooleanValue;
+import static com.appium.utils.OverriddenVariable.getOverriddenIntValue;
+import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
+import static com.znsio.e2e.runner.Runner.NOT_SET;
+import static com.znsio.e2e.runner.Runner.OS_NAME;
+import static com.znsio.e2e.runner.Runner.USER_NAME;
+import static com.znsio.e2e.runner.Runner.configs;
+import static com.znsio.e2e.runner.Runner.configsBoolean;
+import static com.znsio.e2e.runner.Runner.configsInteger;
+import static com.znsio.e2e.runner.Runner.initialiseApplitoolsConfiguration;
+import static com.znsio.e2e.runner.Runner.platform;
 
 public class Setup {
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
