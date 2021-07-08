@@ -68,8 +68,8 @@ public class Setup {
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
     private static final String EXECUTED_ON = "EXECUTED_ON";
     private static final String LOG_DIR = "LOG_DIR";
-    private static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
-    private static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
+    static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
+    static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
     private static final String PARALLEL = "PARALLEL";
     private static final String PLATFORM = "PLATFORM";
     private static final String PROXY_KEY = "PROXY_KEY";

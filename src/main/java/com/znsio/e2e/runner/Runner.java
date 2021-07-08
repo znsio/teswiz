@@ -32,6 +32,8 @@ import static com.znsio.e2e.runner.Setup.BROWSER_MAXIMIZE;
 import static com.znsio.e2e.runner.Setup.BROWSER_VERBOSE_LOGGING;
 import static com.znsio.e2e.runner.Setup.IS_VISUAL;
 import static com.znsio.e2e.runner.Setup.LAUNCH_NAME;
+import static com.znsio.e2e.runner.Setup.MAX_NUMBER_OF_APPIUM_DRIVERS;
+import static com.znsio.e2e.runner.Setup.MAX_NUMBER_OF_WEB_DRIVERS;
 import static com.znsio.e2e.runner.Setup.PROXY_URL;
 import static com.znsio.e2e.runner.Setup.RUN_IN_CI;
 import static com.znsio.e2e.runner.Setup.TARGET_ENVIRONMENT;
@@ -68,6 +70,14 @@ public class Runner {
         }
         cukeArgs = new Setup(configFilePath).getExecutionArguments();
         run(cukeArgs, stepDefDirName, featuresDirName);
+    }
+
+    public static int getMaxNumberOfAppiumDrivers () {
+        return configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS);
+    }
+
+    public static int getMaxNumberOfWebDrivers () {
+        return configsInteger.get(MAX_NUMBER_OF_WEB_DRIVERS);
     }
 
     public void run (ArrayList<String> args, String stepDefsDir, String featuresDir) {

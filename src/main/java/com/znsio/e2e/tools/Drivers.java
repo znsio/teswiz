@@ -54,11 +54,16 @@ public class Drivers {
     private final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<String, Capabilities>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
-    private final int MAX_NUMBER_OF_APPIUM_DRIVERS = 5;
-    private final int MAX_NUMBER_OF_WEB_DRIVERS = 5;
+    private final int MAX_NUMBER_OF_APPIUM_DRIVERS;
+    private final int MAX_NUMBER_OF_WEB_DRIVERS;
     private int numberOfAndroidDriversUsed = 0;
     private int numberOfWebDriversUsed = 0;
     private int numberOfWindowsDriversUsed = 0;
+
+    public Drivers() {
+        MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
+        MAX_NUMBER_OF_WEB_DRIVERS = Runner.getMaxNumberOfWebDrivers();
+    }
 
     public Driver setDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("getDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
