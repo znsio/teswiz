@@ -24,7 +24,7 @@
   },
   "hostMachines": [
     {
-      "machineIP": "mobilab.ril.com/appiumcloud",
+      "machineIP": "device.pcloudy.com/appiumcloud",
       "isCloud": true,
       "cloudName": "pCloudy"
     }
