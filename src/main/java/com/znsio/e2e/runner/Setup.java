@@ -33,17 +33,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.appium.utils.OverriddenVariable.getOverriddenBooleanValue;
-import static com.appium.utils.OverriddenVariable.getOverriddenIntValue;
-import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
-import static com.znsio.e2e.runner.Runner.NOT_SET;
-import static com.znsio.e2e.runner.Runner.OS_NAME;
-import static com.znsio.e2e.runner.Runner.USER_NAME;
-import static com.znsio.e2e.runner.Runner.configs;
-import static com.znsio.e2e.runner.Runner.configsBoolean;
-import static com.znsio.e2e.runner.Runner.configsInteger;
-import static com.znsio.e2e.runner.Runner.initialiseApplitoolsConfiguration;
-import static com.znsio.e2e.runner.Runner.platform;
+import static com.appium.utils.OverriddenVariable.*;
+import static com.znsio.e2e.runner.Runner.*;
 
 public class Setup {
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
@@ -58,6 +49,8 @@ public class Setup {
     static final String RUN_IN_CI = "RUN_IN_CI";
     static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
     static final String APP_PACKAGE_NAME = "APP_PACKAGE_NAME";
+    static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
+    static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
     private static final String CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = "CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION";
     private static final String CHROME = "chrome";
     private static final String PLUGIN = "--plugin";
@@ -77,8 +70,6 @@ public class Setup {
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
     private static final String EXECUTED_ON = "EXECUTED_ON";
     private static final String LOG_DIR = "LOG_DIR";
-    static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
-    static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
     private static final String PARALLEL = "PARALLEL";
     private static final String PLATFORM = "PLATFORM";
     private static final String PROXY_KEY = "PROXY_KEY";

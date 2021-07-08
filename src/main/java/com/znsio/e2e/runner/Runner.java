@@ -23,27 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
-import static com.znsio.e2e.runner.Setup.APP_NAME;
-import static com.znsio.e2e.runner.Setup.APP_PACKAGE_NAME;
-import static com.znsio.e2e.runner.Setup.BASE_URL_FOR_WEB;
-import static com.znsio.e2e.runner.Setup.BROWSER;
-import static com.znsio.e2e.runner.Setup.BROWSER_HEADLESS;
-import static com.znsio.e2e.runner.Setup.BROWSER_MAXIMIZE;
-import static com.znsio.e2e.runner.Setup.BROWSER_VERBOSE_LOGGING;
-import static com.znsio.e2e.runner.Setup.IS_VISUAL;
-import static com.znsio.e2e.runner.Setup.LAUNCH_NAME;
-import static com.znsio.e2e.runner.Setup.MAX_NUMBER_OF_APPIUM_DRIVERS;
-import static com.znsio.e2e.runner.Setup.MAX_NUMBER_OF_WEB_DRIVERS;
-import static com.znsio.e2e.runner.Setup.PROXY_URL;
-import static com.znsio.e2e.runner.Setup.RUN_IN_CI;
-import static com.znsio.e2e.runner.Setup.TARGET_ENVIRONMENT;
-import static com.znsio.e2e.runner.Setup.applitoolsConfiguration;
-import static com.znsio.e2e.runner.Setup.environmentConfiguration;
-import static com.znsio.e2e.runner.Setup.getApplitoolsConfigFromProvidedConfigFile;
-import static com.znsio.e2e.runner.Setup.getMatchLevel;
-import static com.znsio.e2e.runner.Setup.getViewportSize;
-import static com.znsio.e2e.runner.Setup.isBenchmarkingEnabled;
-import static com.znsio.e2e.runner.Setup.testDataForEnvironment;
+import static com.znsio.e2e.runner.Setup.*;
 
 public class Runner {
     public static final String OS_NAME = System.getProperty("os.name");
@@ -72,14 +52,6 @@ public class Runner {
         run(cukeArgs, stepDefDirName, featuresDirName);
     }
 
-    public static int getMaxNumberOfAppiumDrivers () {
-        return configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS);
-    }
-
-    public static int getMaxNumberOfWebDrivers () {
-        return configsInteger.get(MAX_NUMBER_OF_WEB_DRIVERS);
-    }
-
     public void run (ArrayList<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);
@@ -92,6 +64,14 @@ public class Runner {
         if (exitStatus != 0) {
             throw new TestExecutionFailedException("Test execution failed. Exit status: " + exitStatus);
         }
+    }
+
+    public static int getMaxNumberOfAppiumDrivers () {
+        return configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS);
+    }
+
+    public static int getMaxNumberOfWebDrivers () {
+        return configsInteger.get(MAX_NUMBER_OF_WEB_DRIVERS);
     }
 
     public static boolean isVisualTestingEnabled () {
@@ -144,13 +124,13 @@ public class Runner {
         return allDrivers.getDriverForUser(userPersona);
     }
 
+    public static TestExecutionContext getTestExecutionContext (long threadId) {
+        return SessionContext.getTestExecutionContext(threadId);
+    }
+
     public static String fetchDeviceName (long threadId, String forUserPersona) {
         Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.ALL_DRIVERS);
         return allDrivers.getDeviceNameForUser(forUserPersona);
-    }
-
-    public static TestExecutionContext getTestExecutionContext (long threadId) {
-        return SessionContext.getTestExecutionContext(threadId);
     }
 
     public static Visual fetchEyes (long threadId) {
