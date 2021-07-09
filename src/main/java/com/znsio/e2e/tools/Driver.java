@@ -4,11 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.runner.Runner;
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileBy;
-import io.appium.java_client.TouchAction;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.PerformsTouchActions;
+import io.appium.java_client.*;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.StartsActivity;
 import io.appium.java_client.ios.IOSDriver;
@@ -51,10 +47,6 @@ public class Driver {
         this.driver = webDriver;
         this.type = WEB_DRIVER;
         instantiateEyes(testName, webDriver);
-    }
-
-    public WebElement waitForVisibilityOf (By elementId) {
-        return (new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(elementId));
     }
 
     public WebElement waitForVisibilityOf (String elementId) {
@@ -192,7 +184,7 @@ public class Driver {
         int height = getWindowHeight() / 2;
         int fromWidth = (int) (getWindowWidth() * 0.5);
         int toWidth = (int) (getWindowWidth() * 0.9);
-        LOGGER.info("height: "+ height +", from width: "+fromWidth +", to width: " + toWidth);
+        LOGGER.info("height: " + height + ", from width: " + fromWidth + ", to width: " + toWidth);
         swipe(height, fromWidth, toWidth);
     }
 
@@ -251,7 +243,7 @@ public class Driver {
         ((StartsActivity) driver).currentActivity();
     }
 
-    public void goToDeepLinkUrl(String url, String packageName) {
+    public void goToDeepLinkUrl (String url, String packageName) {
         LOGGER.info("Hitting a Deep Link URL: " + url);
         ((AppiumDriver) driver).executeScript(
                 "mobile:deepLink",
@@ -282,24 +274,28 @@ public class Driver {
                 .perform();
     }
 
-    public void pushFileToDevice(String filePathToPush, String devicePath){
-        LOGGER.info("Pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath +"'");
+    public void pushFileToDevice (String filePathToPush, String devicePath) {
+        LOGGER.info("Pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath + "'");
         try {
-            if(Runner.platform.equals(Platform.android)) {
-                ((AndroidDriver) driver).pushFile(devicePath , new File(filePathToPush));
-            }else if(Runner.platform.equals(Platform.iOS)){
-                ((IOSDriver) driver).pushFile(devicePath , new File(filePathToPush));
+            if (Runner.platform.equals(Platform.android)) {
+                ((AndroidDriver) driver).pushFile(devicePath, new File(filePathToPush));
+            } else if (Runner.platform.equals(Platform.iOS)) {
+                ((IOSDriver) driver).pushFile(devicePath, new File(filePathToPush));
             }
         } catch (IOException e) {
-            throw new InvalidTestDataException("Error in pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath +"'", e);
+            throw new InvalidTestDataException("Error in pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath + "'", e);
         }
     }
 
-    public void allowPermission(By element){
+    public void allowPermission (By element) {
         waitForVisibilityOf(element);
-        if(Runner.platform.equals(Platform.android)) {
+        if (Runner.platform.equals(Platform.android)) {
             ((AndroidDriver) driver).findElement(element).click();
         }
+    }
+
+    public WebElement waitForVisibilityOf (By elementId) {
+        return (new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(elementId));
     }
 
 }

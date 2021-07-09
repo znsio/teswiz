@@ -196,6 +196,8 @@ These can be overridden by providing the same either as environment variables or
     TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE 
     TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
     CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> uninstall apk from each device before the test starts
+    MAX_NUMBER_OF_APPIUM_DRIVERS -> The max number of drivers on cloud to create for multiuser android tests, default value is 5
+    MAX_NUMBER_OF_WEB_DRIVERS -> The max number of web drivers on cloud to create for multiuser web tests, default value is 5
 
 ## Troubleshooting / FAQs
 

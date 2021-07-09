@@ -19,11 +19,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.MutableCapabilities;
-import org.openqa.selenium.Proxy;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -38,11 +34,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
@@ -54,11 +46,16 @@ public class Drivers {
     private final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<String, Capabilities>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
-    private final int MAX_NUMBER_OF_APPIUM_DRIVERS = 5;
-    private final int MAX_NUMBER_OF_WEB_DRIVERS = 5;
+    private final int MAX_NUMBER_OF_APPIUM_DRIVERS;
+    private final int MAX_NUMBER_OF_WEB_DRIVERS;
     private int numberOfAndroidDriversUsed = 0;
     private int numberOfWebDriversUsed = 0;
     private int numberOfWindowsDriversUsed = 0;
+
+    public Drivers () {
+        MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
+        MAX_NUMBER_OF_WEB_DRIVERS = Runner.getMaxNumberOfWebDrivers();
+    }
 
     public Driver setDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("getDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
@@ -159,53 +156,6 @@ public class Drivers {
         return currentDriver;
     }
 
-    private AppiumDriver allocateNewDeviceAndStartAppiumDriver () {
-        try {
-            DeviceAllocationManager deviceAllocationManager = DeviceAllocationManager.getInstance();
-            AppiumDevice availableDevice = deviceAllocationManager.getNextAvailableDevice();
-            deviceAllocationManager.allocateDevice(availableDevice);
-            AppiumDriver driver = new AppiumDriverManager().startAppiumDriverInstance();
-            updateAvailableDeviceInformation(availableDevice);
-            return driver;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }
-
-    private AppiumDevice updateAvailableDeviceInformation (AppiumDevice availableDevice) {
-        org.openqa.selenium.Capabilities capabilities = AppiumDriverManager.getDriver()
-                .getCapabilities();
-        LOGGER.info("allocateDeviceAndStartDriver: "
-                + capabilities);
-
-        String udid = capabilities.is("udid")
-                ? getCapabilityFor(capabilities, "udid")
-                : getCapabilityFor(capabilities, "deviceUDID");
-        Device device = availableDevice.getDevice();
-        device.setUdid(udid);
-        device.setDeviceManufacturer(
-                getCapabilityFor(capabilities, "deviceManufacturer"));
-        device.setDeviceModel(
-                getCapabilityFor(capabilities, "deviceModel"));
-        device.setName(
-                getCapabilityFor(capabilities, "deviceName")
-                        + " "
-                        + getCapabilityFor(capabilities, "deviceModel"));
-        device.setApiLevel(
-                getCapabilityFor(capabilities, "deviceApiLevel"));
-        device.setDeviceType(
-                getCapabilityFor(capabilities, "platformName"));
-        device.setScreenSize(
-                getCapabilityFor(capabilities, "deviceScreenSize"));
-        return availableDevice;
-    }
-
-    private String getCapabilityFor (org.openqa.selenium.Capabilities capabilities, String name) {
-        Object capability = capabilities.getCapability(name);
-        return null == capability ? "" : capability.toString();
-    }
-
     @NotNull
     private Driver createWebDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("createWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
@@ -252,7 +202,7 @@ public class Drivers {
         if (Platform.windows.equals(forPlatform) && numberOfWindowsDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
             throw new InvalidTestDataException(
                     String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
-                    numberOfWindowsDriversUsed,
+                            numberOfWindowsDriversUsed,
                             userPersona,
                             forPlatform.name())
             );
@@ -270,8 +220,8 @@ public class Drivers {
                     String.format("Current number of WindowsDriver instances used: '%d'. " +
                                     "Unable to create more than '%d' drivers for user persona: '%s' " +
                                     "on platform: '%s'",
-                                    numberOfWindowsDriversUsed,
-                                    MAX_NUMBER_OF_APPIUM_DRIVERS,
+                            numberOfWindowsDriversUsed,
+                            MAX_NUMBER_OF_APPIUM_DRIVERS,
                             userPersona,
                             forPlatform.name())
             );
@@ -279,6 +229,20 @@ public class Drivers {
         numberOfWindowsDriversUsed++;
         LOGGER.info(String.format("createWindowsDriverForUser: done: userPersona: '%s', Platform: '%s', Number of windowsDrivers: '%d'", userPersona, forPlatform.name(), numberOfWindowsDriversUsed));
         return currentDriver;
+    }
+
+    private AppiumDriver allocateNewDeviceAndStartAppiumDriver () {
+        try {
+            DeviceAllocationManager deviceAllocationManager = DeviceAllocationManager.getInstance();
+            AppiumDevice availableDevice = deviceAllocationManager.getNextAvailableDevice();
+            deviceAllocationManager.allocateDevice(availableDevice);
+            AppiumDriver driver = new AppiumDriverManager().startAppiumDriverInstance();
+            updateAvailableDeviceInformation(availableDevice);
+            return driver;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     private void disableNotificationsAndToastsOnDevice (Driver currentDriver) {
@@ -338,51 +302,32 @@ public class Drivers {
         return driver;
     }
 
-    private WebDriver createFirefoxDriver (String forUserPersona,
-                                           TestExecutionContext testExecutionContext) {
+    private AppiumDevice updateAvailableDeviceInformation (AppiumDevice availableDevice) {
+        org.openqa.selenium.Capabilities capabilities = AppiumDriverManager.getDriver()
+                .getCapabilities();
+        LOGGER.info("allocateDeviceAndStartDriver: "
+                + capabilities);
 
-        boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
-        boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
-        String proxyUrl = Runner.getProxyURL();
-
-        String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Firefox");
-        userPersonaBrowserLogs.put(forUserPersona, logFileName);
-        LOGGER.info("Creating Firefox logs in file: " + logFileName);
-        System.setProperty("webdriver.firefox.logfile", logFileName);
-
-        FirefoxOptions firefoxOptions = new FirefoxOptions();
-        FirefoxProfile firefoxProfile = new FirefoxProfile();
-        firefoxProfile.setPreference("dom.push.enabled", false);
-        firefoxOptions.setProfile(firefoxProfile);
-        firefoxOptions.addPreference("dom.webnotifications.enabled", false);
-        firefoxOptions.addArguments("disable-infobars");
-        firefoxOptions.addArguments("--disable-extensions");
-        firefoxOptions.addArguments("--disable-notifications");
-
-        LoggingPreferences logPrefs = new LoggingPreferences();
-        logPrefs.enable(LogType.BROWSER, Level.ALL);
-
-        if (enableVerboseLogging) {
-            firefoxOptions.setLogLevel(FirefoxDriverLogLevel.DEBUG);
-            logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
-            firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
-        } else {
-            firefoxOptions.setLogLevel(FirefoxDriverLogLevel.INFO);
-        }
-
-        if (null != proxyUrl) {
-            LOGGER.info("Setting Proxy for browser: " + proxyUrl);
-            firefoxOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
-        }
-        firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
-        firefoxOptions.setHeadless(isBrowserHeadless);
-
-        LOGGER.info("FirefoxOptions: " + firefoxOptions.asMap());
-
-        WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(firefoxOptions) : new FirefoxDriver(firefoxOptions);
-        Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities() : ((FirefoxDriver) driver).getCapabilities();
-        userPersonaDriverCapabilities.put(forUserPersona, capabilities);
-        return driver;
+        String udid = capabilities.is("udid")
+                ? getCapabilityFor(capabilities, "udid")
+                : getCapabilityFor(capabilities, "deviceUDID");
+        Device device = availableDevice.getDevice();
+        device.setUdid(udid);
+        device.setDeviceManufacturer(
+                getCapabilityFor(capabilities, "deviceManufacturer"));
+        device.setDeviceModel(
+                getCapabilityFor(capabilities, "deviceModel"));
+        device.setName(
+                getCapabilityFor(capabilities, "deviceName")
+                        + " "
+                        + getCapabilityFor(capabilities, "deviceModel"));
+        device.setApiLevel(
+                getCapabilityFor(capabilities, "deviceApiLevel"));
+        device.setDeviceType(
+                getCapabilityFor(capabilities, "platformName"));
+        device.setScreenSize(
+                getCapabilityFor(capabilities, "deviceScreenSize"));
+        return availableDevice;
     }
 
     @NotNull
@@ -447,6 +392,58 @@ public class Drivers {
         Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities() : ((ChromeDriver) driver).getCapabilities();
         userPersonaDriverCapabilities.put(forUserPersona, capabilities);
         return driver;
+    }
+
+    private WebDriver createFirefoxDriver (String forUserPersona,
+                                           TestExecutionContext testExecutionContext) {
+
+        boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
+        boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
+        String proxyUrl = Runner.getProxyURL();
+
+        String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Firefox");
+        userPersonaBrowserLogs.put(forUserPersona, logFileName);
+        LOGGER.info("Creating Firefox logs in file: " + logFileName);
+        System.setProperty("webdriver.firefox.logfile", logFileName);
+
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
+        FirefoxProfile firefoxProfile = new FirefoxProfile();
+        firefoxProfile.setPreference("dom.push.enabled", false);
+        firefoxOptions.setProfile(firefoxProfile);
+        firefoxOptions.addPreference("dom.webnotifications.enabled", false);
+        firefoxOptions.addArguments("disable-infobars");
+        firefoxOptions.addArguments("--disable-extensions");
+        firefoxOptions.addArguments("--disable-notifications");
+
+        LoggingPreferences logPrefs = new LoggingPreferences();
+        logPrefs.enable(LogType.BROWSER, Level.ALL);
+
+        if (enableVerboseLogging) {
+            firefoxOptions.setLogLevel(FirefoxDriverLogLevel.DEBUG);
+            logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
+            firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+        } else {
+            firefoxOptions.setLogLevel(FirefoxDriverLogLevel.INFO);
+        }
+
+        if (null != proxyUrl) {
+            LOGGER.info("Setting Proxy for browser: " + proxyUrl);
+            firefoxOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
+        }
+        firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+        firefoxOptions.setHeadless(isBrowserHeadless);
+
+        LOGGER.info("FirefoxOptions: " + firefoxOptions.asMap());
+
+        WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(firefoxOptions) : new FirefoxDriver(firefoxOptions);
+        Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities() : ((FirefoxDriver) driver).getCapabilities();
+        userPersonaDriverCapabilities.put(forUserPersona, capabilities);
+        return driver;
+    }
+
+    private String getCapabilityFor (org.openqa.selenium.Capabilities capabilities, String name) {
+        Object capability = capabilities.getCapability(name);
+        return null == capability ? "" : capability.toString();
     }
 
     private String setLogDirectory (String forUserPersona, TestExecutionContext testExecutionContext, String browserType) {
@@ -551,6 +548,19 @@ public class Drivers {
         }
     }
 
+    private void closeAppOnMachine (Driver driver) {
+        String appPackageName = Runner.getAppPackageName();
+        AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
+        LOGGER.info(String.format("Closing WindowsDriver for App '%s'", appPackageName));
+        appiumDriver.closeApp();
+        appiumDriver.quit();
+        ReportPortal.emitLog(
+                String.format("App: '%s' terminated",
+                        appPackageName),
+                "DEBUG",
+                new Date());
+    }
+
     private void closeAppOnDevice (Driver driver) {
         String appPackageName = Runner.getAppPackageName();
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
@@ -572,18 +582,5 @@ public class Drivers {
                     "DEBUG",
                     new Date());
         }
-    }
-
-    private void closeAppOnMachine (Driver driver) {
-        String appPackageName = Runner.getAppPackageName();
-        AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
-        LOGGER.info(String.format("Closing WindowsDriver for App '%s'", appPackageName));
-        appiumDriver.closeApp();
-        appiumDriver.quit();
-        ReportPortal.emitLog(
-                String.format("App: '%s' terminated",
-                        appPackageName),
-                "DEBUG",
-                new Date());
     }
 }

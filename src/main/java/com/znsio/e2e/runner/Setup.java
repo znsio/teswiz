@@ -30,24 +30,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.appium.utils.OverriddenVariable.getOverriddenBooleanValue;
-import static com.appium.utils.OverriddenVariable.getOverriddenIntValue;
-import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
-import static com.znsio.e2e.runner.Runner.NOT_SET;
-import static com.znsio.e2e.runner.Runner.OS_NAME;
-import static com.znsio.e2e.runner.Runner.USER_NAME;
-import static com.znsio.e2e.runner.Runner.configs;
-import static com.znsio.e2e.runner.Runner.configsBoolean;
-import static com.znsio.e2e.runner.Runner.configsInteger;
-import static com.znsio.e2e.runner.Runner.initialiseApplitoolsConfiguration;
-import static com.znsio.e2e.runner.Runner.platform;
+import static com.appium.utils.OverriddenVariable.*;
+import static com.znsio.e2e.runner.Runner.*;
 
 public class Setup {
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
@@ -62,6 +49,8 @@ public class Setup {
     static final String RUN_IN_CI = "RUN_IN_CI";
     static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
     static final String APP_PACKAGE_NAME = "APP_PACKAGE_NAME";
+    static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
+    static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
     private static final String CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = "CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION";
     private static final String CHROME = "chrome";
     private static final String PLUGIN = "--plugin";
@@ -197,6 +186,8 @@ public class Setup {
         configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR, getStringValueFromPropertiesIfAvailable(LOG_DIR, DEFAULT_LOG_DIR)));
         configs.put(LOG_PROPERTIES_FILE, getStringValueFromPropertiesIfAvailable(LOG_PROPERTIES_FILE, DEFAULT_LOG_PROPERTIES_FILE));
         platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, getStringValueFromPropertiesIfAvailable(PLATFORM, Platform.android.name())));
+        configsInteger.put(MAX_NUMBER_OF_APPIUM_DRIVERS, getOverriddenIntValue(MAX_NUMBER_OF_APPIUM_DRIVERS, Integer.parseInt(getStringValueFromPropertiesIfAvailable(MAX_NUMBER_OF_APPIUM_DRIVERS, "5"))));
+        configsInteger.put(MAX_NUMBER_OF_WEB_DRIVERS, getOverriddenIntValue(MAX_NUMBER_OF_WEB_DRIVERS, Integer.parseInt(getStringValueFromPropertiesIfAvailable(MAX_NUMBER_OF_WEB_DRIVERS, "5"))));
         configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, Integer.parseInt(getStringValueFromPropertiesIfAvailable(PARALLEL, String.valueOf(DEFAULT_PARALLEL)))));
         configs.put(PROXY_KEY, getOverriddenStringValue(PROXY_KEY, getStringValueFromPropertiesIfAvailable(PROXY_KEY, PROXY_KEY)));
         configsBoolean.put(RUN_IN_CI, getOverriddenBooleanValue(RUN_IN_CI, getBooleanValueFromPropertiesIfAvailable(RUN_IN_CI, false)));
@@ -367,7 +358,7 @@ public class Setup {
         loadedPlatformCapability.put("pCloudy_ApplicationName", splitAppPath[splitAppPath.length - 1]);
         String osVersion = (String) loadedPlatformCapability.get("pCloudy_DeviceVersion");
         ArrayList listOfAndroidDevices = new ArrayList();
-        for (int numDevices = 0; numDevices < configsInteger.get(PARALLEL); numDevices++) {
+        for (int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS); numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", osVersion);
             listOfAndroidDevices.add(deviceInfo);

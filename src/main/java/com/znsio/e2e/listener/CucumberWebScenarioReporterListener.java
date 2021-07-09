@@ -1,11 +1,9 @@
 package com.znsio.e2e.listener;
 
 import com.epam.reportportal.cucumber.ScenarioReporter;
-import com.epam.reportportal.service.Launch;
 import com.epam.reportportal.utils.MemoizingSupplier;
 import com.epam.ta.reportportal.ws.model.StartTestItemRQ;
 import org.apache.log4j.Logger;
-import rp.com.google.common.base.Suppliers;
 
 import java.util.Calendar;
 
