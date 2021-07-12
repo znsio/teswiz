@@ -34,7 +34,7 @@ dependencies {
     implementation "com.googlecode.json-simple:json-simple:$project.googleCodeJsonSimpleVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation "com.github.znsio:AppiumTestDistribution:$project.atdVersion"
+    implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
