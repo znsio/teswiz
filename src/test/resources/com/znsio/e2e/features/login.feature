@@ -17,14 +17,14 @@ Feature: Test valid and invalid login
     Then "you" login again with invalid credentials - "znsio4", "invalid password"
 
   @multiuser-android @2user
-  Scenario: Orchestrating multiple users on different platforms as part of same test
+  Scenario: Orchestrating 2 users on different platforms as part of same test
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
     And "you" login with invalid credentials - "znsio2", "invalid password" on "android"
     When "I" login again with invalid credentials - "znsio3", "invalid password"
     Then "you" login again with invalid credentials - "znsio4", "invalid password"
 
   @multiuser-android @3user
-  Scenario: Orchestrating multiple users on different platforms as part of same test
+  Scenario: Orchestrating 3 users on different platforms as part of same test
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
     And "you" login with invalid credentials - "znsio2", "invalid password" on "android"
     And "someoneelse" login with invalid credentials - "znsio3", "invalid password" on "android"
