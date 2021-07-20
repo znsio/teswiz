@@ -39,9 +39,9 @@ dependencies {
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
-    implementation "com.epam.reportportal:agent-java-cucumber6:5.0.6"
+    implementation "com.epam.reportportal:agent-java-cucumber6:$project.reportportalAgentCucumberVersion"
     implementation "org.slf4j:slf4j-api:$project.slf4jVersion"
-    implementation('com.epam.reportportal:agent-java-testng:5.0.11') {
+    implementation("com.epam.reportportal:agent-java-testng:$project.reportportalAgentTestNGVersion") {
         exclude group: 'com.fasterxml.jackson.core'
     }
     implementation "com.applitools:eyes-connectivity-java3-jersey1x:$project.applitoolsVersion"
