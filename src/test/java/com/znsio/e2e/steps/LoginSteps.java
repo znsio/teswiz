@@ -3,11 +3,13 @@ package com.znsio.e2e.steps;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.e2e.businessLayer.AppBL;
+import com.znsio.e2e.businessLayer.EchoBL;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Drivers;
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.apache.log4j.Logger;
 
@@ -31,6 +33,12 @@ public class LoginSteps {
         new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).provideInvalidDetailsForSignup(username, password);
     }
 
+    @When("I go back")
+    public void iGoBack () {
+        new AppBL().goBack();
+
+    }
+
     @Given("{string} login with invalid credentials - {string}, {string} on {string}")
     public void loginWithInvalidCredentialsOn (String userPersona, String username, String password, String onPlatform) {
         LOGGER.info(System.out.printf("LoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', Platform: '%s'", userPersona, username, password, onPlatform));
@@ -44,5 +52,10 @@ public class LoginSteps {
         Platform onPlatform = allDrivers.getPlatformForUser(userPersona);
         LOGGER.info(System.out.printf("LoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', Platform: '%s'", SAMPLE_TEST_CONTEXT.ME, username, password, onPlatform.name()));
         new AppBL(userPersona, onPlatform).loginAgain(username, password);
+    }
+
+    @Then("I can echo {string} in the message box")
+    public void iCanEchoInTheMessageBox (String message) {
+        new EchoBL().echoMessage(message);
     }
 }

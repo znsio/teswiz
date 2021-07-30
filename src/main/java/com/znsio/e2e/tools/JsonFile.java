@@ -82,7 +82,7 @@ public class JsonFile {
         return retValue;
     }
 
-    public static ArrayList<Map> getNodeValueAsArrayListFromJsonFile (String node, String fileName) {
+    public static ArrayList<Map> getNodeValueAsArrayListFromJsonFile (String fileName, String node) {
         Map<String, Map> map = loadJsonFile(fileName);
         LOGGER.info("\tPlatform: " + node);
         ArrayList<Map> envMap = (ArrayList<Map>) map.get(node);

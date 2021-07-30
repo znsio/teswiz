@@ -2,13 +2,12 @@ package com.znsio.e2e.businessLayer;
 
 import com.context.TestExecutionContext;
 import com.znsio.e2e.entities.Platform;
+import com.znsio.e2e.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.screen.HomeScreen;
 import com.znsio.e2e.screen.LoginScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class AppBL {
     private static final Logger LOGGER = Logger.getLogger(AppBL.class.getName());
@@ -26,6 +25,14 @@ public class AppBL {
         Runner.setCurrentDriverForUser(userPersona, forPlatform, context);
     }
 
+    public AppBL () {
+        long threadId = Thread.currentThread().getId();
+        this.context = Runner.getTestExecutionContext(threadId);
+        softly = Runner.getSoftAssertion(threadId);
+        this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
+        this.currentPlatform = Runner.platform;
+    }
+
     public LoginBL provideInvalidDetailsForSignup (String username, String password) {
         String errorMessage = "Invalid login credentials error message is incorrect";
         String androidErrorMessage = "Invalid login credentials, please try again";
@@ -33,7 +40,7 @@ public class AppBL {
         String expectedErrorMessage = currentPlatform.equals(Platform.android) ? androidErrorMessage : webErrorMessage;
 
         LoginScreen loginScreen = HomeScreen.get()
-                .selectLoginTest()
+                .selectLogin()
                 .enterLoginDetails(username, password)
                 .login();
         String actualErrorMessage = loginScreen
@@ -67,5 +74,10 @@ public class AppBL {
                 .as(errorMessage)
                 .contains(expectedErrorMessage);
         return new LoginBL(currentUserPersona, currentPlatform);
+    }
+
+    public AppBL goBack () {
+        HomeScreen.get().goBack();
+        return this;
     }
 }

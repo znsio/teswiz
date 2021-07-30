@@ -32,14 +32,14 @@ public class ScreenShotManager {
     public void takeScreenShot (String fileName) {
         Driver driver = (Driver) context.getTestState(TEST_CONTEXT.CURRENT_DRIVER);
         if (null != driver) {
-            File screenshot = ((TakesScreenshot) driver.getInnerDriver()).getScreenshotAs(OutputType.FILE);
-            fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
-            LOGGER.info("The screenshot is placed in : " + destinationFile.getAbsolutePath());
             try {
+                File screenshot = ((TakesScreenshot) driver.getInnerDriver()).getScreenshotAs(OutputType.FILE);
+                fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
+                LOGGER.info("The screenshot is placed in : " + destinationFile.getAbsolutePath());
                 FileUtils.copyFile(screenshot, destinationFile);
                 ReportPortal.emitLog(fileName, "DEBUG", new Date(), destinationFile);
-            } catch (IOException e) {
+            } catch (IOException | RuntimeException e) {
                 LOGGER.info("ERROR: Unable to save or upload screenshot: " + destinationFile.getAbsolutePath() + " or upload sceeenshot to ReportPortal%n");
                 e.printStackTrace();
             }

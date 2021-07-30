@@ -11,7 +11,7 @@ import static com.znsio.e2e.tools.Wait.waitFor;
 public class LoginScreenWeb extends LoginScreen {
     private final Driver driver;
     private final Visual visually;
-    private final String screenName = LoginScreenWeb.class.getSimpleName();
+    private final String SCREEN_NAME = LoginScreenWeb.class.getSimpleName();
     private final By userNameId = By.id("username");
     private final By passwordId = By.id("password");
     private final By loginButtonXpath = By.xpath("//button/i[contains(text(),\"Login\")]");
@@ -21,7 +21,7 @@ public class LoginScreenWeb extends LoginScreen {
     public LoginScreenWeb (Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
-        visually.takeScreenshot(screenName, "Home screen");
+        visually.takeScreenshot(SCREEN_NAME, "Home screen");
     }
 
     @Override
@@ -29,8 +29,8 @@ public class LoginScreenWeb extends LoginScreen {
         waitFor(2);
         driver.findElement(userNameId).sendKeys(username);
         driver.findElement(passwordId).sendKeys(password);
-        visually.takeScreenshot(screenName, "enterLoginDetails");
-        visually.checkWindow(screenName, "entered login details");
+        visually.takeScreenshot(SCREEN_NAME, "enterLoginDetails");
+        visually.checkWindow(SCREEN_NAME, "entered login details");
         return this;
     }
 
@@ -44,8 +44,8 @@ public class LoginScreenWeb extends LoginScreen {
     @Override
     public String getInvalidLoginError () {
         WebElement alertText = driver.waitForVisibilityOf(errorMessageId);
-        visually.takeScreenshot(screenName, "Invalid Login alert");
-        visually.checkWindow(screenName, "Invalid Login alert");
+        visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert");
+        visually.checkWindow(SCREEN_NAME, "Invalid Login alert");
         return alertText.getText().trim();
     }
 
@@ -53,7 +53,7 @@ public class LoginScreenWeb extends LoginScreen {
     public LoginScreen dismissAlert () {
         waitFor(2);
         driver.waitForVisibilityOf(dismissAlertXpath).click();
-        visually.takeScreenshot(screenName, "Invalid Login alert dismissed");
+        visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert dismissed");
         return this;
     }
 }

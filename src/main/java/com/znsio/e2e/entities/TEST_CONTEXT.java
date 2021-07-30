@@ -11,4 +11,7 @@ public class TEST_CONTEXT {
     public static final String CURRENT_DRIVER = "currentDriver";
     public static final String ALL_DRIVERS = "allDrivers";
     public static final String CURRENT_USER_PERSONA = "currentUserPersona";
+    public static final String DEVICE_ON = "deviceOn";
+    public static final String WINDOWS_DEVICE_ON = "windowsDeviceOn";
+    public static final String WEB_BROWSER_ON = "webBrowserOn";
 }

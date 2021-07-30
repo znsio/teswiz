@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.appium.utils.OverriddenVariable.*;
 import static com.znsio.e2e.runner.Runner.*;
@@ -308,7 +309,7 @@ public class Setup {
 
     private void setupWindowsExecution () {
         if (platform.equals(Platform.windows)) {
-            updateAppPath();
+            verifyAppExistsAtMentionedPath();
             cukeArgs.add(PLUGIN);
             cukeArgs.add("com.cucumber.listener.CucumberScenarioListener");
             cukeArgs.add(PLUGIN);
@@ -317,7 +318,7 @@ public class Setup {
         }
     }
 
-    private void updateAppPath () {
+    private void verifyAppExistsAtMentionedPath () {
         String appPath = String.valueOf(configs.get(APP_PATH));
         LOGGER.info("Update path to Apk: " + appPath);
         if (appPath.equals(NOT_SET)) {
@@ -344,23 +345,13 @@ public class Setup {
         return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile, new String[]{platform.name(), "app", "local"});
     }
 
-    private void updateCapabilities (String emailID, String authenticationKey) {
+    private void updateCapabilities (Map<String, Map> loadedCapabilityFile) {
         String capabilityFile = configs.get(CAPS);
-        String appPath = configs.get(APP_PATH);
-        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
-
         String platformName = platform.name();
-        Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        loadedPlatformCapability.remove("app");
-        loadedPlatformCapability.put("pCloudy_Username", emailID);
-        loadedPlatformCapability.put("pCloudy_ApiKey", authenticationKey);
-        String[] splitAppPath = appPath.split("/");
-        loadedPlatformCapability.put("pCloudy_ApplicationName", splitAppPath[splitAppPath.length - 1]);
-        String osVersion = (String) loadedPlatformCapability.get("pCloudy_DeviceVersion");
         ArrayList listOfAndroidDevices = new ArrayList();
         for (int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS); numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
-            deviceInfo.put("osVersion", osVersion);
+            deviceInfo.put("osVersion", String.valueOf(loadedCapabilityFile.get(platformName).get("platformVersion")));
             listOfAndroidDevices.add(deviceInfo);
         }
         Map loadedCloudCapability = loadedCapabilityFile.get("cloud");
@@ -383,7 +374,7 @@ public class Setup {
     }
 
     private void setupLocalExecution () {
-        updateAppPath();
+        verifyAppExistsAtMentionedPath();
         setupLocalDevices();
         int parallelCount = devices.size();
         if (parallelCount == 0) {
@@ -461,7 +452,100 @@ public class Setup {
     }
 
     private void setupCloudExecution () {
-        updateAppPath();
+        verifyAppExistsAtMentionedPath();
+        String cloudName = getCloudNameFromCapabilities();
+        switch (cloudName.toLowerCase()) {
+            case "headspin":
+                updateHeadspinCapabilities();
+                break;
+            case "pcloudy":
+                updatePCloudyCapabilities();
+                break;
+            case "browserstack":
+                break;
+            case "saucelabs":
+                break;
+            default:
+                throw new InvalidTestDataException(String.format("Provided cloudName: '%s' is not supported", cloudName));
+        }
+        configs.put(EXECUTED_ON, "Cloud Devices");
+    }
+
+    private void updateHeadspinCapabilities () {
+        String authenticationKey = configs.get(CLOUD_KEY);
+        String platformName = platform.name();
+        String capabilityFile = configs.get(CAPS);
+        String appPath = configs.get(APP_PATH);
+        String[] splitAppPath = appPath.split("/");
+        configs.put(APP_PATH, splitAppPath[splitAppPath.length - 1]);
+
+        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
+        Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
+        String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
+        String appIdFromHeadspin = NOT_SET;
+        if (configsBoolean.get(CLOUD_UPLOAD_APP)) {
+            appIdFromHeadspin = uploadAPKToHeadspin(authenticationKey, appPath);
+        } else {
+            LOGGER.info("Skip uploading the apk to Device Farm");
+            appIdFromHeadspin = getAppIdFromHeadspin(authenticationKey, configs.get(APP_PACKAGE_NAME));
+        }
+        LOGGER.info("Using appId: " + appIdFromHeadspin);
+        loadedPlatformCapability.put("headspin:appId", appIdFromHeadspin);
+
+        ArrayList hostMachinesList = (ArrayList) loadedCapabilityFile.get("hostMachines");
+        Map hostMachines = (Map) hostMachinesList.get(0);
+        String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
+        remoteServerURL = remoteServerURL.endsWith("/") ? remoteServerURL + authenticationKey : remoteServerURL + "/" + authenticationKey;
+        hostMachines.put("machineIP", remoteServerURL);
+        loadedPlatformCapability.remove("app");
+        loadedPlatformCapability.remove("platformVersion");
+        loadedPlatformCapability.put("headspin:selector", "os_version: >=" + osVersion);
+        updateCapabilities(loadedCapabilityFile);
+    }
+
+    private String uploadAPKToHeadspin (String authenticationKey, String appPath) {
+        LOGGER.info(String.format("uploadAPKTopCloudy for: '%s'%n", authenticationKey));
+        String deviceLabURL = configs.get(DEVICE_LAB_URL);
+
+        String[] curlCommand = new String[]{
+                "curl --insecure -X POST ",
+                "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apk/upload --data-binary '@" + appPath + "'"};
+        CommandLineResponse uploadAPKToHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
+
+        JsonObject uploadResponse = JsonFile.convertToMap(uploadAPKToHeadspinResponse.getStdOut()).getAsJsonObject();
+        return uploadResponse.get("apk_id").getAsString();
+    }
+
+    private String getAppIdFromHeadspin (String authenticationKey, String appPackageName) {
+        LOGGER.info("getAppIdFromHeadspin for package: " + appPackageName);
+
+        String deviceLabURL = configs.get(DEVICE_LAB_URL);
+        String[] curlCommand = new String[]{
+                "curl --insecure",
+                "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apks"};
+        CommandLineResponse listOfUploadedFilesInHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
+
+        JsonObject listOfAppPackages = JsonFile.convertToMap(listOfUploadedFilesInHeadspinResponse.getStdOut()).getAsJsonObject();
+        AtomicReference<String> uploadedAppId = new AtomicReference<>(NOT_SET);
+        listOfAppPackages.keySet().forEach(appId -> {
+            if (uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
+                String retrievedAppPackage = listOfAppPackages.getAsJsonObject(appId).get("app_package").getAsString();
+                LOGGER.info("retrievedAppPackage: " + retrievedAppPackage);
+                if (retrievedAppPackage.equals(appPackageName)) {
+                    LOGGER.info("\tThis file is available in Device Farm: " + appId);
+                    uploadedAppId.set(appId);
+                }
+            }
+        });
+
+        if (uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
+            throw new InvalidTestDataException(String.format("App with package: '%s' not available in Headspin", appPackageName));
+        }
+
+        return uploadedAppId.get();
+    }
+
+    private void updatePCloudyCapabilities () {
         String emailID = configs.get(CLOUD_USER);
         String authenticationKey = configs.get(CLOUD_KEY);
         if (configsBoolean.get(CLOUD_UPLOAD_APP)) {
@@ -469,8 +553,27 @@ public class Setup {
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
         }
-        updateCapabilities(emailID, authenticationKey);
-        configs.put(EXECUTED_ON, "Cloud Devices");
+        String capabilityFile = configs.get(CAPS);
+        String appPath = configs.get(APP_PATH);
+        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
+        String platformName = platform.name();
+        String osVersion = String.valueOf(loadedCapabilityFile.get("platformVersion"));
+        Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
+        loadedPlatformCapability.remove("app");
+        loadedPlatformCapability.put("pCloudy_Username", emailID);
+        loadedPlatformCapability.put("pCloudy_ApiKey", authenticationKey);
+        String[] splitAppPath = appPath.split("/");
+        loadedPlatformCapability.put("pCloudy_ApplicationName", splitAppPath[splitAppPath.length - 1]);
+        loadedPlatformCapability.put("pCloudy_DeviceVersion", osVersion);
+
+        updateCapabilities(loadedPlatformCapability);
+    }
+
+    private String getCloudNameFromCapabilities () {
+        String capabilityFile = configs.get(CAPS);
+        ArrayList<Map> hostMachines = JsonFile.getNodeValueAsArrayListFromJsonFile(capabilityFile, "hostMachines");
+        String cloudName = String.valueOf(hostMachines.get(0).get("cloudName"));
+        return cloudName;
     }
 
     private void uploadAPKTopCloudy (String emailID, String authenticationKey) {
@@ -479,7 +582,7 @@ public class Setup {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
         String authToken = getpCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
-        if (isAPKAlreadyAvailableInCloud(authToken, appPath)) {
+        if (isAPKAlreadyAvailableInPCloudy(authToken, appPath)) {
             LOGGER.info("\tAPK is already available in cloud. No need to upload it again");
         } else {
             LOGGER.info("\tAPK is NOT available in cloud. Upload it");
@@ -487,12 +590,12 @@ public class Setup {
         }
     }
 
-    private boolean isAPKAlreadyAvailableInCloud (String authToken, String appPath) {
+    private boolean isAPKAlreadyAvailableInPCloudy (String authToken, String appPath) {
         Path path = Paths.get(appPath);
         String appNameFromPath = path.getFileName().toString();
         LOGGER.info("isAPKAlreadyAvailableInCloud: Start: " + appPath);
 
-        CommandLineResponse uploadResponse = getListOfUploadedFilesInDeviceFarm(authToken);
+        CommandLineResponse uploadResponse = getListOfUploadedFilesInPCloudy(authToken);
         JsonObject result = JsonFile.convertToMap(uploadResponse.getStdOut()).getAsJsonObject("result");
         JsonArray availableFiles = result.getAsJsonArray("files");
         AtomicBoolean isFileAlreadyUploaded = new AtomicBoolean(false);
@@ -503,12 +606,11 @@ public class Setup {
                 isFileAlreadyUploaded.set(true);
             }
         });
-
         return isFileAlreadyUploaded.get();
     }
 
     @NotNull
-    private CommandLineResponse getListOfUploadedFilesInDeviceFarm (String authToken) {
+    private CommandLineResponse getListOfUploadedFilesInPCloudy (String authToken) {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
         Map payload = new HashMap();
         payload.put("token", authToken);

@@ -31,10 +31,12 @@ public class Driver {
     private static final Logger LOGGER = Logger.getLogger(Driver.class.getName());
     private final String type;
     private final WebDriver driver;
+    private final String deviceOn;
     private Visual visually;
 
-    public Driver (String testName, AppiumDriver<WebElement> appiumDriver) {
+    public Driver (String testName, String deviceOn, AppiumDriver<WebElement> appiumDriver) {
         this.driver = appiumDriver;
+        this.deviceOn = deviceOn;
         this.type = APPIUM_DRIVER;
         instantiateEyes(testName, appiumDriver);
     }
@@ -43,9 +45,10 @@ public class Driver {
         this.visually = new Visual(this.type, innerDriver, testName, Runner.isVisualTestingEnabled());
     }
 
-    public Driver (String testName, WebDriver webDriver) {
+    public Driver (String testName, String browserOn, WebDriver webDriver) {
         this.driver = webDriver;
         this.type = WEB_DRIVER;
+        this.deviceOn = browserOn;
         instantiateEyes(testName, webDriver);
     }
 
@@ -269,7 +272,7 @@ public class Driver {
 
         TouchAction action = new TouchAction((PerformsTouchActions) driver);
         action.longPress(LongPressOptions.longPressOptions()
-                .withElement(ElementOption.element(elementToBeLongTapped)))
+                        .withElement(ElementOption.element(elementToBeLongTapped)))
                 .release()
                 .perform();
     }

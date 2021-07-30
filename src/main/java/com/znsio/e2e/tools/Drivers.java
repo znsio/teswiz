@@ -126,16 +126,19 @@ public class Drivers {
 
         if (numberOfAndroidDriversUsed == 0) {
             AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
+            AppiumDevice deviceInfo = (AppiumDevice) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
             Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
+            context.addTestState(TEST_CONTEXT.DEVICE_ON, deviceInfo.getDeviceOn());
             LOGGER.info("CAPABILITIES: " + appiumDriverCapabilities);
             userPersonaDriverCapabilities.put(userPersona, appiumDriverCapabilities);
             currentDriver = new Driver(
                     context.getTestName() + "-" + userPersona,
+                    deviceInfo.getDeviceOn(),
                     appiumDriver);
         } else {
             try {
                 AppiumDriver appiumDriver = allocateNewDeviceAndStartAppiumDriver();
-                currentDriver = new Driver(context.getTestName() + "-" + userPersona, appiumDriver);
+                currentDriver = new Driver(context.getTestName() + "-" + userPersona, context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON), appiumDriver);
                 Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
                 LOGGER.info("CAPABILITIES: " + appiumDriverCapabilities);
                 userPersonaDriverCapabilities.put(userPersona, appiumDriverCapabilities);
@@ -152,7 +155,7 @@ public class Drivers {
                 userPersona,
                 forPlatform.name(),
                 numberOfAndroidDriversUsed));
-        disableNotificationsAndToastsOnDevice(currentDriver);
+        disableNotificationsAndToastsOnDevice(currentDriver, context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON), (String) userPersonaDriverCapabilities.get(userPersona).getCapability("udid"));
         return currentDriver;
     }
 
@@ -173,8 +176,10 @@ public class Drivers {
             );
         }
         String updatedTestName = context.getTestName() + "-" + userPersona;
+        String runningOn = Runner.isRunningInCI() ? "CI" : "local";
+        context.addTestState(TEST_CONTEXT.WEB_BROWSER_ON, runningOn);
         if (numberOfWebDriversUsed < MAX_NUMBER_OF_WEB_DRIVERS) {
-            currentDriver = new Driver(updatedTestName, createNewWebDriver(userPersona, context));
+            currentDriver = new Driver(updatedTestName, runningOn, createNewWebDriver(userPersona, context));
         } else {
             throw new InvalidTestDataException(
                     String.format("Current number of WebDriver instances used: '%d'. " +
@@ -209,8 +214,11 @@ public class Drivers {
         }
         if (numberOfWindowsDriversUsed < MAX_NUMBER_OF_APPIUM_DRIVERS) {
             AppiumDriver<WebElement> windowsDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
+            String runningOn = Runner.isRunningInCI() ? "CI" : "local";
+            context.addTestState(TEST_CONTEXT.WINDOWS_DEVICE_ON, runningOn);
             currentDriver = new Driver(
                     context.getTestName() + "-" + userPersona,
+                    runningOn,
                     windowsDriver);
             Capabilities windowsDriverCapabilities = windowsDriver.getCapabilities();
             LOGGER.info("CAPABILITIES: " + windowsDriverCapabilities);
@@ -245,15 +253,17 @@ public class Drivers {
         }
     }
 
-    private void disableNotificationsAndToastsOnDevice (Driver currentDriver) {
+    private void disableNotificationsAndToastsOnDevice (Driver currentDriver, String deviceOn, String udid) {
         if (Runner.isRunningInCI()) {
-            Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW deny");
-            LOGGER.info("@disableToastsCommandResponse: " + disableToasts);
-            Object disableNotifications = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell settings put global heads_up_notifications_enabled 0");
-            LOGGER.info("@disableNotificationsCommandResponse: " + disableNotifications);
+            if (deviceOn.equalsIgnoreCase("pCloudy")) {
+                Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW deny");
+                LOGGER.info("@disableToastsCommandResponse: " + disableToasts);
+                Object disableNotifications = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell settings put global heads_up_notifications_enabled 0");
+                LOGGER.info("@disableNotificationsCommandResponse: " + disableNotifications);
+            }
         } else {
-            String[] disableToastsCommand = new String[]{"adb", "-s", "${device.SERIAL}", "shell", "appops", "set", Runner.getAppPackageName(), "TOAST_WINDOW", "deny"};
-            String[] disableNotificationsCommand = new String[]{"adb", "-s", "${device.SERIAL}", "shell", "settings", "put", "global", "heads_up_notifications_enabled", "0"};
+            String[] disableToastsCommand = new String[]{"adb", "-s", udid, "shell", "appops", "set", Runner.getAppPackageName(), "TOAST_WINDOW", "deny"};
+            String[] disableNotificationsCommand = new String[]{"adb", "-s", udid, "shell", "settings", "put", "global", "heads_up_notifications_enabled", "0"};
 
             CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand);
             LOGGER.info("disableToastsCommandResponse: " + disableToastsCommandResponse);
