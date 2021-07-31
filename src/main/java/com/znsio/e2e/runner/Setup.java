@@ -557,8 +557,8 @@ public class Setup {
         String appPath = configs.get(APP_PATH);
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         String platformName = platform.name();
-        String osVersion = String.valueOf(loadedCapabilityFile.get("platformVersion"));
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
+        String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
         loadedPlatformCapability.remove("app");
         loadedPlatformCapability.put("pCloudy_Username", emailID);
         loadedPlatformCapability.put("pCloudy_ApiKey", authenticationKey);
