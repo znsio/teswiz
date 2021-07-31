@@ -566,7 +566,7 @@ public class Setup {
         loadedPlatformCapability.put("pCloudy_ApplicationName", splitAppPath[splitAppPath.length - 1]);
         loadedPlatformCapability.put("pCloudy_DeviceVersion", osVersion);
 
-        updateCapabilities(loadedPlatformCapability);
+        updateCapabilities(loadedCapabilityFile);
     }
 
     private String getCloudNameFromCapabilities () {
