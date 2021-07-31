@@ -477,7 +477,6 @@ public class Setup {
         String capabilityFile = configs.get(CAPS);
         String appPath = configs.get(APP_PATH);
         String[] splitAppPath = appPath.split("/");
-        configs.put(APP_PATH, splitAppPath[splitAppPath.length - 1]);
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
@@ -513,27 +512,30 @@ public class Setup {
         CommandLineResponse uploadAPKToHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
 
         JsonObject uploadResponse = JsonFile.convertToMap(uploadAPKToHeadspinResponse.getStdOut()).getAsJsonObject();
-        return uploadResponse.get("apk_id").getAsString();
+        String uploadedApkId = uploadResponse.get("apk_id").getAsString();
+        LOGGER.info(String.format("App: '%s' uploaded to Headspin. Response: '%s'", appPath, uploadResponse));
+
+        JsonObject listOfAppPackages = getListOfAppPackages(authenticationKey);
+        JsonObject uploadedAppDetails = listOfAppPackages.getAsJsonObject(uploadedApkId);
+        String uploadedAppName = uploadedAppDetails.get("app_name").getAsString();
+        configs.put(APP_PATH, uploadedAppName);
+        return uploadedApkId;
     }
 
     private String getAppIdFromHeadspin (String authenticationKey, String appPackageName) {
         LOGGER.info("getAppIdFromHeadspin for package: " + appPackageName);
 
-        String deviceLabURL = configs.get(DEVICE_LAB_URL);
-        String[] curlCommand = new String[]{
-                "curl --insecure",
-                "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apks"};
-        CommandLineResponse listOfUploadedFilesInHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
-
-        JsonObject listOfAppPackages = JsonFile.convertToMap(listOfUploadedFilesInHeadspinResponse.getStdOut()).getAsJsonObject();
+        JsonObject listOfAppPackages = getListOfAppPackages(authenticationKey);
         AtomicReference<String> uploadedAppId = new AtomicReference<>(NOT_SET);
         listOfAppPackages.keySet().forEach(appId -> {
             if (uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
-                String retrievedAppPackage = listOfAppPackages.getAsJsonObject(appId).get("app_package").getAsString();
+                JsonObject appInfoAsJson = listOfAppPackages.getAsJsonObject(appId);
+                String retrievedAppPackage = appInfoAsJson.get("app_package").getAsString();
                 LOGGER.info("retrievedAppPackage: " + retrievedAppPackage);
                 if (retrievedAppPackage.equals(appPackageName)) {
                     LOGGER.info("\tThis file is available in Device Farm: " + appId);
                     uploadedAppId.set(appId);
+                    configs.put(APP_PATH, appInfoAsJson.get("app_name").getAsString());
                 }
             }
         });
@@ -543,6 +545,17 @@ public class Setup {
         }
 
         return uploadedAppId.get();
+    }
+
+    private JsonObject getListOfAppPackages(String authenticationKey) {
+        String deviceLabURL = configs.get(DEVICE_LAB_URL);
+        String[] curlCommand = new String[]{
+                "curl --insecure",
+                "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apks"};
+        CommandLineResponse listOfUploadedFilesInHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
+
+        JsonObject listOfAppPackages = JsonFile.convertToMap(listOfUploadedFilesInHeadspinResponse.getStdOut()).getAsJsonObject();
+        return listOfAppPackages;
     }
 
     private void updatePCloudyCapabilities () {
