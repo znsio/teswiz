@@ -587,7 +587,6 @@ public class Drivers {
             appiumDriver.quit();
             ReportPortal.emitLog(
                     String.format("App: '%s' Current application state: '%s'%n",
-
                             appPackageName,
                             applicationState),
                     "DEBUG",
