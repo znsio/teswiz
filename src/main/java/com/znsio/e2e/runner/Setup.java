@@ -499,6 +499,9 @@ public class Setup {
         loadedPlatformCapability.remove("app");
         loadedPlatformCapability.remove("platformVersion");
         loadedPlatformCapability.put("headspin:selector", "os_version: >=" + osVersion);
+        loadedPlatformCapability.put("headspin:capture", true);
+        loadedPlatformCapability.put("headspin:capture.video", true);
+        loadedPlatformCapability.put("headspin:capture.network", true);
         updateCapabilities(loadedCapabilityFile);
     }
 
