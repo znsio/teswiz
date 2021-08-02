@@ -33,15 +33,16 @@ public class ScreenShotManager {
     public void takeScreenShot (String fileName) {
         Driver driver = (Driver) context.getTestState(TEST_CONTEXT.CURRENT_DRIVER);
         if (null != driver) {
+            fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
             try {
                 File screenshot = ((TakesScreenshot) driver.getInnerDriver()).getScreenshotAs(OutputType.FILE);
-                fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
+                LOGGER.info("Original screenshot : " + screenshot.getAbsolutePath());
                 LOGGER.info("The screenshot is placed in : " + destinationFile.getAbsolutePath());
                 FileUtils.copyFile(screenshot, destinationFile);
                 ReportPortal.emitLog(fileName, "DEBUG", new Date(), destinationFile);
             } catch (IOException | RuntimeException e) {
-                LOGGER.info("ERROR: Unable to save or upload screenshot: " + destinationFile.getAbsolutePath() + " or upload sceeenshot to ReportPortal%n");
+                LOGGER.info("ERROR: Unable to save or upload screenshot: " + destinationFile.getAbsolutePath() + " or upload screenshot to ReportPortal\n");
                 LOGGER.info(ExceptionUtils.getStackTrace(e));
             }
         } else {
@@ -50,7 +51,9 @@ public class ScreenShotManager {
     }
 
     private String normaliseScenarioName (String scenarioName) {
-        return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_");
+        return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_")
+                .replaceAll("__", "_")
+                .replaceAll("__", "_");
     }
 
     private int getPrefix () {
