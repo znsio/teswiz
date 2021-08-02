@@ -5,6 +5,7 @@ import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -41,7 +42,7 @@ public class ScreenShotManager {
                 ReportPortal.emitLog(fileName, "DEBUG", new Date(), destinationFile);
             } catch (IOException | RuntimeException e) {
                 LOGGER.info("ERROR: Unable to save or upload screenshot: " + destinationFile.getAbsolutePath() + " or upload sceeenshot to ReportPortal%n");
-                e.printStackTrace();
+                LOGGER.info(ExceptionUtils.getStackTrace(e));
             }
         } else {
             LOGGER.info("Driver is not instantiated for this test");

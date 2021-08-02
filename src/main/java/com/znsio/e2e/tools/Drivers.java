@@ -17,6 +17,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.appmanagement.ApplicationState;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
@@ -248,7 +249,7 @@ public class Drivers {
             updateAvailableDeviceInformation(availableDevice);
             return driver;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.info(ExceptionUtils.getStackTrace(e));
             throw new RuntimeException(e);
         }
     }
