@@ -230,7 +230,7 @@ public class Driver {
     public void selectNotification (By selectNotificationLocator) {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         WebElement selectNotificationElement = driver.findElement(selectNotificationLocator);
-        LOGGER.info("Notification found: " + selectNotificationElement.getText());
+        LOGGER.info("Notification found: " + selectNotificationElement.getText().trim());
         Point notificationCoordinates = selectNotificationElement.getLocation();
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.tap(PointOption.point(notificationCoordinates)).perform();
