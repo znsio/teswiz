@@ -11,7 +11,7 @@ class RunnerTest {
     private final String logDir = "./target/";
 
     @Test
-    void mainLocalDefault () {
+    void localDefault () {
         String featuresDir = "./src/test/resources";
         System.setProperty("RUN_IN_CI", "false");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
@@ -27,7 +27,7 @@ class RunnerTest {
     }
 
     @Test
-    void mainLocalAndroid () {
+    void localAndroid () {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("PLATFORM", Platform.android.name());
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
@@ -35,7 +35,7 @@ class RunnerTest {
     }
 
     @Test
-    void mainLocalWeb () {
+    void localWeb () {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("PLATFORM", Platform.web.name());
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
@@ -43,13 +43,7 @@ class RunnerTest {
     }
 
     @Test
-    void mainAndroidCloud () {
-        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/pcloudy_config.properties", stepDefDir, featuresDir);
-    }
-
-    @Test
-    void multiUserTest () {
+    void multiUserAndroidWebTest () {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("TAG", "@multiuser-android-web");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
@@ -71,7 +65,7 @@ class RunnerTest {
     }
 
     @Test
-    void multiUserPCloudyAndroidCloudTest () {
+    void pCloudyMultiUserAndroidCloudTest () {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
         System.setProperty("TAG", "@multiuser-android and @login");
@@ -87,7 +81,7 @@ class RunnerTest {
     }
 
     @Test
-    void multiUserHeadspinAndroidCloudTest () {
+    void headspinMultiUserAndroidCloudTest () {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
         System.setProperty("TAG", "@multiuser-android and @login");
