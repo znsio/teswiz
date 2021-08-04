@@ -4,15 +4,19 @@ import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
 import com.znsio.e2e.entities.TEST_CONTEXT;
+import io.appium.java_client.AppiumDriver;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+
+import static com.znsio.e2e.tools.Driver.WEB_DRIVER;
 
 
 public class ScreenShotManager {
@@ -36,7 +40,14 @@ public class ScreenShotManager {
             fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
             try {
-                File screenshot = ((TakesScreenshot) driver.getInnerDriver()).getScreenshotAs(OutputType.FILE);
+                File screenshot = null;
+                if (driver.getType().equalsIgnoreCase(WEB_DRIVER)) {
+                    WebDriver innerDriver = driver.getInnerDriver();
+                    screenshot = ((TakesScreenshot) innerDriver).getScreenshotAs(OutputType.FILE);
+                } else {
+                    AppiumDriver innerDriver = (AppiumDriver) driver.getInnerDriver();
+                    screenshot = ((TakesScreenshot) innerDriver).getScreenshotAs(OutputType.FILE);
+                }
                 LOGGER.info("Original screenshot : " + screenshot.getAbsolutePath());
                 LOGGER.info("The screenshot is placed in : " + destinationFile.getAbsolutePath());
                 FileUtils.copyFile(screenshot, destinationFile);
