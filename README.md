@@ -185,8 +185,7 @@ These can be overridden by providing the same either as environment variables or
     BROWSER_HEADLESS=false -> Should browser be started in headless mode? If yes, set to true
     BROWSER_MAXIMIZE=true -> Should browser be maximised when started? If yes, set to true
     BROWSER_VERBOSE_LOGGING=true -> Should browser logs be verbose? If yes, set to true
-    CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> Uninstall app from local Android devices before starting test 
-execution
+    CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> Uninstall app from local Android devices before starting test execution
     CLOUD_KEY=<auth / api key> for pCloudy / Headspin
     CLOUD_USER=<username / email> for pCloudy -> Not required for Headspin
     CLOUD_NAME=headspin|pCloudy -> REQUIRED when running against pCloudy / Headspin
