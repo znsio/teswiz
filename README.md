@@ -177,6 +177,7 @@ These can be overridden by providing the same either as environment variables or
 
     APP_NAME=teswiz -> Name of your application
     APP_PACKAGE_NAME=io.cloudgrey.the_app -> android app package name
+    APP_PATH=./temp/abc.apk -> path to android / windows app name
     APPLITOOLS_CONFIGURATION=./configs/applitools_config.json -> Applitools configuration 
     BASE_URL_FOR_WEB=BASE_URL -> Key name of the property in TEST_DATA_FILE for environment specific base url
     BROWSER=chrome -> Which browser to use for Web execution? Supported: chrome || firefox
@@ -184,20 +185,27 @@ These can be overridden by providing the same either as environment variables or
     BROWSER_HEADLESS=false -> Should browser be started in headless mode? If yes, set to true
     BROWSER_MAXIMIZE=true -> Should browser be maximised when started? If yes, set to true
     BROWSER_VERBOSE_LOGGING=true -> Should browser logs be verbose? If yes, set to true
+    CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> Uninstall app from local Android devices before starting test 
+execution
+    CLOUD_KEY=<auth / api key> for pCloudy / Headspin
+    CLOUD_USER=<username / email> for pCloudy -> Not required for Headspin
+    CLOUD_NAME=headspin|pCloudy -> REQUIRED when running against pCloudy / Headspin
+    CLOUD_UPLOAD_APP=false -> Upload the app to pCloudy / headspin before running the tests
+    DEVICE_LAB_URL=<root url for device farm>
     ENVIRONMENT_CONFIG_FILE=./src/test/resources/environments.json -> Environment specific configuration file
     IS_VISUAL=false -> Should enable Applitools Visual Testing? If yes, set to true
     LOG_DIR=target -> Where should logs be created?
     LOG_PROPERTIES_FILE=./src/test/resources/log4j.properties -> log4j configuration file
-    PARALLEL=1 -> How many tests should be run in parallel? 
-    PLATFORM=android -> Run tests against? Supported: android | iOS | windows | web
-    PROXY_KEY=HTTP_PROXY -> If proxy should be set, what is the environment variable specifying the proxy?
-    REPORT_PORTAL_FILE=src/test/resources/reportportal.properties -> ReportPortal.io configuration
-    RUN_IN_CI=false -> Are tests running in CI?
-    TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE 
-    TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
-    CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> uninstall apk from each device before the test starts
     MAX_NUMBER_OF_APPIUM_DRIVERS -> The max number of drivers on cloud to create for multiuser android tests, default value is 5
     MAX_NUMBER_OF_WEB_DRIVERS -> The max number of web drivers on cloud to create for multiuser web tests, default value is 5
+    PLATFORM=android -> Run tests against? Supported: android | iOS | windows | web
+    PARALLEL=1 -> How many tests should be run in parallel?
+    PROXY_KEY=HTTP_PROXY -> If proxy should be set, what is the environment variable specifying the proxy?
+    PROXY_URL=<proxy_url> -> What is the proxy url to be used if PROXY_KEY is set
+    REPORT_PORTAL_FILE=src/test/resources/reportportal.properties -> ReportPortal.io configuration
+    RUN_IN_CI=false -> Are tests running in CI?
+    TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE
+    TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
 
 ## Troubleshooting / FAQs
 
