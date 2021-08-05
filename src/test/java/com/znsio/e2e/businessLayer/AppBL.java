@@ -16,7 +16,7 @@ public class AppBL {
     private final String currentUserPersona;
     private final Platform currentPlatform;
 
-    public AppBL (String userPersona, Platform forPlatform) {
+    public AppBL(String userPersona, Platform forPlatform) {
         long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
@@ -25,7 +25,7 @@ public class AppBL {
         Runner.setCurrentDriverForUser(userPersona, forPlatform, context);
     }
 
-    public AppBL () {
+    public AppBL() {
         long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
@@ -33,7 +33,7 @@ public class AppBL {
         this.currentPlatform = Runner.platform;
     }
 
-    public LoginBL provideInvalidDetailsForSignup (String username, String password) {
+    public LoginBL provideInvalidDetailsForSignup(String username, String password) {
         String errorMessage = "Invalid login credentials error message is incorrect";
         String androidErrorMessage = "Invalid login credentials, please try again";
         String webErrorMessage = "Your username is invalid!";
@@ -55,7 +55,7 @@ public class AppBL {
         return new LoginBL(currentUserPersona, currentPlatform);
     }
 
-    public LoginBL loginAgain (String username, String password) {
+    public LoginBL loginAgain(String username, String password) {
         String errorMessage = "Invalid login credentials error message is incorrect";
         String androidErrorMessage = "Invalid login credentials, please try again";
         String webErrorMessage = "Your username is invalid!";
@@ -76,7 +76,7 @@ public class AppBL {
         return new LoginBL(currentUserPersona, currentPlatform);
     }
 
-    public AppBL goBack () {
+    public AppBL goBack() {
         HomeScreen.get().goBack();
         return this;
     }

@@ -19,13 +19,13 @@ public class LoginScreenAndroid extends LoginScreen {
     private final By errorMessageId = By.id("android:id/message");
     private final By dismissAlertId = By.id("android:id/button1");
 
-    public LoginScreenAndroid (Driver driver, Visual visually) {
+    public LoginScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
     }
 
     @Override
-    public LoginScreen enterLoginDetails (String username, String password) {
+    public LoginScreen enterLoginDetails(String username, String password) {
         waitFor(2);
         driver.findElementByAccessibilityId(userNameId).sendKeys(username);
         driver.findElementByAccessibilityId(passwordId).sendKeys(password);
@@ -36,14 +36,14 @@ public class LoginScreenAndroid extends LoginScreen {
     }
 
     @Override
-    public LoginScreen login () {
+    public LoginScreen login() {
         driver.findElement(loginButtonXpath).click();
         waitFor(2);
         return this;
     }
 
     @Override
-    public String getInvalidLoginError () {
+    public String getInvalidLoginError() {
         WebElement alertText = driver.waitForVisibilityOf(errorMessageId);
         visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert");
         visually.checkWindow(SCREEN_NAME, "Invalid Login alert");
@@ -51,7 +51,7 @@ public class LoginScreenAndroid extends LoginScreen {
     }
 
     @Override
-    public LoginScreen dismissAlert () {
+    public LoginScreen dismissAlert() {
         driver.waitForVisibilityOf(dismissAlertId).click();
         waitFor(2);
         visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert dismissed");
