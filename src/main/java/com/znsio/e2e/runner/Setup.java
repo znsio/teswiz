@@ -528,26 +528,32 @@ public class Setup {
     private String getAppIdFromHeadspin (String authenticationKey, String appPackageName) {
         LOGGER.info("getAppIdFromHeadspin for package: " + appPackageName);
 
-        JsonObject listOfAppPackages = getListOfAppPackages(authenticationKey);
         AtomicReference<String> uploadedAppId = new AtomicReference<>(NOT_SET);
-        listOfAppPackages.keySet().forEach(appId -> {
-            if (uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
-                JsonObject appInfoAsJson = listOfAppPackages.getAsJsonObject(appId);
-                String retrievedAppPackage = appInfoAsJson.get("app_package").getAsString();
-                LOGGER.info("retrievedAppPackage: " + retrievedAppPackage);
-                if (retrievedAppPackage.equals(appPackageName)) {
-                    LOGGER.info("\tThis file is available in Device Farm: " + appId);
-                    uploadedAppId.set(appId);
-                    configs.put(APP_PATH, appInfoAsJson.get("app_name").getAsString());
-                }
-            }
-        });
+        JsonObject listOfAppPackages = getListOfAppPackages(authenticationKey);
+        if (listOfAppPackages.keySet().size()>0) {
+            getAppIdFromAvailableAppsFromHeadspin(appPackageName, listOfAppPackages, uploadedAppId);
+        }
 
         if (uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
             throw new InvalidTestDataException(String.format("App with package: '%s' not available in Headspin", appPackageName));
         }
 
         return uploadedAppId.get();
+    }
+
+    private void getAppIdFromAvailableAppsFromHeadspin(String appPackageName, JsonObject listOfAppPackages, AtomicReference<String> uploadedAppId) {
+        listOfAppPackages.keySet().forEach(appId -> {
+            if(uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
+                JsonObject appInfoAsJson = listOfAppPackages.getAsJsonObject(appId);
+                String retrievedAppPackage = appInfoAsJson.get("app_package").getAsString();
+                LOGGER.info("retrievedAppPackage: " + retrievedAppPackage);
+                if(retrievedAppPackage.equals(appPackageName)) {
+                    LOGGER.info("\tThis file is available in Device Farm: " + appId);
+                    uploadedAppId.set(appId);
+                    configs.put(APP_PATH, appInfoAsJson.get("app_name").getAsString());
+                }
+            }
+        });
     }
 
     private JsonObject getListOfAppPackages(String authenticationKey) {
@@ -558,6 +564,10 @@ public class Setup {
         CommandLineResponse listOfUploadedFilesInHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
 
         JsonObject listOfAppPackages = JsonFile.convertToMap(listOfUploadedFilesInHeadspinResponse.getStdOut()).getAsJsonObject();
+        JsonElement statusCode = listOfAppPackages.get("status_code");
+        if (null != statusCode && statusCode.getAsInt()!= 200) {
+            throw new InvalidTestDataException("There was a problem getting the list of apps in Headspin");
+        }
         return listOfAppPackages;
     }
 
