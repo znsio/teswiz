@@ -16,7 +16,7 @@ public abstract class EchoScreen {
     private static final String SCREEN_NAME = EchoScreen.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(HomeScreen.class.getName());
 
-    public static EchoScreen get () {
+    public static EchoScreen get() {
         Driver driver = fetchDriver(Thread.currentThread().getId());
         Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
@@ -31,5 +31,5 @@ public abstract class EchoScreen {
         throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.platform);
     }
 
-    public abstract EchoScreen echoMessage (String message);
+    public abstract EchoScreen echoMessage(String message);
 }

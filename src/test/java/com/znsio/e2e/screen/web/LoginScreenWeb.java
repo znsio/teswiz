@@ -18,14 +18,14 @@ public class LoginScreenWeb extends LoginScreen {
     private final By errorMessageId = By.id("flash");
     private final By dismissAlertXpath = By.xpath("//a[@href=\"#\"]");
 
-    public LoginScreenWeb (Driver driver, Visual visually) {
+    public LoginScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
         visually.takeScreenshot(SCREEN_NAME, "Home screen");
     }
 
     @Override
-    public LoginScreen enterLoginDetails (String username, String password) {
+    public LoginScreen enterLoginDetails(String username, String password) {
         waitFor(2);
         driver.findElement(userNameId).sendKeys(username);
         driver.findElement(passwordId).sendKeys(password);
@@ -35,14 +35,14 @@ public class LoginScreenWeb extends LoginScreen {
     }
 
     @Override
-    public LoginScreen login () {
+    public LoginScreen login() {
         driver.findElement(loginButtonXpath).click();
         waitFor(2);
         return this;
     }
 
     @Override
-    public String getInvalidLoginError () {
+    public String getInvalidLoginError() {
         WebElement alertText = driver.waitForVisibilityOf(errorMessageId);
         visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert");
         visually.checkWindow(SCREEN_NAME, "Invalid Login alert");
@@ -50,7 +50,7 @@ public class LoginScreenWeb extends LoginScreen {
     }
 
     @Override
-    public LoginScreen dismissAlert () {
+    public LoginScreen dismissAlert() {
         waitFor(2);
         driver.waitForVisibilityOf(dismissAlertXpath).click();
         visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert dismissed");

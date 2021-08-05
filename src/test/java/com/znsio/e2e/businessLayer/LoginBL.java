@@ -11,7 +11,7 @@ public class LoginBL {
     private final String currentUserPersona;
     private final Platform currentPlatform;
 
-    public LoginBL (String userPersona, Platform forPlatform) {
+    public LoginBL(String userPersona, Platform forPlatform) {
         long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);

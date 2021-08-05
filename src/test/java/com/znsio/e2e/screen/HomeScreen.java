@@ -16,7 +16,7 @@ public abstract class HomeScreen {
     private static final String SCREEN_NAME = HomeScreen.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(HomeScreen.class.getName());
 
-    public static HomeScreen get () {
+    public static HomeScreen get() {
         Driver driver = fetchDriver(Thread.currentThread().getId());
         Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
@@ -31,9 +31,9 @@ public abstract class HomeScreen {
         throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.platform);
     }
 
-    public abstract LoginScreen selectLogin ();
+    public abstract LoginScreen selectLogin();
 
-    public abstract HomeScreen goBack ();
+    public abstract HomeScreen goBack();
 
-    public abstract EchoScreen selectEcho ();
+    public abstract EchoScreen selectEcho();
 }

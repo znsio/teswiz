@@ -11,7 +11,7 @@ class RunnerTest {
     private final String logDir = "./target/";
 
     @Test
-    void localDefault () {
+    void localDefault() {
         String featuresDir = "./src/test/resources";
         System.setProperty("RUN_IN_CI", "false");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
@@ -27,7 +27,16 @@ class RunnerTest {
     }
 
     @Test
-    void localAndroid () {
+    void localWindows() {
+        String featuresDir = "./src/test/resources";
+        System.setProperty("RUN_IN_CI", "false");
+        System.setProperty("PLATFORM", "windows");
+        System.setProperty("TAG", "@notepad");
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/windows_config.properties", stepDefDir, featuresDir);
+    }
+
+    @Test
+    void localAndroid() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("PLATFORM", Platform.android.name());
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
@@ -35,7 +44,7 @@ class RunnerTest {
     }
 
     @Test
-    void localWeb () {
+    void localWeb() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("PLATFORM", Platform.web.name());
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
@@ -43,21 +52,21 @@ class RunnerTest {
     }
 
     @Test
-    void multiUserAndroidWebTest () {
+    void multiUserAndroidWebTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("TAG", "@multiuser-android-web");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
     }
 
     @Test
-    void multiUserAndroidTest () {
+    void multiUserAndroidTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("TAG", "@multiuser-android and @login");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
     }
 
     @Test
-    void pCloudyAndroidCloudTest () {
+    void pCloudyAndroidCloudTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
         System.setProperty("TAG", "@login");
@@ -65,7 +74,7 @@ class RunnerTest {
     }
 
     @Test
-    void pCloudyMultiUserAndroidCloudTest () {
+    void pCloudyMultiUserAndroidCloudTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
         System.setProperty("TAG", "@multiuser-android and @login");
@@ -73,7 +82,7 @@ class RunnerTest {
     }
 
     @Test
-    void headspinAndroidCloudTest () {
+    void headspinAndroidCloudTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
         System.setProperty("TAG", "@login");
@@ -81,7 +90,7 @@ class RunnerTest {
     }
 
     @Test
-    void headspinMultiUserAndroidCloudTest () {
+    void headspinMultiUserAndroidCloudTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
         System.setProperty("TAG", "@multiuser-android and @login");
