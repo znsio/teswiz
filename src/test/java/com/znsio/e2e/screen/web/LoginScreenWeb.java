@@ -52,7 +52,6 @@ public class LoginScreenWeb extends LoginScreen {
     @Override
     public LoginScreen dismissAlert() {
         waitFor(2);
-        driver.waitForVisibilityOf(dismissAlertXpath).click();
         visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert dismissed");
         return this;
     }

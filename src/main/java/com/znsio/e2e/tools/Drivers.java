@@ -38,6 +38,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 
+import static com.znsio.e2e.runner.Setup.CAPS;
 import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
 
 public class Drivers {
@@ -471,7 +472,22 @@ public class Drivers {
     @NotNull
     private RemoteWebDriver createRemoteWebDriver (MutableCapabilities chromeOptions) {
         try {
-            return new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), chromeOptions);
+            String cloudName = Runner.getCloudName();
+            String webdriverHubSuffix = "/wd/hub";
+            String remoteUrl = "http://localhost:4444" + webdriverHubSuffix;
+            if (cloudName.equalsIgnoreCase("headspin")) {
+                String authenticationKey = Runner.getCloudKey();
+                String capabilityFile = System.getProperty(CAPS);
+                Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
+                ArrayList hostMachinesList = (ArrayList) loadedCapabilityFile.get("hostMachines");
+                Map hostMachines = (Map) hostMachinesList.get(0);
+                String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
+                remoteUrl = remoteServerURL.endsWith("/")
+                        ? remoteServerURL + authenticationKey + webdriverHubSuffix
+                        : remoteServerURL + "/" + authenticationKey + webdriverHubSuffix;
+                remoteUrl = remoteUrl.startsWith("https") ? remoteUrl : "https://" + remoteUrl;
+            }
+            return new RemoteWebDriver(new URL(remoteUrl), chromeOptions);
         } catch (MalformedURLException e) {
             throw new EnvironmentSetupException("Unable to create a new RemoteWebDriver", e);
         }

@@ -52,6 +52,14 @@ public class Runner {
         run(cukeArgs, stepDefDirName, featuresDirName);
     }
 
+    public static String getCloudName() {
+        return configs.get(CLOUD_NAME);
+    }
+
+    public static String getCloudKey() {
+        return configs.get(CLOUD_KEY);
+    }
+
     public void run (ArrayList<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);

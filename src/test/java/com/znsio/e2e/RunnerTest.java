@@ -4,11 +4,13 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.runner.Runner;
 import org.junit.jupiter.api.Test;
 
+import static com.znsio.e2e.runner.Setup.CLOUD_KEY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class RunnerTest {
     private final String stepDefDir = "com/znsio/e2e/steps";
     private final String logDir = "./target/";
+    private final String HEADSPIN_KEY = System.getenv("HEADSPIN_KEY");
 
     @Test
     void localDefault() {
@@ -52,10 +54,29 @@ class RunnerTest {
     }
 
     @Test
-    void multiUserAndroidWebTest() {
+    void headspinWeb() {
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty("PLATFORM", Platform.web.name());
+        System.setProperty("RUN_IN_CI", "true");
+        System.setProperty("TAG", "@login");
+        System.setProperty(CLOUD_KEY, HEADSPIN_KEY);
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/headspin_config.properties", stepDefDir, featuresDir);
+    }
+
+    @Test
+    void localMultiUserAndroidWebTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("TAG", "@multiuser-android-web");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+    }
+
+    @Test
+    void headspinMultiUserAndroidWebTest() {
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty(CLOUD_KEY, HEADSPIN_KEY);
+        System.setProperty("RUN_IN_CI", "true");
+        System.setProperty("TAG", "@multiuser-android-web");
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/headspin_config.properties", stepDefDir, featuresDir);
     }
 
     @Test
@@ -86,6 +107,7 @@ class RunnerTest {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
         System.setProperty("TAG", "@login");
+        System.setProperty(CLOUD_KEY, HEADSPIN_KEY);
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/headspin_config.properties", stepDefDir, featuresDir);
     }
 
@@ -94,6 +116,7 @@ class RunnerTest {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
         System.setProperty("TAG", "@multiuser-android and @login");
+        System.setProperty(CLOUD_KEY, HEADSPIN_KEY);
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/headspin_config.properties", stepDefDir, featuresDir);
     }
 }

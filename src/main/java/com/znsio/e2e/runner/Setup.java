@@ -63,10 +63,12 @@ public class Setup {
     private static final String LOG_PROPERTIES_FILE = "LOG_PROPERTIES_FILE";
     private static final String DEFAULT_LOG_DIR = "target";
     private static final String APP_PATH = "APP_PATH";
-    private static final String CAPS = "CAPS";
+    public static final String CAPS = "CAPS";
     private static final String CLOUD_USER = "CLOUD_USER";
-    private static final String CLOUD_KEY = "CLOUD_KEY";
+    public static final String CLOUD_KEY = "CLOUD_KEY";
     private static final String CLOUD_UPLOAD_APP = "CLOUD_UPLOAD_APP";
+    static final String CLOUD_NAME = "CLOUD_NAME";
+    private static final String LOCAL = "LOCAL";
     private static final String DEVICE_LAB_URL = "DEVICE_LAB_URL";
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
     private static final String EXECUTED_ON = "EXECUTED_ON";
@@ -179,6 +181,7 @@ public class Setup {
         configs.put(CAPS, getOverriddenStringValue(CAPS, getStringValueFromPropertiesIfAvailable(CAPS, NOT_SET)));
         configs.put(CLOUD_KEY, getOverriddenStringValue(CLOUD_KEY, getStringValueFromPropertiesIfAvailable(CLOUD_KEY, NOT_SET)));
         configs.put(CLOUD_USER, getOverriddenStringValue(CLOUD_USER, getStringValueFromPropertiesIfAvailable(CLOUD_USER, NOT_SET)));
+        configs.put(CLOUD_NAME, getOverriddenStringValue(CLOUD_NAME, getStringValueFromPropertiesIfAvailable(CLOUD_NAME, LOCAL)));
         configsBoolean.put(CLOUD_UPLOAD_APP, getOverriddenBooleanValue(CLOUD_UPLOAD_APP, getBooleanValueFromPropertiesIfAvailable(CLOUD_UPLOAD_APP, false)));
         configs.put(DEVICE_LAB_URL, getOverriddenStringValue(DEVICE_LAB_URL, getStringValueFromPropertiesIfAvailable(DEVICE_LAB_URL, NOT_SET)));
         configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE, getStringValueFromPropertiesIfAvailable(ENVIRONMENT_CONFIG_FILE, NOT_SET)));
