@@ -39,21 +39,15 @@ public class ScreenShotManager {
         if (null != driver) {
             fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
+            LOGGER.info("The screenshot will be placed here : " + destinationFile.getAbsolutePath());
             try {
-                File screenshot = null;
-                if (driver.getType().equalsIgnoreCase(WEB_DRIVER)) {
-                    WebDriver innerDriver = driver.getInnerDriver();
-                    screenshot = ((TakesScreenshot) innerDriver).getScreenshotAs(OutputType.FILE);
-                } else {
-                    AppiumDriver innerDriver = (AppiumDriver) driver.getInnerDriver();
-                    screenshot = ((TakesScreenshot) innerDriver).getScreenshotAs(OutputType.FILE);
-                }
+                File screenshot = ((TakesScreenshot) driver.getInnerDriver()).getScreenshotAs(OutputType.FILE);
                 LOGGER.info("Original screenshot : " + screenshot.getAbsolutePath());
-                LOGGER.info("The screenshot is placed in : " + destinationFile.getAbsolutePath());
                 FileUtils.copyFile(screenshot, destinationFile);
+                LOGGER.info("The screenshot is available here : " + destinationFile.getAbsolutePath());
                 ReportPortal.emitLog(fileName, "DEBUG", new Date(), destinationFile);
             } catch (IOException | RuntimeException e) {
-                LOGGER.info("ERROR: Unable to save or upload screenshot: " + destinationFile.getAbsolutePath() + " or upload screenshot to ReportPortal\n");
+                LOGGER.info("ERROR: Unable to save or upload screenshot: '" + destinationFile.getAbsolutePath() + "' or upload screenshot to ReportPortal\n");
                 LOGGER.info(ExceptionUtils.getStackTrace(e));
             }
         } else {
