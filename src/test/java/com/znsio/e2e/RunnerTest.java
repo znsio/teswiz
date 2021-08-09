@@ -103,7 +103,7 @@ class RunnerTest {
     }
 
     @Test
-    void headspinAndroidCloudTest() {
+    void headspinAndroidTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
         System.setProperty("TAG", "@login");
@@ -112,7 +112,7 @@ class RunnerTest {
     }
 
     @Test
-    void headspinMultiUserAndroidCloudTest() {
+    void headspinMultiUserAndroidTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
         System.setProperty("TAG", "@multiuser-android and @login");
