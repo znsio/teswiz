@@ -27,7 +27,9 @@ public class LoginScreenAndroid extends LoginScreen {
     @Override
     public LoginScreen enterLoginDetails(String username, String password) {
         waitFor(2);
+        driver.findElementByAccessibilityId(userNameId).clear();
         driver.findElementByAccessibilityId(userNameId).sendKeys(username);
+        driver.findElementByAccessibilityId(passwordId).clear();
         driver.findElementByAccessibilityId(passwordId).sendKeys(password);
 //        driver.waitForVisibilityOf(passwordId).sendKeys(username);
         visually.takeScreenshot(SCREEN_NAME, "enterLoginDetails");
