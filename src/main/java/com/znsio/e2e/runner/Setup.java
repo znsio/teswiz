@@ -361,19 +361,18 @@ public class Setup {
     }
 
     private void fetchAndroidAppVersion() {
-        String[] commandToGetAppVersion = new String[] {"adb", "shell", "dumpsys", "package", configs.get(APP_PACKAGE_NAME), "|", "grep", "versionName"};
+        String[] commandToGetAppVersion = new String[] {"adb", "shell", "dumpsys", "package", configs.get(APP_PACKAGE_NAME), "|", "findstr", "versionName"};
         fetchAppVersion(commandToGetAppVersion);
     }
 
     private void fetchAppVersion(String[] commandToGetAppVersion) {
         CommandLineResponse appVersionResponse = CommandLineExecutor.execCommand(commandToGetAppVersion);
-        LOGGER.info("fetchAppVersion: getErrOut: " + appVersionResponse.getErrOut());
         String commandOutput = appVersionResponse.getStdOut();
 
         if (!(null == commandOutput || commandOutput.isEmpty())) {
             //output format:
-            // Version=X.X.X.XX (Windows)
-            // versionName=X.X.X.XX (Android)
+            //Windows: Version=X.X.X.XX
+            //Android: versionName=X.X.X.XX
             String appVersion = commandOutput.split("=")[1].trim();
             configs.put(APP_VERSION, appVersion);
         }
