@@ -355,7 +355,8 @@ public class Setup {
 
     private void fetchWindowsAppVersion() {
         String appPath = String.valueOf(configs.get(APP_PATH));
-        String[] commandToGetAppVersion = new String[] {"wmic", "datafile", "where", "name", "=", "\"", appPath, "\"", "get", "Version", "/value"};
+        String nameVariable = "name=\"" + appPath.replace("\\", "\\\\") + "\"";
+        String[] commandToGetAppVersion = new String[] {"wmic", "datafile", "where", nameVariable, "get", "Version", "/value"};
         fetchAppVersion(commandToGetAppVersion);
     }
 
@@ -366,12 +367,16 @@ public class Setup {
 
     private void fetchAppVersion(String[] commandToGetAppVersion) {
         CommandLineResponse appVersionResponse = CommandLineExecutor.execCommand(commandToGetAppVersion);
+        LOGGER.info("fetchAppVersion: getErrOut: " + appVersionResponse.getErrOut());
         String commandOutput = appVersionResponse.getStdOut();
-        //output format:
-        // Version=X.X.X.XX (Windows)
-        // versionName=X.X.X.XX (Windows)
-        String appVersion = commandOutput.split("=")[1].trim();
-        configs.put(APP_VERSION, appVersion);
+
+        if (!(null == commandOutput || commandOutput.isEmpty())) {
+            //output format:
+            // Version=X.X.X.XX (Windows)
+            // versionName=X.X.X.XX (Android)
+            String appVersion = commandOutput.split("=")[1].trim();
+            configs.put(APP_VERSION, appVersion);
+        }
     }
 
     private String getAppPathFromCapabilities () {
