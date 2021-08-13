@@ -79,6 +79,9 @@ public class Setup {
     private static final String TAG = "TAG";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
     private static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
+    private static final String APP_VERSION = "APP_VERSION";
+    private static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
+    private static final String APPIUM_SETTINGS = "io.appium.settings";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
 
     static Map<String, Map> environmentConfiguration;
@@ -199,6 +202,7 @@ public class Setup {
         configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
+        configs.put(APP_VERSION, NOT_SET);
     }
 
     public ArrayList<String> getExecutionArguments () {
@@ -243,6 +247,10 @@ public class Setup {
                         "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " +
                         "Username:" + USER_NAME + "; " +
                         "VisualEnabled:" + configsBoolean.get(IS_VISUAL) + "; ";
+
+        if (!configs.get(APP_VERSION).equals(NOT_SET)) {
+            rpAttributes += "AppVersion: " + configs.get(APP_VERSION) + "; ";
+        }
 
         LOGGER.info("ReportPortal Test Execution Attributes: " + rpAttributes);
 
@@ -301,6 +309,7 @@ public class Setup {
             } else {
                 setupLocalExecution();
             }
+            fetchAndroidAppVersion();
             cukeArgs.add("--threads");
             cukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
             cukeArgs.add(PLUGIN);
@@ -313,6 +322,7 @@ public class Setup {
     private void setupWindowsExecution () {
         if (platform.equals(Platform.windows)) {
             verifyAppExistsAtMentionedPath();
+            fetchWindowsAppVersion();
             cukeArgs.add(PLUGIN);
             cukeArgs.add("com.cucumber.listener.CucumberScenarioListener");
             cukeArgs.add(PLUGIN);
@@ -341,6 +351,27 @@ public class Setup {
             LOGGER.info("\tAppPath: " + appPath + " not found!");
             throw new InvalidTestDataException("App file not found at the mentioned path: " + appPath);
         }
+    }
+
+    private void fetchWindowsAppVersion() {
+        String appPath = String.valueOf(configs.get(APP_PATH));
+        String[] commandToGetAppVersion = new String[] {"wmic", "datafile", "where", "name", "=", "\"", appPath, "\"", "get", "Version", "/value"};
+        fetchAppVersion(commandToGetAppVersion);
+    }
+
+    private void fetchAndroidAppVersion() {
+        String[] commandToGetAppVersion = new String[] {"adb", "shell", "dumpsys", "package", configs.get(APP_PACKAGE_NAME), "|", "grep", "versionName"};
+        fetchAppVersion(commandToGetAppVersion);
+    }
+
+    private void fetchAppVersion(String[] commandToGetAppVersion) {
+        CommandLineResponse appVersionResponse = CommandLineExecutor.execCommand(commandToGetAppVersion);
+        String commandOutput = appVersionResponse.getStdOut();
+        //output format:
+        // Version=X.X.X.XX (Windows)
+        // versionName=X.X.X.XX (Windows)
+        String appVersion = commandOutput.split("=")[1].trim();
+        configs.put(APP_VERSION, appVersion);
     }
 
     private String getAppPathFromCapabilities () {
@@ -426,9 +457,9 @@ public class Setup {
     }
 
     private void uninstallAppFromDevice (Device device, String appPackageName) {
-        String[] uninstallAppiumAutomator2Server = new String[]{"adb", "-s", device.getUdid(), "uninstall", "io.appium.uiautomator2.server"};
+        String[] uninstallAppiumAutomator2Server = new String[]{"adb", "-s", device.getUdid(), "uninstall", APPIUM_UI_AUTOMATOR2_SERVER};
         CommandLineExecutor.execCommand(uninstallAppiumAutomator2Server);
-        String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall", "io.appium.settings"};
+        String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall", APPIUM_SETTINGS};
         CommandLineExecutor.execCommand(uninstallAppiumSettings);
 
         if (configsBoolean.get(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
