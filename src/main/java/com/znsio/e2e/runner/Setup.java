@@ -23,6 +23,7 @@ import se.vidstige.jadb.JadbDevice;
 import se.vidstige.jadb.JadbException;
 import se.vidstige.jadb.Stream;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +34,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.appium.utils.OverriddenVariable.*;
 import static com.znsio.e2e.runner.Runner.*;
@@ -304,6 +307,7 @@ public class Setup {
 
     private void setupAndroidExecution () {
         if (platform.equals(Platform.android)) {
+            verifyAppExistsAtMentionedPath();
             if (configsBoolean.get(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
@@ -354,34 +358,41 @@ public class Setup {
     }
 
     private void fetchWindowsAppVersion() {
+        Pattern VERSION_NAME_PATTERN = Pattern.compile("Version=([0-9]+(\\.[0-9]+)+)", Pattern.MULTILINE);
+
         String appPath = String.valueOf(configs.get(APP_PATH));
         String nameVariable = "name=\"" + appPath.replace("\\", "\\\\") + "\"";
         String[] commandToGetAppVersion = new String[] {"wmic", "datafile", "where", nameVariable, "get", "Version", "/value"};
-        fetchAppVersion(commandToGetAppVersion);
+        fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
     }
 
     private void fetchAndroidAppVersion() {
-        String[] commandToGetAppVersion;
-        if ((null == devices) || (devices.isEmpty())) {
-            LOGGER.info("fetchAndroidAppVersion: devices list found empty!");
-            commandToGetAppVersion = new String[] {"adb", "shell", "dumpsys", "package", configs.get(APP_PACKAGE_NAME), "|", "findstr", "versionName"};
+        Pattern VERSION_NAME_PATTERN = Pattern.compile("versionName='([0-9]+(\\.[0-9]+)+)'", Pattern.MULTILINE);
+        String filePath = configs.get(APP_PATH);
+
+        String env = System.getenv("ANDROID_HOME");
+        File buildToolsFolder = new File(env, "build-tools");
+        File buildTool = buildToolsFolder.listFiles()[0];
+        File[] aaptFilter = buildTool.listFiles((dir, name) -> name.toLowerCase().contains("aapt.exe"));
+
+        if (aaptFilter.length != 0) {
+            String[] commandToGetAppVersion = new String[] {aaptFilter[0].toString(), "dump", "badging", filePath, "|", "findstr", "versionName"};
+            fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
         } else {
-            String udid = devices.get(0).getUdid();
-            commandToGetAppVersion = new String[] {"adb", "-s", udid, "shell", "dumpsys", "package", configs.get(APP_PACKAGE_NAME), "|", "findstr", "versionName"};
+            LOGGER.info(String.format("fetchAndroidAppVersion: aapt.exe not found at folder '%s'", buildTool));
         }
-        fetchAppVersion(commandToGetAppVersion);
     }
 
-    private void fetchAppVersion(String[] commandToGetAppVersion) {
-        CommandLineResponse appVersionResponse = CommandLineExecutor.execCommand(commandToGetAppVersion);
-        String commandOutput = appVersionResponse.getStdOut();
-
+    private void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {
+        CommandLineResponse commandResponse = CommandLineExecutor.execCommand(commandToGetAppVersion);
+        String commandOutput = commandResponse.getStdOut();
         if (!(null == commandOutput || commandOutput.isEmpty())) {
-            //output format:
-            //Windows: Version=X.X.X.XX
-            //Android: versionName=X.X.X.XX
-            String appVersion = commandOutput.split("=")[1].trim();
-            configs.put(APP_VERSION, appVersion);
+            Matcher matcher = pattern.matcher(commandOutput);
+            if (matcher.find()) {
+                configs.put(APP_VERSION, matcher.group(1));
+            }
+        } else {
+            LOGGER.info("fetchAppVersion: " + commandResponse.getErrOut());
         }
     }
 
@@ -419,7 +430,6 @@ public class Setup {
     }
 
     private void setupLocalExecution () {
-        verifyAppExistsAtMentionedPath();
         setupLocalDevices();
         int parallelCount = devices.size();
         if (parallelCount == 0) {
@@ -497,7 +507,6 @@ public class Setup {
     }
 
     private void setupCloudExecution () {
-        verifyAppExistsAtMentionedPath();
         String cloudName = getCloudNameFromCapabilities();
         switch (cloudName.toLowerCase()) {
             case "headspin":
