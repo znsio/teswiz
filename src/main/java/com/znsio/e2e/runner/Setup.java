@@ -361,7 +361,14 @@ public class Setup {
     }
 
     private void fetchAndroidAppVersion() {
-        String[] commandToGetAppVersion = new String[] {"adb", "shell", "dumpsys", "package", configs.get(APP_PACKAGE_NAME), "|", "findstr", "versionName"};
+        String[] commandToGetAppVersion;
+        if ((null == devices) || (devices.isEmpty())) {
+            LOGGER.info("fetchAndroidAppVersion: devices list found empty!");
+            commandToGetAppVersion = new String[] {"adb", "shell", "dumpsys", "package", configs.get(APP_PACKAGE_NAME), "|", "findstr", "versionName"};
+        } else {
+            String udid = devices.get(0).getUdid();
+            commandToGetAppVersion = new String[] {"adb", "-s", udid, "shell", "dumpsys", "package", configs.get(APP_PACKAGE_NAME), "|", "findstr", "versionName"};
+        }
         fetchAppVersion(commandToGetAppVersion);
     }
 
