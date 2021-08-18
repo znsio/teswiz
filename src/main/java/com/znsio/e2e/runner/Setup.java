@@ -358,17 +358,18 @@ public class Setup {
         }
     }
 
-    @SneakyThrows
     private void fetchWindowsAppVersion() {
         Pattern VERSION_NAME_PATTERN = Pattern.compile("Version=([0-9]+(\\.[0-9]+)+)", Pattern.MULTILINE);
-
-        File appFile = new File(String.valueOf(configs.get(APP_PATH)));
-        String nameVariable = "name=\"" + appFile.getCanonicalPath().replace("\\", "\\\\") + "\"";
-        String[] commandToGetAppVersion = new String[] {"wmic", "datafile", "where", nameVariable, "get", "Version", "/value"};
-        fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
+        try {
+            File appFile = new File(String.valueOf(configs.get(APP_PATH)));
+            String nameVariable = "name=\"" + appFile.getCanonicalPath().replace("\\", "\\\\") + "\"";
+            String[] commandToGetAppVersion = new String[] {"wmic", "datafile", "where", nameVariable, "get", "Version", "/value"};
+            fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
+        } catch (IOException e) {
+            LOGGER.info("fetchWindowsAppVersion: Exception: " + e.getLocalizedMessage());
+        }
     }
 
-    @SneakyThrows
     private void fetchAndroidAppVersion() {
         Pattern VERSION_NAME_PATTERN = Pattern.compile("versionName='([0-9]+(\\.[0-9]+)+)'", Pattern.MULTILINE);
         String searchPattern = "grep";
@@ -376,19 +377,22 @@ public class Setup {
             searchPattern = "findstr";
         }
 
-        File appFile = new File(String.valueOf(configs.get(APP_PATH)));
-        String appFilePath = appFile.getCanonicalPath();
+        try {
+            File appFile = new File(String.valueOf(configs.get(APP_PATH)));
+            String appFilePath = appFile.getCanonicalPath();
+            String androidHomePath = System.getenv("ANDROID_HOME");
+            File buildToolsFolder = new File(androidHomePath, "build-tools");
+            File buildVersionFolder = buildToolsFolder.listFiles()[0];
+            File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
 
-        String env = System.getenv("ANDROID_HOME");
-        File buildToolsFolder = new File(env, "build-tools");
-        File buildVersionFolder = buildToolsFolder.listFiles()[0];
-        File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
-
-        if (aaptExecutable.exists()) {
-            String[] commandToGetAppVersion = new String[] {aaptExecutable.toString(), "dump", "badging", appFilePath, "|", searchPattern, "versionName"};
-            fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
-        } else {
-            LOGGER.info(String.format("fetchAndroidAppVersion: aapt executable not found at folder '%s'", buildVersionFolder));
+            if (aaptExecutable.exists()) {
+                String[] commandToGetAppVersion = new String[] {aaptExecutable.toString(), "dump", "badging", appFilePath, "|", searchPattern, "versionName"};
+                fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
+            } else {
+                LOGGER.info(String.format("fetchAndroidAppVersion: aapt executable not found at folder '%s'", buildVersionFolder));
+            }
+        } catch (IOException e) {
+            LOGGER.info("fetchAndroidAppVersion: Exception: " + e.getLocalizedMessage());
         }
     }
 
