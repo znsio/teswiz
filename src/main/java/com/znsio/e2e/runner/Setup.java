@@ -14,6 +14,7 @@ import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.tools.JsonFile;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -357,29 +358,37 @@ public class Setup {
         }
     }
 
+    @SneakyThrows
     private void fetchWindowsAppVersion() {
         Pattern VERSION_NAME_PATTERN = Pattern.compile("Version=([0-9]+(\\.[0-9]+)+)", Pattern.MULTILINE);
 
-        String appPath = String.valueOf(configs.get(APP_PATH));
-        String nameVariable = "name=\"" + appPath.replace("\\", "\\\\") + "\"";
+        File appFile = new File(String.valueOf(configs.get(APP_PATH)));
+        String nameVariable = "name=\"" + appFile.getCanonicalPath().replace("\\", "\\\\") + "\"";
         String[] commandToGetAppVersion = new String[] {"wmic", "datafile", "where", nameVariable, "get", "Version", "/value"};
         fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
     }
 
+    @SneakyThrows
     private void fetchAndroidAppVersion() {
         Pattern VERSION_NAME_PATTERN = Pattern.compile("versionName='([0-9]+(\\.[0-9]+)+)'", Pattern.MULTILINE);
-        String filePath = configs.get(APP_PATH);
+        String searchPattern = "grep";
+        if (Runner.IS_WINDOWS) {
+            searchPattern = "findstr";
+        }
+
+        File appFile = new File(String.valueOf(configs.get(APP_PATH)));
+        String appFilePath = appFile.getCanonicalPath();
 
         String env = System.getenv("ANDROID_HOME");
         File buildToolsFolder = new File(env, "build-tools");
-        File buildTool = buildToolsFolder.listFiles()[0];
-        File[] aaptFilter = buildTool.listFiles((dir, name) -> name.toLowerCase().contains("aapt.exe"));
+        File buildVersionFolder = buildToolsFolder.listFiles()[0];
+        File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
 
-        if (aaptFilter.length != 0) {
-            String[] commandToGetAppVersion = new String[] {aaptFilter[0].toString(), "dump", "badging", filePath, "|", "findstr", "versionName"};
+        if (aaptExecutable.exists()) {
+            String[] commandToGetAppVersion = new String[] {aaptExecutable.toString(), "dump", "badging", appFilePath, "|", searchPattern, "versionName"};
             fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
         } else {
-            LOGGER.info(String.format("fetchAndroidAppVersion: aapt.exe not found at folder '%s'", buildTool));
+            LOGGER.info(String.format("fetchAndroidAppVersion: aapt executable not found at folder '%s'", buildVersionFolder));
         }
     }
 
