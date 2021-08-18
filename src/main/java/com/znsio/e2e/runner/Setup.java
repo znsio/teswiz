@@ -23,6 +23,7 @@ import se.vidstige.jadb.JadbDevice;
 import se.vidstige.jadb.JadbException;
 import se.vidstige.jadb.Stream;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +34,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.appium.utils.OverriddenVariable.*;
 import static com.znsio.e2e.runner.Runner.*;
@@ -79,6 +82,9 @@ public class Setup {
     private static final String TAG = "TAG";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
     private static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
+    private static final String APP_VERSION = "APP_VERSION";
+    private static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
+    private static final String APPIUM_SETTINGS = "io.appium.settings";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
 
     static Map<String, Map> environmentConfiguration;
@@ -199,6 +205,7 @@ public class Setup {
         configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
+        configs.put(APP_VERSION, NOT_SET);
     }
 
     public ArrayList<String> getExecutionArguments () {
@@ -243,6 +250,10 @@ public class Setup {
                         "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " +
                         "Username:" + USER_NAME + "; " +
                         "VisualEnabled:" + configsBoolean.get(IS_VISUAL) + "; ";
+
+        if (!configs.get(APP_VERSION).equals(NOT_SET)) {
+            rpAttributes += "AppVersion: " + configs.get(APP_VERSION) + "; ";
+        }
 
         LOGGER.info("ReportPortal Test Execution Attributes: " + rpAttributes);
 
@@ -296,11 +307,13 @@ public class Setup {
 
     private void setupAndroidExecution () {
         if (platform.equals(Platform.android)) {
+            verifyAppExistsAtMentionedPath();
             if (configsBoolean.get(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
                 setupLocalExecution();
             }
+            fetchAndroidAppVersion();
             cukeArgs.add("--threads");
             cukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
             cukeArgs.add(PLUGIN);
@@ -313,6 +326,7 @@ public class Setup {
     private void setupWindowsExecution () {
         if (platform.equals(Platform.windows)) {
             verifyAppExistsAtMentionedPath();
+            fetchWindowsAppVersion();
             cukeArgs.add(PLUGIN);
             cukeArgs.add("com.cucumber.listener.CucumberScenarioListener");
             cukeArgs.add(PLUGIN);
@@ -340,6 +354,53 @@ public class Setup {
         } else {
             LOGGER.info("\tAppPath: " + appPath + " not found!");
             throw new InvalidTestDataException("App file not found at the mentioned path: " + appPath);
+        }
+    }
+
+    private void fetchWindowsAppVersion() {
+        Pattern VERSION_NAME_PATTERN = Pattern.compile("Version=([0-9]+(\\.[0-9]+)+)", Pattern.MULTILINE);
+        try {
+            File appFile = new File(String.valueOf(configs.get(APP_PATH)));
+            String nameVariable = "name=\"" + appFile.getCanonicalPath().replace("\\", "\\\\") + "\"";
+            String[] commandToGetAppVersion = new String[] {"wmic", "datafile", "where", nameVariable, "get", "Version", "/value"};
+            fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
+        } catch (IOException e) {
+            LOGGER.info("fetchWindowsAppVersion: Exception: " + e.getLocalizedMessage());
+        }
+    }
+
+    private void fetchAndroidAppVersion() {
+        Pattern VERSION_NAME_PATTERN = Pattern.compile("versionName='([0-9]+(\\.[0-9]+)+)'", Pattern.MULTILINE);
+        String searchPattern = "grep";
+        if (Runner.IS_WINDOWS) {
+            searchPattern = "findstr";
+        }
+
+        try {
+            File appFile = new File(String.valueOf(configs.get(APP_PATH)));
+            String appFilePath = appFile.getCanonicalPath();
+            String androidHomePath = System.getenv("ANDROID_HOME");
+            File buildToolsFolder = new File(androidHomePath, "build-tools");
+            File buildVersionFolder = buildToolsFolder.listFiles()[0];
+            File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
+
+            String[] commandToGetAppVersion = new String[] {aaptExecutable.toString(), "dump", "badging", appFilePath, "|", searchPattern, "versionName"};
+            fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
+        } catch (Exception e) {
+            LOGGER.info("fetchAndroidAppVersion: Exception: " + e.getLocalizedMessage());
+        }
+    }
+
+    private void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {
+        CommandLineResponse commandResponse = CommandLineExecutor.execCommand(commandToGetAppVersion);
+        String commandOutput = commandResponse.getStdOut();
+        if (!(null == commandOutput || commandOutput.isEmpty())) {
+            Matcher matcher = pattern.matcher(commandOutput);
+            if (matcher.find()) {
+                configs.put(APP_VERSION, matcher.group(1));
+            }
+        } else {
+            LOGGER.info("fetchAppVersion: " + commandResponse.getErrOut());
         }
     }
 
@@ -377,7 +438,6 @@ public class Setup {
     }
 
     private void setupLocalExecution () {
-        verifyAppExistsAtMentionedPath();
         setupLocalDevices();
         int parallelCount = devices.size();
         if (parallelCount == 0) {
@@ -426,9 +486,9 @@ public class Setup {
     }
 
     private void uninstallAppFromDevice (Device device, String appPackageName) {
-        String[] uninstallAppiumAutomator2Server = new String[]{"adb", "-s", device.getUdid(), "uninstall", "io.appium.uiautomator2.server"};
+        String[] uninstallAppiumAutomator2Server = new String[]{"adb", "-s", device.getUdid(), "uninstall", APPIUM_UI_AUTOMATOR2_SERVER};
         CommandLineExecutor.execCommand(uninstallAppiumAutomator2Server);
-        String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall", "io.appium.settings"};
+        String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall", APPIUM_SETTINGS};
         CommandLineExecutor.execCommand(uninstallAppiumSettings);
 
         if (configsBoolean.get(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
@@ -455,7 +515,6 @@ public class Setup {
     }
 
     private void setupCloudExecution () {
-        verifyAppExistsAtMentionedPath();
         String cloudName = getCloudNameFromCapabilities();
         switch (cloudName.toLowerCase()) {
             case "headspin":
