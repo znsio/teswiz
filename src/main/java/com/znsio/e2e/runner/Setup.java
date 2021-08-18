@@ -14,7 +14,6 @@ import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.tools.JsonFile;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
-import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -385,13 +384,9 @@ public class Setup {
             File buildVersionFolder = buildToolsFolder.listFiles()[0];
             File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
 
-            if (aaptExecutable.exists()) {
-                String[] commandToGetAppVersion = new String[] {aaptExecutable.toString(), "dump", "badging", appFilePath, "|", searchPattern, "versionName"};
-                fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
-            } else {
-                LOGGER.info(String.format("fetchAndroidAppVersion: aapt executable not found at folder '%s'", buildVersionFolder));
-            }
-        } catch (IOException e) {
+            String[] commandToGetAppVersion = new String[] {aaptExecutable.toString(), "dump", "badging", appFilePath, "|", searchPattern, "versionName"};
+            fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
+        } catch (Exception e) {
             LOGGER.info("fetchAndroidAppVersion: Exception: " + e.getLocalizedMessage());
         }
     }
