@@ -796,6 +796,10 @@ public class Setup {
                 platform = Platform.web;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Web";
+            } else if (providedTags.contains("multiuser-windows-web")) {
+                platform = Platform.windows;
+                inferredTags = providedTags + " and not @wip";
+                launchName += " - Real User Simulation on Windows & Web";
             } else {
                 launchName += " - " + platform;
             }
