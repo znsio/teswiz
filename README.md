@@ -205,6 +205,7 @@ These can be overridden by providing the same either as environment variables or
     RUN_IN_CI=false -> Are tests running in CI?
     TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE
     TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
+    ACCEPT_INSECURE_CERTS=true -> Accept all insecure SSL certificates on web browser
 
 ## Troubleshooting / FAQs
 

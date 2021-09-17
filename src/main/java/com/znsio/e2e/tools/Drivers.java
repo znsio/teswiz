@@ -347,6 +347,7 @@ public class Drivers {
                                           TestExecutionContext testExecutionContext) {
         boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
         boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
+        boolean acceptInsecureCerts = Runner.acceptInsecureCerts();
         String proxyUrl = Runner.getProxyURL();
 
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Chrome");
@@ -377,7 +378,6 @@ public class Drivers {
         prefs.put("profile.default_content_setting_values.media_stream_mic", 1);
         prefs.put("profile.default_content_setting_values.media_stream_camera", 1);
         prefs.put("protocol_handler.excluded_schemes", excludedSchemes);
-        prefs.put("safebrowsing.enabled", "true");
         chromeOptions.setExperimentalOption("prefs", prefs);
 
         LOGGER.info("Set Logging preferences");
@@ -398,6 +398,7 @@ public class Drivers {
 
         chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
         chromeOptions.setHeadless(isBrowserHeadless);
+        chromeOptions.setAcceptInsecureCerts(acceptInsecureCerts);
 
         LOGGER.info("ChromeOptions: " + chromeOptions.asMap());
 
@@ -412,6 +413,7 @@ public class Drivers {
 
         boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
         boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
+        boolean acceptInsecureCerts = Runner.acceptInsecureCerts();
         String proxyUrl = Runner.getProxyURL();
 
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Firefox");
@@ -429,14 +431,13 @@ public class Drivers {
         firefoxOptions.addArguments("--disable-notifications");
 
         LoggingPreferences logPrefs = new LoggingPreferences();
-        logPrefs.enable(LogType.BROWSER, Level.ALL);
 
         if (enableVerboseLogging) {
             firefoxOptions.setLogLevel(FirefoxDriverLogLevel.DEBUG);
             logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
-            firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
         } else {
             firefoxOptions.setLogLevel(FirefoxDriverLogLevel.INFO);
+            logPrefs.enable(LogType.BROWSER, Level.ALL);
         }
 
         if (null != proxyUrl) {
@@ -445,6 +446,7 @@ public class Drivers {
         }
         firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
         firefoxOptions.setHeadless(isBrowserHeadless);
+        firefoxOptions.setAcceptInsecureCerts(acceptInsecureCerts);
 
         LOGGER.info("FirefoxOptions: " + firefoxOptions.asMap());
 
