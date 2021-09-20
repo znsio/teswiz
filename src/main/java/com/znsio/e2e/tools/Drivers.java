@@ -347,7 +347,7 @@ public class Drivers {
                                           TestExecutionContext testExecutionContext) {
         boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
         boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
-        boolean acceptInsecureCerts = Runner.acceptInsecureCerts();
+        boolean acceptInsecureCerts = Runner.shouldAcceptInsecureCerts();
         String proxyUrl = Runner.getProxyURL();
 
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Chrome");
@@ -413,7 +413,7 @@ public class Drivers {
 
         boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
         boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
-        boolean acceptInsecureCerts = Runner.acceptInsecureCerts();
+        boolean acceptInsecureCerts = Runner.shouldAcceptInsecureCerts();
         String proxyUrl = Runner.getProxyURL();
 
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Firefox");

@@ -220,7 +220,7 @@ public class Runner {
         return configsBoolean.get(BROWSER_MAXIMIZE);
     }
 
-    public static boolean acceptInsecureCerts() {
+    public static boolean shouldAcceptInsecureCerts() {
         return configsBoolean.get(ACCEPT_INSECURE_CERTS);
     }
 }
