@@ -347,6 +347,7 @@ public class Drivers {
                                           TestExecutionContext testExecutionContext) {
         boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
         boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
+        boolean acceptInsecureCerts = Runner.shouldAcceptInsecureCerts();
         String proxyUrl = Runner.getProxyURL();
 
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Chrome");
@@ -397,6 +398,7 @@ public class Drivers {
 
         chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
         chromeOptions.setHeadless(isBrowserHeadless);
+        chromeOptions.setAcceptInsecureCerts(acceptInsecureCerts);
 
         LOGGER.info("ChromeOptions: " + chromeOptions.asMap());
 
@@ -411,6 +413,7 @@ public class Drivers {
 
         boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
         boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
+        boolean acceptInsecureCerts = Runner.shouldAcceptInsecureCerts();
         String proxyUrl = Runner.getProxyURL();
 
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Firefox");
@@ -428,14 +431,13 @@ public class Drivers {
         firefoxOptions.addArguments("--disable-notifications");
 
         LoggingPreferences logPrefs = new LoggingPreferences();
-        logPrefs.enable(LogType.BROWSER, Level.ALL);
 
         if (enableVerboseLogging) {
             firefoxOptions.setLogLevel(FirefoxDriverLogLevel.DEBUG);
             logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
-            firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
         } else {
             firefoxOptions.setLogLevel(FirefoxDriverLogLevel.INFO);
+            logPrefs.enable(LogType.BROWSER, Level.ALL);
         }
 
         if (null != proxyUrl) {
@@ -444,6 +446,7 @@ public class Drivers {
         }
         firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
         firefoxOptions.setHeadless(isBrowserHeadless);
+        firefoxOptions.setAcceptInsecureCerts(acceptInsecureCerts);
 
         LOGGER.info("FirefoxOptions: " + firefoxOptions.asMap());
 

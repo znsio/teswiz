@@ -209,7 +209,8 @@ public class Driver {
         touchAction.press(PointOption.point(new Point(fromWidth, height)))
                 .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
                 .moveTo(PointOption.point(new Point(toWidth, height)))
-                .release().perform();
+                .release()
+                .perform();
     }
 
     public void swipeLeft () {
@@ -309,4 +310,7 @@ public class Driver {
         return (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(elementId));
     }
 
+    public WebElement waitTillElementIsVisible (String locator) {
+        return (new WebDriverWait(driver, 10)).until(ExpectedConditions.visibilityOf(findElementByAccessibilityId(locator)));
+    }
 }

@@ -85,6 +85,7 @@ public class Setup {
     private static final String APP_VERSION = "APP_VERSION";
     private static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
     private static final String APPIUM_SETTINGS = "io.appium.settings";
+    static final String ACCEPT_INSECURE_CERTS = "acceptInsecureCerts";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
 
     static Map<String, Map> environmentConfiguration;
@@ -205,6 +206,7 @@ public class Setup {
         configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
+        configsBoolean.put(ACCEPT_INSECURE_CERTS, getOverriddenBooleanValue(ACCEPT_INSECURE_CERTS, getBooleanValueFromPropertiesIfAvailable(ACCEPT_INSECURE_CERTS, false)));
         configs.put(APP_VERSION, NOT_SET);
     }
 
@@ -796,6 +798,10 @@ public class Setup {
                 platform = Platform.web;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Web";
+            } else if (providedTags.contains("multiuser-windows-web")) {
+                platform = Platform.windows;
+                inferredTags = providedTags + " and not @wip";
+                launchName += " - Real User Simulation on Windows & Web";
             } else {
                 launchName += " - " + platform;
             }
