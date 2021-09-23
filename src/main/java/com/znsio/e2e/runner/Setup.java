@@ -85,7 +85,7 @@ public class Setup {
     private static final String APP_VERSION = "APP_VERSION";
     private static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
     private static final String APPIUM_SETTINGS = "io.appium.settings";
-    static final String ACCEPT_INSECURE_CERTS = "acceptInsecureCerts";
+    static final String ACCEPT_INSECURE_CERTS = "ACCEPT_INSECURE_CERTS";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
 
     static Map<String, Map> environmentConfiguration;

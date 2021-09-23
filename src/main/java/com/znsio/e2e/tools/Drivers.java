@@ -612,4 +612,8 @@ public class Drivers {
                     new Date());
         }
     }
+
+    public Set<String> getAvailableUserPersonas() {
+        return userPersonaDrivers.keySet();
+    }
 }
