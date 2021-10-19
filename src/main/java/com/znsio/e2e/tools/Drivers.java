@@ -60,7 +60,7 @@ public class Drivers {
     }
 
     public Driver setDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        LOGGER.info(String.format("getDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
+        LOGGER.info(String.format("setDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
         if (!userPersonaDrivers.containsKey(userPersona)) {
             String message = String.format("ERROR: Driver for user persona: '%s' DOES NOT EXIST%nAvailable drivers: '%s'",
                     userPersona,
@@ -74,7 +74,7 @@ public class Drivers {
     }
 
     public Driver createDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
-        LOGGER.info(String.format("allocateDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
+        LOGGER.info(String.format("createDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
         Driver currentDriver = null;
         if (userPersonaDrivers.containsKey(userPersona)) {
             String message = String.format("ERROR: Driver for user persona: '%s' ALREADY EXISTS%nAvailable drivers: '%s'",
@@ -103,7 +103,7 @@ public class Drivers {
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
         userPersonaDrivers.put(userPersona, currentDriver);
         userPersonaPlatforms.put(userPersona, forPlatform);
-        LOGGER.info(String.format("allocateDriverFor: done: userPersona: '%s', Platform: '%s'%n",
+        LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n",
                 userPersona,
                 forPlatform.name()));
 
@@ -615,5 +615,31 @@ public class Drivers {
 
     public Set<String> getAvailableUserPersonas() {
         return userPersonaDrivers.keySet();
+    }
+
+    public void assignNewPersonaToExistingDriver (String userPersona, String newUserPersona, TestExecutionContext context) {
+        if (!userPersonaDrivers.containsKey(userPersona)) {
+            LOGGER.info("assignNewPersonaToExistingDriver: Drivers available for userPersonas: " + userPersonaDrivers.keySet());
+            throw new InvalidTestDataException(String.format("No Driver found for user persona: '%s'", userPersona));
+        }
+
+        Driver currentDriver = userPersonaDrivers.get(userPersona);
+        Platform currentPlatform = userPersonaPlatforms.get(userPersona);
+        Capabilities userPersonaCapabilities = userPersonaDriverCapabilities.get(userPersona);
+        String logFileName = userPersonaBrowserLogs.get(userPersona);
+
+        context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
+        context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, newUserPersona);
+
+        userPersonaDrivers.remove(userPersona);
+        userPersonaPlatforms.remove(userPersona);
+        userPersonaDriverCapabilities.remove(userPersona);
+        userPersonaBrowserLogs.remove(userPersona);
+
+        userPersonaDrivers.put(newUserPersona, currentDriver);
+        userPersonaPlatforms.put(newUserPersona, currentPlatform);
+        userPersonaDriverCapabilities.put(newUserPersona, userPersonaCapabilities);
+        userPersonaBrowserLogs.put(newUserPersona, logFileName);
+        LOGGER.info(String.format("assignNewPersonaToExistingDriver: Persona updated from '%s' to '%s'", userPersona, newUserPersona));
     }
 }

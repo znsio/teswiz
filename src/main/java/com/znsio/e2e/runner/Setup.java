@@ -802,6 +802,10 @@ public class Setup {
                 platform = Platform.windows;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Windows & Web";
+            } else if (providedTags.contains("multiuser-windows-android")) {
+                platform = Platform.windows;
+                inferredTags = providedTags + " and not @wip";
+                launchName += " - Real User Simulation on Windows & Android";
             } else {
                 launchName += " - " + platform;
             }
