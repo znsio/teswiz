@@ -234,7 +234,7 @@ public class Visual {
                 + ", mismatched = " + result.getMismatches()
                 + ", missing = " + result.getMissing()
                 + ", isNew: " + result.isNew()
-                + ", isPassed: ");
+                + ", isPassed: " + result.isPassed());
         LOGGER.info("Visual Testing results available here: " + result.getUrl());
         boolean hasMismatches = result.getMismatches() != 0;
         LOGGER.info("Visual testing differences found? - " + hasMismatches);

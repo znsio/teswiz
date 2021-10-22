@@ -159,7 +159,9 @@ public class Driver {
         int midWidth = screenSize.width / 2;
         LOGGER.info(String.format("tapOnMiddleOfScreen: Screen dimensions: '%s'. Tapping on coordinates: %d:%d%n", screenSize.toString(), midWidth, midHeight));
         TouchAction touchAction = new TouchAction(appiumDriver);
-        touchAction.tap(PointOption.point(midWidth, midHeight)).perform();
+        touchAction
+                .tap(PointOption.point(midWidth, midHeight))
+                .perform();
         waitFor(1);
     }
 
@@ -172,14 +174,16 @@ public class Driver {
         int midWidth = screenSize.width / 2;
         int currentPositionX = currentPosition.getX();
         int currentPositionY = currentPosition.getY();
-        LOGGER.info(String.format("Current position: '%d':'%d", currentPositionX, currentPositionY));
+        LOGGER.info(String.format("Current position: '%d':'%d'", currentPositionX, currentPositionY));
 
         int offsetX = currentPositionX < midWidth ? 50 : -50;
         int offsetY = currentPositionY < midHeight ? 50 : -50;
 
         LOGGER.info(String.format("Using offset: '%d':'%d'", offsetX, offsetY));
 
-        actions.moveByOffset(offsetX, offsetY).perform();
+        actions
+                .moveByOffset(offsetX, offsetY)
+                .perform();
         waitFor(1);
     }
 
@@ -233,8 +237,11 @@ public class Driver {
         WebElement selectNotificationElement = driver.findElement(selectNotificationLocator);
         LOGGER.info("Notification found: " + selectNotificationElement.isDisplayed());
         Point notificationCoordinates = selectNotificationElement.getLocation();
+
         TouchAction touchAction = new TouchAction(appiumDriver);
-        touchAction.tap(PointOption.point(notificationCoordinates)).perform();
+        touchAction
+                .tap(PointOption.point(notificationCoordinates))
+                .perform();
         LOGGER.info("Tapped on notification. Go back to meeting");
         waitFor(3);
     }
