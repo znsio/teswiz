@@ -1,7 +1,7 @@
 buildscript {
     ext {
         gradleVersion = '6.7.1'
-        teswizVersion = '0.0.57'
+        teswizVersion = 'c2cd583830'
     }
     repositories {
         mavenLocal()
@@ -11,7 +11,7 @@ buildscript {
 plugins {
     id "java"
     id "idea"
-    id "maven"
+    id "maven-publish"
 }
 
 version '0.0.1'
@@ -43,8 +43,7 @@ task run(type: JavaExec) {
         def runnerArgs = [
                 "${configFile}",
                 "<pathToStepDef>",
-                "<pathToFeaturesDir>",
-                "<pathToLogProperties>"
+                "<pathToFeaturesDir>"
         ]
         args = runnerArgs
     }
