@@ -83,6 +83,7 @@ public class Setup {
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
     private static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
     private static final String APP_VERSION = "APP_VERSION";
+    private static final String INCLUDE_ENVIRONMENT_IN_LAUNCH_NAME = "INCLUDE_ENVIRONMENT_IN_LAUNCH_NAME";
     private static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
     private static final String APPIUM_SETTINGS = "io.appium.settings";
     static final String ACCEPT_INSECURE_CERTS = "ACCEPT_INSECURE_CERTS";
@@ -207,6 +208,7 @@ public class Setup {
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
         configsBoolean.put(ACCEPT_INSECURE_CERTS, getOverriddenBooleanValue(ACCEPT_INSECURE_CERTS, getBooleanValueFromPropertiesIfAvailable(ACCEPT_INSECURE_CERTS, false)));
+        configsBoolean.put(INCLUDE_ENVIRONMENT_IN_LAUNCH_NAME, getOverriddenBooleanValue(INCLUDE_ENVIRONMENT_IN_LAUNCH_NAME, getBooleanValueFromPropertiesIfAvailable(INCLUDE_ENVIRONMENT_IN_LAUNCH_NAME, false)));
         configs.put(APP_VERSION, NOT_SET);
     }
 
@@ -810,6 +812,11 @@ public class Setup {
                 launchName += " - " + platform;
             }
         }
+
+        if (configsBoolean.get(INCLUDE_ENVIRONMENT_IN_LAUNCH_NAME)) {
+            launchName += String.format(" on '%s' environment", Runner.getTargetEnvironment());
+        }
+
         LOGGER.info("\tRunning tests with platform: " + platform + " and the following tag criteria : " + inferredTags);
         LOGGER.info("\tReportPortal Tests Launch name: " + launchName);
 

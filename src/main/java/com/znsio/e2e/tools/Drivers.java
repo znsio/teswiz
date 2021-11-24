@@ -399,6 +399,7 @@ public class Drivers {
         chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
         chromeOptions.setHeadless(isBrowserHeadless);
         chromeOptions.setAcceptInsecureCerts(acceptInsecureCerts);
+        chromeOptions.addArguments("use-fake-device-for-media-stream");
 
         LOGGER.info("ChromeOptions: " + chromeOptions.asMap());
 
