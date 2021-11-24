@@ -778,7 +778,7 @@ public class Setup {
 
     private void getPlatformTagsAndLaunchName () {
         LOGGER.info("Get Platform, Tags and LaunchName");
-        String launchName = configs.get(APP_NAME) + " Tests";
+        String launchName = configs.get(APP_NAME) + " Automated Test Report";
         if (configsBoolean.get(RUN_IN_CI)) {
             launchName += " on Device Farm";
         }
