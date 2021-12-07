@@ -15,7 +15,7 @@ class RunnerTest {
     private final String logDir;
     {
         DateTime now = DateTime.now();
-        logDir = "./target-" + now.getDayOfMonth() + "-" + now.getMonthOfYear() + "-" + now.getYear() + "-" + now.getHourOfDay() + "-" + now.getMinuteOfHour();
+        logDir = "./target-" + now.getDayOfMonth() + "-" + now.getMonthOfYear() + "-" + now.getYear() + "_" + now.getHourOfDay() + "-" + now.getMinuteOfHour();
         System.setProperty("LOG_DIR", logDir);
     }
 
