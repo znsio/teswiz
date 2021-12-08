@@ -70,6 +70,7 @@ public class Drivers {
         Driver currentDriver = userPersonaDrivers.get(userPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
+        context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, forPlatform);
         return currentDriver;
     }
 
@@ -101,6 +102,7 @@ public class Drivers {
         }
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
+        context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, forPlatform);
         userPersonaDrivers.put(userPersona, currentDriver);
         userPersonaPlatforms.put(userPersona, forPlatform);
         LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n",
@@ -631,6 +633,7 @@ public class Drivers {
 
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, newUserPersona);
+        context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, currentPlatform);
 
         userPersonaDrivers.remove(userPersona);
         userPersonaPlatforms.remove(userPersona);
