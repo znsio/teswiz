@@ -2,8 +2,8 @@ import java.text.SimpleDateFormat
 
 buildscript {
     ext {
-        gradleVersion = '6.7.1'
-        teswizVersion = 'c2cd583830'
+        gradleVersion = '7.1'
+        teswizVersion = 'b71ab1bc55'
     }
     repositories {
         mavenLocal()
@@ -60,7 +60,7 @@ task run(type: JavaExec) {
         ]
         args = runnerArgs
     }
-    main = "com.znsio.e2e.runner.Runner"
+    mainClass = "com.znsio.e2e.runner.Runner"
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
 }
 
