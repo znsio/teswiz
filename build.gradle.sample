@@ -50,6 +50,7 @@ task run(type: JavaExec) {
         def logDirectory = "target/" + getCurrentTimestamp()
         println "LOG_DIR: $logDirectory"
         environment "LOG_DIR", logDirectory
+        environment "OUTPUT_DIRECTORY", logDirectory
         def configFile = System.getenv("RUN_IN_CI") ? "./configs/pcloudy_config.properties" : "./configs/config.properties"
         systemProperties = System.properties
         def runnerArgs = [
