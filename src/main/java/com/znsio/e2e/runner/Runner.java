@@ -115,6 +115,8 @@ public class Runner {
     }
 
     public static void main(String[] args) {
+        String logDir = System.getProperty("LOG_DIR");
+        System.setProperty("OUTPUT_DIRECTORY", logDir);
         LOGGER.info("teswiz Runner");
         LOGGER.info("Provided parameters:");
         for(int i = 0; i < args.length; i++) {
