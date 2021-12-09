@@ -39,13 +39,13 @@ public class Runner {
     public static Platform platform = Platform.android;
     private static ArrayList<String> cukeArgs = new ArrayList<>();
 
-    public Runner () {
+    public Runner() {
         throw new InvalidTestDataException("Required args not provided to Runner");
     }
 
-    public Runner (String configFilePath, String stepDefDirName, String featuresDirName) {
+    public Runner(String configFilePath, String stepDefDirName, String featuresDirName) {
         Path path = Paths.get(configFilePath);
-        if (!Files.exists(path)) {
+        if(!Files.exists(path)) {
             throw new InvalidTestDataException(String.format("Invalid path ('%s') provided for config", configFilePath));
         }
         cukeArgs = new Setup(configFilePath).getExecutionArguments();
@@ -60,7 +60,7 @@ public class Runner {
         return configs.get(CLOUD_KEY);
     }
 
-    public void run (ArrayList<String> args, String stepDefsDir, String featuresDir) {
+    public void run(ArrayList<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);
         args.add(featuresDir);
@@ -69,28 +69,28 @@ public class Runner {
         String[] array = args.stream().toArray(String[]::new);
         byte exitStatus = Main.run(array);
         LOGGER.info("Output of test run: " + exitStatus);
-        if (exitStatus != 0) {
+        if(exitStatus != 0) {
             throw new TestExecutionFailedException("Test execution failed. Exit status: " + exitStatus);
         }
     }
 
-    public static int getMaxNumberOfAppiumDrivers () {
+    public static int getMaxNumberOfAppiumDrivers() {
         return configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS);
     }
 
-    public static int getMaxNumberOfWebDrivers () {
+    public static int getMaxNumberOfWebDrivers() {
         return configsInteger.get(MAX_NUMBER_OF_WEB_DRIVERS);
     }
 
-    public static boolean isVisualTestingEnabled () {
+    public static boolean isVisualTestingEnabled() {
         return configsBoolean.get(IS_VISUAL);
     }
 
-    public static void remove (long threadId) {
+    public static void remove(long threadId) {
         SessionContext.remove(threadId);
     }
 
-    public static String getFromEnvironmentConfiguration (String key) {
+    public static String getFromEnvironmentConfiguration(String key) {
         try {
             return String.valueOf(environmentConfiguration.get(key));
         } catch (NullPointerException npe) {
@@ -98,7 +98,7 @@ public class Runner {
         }
     }
 
-    public static String getTestData (String key) {
+    public static String getTestData(String key) {
         try {
             return String.valueOf(testDataForEnvironment.get(key));
         } catch (NullPointerException npe) {
@@ -106,7 +106,7 @@ public class Runner {
         }
     }
 
-    public static Map getTestDataAsMap (String key) {
+    public static Map getTestDataAsMap(String key) {
         try {
             return testDataForEnvironment.get(key);
         } catch (NullPointerException npe) {
@@ -114,79 +114,80 @@ public class Runner {
         }
     }
 
-    public static void main (String[] args) {
+    public static void main(String[] args) {
         LOGGER.info("teswiz Runner");
         LOGGER.info("Provided parameters:");
-        for (int i = 0; i < args.length; i++) {
+        for(int i = 0; i < args.length; i++) {
             LOGGER.info("\t" + args[i]);
         }
-        if (args.length != 3) {
+        if(args.length != 3) {
             throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName");
         }
         new Runner(args[0], args[1], args[2]);
     }
 
-    public static Driver fetchDriver (long threadId) {
+    public static Driver fetchDriver(long threadId) {
         String userPersona = getTestExecutionContext(threadId).getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
         Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.ALL_DRIVERS);
         return allDrivers.getDriverForUser(userPersona);
     }
 
-    public static TestExecutionContext getTestExecutionContext (long threadId) {
+    public static TestExecutionContext getTestExecutionContext(long threadId) {
         return SessionContext.getTestExecutionContext(threadId);
     }
 
-    public static String fetchDeviceName (long threadId, String forUserPersona) {
+    public static String fetchDeviceName(long threadId, String forUserPersona) {
         Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.ALL_DRIVERS);
         return allDrivers.getDeviceNameForUser(forUserPersona);
     }
 
-    public static Visual fetchEyes (long threadId) {
+    public static Visual fetchEyes(long threadId) {
         String userPersona = getTestExecutionContext(threadId).getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
         Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.ALL_DRIVERS);
         return allDrivers.getDriverForUser(userPersona).getVisual();
     }
 
-    public static SoftAssertions getSoftAssertion (long threadId) {
+    public static SoftAssertions getSoftAssertion(long threadId) {
         return (SoftAssertions) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.SOFT_ASSERTIONS);
     }
 
-    public static Driver setCurrentDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
+    public static Driver setCurrentDriverForUser(String userPersona, Platform forPlatform, TestExecutionContext context) {
         Drivers allDrivers = (Drivers) context.getTestState(TEST_CONTEXT.ALL_DRIVERS);
         return allDrivers.setDriverFor(userPersona, forPlatform, context);
     }
 
-    public static Platform fetchPlatform (long threadId) {
+    public static Platform fetchPlatform(long threadId) {
         String userPersona = getTestExecutionContext(threadId).getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
         Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.ALL_DRIVERS);
         return allDrivers.getPlatformForUser(userPersona);
     }
 
-    public static void closeAllDrivers (long threadId) {
+    public static void closeAllDrivers(long threadId) {
         TestExecutionContext context = getTestExecutionContext(threadId);
         Drivers allDrivers = (Drivers) context.getTestState(TEST_CONTEXT.ALL_DRIVERS);
         allDrivers.attachLogsAndCloseAllWebDrivers(context);
     }
 
-    public static String getTargetEnvironment () {
+    public static String getTargetEnvironment() {
         return configs.get(TARGET_ENVIRONMENT);
     }
 
-    public static String getBaseURLForWeb () {
+    public static String getBaseURLForWeb() {
         return configs.get(BASE_URL_FOR_WEB);
     }
 
-    public static String getAppPackageName () {
+    public static String getAppPackageName() {
         return configs.get(APP_PACKAGE_NAME);
     }
 
-    public static boolean isRunningInCI () {
+    public static boolean isRunningInCI() {
         return configsBoolean.get(RUN_IN_CI);
     }
 
-    public static Map initialiseApplitoolsConfiguration () {
-        if (applitoolsConfiguration.isEmpty()) {
+    public static Map initialiseApplitoolsConfiguration() {
+        if(applitoolsConfiguration.isEmpty()) {
             getApplitoolsConfigFromProvidedConfigFile();
+            applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
             applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(APP_NAME));
             applitoolsConfiguration.put(APPLITOOLS.API_KEY, getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
             applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT)));
@@ -198,25 +199,29 @@ public class Runner {
         return applitoolsConfiguration;
     }
 
-    public static String getBrowser () {
+    private static String getServerUrl() {
+        return String.valueOf(applitoolsConfiguration.get(APPLITOOLS.SERVER_URL));
+    }
+
+    public static String getBrowser() {
         return configs.get(BROWSER);
     }
 
-    public static boolean isRunInHeadlessMode () {
+    public static boolean isRunInHeadlessMode() {
         return configsBoolean.get(BROWSER_HEADLESS);
     }
 
-    public static boolean enableVerboseLoggingInBrowser () {
+    public static boolean enableVerboseLoggingInBrowser() {
         return configsBoolean.get(BROWSER_VERBOSE_LOGGING);
     }
 
-    public static String getProxyURL () {
+    public static String getProxyURL() {
         String proxyURL = configs.get(PROXY_URL);
         LOGGER.info("proxyURL: " + proxyURL);
         return proxyURL;
     }
 
-    public static boolean shouldMaximizeBrowser () {
+    public static boolean shouldMaximizeBrowser() {
         return configsBoolean.get(BROWSER_MAXIMIZE);
     }
 
