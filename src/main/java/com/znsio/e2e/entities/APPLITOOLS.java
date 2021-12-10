@@ -13,4 +13,5 @@ public class APPLITOOLS {
     public static final String ENABLE_BENCHMARK_PER_VALIDATION = "enableBenchmarkPerValidation";
     public static final String IS_BENCHMARKING_ENABLED = "isBenchmarkingEnabled";
     public static final String APP_NAME = "appName";
+    public static final String SERVER_URL ="serverUrl";
 }

@@ -1,9 +1,6 @@
 package com.znsio.e2e.tools;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import org.apache.log4j.Logger;
@@ -92,5 +89,9 @@ public class JsonFile {
 
     public static JsonObject convertToMap (String jsonAsString) {
         return JsonParser.parseString(jsonAsString).getAsJsonObject();
+    }
+
+    public static JsonArray convertToArray (String jsonAsString) {
+        return JsonParser.parseString(jsonAsString).getAsJsonArray();
     }
 }
