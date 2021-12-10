@@ -34,6 +34,7 @@ public class Visual {
     private final boolean isVerboseLoggingEnabled;
     private String applitoolsLogFileNameForWeb = Runner.NOT_SET;
     private String applitoolsLogFileNameForApp = Runner.NOT_SET;
+    private static final String DEFAULT_APPLITOOLS_SERVER_URL = "https://eyesapi.applitools.com";
 
     public Visual (String driverType, WebDriver innerDriver, String testName, boolean isVisualTestingEnabled) {
         LOGGER.info("Visual constructor: Driver type: " + driverType + ", testName: " + testName + ", isVisualTestingEnabled:  " + isVisualTestingEnabled);
@@ -55,6 +56,7 @@ public class Visual {
         LOGGER.info("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         com.applitools.eyes.appium.Eyes eyes = new com.applitools.eyes.appium.Eyes();
 
+        eyes.setServerUrl(String.valueOf(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL)));
         eyes.setApiKey(String.valueOf(getValueFromConfig(APPLITOOLS.API_KEY)));
         eyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
         eyes.setEnvName(targetEnvironment);
@@ -78,6 +80,7 @@ public class Visual {
         appName += Platform.web;
         LOGGER.info("instantiateWebEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         com.applitools.eyes.selenium.Eyes eyes = new com.applitools.eyes.selenium.Eyes();
+        eyes.setServerUrl(String.valueOf(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL)));
         eyes.setApiKey(String.valueOf(getValueFromConfig(APPLITOOLS.API_KEY)));
         eyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
         eyes.setEnvName(targetEnvironment);

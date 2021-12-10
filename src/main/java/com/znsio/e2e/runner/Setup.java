@@ -3,10 +3,7 @@ package com.znsio.e2e.runner;
 import com.applitools.eyes.MatchLevel;
 import com.applitools.eyes.RectangleSize;
 import com.github.device.Device;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.znsio.e2e.entities.APPLITOOLS;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
@@ -98,13 +95,13 @@ public class Setup {
     private final String configFilePath;
     private List<Device> devices;
 
-    Setup (String configFilePath) {
+    Setup(String configFilePath) {
         this.configFilePath = configFilePath;
         properties = loadProperties(this.configFilePath);
     }
 
     @NotNull
-    Properties loadProperties (String configFile) {
+    Properties loadProperties(String configFile) {
         final Properties properties;
         try (InputStream input = new FileInputStream(configFile)) {
             properties = new Properties();
@@ -115,7 +112,7 @@ public class Setup {
         return properties;
     }
 
-    private static Map<String, Map> loadEnvironmentConfiguration (String environment) {
+    private static Map<String, Map> loadEnvironmentConfiguration(String environment) {
         String envConfigFile = configs.get(ENVIRONMENT_CONFIG_FILE);
         LOGGER.info("Loading environment configuration from ENVIRONMENT_CONFIG_FILE: "
                 + envConfigFile
@@ -126,7 +123,7 @@ public class Setup {
                 : JsonFile.getNodeValueAsMapFromJsonFile(environment, envConfigFile);
     }
 
-    private static Map<String, Map> loadTestDataForEnvironment (String environment) {
+    private static Map<String, Map> loadTestDataForEnvironment(String environment) {
         String testDataFile = configs.get(TEST_DATA_FILE);
         LOGGER.info("Loading test data from TEST_DATA_FILE: "
                 + testDataFile
@@ -135,13 +132,13 @@ public class Setup {
         return (NOT_SET.equalsIgnoreCase(testDataFile)) ? new HashMap<>() : JsonFile.getNodeValueAsMapFromJsonFile(environment, testDataFile);
     }
 
-    static boolean isBenchmarkingEnabled () {
+    static boolean isBenchmarkingEnabled() {
         return Boolean.parseBoolean(String.valueOf(applitoolsConfiguration.get(APPLITOOLS.ENABLE_BENCHMARK_PER_VALIDATION)));
     }
 
-    static void getApplitoolsConfigFromProvidedConfigFile () {
+    static void getApplitoolsConfigFromProvidedConfigFile() {
         String applitoolsConfigurationFileName = configs.get(APPLITOOLS_CONFIGURATION);
-        if (applitoolsConfigurationFileName.equals(NOT_SET)) {
+        if(applitoolsConfigurationFileName.equals(NOT_SET)) {
             LOGGER.info("Applitools configuration not provided. Will use defaults%n");
         } else {
             LOGGER.info("Loading Applitools configuration from: " + applitoolsConfigurationFileName);
@@ -149,7 +146,7 @@ public class Setup {
         }
     }
 
-    static MatchLevel getMatchLevel () {
+    static MatchLevel getMatchLevel() {
         MatchLevel matchLevel;
         try {
             matchLevel = MatchLevel.valueOf(String.valueOf(applitoolsConfiguration.get(APPLITOOLS.DEFAULT_MATCH_LEVEL)));
@@ -160,7 +157,7 @@ public class Setup {
     }
 
     @NotNull
-    static RectangleSize getViewportSize () {
+    static RectangleSize getViewportSize() {
         RectangleSize viewportSize = new RectangleSize(1280, 960);
         try {
             String[] viewP = ((String) applitoolsConfiguration.get(APPLITOOLS.VIEWPORT_SIZE)).split("x");
@@ -171,12 +168,12 @@ public class Setup {
         return viewportSize;
     }
 
-    void loadAndUpdateConfigParameters (String configFilePath) {
+    void loadAndUpdateConfigParameters(String configFilePath) {
         configs.put(CONFIG_FILE, configFilePath);
         buildMapOfRequiredProperties();
     }
 
-    private void buildMapOfRequiredProperties () {
+    private void buildMapOfRequiredProperties() {
         configs.put(APP_NAME, getOverriddenStringValue(APP_NAME, getStringValueFromPropertiesIfAvailable(APP_NAME, NOT_SET)));
         configs.put(APP_PACKAGE_NAME, getOverriddenStringValue(APP_PACKAGE_NAME, getStringValueFromPropertiesIfAvailable(APP_PACKAGE_NAME, NOT_SET)));
         configs.put(APP_PATH, getOverriddenStringValue(APP_PATH, getStringValueFromPropertiesIfAvailable(APP_PATH, NOT_SET)));
@@ -212,7 +209,7 @@ public class Setup {
         configs.put(APP_VERSION, NOT_SET);
     }
 
-    public ArrayList<String> getExecutionArguments () {
+    public ArrayList<String> getExecutionArguments() {
         loadAndUpdateConfigParameters(configFilePath);
 
 //        cleanupDirectories();
@@ -233,7 +230,7 @@ public class Setup {
         return cukeArgs;
     }
 
-    private void setupExecutionEnvironment () {
+    private void setupExecutionEnvironment() {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
         setupAndroidExecution();
@@ -255,7 +252,7 @@ public class Setup {
                         "Username:" + USER_NAME + "; " +
                         "VisualEnabled:" + configsBoolean.get(IS_VISUAL) + "; ";
 
-        if (!configs.get(APP_VERSION).equals(NOT_SET)) {
+        if(!configs.get(APP_VERSION).equals(NOT_SET)) {
             rpAttributes += "AppVersion: " + configs.get(APP_VERSION) + "; ";
         }
 
@@ -273,7 +270,7 @@ public class Setup {
         System.setProperty("rp.attributes", rpAttributes);
     }
 
-    private void getBranchName () {
+    private void getBranchName() {
         String[] listOfDevices = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(listOfDevices);
         String branchName = response.getStdOut();
@@ -281,23 +278,23 @@ public class Setup {
         configs.put(BRANCH_NAME, branchName);
     }
 
-    private String getStringValueFromPropertiesIfAvailable (String key, String defaultValue) {
+    private String getStringValueFromPropertiesIfAvailable(String key, String defaultValue) {
         return properties.getProperty(key, String.valueOf(defaultValue));
     }
 
-    private boolean getBooleanValueFromPropertiesIfAvailable (String key, boolean defaultValue) {
+    private boolean getBooleanValueFromPropertiesIfAvailable(String key, boolean defaultValue) {
         return Boolean.parseBoolean(properties.getProperty(key, String.valueOf(defaultValue)));
     }
 
-    private void printLoadedConfigProperties (String configFilePath) {
+    private void printLoadedConfigProperties(String configFilePath) {
         LOGGER.info("\nLoaded property file: " + configFilePath);
         properties.keySet().forEach(key -> {
             LOGGER.info("\t" + key + " :: " + properties.get(key));
         });
     }
 
-    private void setupWebExecution () {
-        if (platform.equals(Platform.web)) {
+    private void setupWebExecution() {
+        if(platform.equals(Platform.web)) {
             configs.put(APP_PATH, configs.get(BROWSER));
             cukeArgs.add("--threads");
             cukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
@@ -309,10 +306,10 @@ public class Setup {
         }
     }
 
-    private void setupAndroidExecution () {
-        if (platform.equals(Platform.android)) {
+    private void setupAndroidExecution() {
+        if(platform.equals(Platform.android)) {
             verifyAppExistsAtMentionedPath();
-            if (configsBoolean.get(RUN_IN_CI)) {
+            if(configsBoolean.get(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
                 setupLocalExecution();
@@ -327,8 +324,8 @@ public class Setup {
         }
     }
 
-    private void setupWindowsExecution () {
-        if (platform.equals(Platform.windows)) {
+    private void setupWindowsExecution() {
+        if(platform.equals(Platform.windows)) {
             verifyAppExistsAtMentionedPath();
             fetchWindowsAppVersion();
             cukeArgs.add(PLUGIN);
@@ -339,10 +336,10 @@ public class Setup {
         }
     }
 
-    private void verifyAppExistsAtMentionedPath () {
+    private void verifyAppExistsAtMentionedPath() {
         String appPath = String.valueOf(configs.get(APP_PATH));
         LOGGER.info("Update path to Apk: " + appPath);
-        if (appPath.equals(NOT_SET)) {
+        if(appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
             configs.put(APP_PATH, appPath);
             String capabilitiesFileName = configs.get(CAPS);
@@ -352,8 +349,8 @@ public class Setup {
         }
     }
 
-    private void checkIfAppExistsAtTheMentionedPath (String appPath, String capabilitiesFileName) {
-        if (Files.exists(Paths.get(appPath))) {
+    private void checkIfAppExistsAtTheMentionedPath(String appPath, String capabilitiesFileName) {
+        if(Files.exists(Paths.get(appPath))) {
             LOGGER.info("\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName + ":: " + platform);
         } else {
             LOGGER.info("\tAppPath: " + appPath + " not found!");
@@ -366,7 +363,7 @@ public class Setup {
         try {
             File appFile = new File(String.valueOf(configs.get(APP_PATH)));
             String nameVariable = "name=\"" + appFile.getCanonicalPath().replace("\\", "\\\\") + "\"";
-            String[] commandToGetAppVersion = new String[] {"wmic", "datafile", "where", nameVariable, "get", "Version", "/value"};
+            String[] commandToGetAppVersion = new String[]{"wmic", "datafile", "where", nameVariable, "get", "Version", "/value"};
             fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
         } catch (IOException e) {
             LOGGER.info("fetchWindowsAppVersion: Exception: " + e.getLocalizedMessage());
@@ -376,7 +373,7 @@ public class Setup {
     private void fetchAndroidAppVersion() {
         Pattern VERSION_NAME_PATTERN = Pattern.compile("versionName='([0-9]+(\\.[0-9]+)+)'", Pattern.MULTILINE);
         String searchPattern = "grep";
-        if (Runner.IS_WINDOWS) {
+        if(Runner.IS_WINDOWS) {
             searchPattern = "findstr";
         }
 
@@ -388,7 +385,7 @@ public class Setup {
             File buildVersionFolder = buildToolsFolder.listFiles()[0];
             File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
 
-            String[] commandToGetAppVersion = new String[] {aaptExecutable.toString(), "dump", "badging", appFilePath, "|", searchPattern, "versionName"};
+            String[] commandToGetAppVersion = new String[]{aaptExecutable.toString(), "dump", "badging", appFilePath, "|", searchPattern, "versionName"};
             fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
         } catch (Exception e) {
             LOGGER.info("fetchAndroidAppVersion: Exception: " + e.getLocalizedMessage());
@@ -398,9 +395,9 @@ public class Setup {
     private void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {
         CommandLineResponse commandResponse = CommandLineExecutor.execCommand(commandToGetAppVersion);
         String commandOutput = commandResponse.getStdOut();
-        if (!(null == commandOutput || commandOutput.isEmpty())) {
+        if(!(null == commandOutput || commandOutput.isEmpty())) {
             Matcher matcher = pattern.matcher(commandOutput);
-            if (matcher.find()) {
+            if(matcher.find()) {
                 configs.put(APP_VERSION, matcher.group(1));
             }
         } else {
@@ -408,18 +405,19 @@ public class Setup {
         }
     }
 
-    private String getAppPathFromCapabilities () {
+    private String getAppPathFromCapabilities() {
         String capabilityFile = configs.get(CAPS);
         return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile, new String[]{platform.name(), "app", "local"});
     }
 
-    private void updateCapabilities (Map<String, Map> loadedCapabilityFile) {
+    private void updateCapabilities(Map<String, Map> loadedCapabilityFile) {
         String capabilityFile = configs.get(CAPS);
         String platformName = platform.name();
         ArrayList listOfAndroidDevices = new ArrayList();
-        for (int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS); numDevices++) {
+        for(int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS); numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", String.valueOf(loadedCapabilityFile.get(platformName).get("platformVersion")));
+            deviceInfo.put("deviceName", String.valueOf(loadedCapabilityFile.get(platformName).get("platformName")));
             listOfAndroidDevices.add(deviceInfo);
         }
         Map loadedCloudCapability = loadedCapabilityFile.get("cloud");
@@ -432,7 +430,7 @@ public class Setup {
         configs.put(CAPS, updatedCapabilitiesFile);
     }
 
-    private String getPathForFileInLogDir (String fullFilePath) {
+    private String getPathForFileInLogDir(String fullFilePath) {
         LOGGER.info("\tgetPathForFileInLogDir: fullFilePath: " + fullFilePath);
         Path path = Paths.get(fullFilePath);
         String fileName = path.getFileName().toString();
@@ -441,19 +439,19 @@ public class Setup {
         return newFileName;
     }
 
-    private void setupLocalExecution () {
+    private void setupLocalExecution() {
         setupLocalDevices();
         int parallelCount = devices.size();
-        if (parallelCount == 0) {
+        if(parallelCount == 0) {
             throw new EnvironmentSetupException("No devices available to run the tests");
         }
         configsInteger.put(PARALLEL, parallelCount);
         configs.put(EXECUTED_ON, "Local Devices");
     }
 
-    private List<Device> setupLocalDevices () {
+    private List<Device> setupLocalDevices() {
         startADBServer();
-        if (null == devices) {
+        if(null == devices) {
             JadbConnection jadb = new JadbConnection();
             List<JadbDevice> deviceList = new ArrayList<>();
             devices = new ArrayList<>();
@@ -470,7 +468,7 @@ public class Setup {
         return devices;
     }
 
-    private void extractInfoFromEachDevice (List<JadbDevice> deviceList) {
+    private void extractInfoFromEachDevice(List<JadbDevice> deviceList) {
         deviceList.forEach(jadbDevice -> {
             try {
                 Device device = new Device();
@@ -489,13 +487,13 @@ public class Setup {
         });
     }
 
-    private void uninstallAppFromDevice (Device device, String appPackageName) {
+    private void uninstallAppFromDevice(Device device, String appPackageName) {
         String[] uninstallAppiumAutomator2Server = new String[]{"adb", "-s", device.getUdid(), "uninstall", APPIUM_UI_AUTOMATOR2_SERVER};
         CommandLineExecutor.execCommand(uninstallAppiumAutomator2Server);
         String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall", APPIUM_SETTINGS};
         CommandLineExecutor.execCommand(uninstallAppiumSettings);
 
-        if (configsBoolean.get(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
+        if(configsBoolean.get(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
             String[] uninstallApp = new String[]{"adb", "-s", device.getUdid(), "uninstall", appPackageName};
             CommandLineExecutor.execCommand(uninstallApp);
         } else {
@@ -504,7 +502,7 @@ public class Setup {
     }
 
     @NotNull
-    private String getAdbCommandOutput (JadbDevice device, String command, String args) throws IOException, JadbException {
+    private String getAdbCommandOutput(JadbDevice device, String command, String args) throws IOException, JadbException {
         InputStream inputStream = device.executeShell(command, args);
         LOGGER.info("\tadb command: " + command + ", args: " + args + ", ");
         String adbCommandOutput = Stream.readAll(inputStream, StandardCharsets.UTF_8).replaceAll("\n$", "");
@@ -512,13 +510,13 @@ public class Setup {
         return adbCommandOutput;
     }
 
-    private void startADBServer () {
+    private void startADBServer() {
         LOGGER.info("Start ADB server");
         String[] listOfDevices = new String[]{"adb", "devices"};
         CommandLineExecutor.execCommand(listOfDevices);
     }
 
-    private void setupCloudExecution () {
+    private void setupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
         switch (cloudName.toLowerCase()) {
             case "headspin":
@@ -528,6 +526,7 @@ public class Setup {
                 updatePCloudyCapabilities();
                 break;
             case "browserstack":
+                updateBrowserStackCapabilities();
                 break;
             case "saucelabs":
                 break;
@@ -537,7 +536,81 @@ public class Setup {
         configs.put(EXECUTED_ON, "Cloud Devices");
     }
 
-    private void updateHeadspinCapabilities () {
+    private void updateBrowserStackCapabilities() {
+        String authenticationUser = configs.get(CLOUD_USER);
+        String authenticationKey = configs.get(CLOUD_KEY);
+        String platformName = platform.name();
+        String capabilityFile = configs.get(CAPS);
+        String appPath = configs.get(APP_PATH);
+
+        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
+        Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
+        String appIdFromBrowserStack = NOT_SET;
+        if(configsBoolean.get(CLOUD_UPLOAD_APP)) {
+            appIdFromBrowserStack = uploadAPKToBrowserStack(authenticationUser + ":" + authenticationKey, appPath);
+        } else {
+            LOGGER.info("Skip uploading the apk to Device Farm");
+            appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser + ":" + authenticationKey, appPath);
+        }
+        LOGGER.info("Using appId: " + appIdFromBrowserStack);
+
+        ArrayList hostMachinesList = (ArrayList) loadedCapabilityFile.get("hostMachines");
+        Map hostMachines = (Map) hostMachinesList.get(0);
+        String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
+        hostMachines.put("machineIP", remoteServerURL);
+        Map app = (Map) loadedPlatformCapability.get("app");
+        app.put("cloud", appIdFromBrowserStack);
+        loadedPlatformCapability.put("browserstack.user", authenticationUser);
+        loadedPlatformCapability.put("browserstack.key", authenticationKey);
+        updateCapabilities(loadedCapabilityFile);
+    }
+
+    private String getAppIdFromBrowserStack(String authenticationKey, String appPath) {
+        String appName = getAppName(appPath);
+        LOGGER.info(String.format("getAppIdFromBrowserStack for: '%s' and appName: '%s'%n", authenticationKey, appName));
+        String[] curlCommand = new String[]{
+                "curl --insecure -u '" + authenticationKey + "'",
+                "-X GET 'https://api-cloud.browserstack.com/app-automate/recent_apps/" + appName + "'"
+        };
+        String uploadedAppIdFromBrowserStack;
+        try {
+            CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(curlCommand);
+            LOGGER.debug("uploadAPKToBrowserStackResponse: " + uploadAPKToBrowserStackResponse);
+
+            JsonArray uploadResponse = JsonFile.convertToArray(uploadAPKToBrowserStackResponse.getStdOut());
+            uploadedAppIdFromBrowserStack = uploadResponse.get(0).getAsJsonObject().get("app_url").getAsString();
+        } catch (IllegalStateException | NullPointerException | JsonSyntaxException e) {
+            throw new InvalidTestDataException(String.format("App with id: '%s' is not uploaded to BrowserStack. %nError: '%s'", appName, e.getMessage()));
+        }
+        LOGGER.info(String.format("getAppIdFromBrowserStack: AppId: '%s'%n", uploadedAppIdFromBrowserStack));
+        return uploadedAppIdFromBrowserStack;
+    }
+
+    private String uploadAPKToBrowserStack(String authenticationKey, String appPath) {
+        LOGGER.info(String.format("uploadAPKToBrowserStack for: '%s'%n", authenticationKey));
+        String deviceLabURL = configs.get(DEVICE_LAB_URL);
+
+        String[] curlCommand = new String[]{
+                "curl --insecure -u '" + authenticationKey + "'",
+                "-X POST 'https://api-cloud.browserstack.com/app-automate/upload'",
+                "-F 'file=@" + appPath + "'",
+                "-F 'custom_id=" + getAppName(appPath) + "'"
+        };
+        CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(curlCommand);
+
+        JsonObject uploadResponse = JsonFile.convertToMap(uploadAPKToBrowserStackResponse.getStdOut()).getAsJsonObject();
+        String uploadedApkId = uploadResponse.get("app_url").getAsString();
+        LOGGER.info(String.format("App: '%s' uploaded to Headspin. Response: '%s'", appPath, uploadResponse));
+        configs.put(APP_PATH, uploadedApkId);
+        return uploadedApkId;
+    }
+
+    private String getAppName(String appPath) {
+        String[] appPaths = appPath.strip().split("/");
+        return appPaths[appPaths.length - 1];
+    }
+
+    private void updateHeadspinCapabilities() {
         String authenticationKey = configs.get(CLOUD_KEY);
         String platformName = platform.name();
         String capabilityFile = configs.get(CAPS);
@@ -548,7 +621,7 @@ public class Setup {
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
         String appIdFromHeadspin = NOT_SET;
-        if (configsBoolean.get(CLOUD_UPLOAD_APP)) {
+        if(configsBoolean.get(CLOUD_UPLOAD_APP)) {
             appIdFromHeadspin = uploadAPKToHeadspin(authenticationKey, appPath);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
@@ -571,7 +644,7 @@ public class Setup {
         updateCapabilities(loadedCapabilityFile);
     }
 
-    private String uploadAPKToHeadspin (String authenticationKey, String appPath) {
+    private String uploadAPKToHeadspin(String authenticationKey, String appPath) {
         LOGGER.info(String.format("uploadAPKTopCloudy for: '%s'%n", authenticationKey));
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
@@ -584,23 +657,23 @@ public class Setup {
         String uploadedApkId = uploadResponse.get("apk_id").getAsString();
         LOGGER.info(String.format("App: '%s' uploaded to Headspin. Response: '%s'", appPath, uploadResponse));
 
-        JsonObject listOfAppPackages = getListOfAppPackages(authenticationKey);
+        JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey);
         JsonObject uploadedAppDetails = listOfAppPackages.getAsJsonObject(uploadedApkId);
         String uploadedAppName = uploadedAppDetails.get("app_name").getAsString();
         configs.put(APP_PATH, uploadedAppName);
         return uploadedApkId;
     }
 
-    private String getAppIdFromHeadspin (String authenticationKey, String appPackageName) {
+    private String getAppIdFromHeadspin(String authenticationKey, String appPackageName) {
         LOGGER.info("getAppIdFromHeadspin for package: " + appPackageName);
 
         AtomicReference<String> uploadedAppId = new AtomicReference<>(NOT_SET);
-        JsonObject listOfAppPackages = getListOfAppPackages(authenticationKey);
-        if (listOfAppPackages.keySet().size()>0) {
+        JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey);
+        if(listOfAppPackages.keySet().size() > 0) {
             getAppIdFromAvailableAppsFromHeadspin(appPackageName, listOfAppPackages, uploadedAppId);
         }
 
-        if (uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
+        if(uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
             throw new InvalidTestDataException(String.format("App with package: '%s' not available in Headspin", appPackageName));
         }
 
@@ -622,7 +695,7 @@ public class Setup {
         });
     }
 
-    private JsonObject getListOfAppPackages(String authenticationKey) {
+    private JsonObject getListOfAppPackagesFromHeadSpin(String authenticationKey) {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
         String[] curlCommand = new String[]{
                 "curl --insecure",
@@ -631,16 +704,16 @@ public class Setup {
 
         JsonObject listOfAppPackages = JsonFile.convertToMap(listOfUploadedFilesInHeadspinResponse.getStdOut()).getAsJsonObject();
         JsonElement statusCode = listOfAppPackages.get("status_code");
-        if (null != statusCode && statusCode.getAsInt()!= 200) {
+        if(null != statusCode && statusCode.getAsInt() != 200) {
             throw new InvalidTestDataException("There was a problem getting the list of apps in Headspin");
         }
         return listOfAppPackages;
     }
 
-    private void updatePCloudyCapabilities () {
+    private void updatePCloudyCapabilities() {
         String emailID = configs.get(CLOUD_USER);
         String authenticationKey = configs.get(CLOUD_KEY);
-        if (configsBoolean.get(CLOUD_UPLOAD_APP)) {
+        if(configsBoolean.get(CLOUD_UPLOAD_APP)) {
             uploadAPKTopCloudy(emailID, authenticationKey);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
@@ -661,20 +734,20 @@ public class Setup {
         updateCapabilities(loadedCapabilityFile);
     }
 
-    private String getCloudNameFromCapabilities () {
+    private String getCloudNameFromCapabilities() {
         String capabilityFile = configs.get(CAPS);
         ArrayList<Map> hostMachines = JsonFile.getNodeValueAsArrayListFromJsonFile(capabilityFile, "hostMachines");
         String cloudName = String.valueOf(hostMachines.get(0).get("cloudName"));
         return cloudName;
     }
 
-    private void uploadAPKTopCloudy (String emailID, String authenticationKey) {
+    private void uploadAPKTopCloudy(String emailID, String authenticationKey) {
         LOGGER.info(String.format("uploadAPKTopCloudy for: '%s':'%s'%n", emailID, authenticationKey));
         String appPath = configs.get(APP_PATH);
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
         String authToken = getpCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
-        if (isAPKAlreadyAvailableInPCloudy(authToken, appPath)) {
+        if(isAPKAlreadyAvailableInPCloudy(authToken, appPath)) {
             LOGGER.info("\tAPK is already available in cloud. No need to upload it again");
         } else {
             LOGGER.info("\tAPK is NOT available in cloud. Upload it");
@@ -682,7 +755,7 @@ public class Setup {
         }
     }
 
-    private boolean isAPKAlreadyAvailableInPCloudy (String authToken, String appPath) {
+    private boolean isAPKAlreadyAvailableInPCloudy(String authToken, String appPath) {
         Path path = Paths.get(appPath);
         String appNameFromPath = path.getFileName().toString();
         LOGGER.info("isAPKAlreadyAvailableInCloud: Start: " + appPath);
@@ -694,7 +767,7 @@ public class Setup {
         availableFiles.forEach(file -> {
             String fileName = ((JsonObject) file).get("file").getAsString();
             LOGGER.info("\tThis file is available in Device Farm: " + fileName);
-            if (appNameFromPath.equals(fileName)) {
+            if(appNameFromPath.equals(fileName)) {
                 isFileAlreadyUploaded.set(true);
             }
         });
@@ -702,7 +775,7 @@ public class Setup {
     }
 
     @NotNull
-    private CommandLineResponse getListOfUploadedFilesInPCloudy (String authToken) {
+    private CommandLineResponse getListOfUploadedFilesInPCloudy(String authToken) {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
         Map payload = new HashMap();
         payload.put("token", authToken);
@@ -721,7 +794,7 @@ public class Setup {
         JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut()).getAsJsonObject("result");
         JsonElement resultCode = result.get("code");
         int uploadStatus = (null == resultCode) ? 400 : resultCode.getAsInt();
-        if (200 != uploadStatus) {
+        if(200 != uploadStatus) {
             throw new EnvironmentSetupException(String.format("Unable to get list of uploaded files%n%s",
                     listFilesInPCloudyResponse));
         }
@@ -729,7 +802,7 @@ public class Setup {
         return listFilesInPCloudyResponse;
     }
 
-    private String uploadAPKToPCloudy (String appPath, String deviceLabURL, String authToken) {
+    private String uploadAPKToPCloudy(String appPath, String deviceLabURL, String authToken) {
         LOGGER.info("uploadAPKTopCloudy: " + appPath);
         String[] listOfDevices = new String[]{
                 "curl --insecure",
@@ -749,7 +822,7 @@ public class Setup {
         LOGGER.info("\tuploadApkResponse: " + uploadApkResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(uploadApkResponse.getStdOut()).getAsJsonObject("result");
         int uploadStatus = result.get("code").getAsInt();
-        if (200 != uploadStatus) {
+        if(200 != uploadStatus) {
             throw new EnvironmentSetupException(String.format("Unable to upload app: '%s' to '%s'%n%s",
                     appPath, deviceLabURL, uploadApkResponse));
         }
@@ -758,7 +831,7 @@ public class Setup {
         return uploadedFileName;
     }
 
-    private String getpCloudyAuthToken (String emailID, String authenticationKey, String appPath, String deviceLabURL) {
+    private String getpCloudyAuthToken(String emailID, String authenticationKey, String appPath, String deviceLabURL) {
         LOGGER.info("Get pCloudy Auth Token");
         String[] getAppToken = new String[]{
                 "curl --insecure",
@@ -768,7 +841,7 @@ public class Setup {
         };
         CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken);
         LOGGER.info("\tauthTokenResponse: " + authTokenResponse.getStdOut());
-        if (authTokenResponse.getStdOut().contains("error")) {
+        if(authTokenResponse.getStdOut().contains("error")) {
             throw new EnvironmentSetupException(String.format("Unable to get auth: '%s' to '%s'%n%s", appPath, deviceLabURL, authTokenResponse));
         }
         String authToken = JsonFile.convertToMap(authTokenResponse.getStdOut()).getAsJsonObject("result").get("token").getAsString();
@@ -776,35 +849,35 @@ public class Setup {
         return authToken;
     }
 
-    private void getPlatformTagsAndLaunchName () {
+    private void getPlatformTagsAndLaunchName() {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME) + " Automated Tests Report";
-        if (configsBoolean.get(RUN_IN_CI)) {
+        if(configsBoolean.get(RUN_IN_CI)) {
             launchName += " on Device Farm";
         }
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);
-        if (providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
+        if(providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
             LOGGER.info("\tTags not specified");
             launchName += " - " + platform;
         } else {
-            if (providedTags.contains("multiuser-android-web")) {
+            if(providedTags.contains("multiuser-android-web")) {
                 platform = Platform.android;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Android & Web";
-            } else if (providedTags.contains("multiuser-android")) {
+            } else if(providedTags.contains("multiuser-android")) {
                 platform = Platform.android;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on multiple Androids";
-            } else if (providedTags.contains("multiuser-web")) {
+            } else if(providedTags.contains("multiuser-web")) {
                 platform = Platform.web;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Web";
-            } else if (providedTags.contains("multiuser-windows-web")) {
+            } else if(providedTags.contains("multiuser-windows-web")) {
                 platform = Platform.windows;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Windows & Web";
-            } else if (providedTags.contains("multiuser-windows-android")) {
+            } else if(providedTags.contains("multiuser-windows-android")) {
                 platform = Platform.windows;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Windows & Android";
@@ -825,7 +898,7 @@ public class Setup {
         cukeArgs.add(inferredTags);
     }
 
-    private void addCucumberPlugsToArgs () {
+    private void addCucumberPlugsToArgs() {
         cukeArgs.add(PLUGIN);
         cukeArgs.add("pretty");
         cukeArgs.add(PLUGIN);
@@ -841,11 +914,11 @@ public class Setup {
         cukeArgs.add("timeline:" + logDir + "/reports/timeline");
     }
 
-    private String getCustomTags () {
+    private String getCustomTags() {
         String customTags = "@" + platform + " and not @wip";
         String providedTags = configs.get(TAG);
-        if (!providedTags.equalsIgnoreCase(NOT_SET)) {
-            if (!providedTags.startsWith("@")) {
+        if(!providedTags.equalsIgnoreCase(NOT_SET)) {
+            if(!providedTags.startsWith("@")) {
                 providedTags = "@" + providedTags;
             }
             customTags = providedTags + " and " + customTags;
@@ -854,31 +927,31 @@ public class Setup {
         return customTags;
     }
 
-    private void printArguments (String[] args) {
+    private void printArguments(String[] args) {
         LOGGER.info("Passed args: " + args.length);
-        for (int i = 0; i < args.length; i++) {
+        for(int i = 0; i < args.length; i++) {
             LOGGER.info("\targ: " + (i + 1) + " :: " + args[i]);
         }
     }
 
-    private void printSystemProperties () {
+    private void printSystemProperties() {
         LOGGER.info("system properties");
         System.getProperties().forEach((key, value) -> {
             LOGGER.info("\t" + key + "\t:: " + value);
         });
     }
 
-    private void printEnvironmentVariables () {
+    private void printEnvironmentVariables() {
         LOGGER.info("environment variables");
         System.getenv().forEach((key, value) -> {
             LOGGER.info("\t" + key + "\t:: " + value);
         });
     }
 
-    private void cleanupDirectories () {
+    private void cleanupDirectories() {
         List<String> files = listOfDirectoriesToDelete();
         LOGGER.info("Delete Directories: " + files);
-        for (String file : files) {
+        for(String file : files) {
             LOGGER.info("\tDeleting directory: " + file);
             try {
                 FileUtils.deleteDirectory(new java.io.File(file));
@@ -888,16 +961,16 @@ public class Setup {
         }
     }
 
-    private List<String> listOfDirectoriesToDelete () {
+    private List<String> listOfDirectoriesToDelete() {
         List<String> files = new ArrayList<>();
         files.add(configs.get(LOG_DIR));
         return files;
     }
 
-    private void setupDirectories () {
+    private void setupDirectories() {
         List<String> files = listOfDirectoriesToCreate();
         LOGGER.info("Create Directories: " + files);
-        for (String file : files) {
+        for(String file : files) {
             LOGGER.info("\tCreating directory: " + file);
             try {
                 FileUtils.forceMkdir(new java.io.File(file));
@@ -907,7 +980,7 @@ public class Setup {
         }
     }
 
-    private List<String> listOfDirectoriesToCreate () {
+    private List<String> listOfDirectoriesToCreate() {
         List<String> files = new ArrayList<>();
         files.add(tempDirectory);
         files.add(configs.get(LOG_DIR));

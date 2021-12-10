@@ -132,6 +132,9 @@ provided:**
 
 * `IS_VISUAL=true` - to enable Visual Testing using Applitools
 * `APPLITOOLS_API_KEY=<API_KEY>` - Sets the API key as provided by Applitools
+* To run Visual Tests against dedicated Applitools instance, add a property serverUrl in applitools_config.json.
+  Ex: "serverUrl": "https://eyesapi.applitools.com"
+  * By Default, the free public Applitools cloud will be used
 
 ### Running a subset of tests:
 
