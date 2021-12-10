@@ -10,7 +10,6 @@ plugins {
 
 group = 'com.github.znsio'
 version '0.0.65'
-project.ext.logDir = "${rootDir}/target"
 
 repositories {
     mavenLocal()
@@ -70,7 +69,7 @@ shadowJar {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
 
