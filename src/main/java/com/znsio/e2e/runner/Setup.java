@@ -811,15 +811,18 @@ public class Setup {
     private CommandLineResponse getListOfUploadedFilesInPCloudy(String authToken) {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
         Map payload = new HashMap();
-        payload.put("token", authToken);
-        payload.put("limit", 15);
-        payload.put("filter", "all");
-        String[] listOfDevices = new String[]{
+        payload.put("\"token\"", "\"" + authToken + "\"");
+        payload.put("\"limit\"", 15);
+        payload.put("\"filter\"", "\"all\"");
+        String updatedPayload = payload.toString().replace("\"", "\\\"");
+
+        String[] listOfDevices;
+        listOfDevices = new String[]{
                 "curl --insecure",
                 "-H",
                 "Content-Type:application/json",
                 "-d",
-                "'" + JsonParser.parseString(payload.toString()) + "'",
+                "\"" + updatedPayload + "\"",
                 deviceLabURL + "/api/drive"};
 
         CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfDevices);

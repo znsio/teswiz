@@ -53,7 +53,11 @@ public class Driver {
     }
 
     public WebElement waitForVisibilityOf (String elementId) {
-        return (new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(findElementByAccessibilityId(elementId)));
+        return waitForVisibilityOf(elementId, 10);
+    }
+
+    public WebElement waitForVisibilityOf (String elementId, int numberOfSecondsToWait) {
+        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.elementToBeClickable(findElementByAccessibilityId(elementId)));
     }
 
     public WebElement findElementByAccessibilityId (String locator) {
@@ -63,6 +67,7 @@ public class Driver {
     public void waitForAlert () {
         waitForAlert(10);
     }
+
     public void waitForAlert (int numberOfSecondsToWait) {
         (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.alertIsPresent());
         driver.switchTo().alert();
