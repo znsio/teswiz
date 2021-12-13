@@ -310,8 +310,10 @@ public class Drivers {
                 throw new InvalidTestDataException(String.format("Browser: '%s' is NOT supported", browserType));
         }
         driver.get(baseUrl);
-        if (shouldMaximizeBrowser) {
+        if (shouldMaximizeBrowser && !Runner.isRunInHeadlessMode()) {
             driver.manage().window().maximize();
+        } else if (Runner.isRunInHeadlessMode()) {
+            driver.manage().window().setSize(new Dimension(1920, 1080));
         }
         return driver;
     }
