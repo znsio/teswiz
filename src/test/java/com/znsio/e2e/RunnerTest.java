@@ -137,7 +137,7 @@ class RunnerTest {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
 //        System.setProperty("TAG", "@login");
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/browserstack_config.properties", stepDefDir, featuresDir);
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/browserStack_config.properties", stepDefDir, featuresDir);
     }
 
 }

@@ -410,6 +410,39 @@ public class Setup {
         return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile, new String[]{platform.name(), "app", "local"});
     }
 
+    private void updateBrowserStackDevicesInCapabilities(String authenticationUser, String authenticationKey, Map<String, Map> loadedCapabilityFile) {
+        String capabilityFile = configs.get(CAPS);
+        String platformName = platform.name();
+        ArrayList listOfAndroidDevices = new ArrayList();
+
+        String platformVersion = String.valueOf(loadedCapabilityFile.get(platformName).get("platformVersion"));
+        String deviceName = String.valueOf(loadedCapabilityFile.get(platformName).get("device"));
+        loadedCapabilityFile.get(platformName).remove("device");
+
+        Map<String, String> filters = new LinkedHashMap<String, String>();
+        filters.put("Platform", "mobile");// mobile-desktop
+        filters.put("Os", platformName); // ios-android-Windows-OS X
+        filters.put("Device", deviceName); // ios-android-Windows-OS X
+        filters.put("Os_version", platformVersion); // os versions
+
+        List<BrowserStackDevice> availableDevices = BrowserStackDeviceFilter.getFilteredDevices(authenticationUser, authenticationKey, filters, configs.get(LOG_DIR));
+
+        for(int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS); numDevices++) {
+            HashMap<String, String> deviceInfo = new HashMap();
+            deviceInfo.put("osVersion", availableDevices.get(numDevices).getOs_version());
+            deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
+            listOfAndroidDevices.add(deviceInfo);
+        }
+        Map loadedCloudCapability = loadedCapabilityFile.get("cloud");
+        loadedCloudCapability.put(platformName, listOfAndroidDevices);
+
+        LOGGER.info("Updated Device Lab Capabilities file: \n" + loadedCapabilityFile);
+
+        String updatedCapabilitiesFile = getPathForFileInLogDir(capabilityFile);
+        JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitiesFile);
+        configs.put(CAPS, updatedCapabilitiesFile);
+    }
+
     private void updateCapabilities(Map<String, Map> loadedCapabilityFile) {
         String capabilityFile = configs.get(CAPS);
         String platformName = platform.name();
@@ -562,7 +595,7 @@ public class Setup {
         app.put("cloud", appIdFromBrowserStack);
         loadedPlatformCapability.put("browserstack.user", authenticationUser);
         loadedPlatformCapability.put("browserstack.key", authenticationKey);
-        updateCapabilities(loadedCapabilityFile);
+        updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey, loadedCapabilityFile);
     }
 
     private String getAppIdFromBrowserStack(String authenticationKey, String appPath) {
@@ -600,7 +633,7 @@ public class Setup {
 
         JsonObject uploadResponse = JsonFile.convertToMap(uploadAPKToBrowserStackResponse.getStdOut()).getAsJsonObject();
         String uploadedApkId = uploadResponse.get("app_url").getAsString();
-        LOGGER.info(String.format("App: '%s' uploaded to Headspin. Response: '%s'", appPath, uploadResponse));
+        LOGGER.info(String.format("App: '%s' uploaded to BrowserStack. Response: '%s'", appPath, uploadResponse));
         configs.put(APP_PATH, uploadedApkId);
         return uploadedApkId;
     }

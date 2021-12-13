@@ -61,7 +61,10 @@ public class Driver {
     }
 
     public void waitForAlert () {
-        (new WebDriverWait(driver, 10)).until(ExpectedConditions.alertIsPresent());
+        waitForAlert(10);
+    }
+    public void waitForAlert (int numberOfSecondsToWait) {
+        (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.alertIsPresent());
         driver.switchTo().alert();
     }
 
@@ -306,7 +309,11 @@ public class Driver {
     }
 
     public WebElement waitForVisibilityOf (By elementId) {
-        return (new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(elementId));
+        return waitForVisibilityOf(elementId, 10);
+    }
+
+    public WebElement waitForVisibilityOf (By elementId, int numberOfSecondsToWait) {
+        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.elementToBeClickable(elementId));
     }
 
     public List<WebElement> findElementsByAccessibilityId (String locator) {
@@ -314,10 +321,18 @@ public class Driver {
     }
 
     public WebElement waitTillElementIsPresent (By elementId) {
-        return (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfElementLocated(elementId));
+        return waitTillElementIsPresent(elementId, 10);
+    }
+
+    public WebElement waitTillElementIsPresent (By elementId, int numberOfSecondsToWait) {
+        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.presenceOfElementLocated(elementId));
     }
 
     public WebElement waitTillElementIsVisible (String locator) {
-        return (new WebDriverWait(driver, 10)).until(ExpectedConditions.visibilityOf(findElementByAccessibilityId(locator)));
+        return waitTillElementIsVisible(locator, 10);
+    }
+
+    public WebElement waitTillElementIsVisible (String locator, int numberOfSecondsToWait) {
+        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.visibilityOf(findElementByAccessibilityId(locator)));
     }
 }
