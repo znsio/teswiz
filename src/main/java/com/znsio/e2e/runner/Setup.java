@@ -259,6 +259,8 @@ public class Setup {
         LOGGER.info("ReportPortal Test Execution Attributes: " + rpAttributes);
 
         // properties needed for atd
+        System.setProperty("CLOUD_USER", configs.get(CLOUD_USER));
+        System.setProperty("CLOUD_KEY", configs.get(CLOUD_KEY));
         System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
         System.setProperty("CAPS", configs.get(CAPS));
         System.setProperty("Platform", platform.name());
@@ -431,6 +433,7 @@ public class Setup {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", availableDevices.get(numDevices).getOs_version());
             deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
+            deviceInfo.put("device", availableDevices.get(numDevices).getDevice());
             listOfAndroidDevices.add(deviceInfo);
         }
         Map loadedCloudCapability = loadedCapabilityFile.get("cloud");

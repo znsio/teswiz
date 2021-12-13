@@ -14,6 +14,8 @@
     "noReset": true,
     "autoAcceptAlerts": true,
     "browserstack.enableCameraImageInjection": true,
+    "browserstack.geoLocation": "IN",
+    "browserstack.timezone": "Kolkata",
     "app": {
       "local": "./src/test/resources/sampleApps/TheApp-VR-v1.apk"
     }
