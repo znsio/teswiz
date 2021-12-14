@@ -36,7 +36,7 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation "com.github.znsio:AppiumTestDistribution:$project.atdVersion"
+    implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.jayway.jsonpath:json-path:$project.jsonPathVersion"
@@ -112,7 +112,6 @@ task run(type: JavaExec) {
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
-        environment "PLATFORM", "web"
 
         def configFile = System.getenv("RUN_IN_CI") ? "./src/test/resources/com/znsio/e2e/features/configs/pcloudy_config.properties" : "./src/test/resources/com/znsio/e2e/features/configs/config.properties"
         systemProperties = System.properties
