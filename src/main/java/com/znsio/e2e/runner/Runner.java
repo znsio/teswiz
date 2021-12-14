@@ -56,6 +56,10 @@ public class Runner {
         return configs.get(CLOUD_NAME);
     }
 
+    public static String getCloudUser() {
+        return configs.get(CLOUD_USER);
+    }
+
     public static String getCloudKey() {
         return configs.get(CLOUD_KEY);
     }

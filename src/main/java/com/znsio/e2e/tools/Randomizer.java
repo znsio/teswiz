@@ -3,6 +3,11 @@ package com.znsio.e2e.tools;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class Randomizer {
+
+    public static String randomize (int size) {
+        return RandomStringUtils.randomNumeric(size);
+    }
+
     public static String randomize (String randomizeTestData) {
         String randomizedValue = randomizeTestData;
         try {

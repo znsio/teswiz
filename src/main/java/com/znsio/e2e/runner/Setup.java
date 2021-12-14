@@ -64,7 +64,7 @@ public class Setup {
     private static final String DEFAULT_LOG_DIR = "target";
     private static final String APP_PATH = "APP_PATH";
     public static final String CAPS = "CAPS";
-    private static final String CLOUD_USER = "CLOUD_USER";
+    static final String CLOUD_USER = "CLOUD_USER";
     public static final String CLOUD_KEY = "CLOUD_KEY";
     private static final String CLOUD_UPLOAD_APP = "CLOUD_UPLOAD_APP";
     static final String CLOUD_NAME = "CLOUD_NAME";
