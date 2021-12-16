@@ -681,7 +681,7 @@ public class Setup {
     }
 
     private String uploadAPKToHeadspin(String authenticationKey, String appPath) {
-        LOGGER.info(String.format("uploadAPKTopCloudy for: '%s'%n", authenticationKey));
+        LOGGER.info(String.format("uploadAPKToHeadspin for: '%s'%n", authenticationKey));
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
         String[] curlCommand = new String[]{
@@ -819,16 +819,11 @@ public class Setup {
         payload.put("\"filter\"", "\"all\"");
         String updatedPayload = payload.toString().replace("\"", "\\\"");
 
-        String[] listOfDevices;
-        listOfDevices = new String[]{
-                "curl --insecure",
-                "-H",
-                "Content-Type:application/json",
-                "-d",
-                "\"" + updatedPayload + "\"",
-                deviceLabURL + "/api/drive"};
+        String[] listOfUploadedFiles;
+        listOfUploadedFiles = new String[]{
+                "curl --insecure -H Content-Type:application/json -d '{\"filter\":\"all\",\"limit\":15,\"token\":\"'" + authToken + "'\"}' '" + deviceLabURL + "/api/drive'\n"};
 
-        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfDevices);
+        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfUploadedFiles);
         LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut()).getAsJsonObject("result");
         JsonElement resultCode = result.get("code");
