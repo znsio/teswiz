@@ -27,8 +27,8 @@ public class BrowserStackDeviceFilter {
         try {
 
             String[] curlCommand = new String[]{
-                    "curl --insecure -u '" + authenticationUser + ":" + authenticationKey + "'",
-                    "'https://api.browserstack.com/automate/browsers.json'",
+                    "curl --insecure -u \"" + authenticationUser + ":" + authenticationKey + "\"",
+                    "\"https://api.browserstack.com/automate/browsers.json\"",
                     "> " + allAvailableBrowsersAndDevicesFileName
             };
             CommandLineResponse listofBrowsersAndDevicesAvailableInBrowserStack = CommandLineExecutor.execCommand(curlCommand);

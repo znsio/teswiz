@@ -577,7 +577,7 @@ public class Setup {
         String authenticationKey = configs.get(CLOUD_KEY);
         String platformName = platform.name();
         String capabilityFile = configs.get(CAPS);
-        String appPath = configs.get(APP_PATH);
+        String appPath = new File(configs.get(APP_PATH)).getAbsolutePath();
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
@@ -608,8 +608,8 @@ public class Setup {
         String appName = getAppName(appPath);
         LOGGER.info(String.format("getAppIdFromBrowserStack for: '%s' and appName: '%s'%n", authenticationKey, appName));
         String[] curlCommand = new String[]{
-                "curl --insecure -u '" + authenticationKey + "'",
-                "-X GET 'https://api-cloud.browserstack.com/app-automate/recent_apps/" + appName + "'"
+                "curl --insecure -u \"" + authenticationKey + "\"",
+                "-X GET \"https://api-cloud.browserstack.com/app-automate/recent_apps/" + appName + "\""
         };
         String uploadedAppIdFromBrowserStack;
         try {
@@ -630,10 +630,10 @@ public class Setup {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
         String[] curlCommand = new String[]{
-                "curl --insecure -u '" + authenticationKey + "'",
-                "-X POST 'https://api-cloud.browserstack.com/app-automate/upload'",
-                "-F 'file=@" + appPath + "'",
-                "-F 'custom_id=" + getAppName(appPath) + "'"
+                "curl --insecure -u \"" + authenticationKey + "\"",
+                "-X POST \"https://api-cloud.browserstack.com/app-automate/upload\"",
+                "-F \"file=@" + appPath + "\"",
+                "-F \"custom_id=" + getAppName(appPath) + "\""
         };
         CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(curlCommand);
 
