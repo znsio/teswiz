@@ -141,7 +141,7 @@ public class Drivers {
                     appiumDriver);
         } else {
             try {
-                AppiumDriver appiumDriver = allocateNewDeviceAndStartAppiumDriver();
+                AppiumDriver appiumDriver = allocateNewDeviceAndStartAppiumDriver(context.getTestName());
                 currentDriver = new Driver(context.getTestName() + "-" + userPersona, context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON), appiumDriver);
                 Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
                 LOGGER.info("CAPABILITIES: " + appiumDriverCapabilities);
@@ -246,12 +246,12 @@ public class Drivers {
         return currentDriver;
     }
 
-    private AppiumDriver allocateNewDeviceAndStartAppiumDriver () {
+    private AppiumDriver allocateNewDeviceAndStartAppiumDriver(String testName) {
         try {
             DeviceAllocationManager deviceAllocationManager = DeviceAllocationManager.getInstance();
             AppiumDevice availableDevice = deviceAllocationManager.getNextAvailableDevice();
             deviceAllocationManager.allocateDevice(availableDevice);
-            AppiumDriver driver = new AppiumDriverManager().startAppiumDriverInstance();
+            AppiumDriver driver = new AppiumDriverManager().startAppiumDriverInstance(testName);
             updateAvailableDeviceInformation(availableDevice);
             return driver;
         } catch (Exception e) {
