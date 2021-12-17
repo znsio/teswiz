@@ -470,7 +470,7 @@ public class Setup {
         LOGGER.info("\tgetPathForFileInLogDir: fullFilePath: " + fullFilePath);
         Path path = Paths.get(fullFilePath);
         String fileName = path.getFileName().toString();
-        String newFileName = configs.get(LOG_DIR) + "/" + fileName;
+        String newFileName = new File(configs.get(LOG_DIR) + File.separator + fileName).getAbsolutePath();
         LOGGER.info("\tNew file available here: " + newFileName);
         return newFileName;
     }
@@ -595,10 +595,11 @@ public class Setup {
         String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
         hostMachines.put("machineIP", remoteServerURL);
         Map app = (Map) loadedPlatformCapability.get("app");
+        app.put("local", appPath);
         app.put("cloud", appIdFromBrowserStack);
         loadedPlatformCapability.put("browserstack.user", authenticationUser);
         loadedPlatformCapability.put("browserstack.key", authenticationKey);
-        String subsetOfLogDir = configs.get(LOG_DIR).replaceAll("[/.|]","");
+        String subsetOfLogDir = configs.get(LOG_DIR).replace("/", "").replace("\\","");
         loadedPlatformCapability.put("build", configs.get(LAUNCH_NAME) + "-" + subsetOfLogDir);
         loadedPlatformCapability.put("project", configs.get(APP_NAME));
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey, loadedCapabilityFile);
