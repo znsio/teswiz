@@ -133,7 +133,10 @@ task run(type: JavaExec) {
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
 
-        def configFile = System.getenv("RUN_IN_CI") ? "./src/test/resources/com/znsio/e2e/features/configs/browserStack_config.properties" : "./src/test/resources/com/znsio/e2e/features/configs/config.properties"
+        def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
+        println "isRunningInCI: $isRunInCI"
+
+        def configFile = isRunInCI ? "./src/test/resources/com/znsio/e2e/features/configs/browserStack_config.properties" : "./src/test/resources/com/znsio/e2e/features/configs/config.properties"
         systemProperties = System.properties
         def runnerArgs = [
                 "${configFile}",

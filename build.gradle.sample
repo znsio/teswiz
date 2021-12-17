@@ -55,7 +55,11 @@ task run(type: JavaExec) {
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
-        def configFile = System.getenv("RUN_IN_CI") ? "./configs/pcloudy_config.properties" : "./configs/config.properties"
+
+        def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
+        println "isRunningInCI: $isRunInCI"
+
+        def configFile = isRunInCI ? "./configs/pcloudy_config.properties" : "./configs/config.properties"
         systemProperties = System.properties
         def runnerArgs = [
                 "${configFile}",
