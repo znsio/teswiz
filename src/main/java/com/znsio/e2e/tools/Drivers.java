@@ -305,9 +305,7 @@ public class Drivers {
                 break;
             case OPERA:
             case EDGE:
-            case PHANTOMJS:
             case IEXPLORER:
-            case SELENIUM_SERVER_STANDALONE:
             case CHROMIUM:
             case SAFARI:
                 throw new InvalidTestDataException(String.format("Browser: '%s' is NOT supported", browserType));
