@@ -627,7 +627,6 @@ public class Setup {
 
     private String uploadAPKToBrowserStack(String authenticationKey, String appPath) {
         LOGGER.info(String.format("uploadAPKToBrowserStack for: '%s'%n", authenticationKey));
-        String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
         String[] curlCommand = new String[]{
                 "curl --insecure -u \"" + authenticationKey + "\"",
@@ -645,8 +644,7 @@ public class Setup {
     }
 
     private String getAppName(String appPath) {
-        String[] appPaths = appPath.strip().split("/");
-        return appPaths[appPaths.length - 1];
+        return new File(appPath).getName();
     }
 
     private void updateHeadspinCapabilities() {
@@ -654,7 +652,6 @@ public class Setup {
         String platformName = platform.name();
         String capabilityFile = configs.get(CAPS);
         String appPath = configs.get(APP_PATH);
-        String[] splitAppPath = appPath.split("/");
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
@@ -766,8 +763,7 @@ public class Setup {
         loadedPlatformCapability.remove("app");
         loadedPlatformCapability.put("pCloudy_Username", emailID);
         loadedPlatformCapability.put("pCloudy_ApiKey", authenticationKey);
-        String[] splitAppPath = appPath.split("/");
-        loadedPlatformCapability.put("pCloudy_ApplicationName", splitAppPath[splitAppPath.length - 1]);
+        loadedPlatformCapability.put("pCloudy_ApplicationName", getAppName(appPath));
         loadedPlatformCapability.put("pCloudy_DeviceVersion", osVersion);
 
         updateCapabilities(loadedCapabilityFile);

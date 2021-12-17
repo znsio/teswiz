@@ -12,7 +12,7 @@ public class CommandLineExecutor {
 
     public static CommandLineResponse execCommand (final String[] command) {
         String jointCommand = String.join(" ", command);
-        String message = "\tExecuting Command : " + jointCommand;
+        String message = "\tExecuting Command: " + jointCommand;
         LOGGER.info(message);
         try {
             CommandLineResponse response = new CommandLineResponse();
@@ -23,11 +23,11 @@ public class CommandLineExecutor {
                 builder.command("sh", "-c", jointCommand);
             }
             Process process = builder.start();
-            process.waitFor(60, TimeUnit.SECONDS);
+            process.waitFor(120, TimeUnit.SECONDS);
             response.setStdOut(IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8).trim());
             response.setErrOut(IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8).trim());
             response.setExitCode(process.exitValue());
-            LOGGER.info("\t" + response.getStdOut());
+            LOGGER.info("\t" + response.toString());
             return response;
         } catch (Exception e) {
             throw new RuntimeException("Error " + message, e);

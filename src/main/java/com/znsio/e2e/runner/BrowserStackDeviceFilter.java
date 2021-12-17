@@ -23,7 +23,7 @@ public class BrowserStackDeviceFilter {
         // fetch the browser list from browserstack
         List<BrowserStackDevice> filteredDevices = null;
         String filteredDeviceFileName = logDir + File.separator + "filteredDevicesFromBrowserStack.yml";
-        String allAvailableBrowsersAndDevicesFileName = logDir + File.separator + "allAvailableBrowsersAndDevices.json";
+        String allAvailableBrowsersAndDevicesFileName = new File(logDir + File.separator + "allAvailableBrowsersAndDevices.json").getAbsolutePath();
         try {
 
             String[] curlCommand = new String[]{
