@@ -1,15 +1,35 @@
 import java.text.SimpleDateFormat
 
+buildscript {
+    ext {
+        gradleVersion = '7.1'
+        assertJVersion = '3.21.0'
+        atdVersion = '40f17b85c4'
+        applitoolsVersion = '3.210.6'
+        commonsLang3Version = '3.12.0'
+        unirestVersion = '3.13.4'
+        jadbVersion = '1.2.1'
+        webDriverManagerVersion = '5.0.3'
+        googleCodeJsonSimpleVersion = '1.1.1'
+        junitVersion = '5.8.2'
+        slf4jVersion = '1.7.32'
+        reportportalAgentCucumberVersion = '5.0.6'
+        reportportalAgentTestNGVersion = '5.0.11'
+        fasterxmlJacksonVersion = '2.13.1'
+        jsonPathVersion = '2.6.0'
+    }
+}
+
 plugins {
     id "org.sonarqube" version "3.3"
     id "java"
     id "idea"
-    id 'com.github.johnrengelman.shadow' version '7.1.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.1'
     id 'maven-publish'
 }
 
 group = 'com.github.znsio'
-version '0.0.65'
+version '0.0.66'
 
 repositories {
     mavenLocal()
@@ -36,7 +56,7 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation "com.github.znsio:AppiumTestDistribution:$project.atdVersion"
+    implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.jayway.jsonpath:json-path:$project.jsonPathVersion"
@@ -95,21 +115,28 @@ publishing {
 
 task install(dependsOn: publishToMavenLocal)
 
-static def getCurrentTimestamp ()
-{
-    Date today = new Date ()
-    SimpleDateFormat df = new SimpleDateFormat ("MM-dd-yyyy_HH-mm-ss")
-    return df.format (today)
+static def getCurrentDatestamp() {
+    Date today = new Date()
+    SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy")
+    return df.format(today)
+}
+
+static def getCurrentTimestamp() {
+    Date today = new Date()
+    SimpleDateFormat df = new SimpleDateFormat("HH-mm-ss")
+    return df.format(today)
 }
 
 task run(type: JavaExec) {
     doFirst {
-        def logDirectory = "target/" + getCurrentTimestamp()
+        def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
-        environment "PLATFORM", "web"
 
-        def configFile = System.getenv("RUN_IN_CI") ? "./src/test/resources/com/znsio/e2e/features/configs/pcloudy_config.properties" : "./src/test/resources/com/znsio/e2e/features/configs/config.properties"
+        def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
+        println "isRunningInCI: $isRunInCI"
+
+        def configFile = isRunInCI ? "./src/test/resources/com/znsio/e2e/features/configs/browserStack_config.properties" : "./src/test/resources/com/znsio/e2e/features/configs/config.properties"
         systemProperties = System.properties
         def runnerArgs = [
                 "${configFile}",

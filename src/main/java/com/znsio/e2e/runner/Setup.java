@@ -64,7 +64,7 @@ public class Setup {
     private static final String DEFAULT_LOG_DIR = "target";
     private static final String APP_PATH = "APP_PATH";
     public static final String CAPS = "CAPS";
-    private static final String CLOUD_USER = "CLOUD_USER";
+    static final String CLOUD_USER = "CLOUD_USER";
     public static final String CLOUD_KEY = "CLOUD_KEY";
     private static final String CLOUD_UPLOAD_APP = "CLOUD_UPLOAD_APP";
     static final String CLOUD_NAME = "CLOUD_NAME";
@@ -259,6 +259,8 @@ public class Setup {
         LOGGER.info("ReportPortal Test Execution Attributes: " + rpAttributes);
 
         // properties needed for atd
+        System.setProperty("CLOUD_USER", configs.get(CLOUD_USER));
+        System.setProperty("CLOUD_KEY", configs.get(CLOUD_KEY));
         System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
         System.setProperty("CAPS", configs.get(CAPS));
         System.setProperty("Platform", platform.name());
@@ -431,6 +433,7 @@ public class Setup {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", availableDevices.get(numDevices).getOs_version());
             deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
+            deviceInfo.put("device", availableDevices.get(numDevices).getDevice());
             listOfAndroidDevices.add(deviceInfo);
         }
         Map loadedCloudCapability = loadedCapabilityFile.get("cloud");
@@ -467,7 +470,7 @@ public class Setup {
         LOGGER.info("\tgetPathForFileInLogDir: fullFilePath: " + fullFilePath);
         Path path = Paths.get(fullFilePath);
         String fileName = path.getFileName().toString();
-        String newFileName = configs.get(LOG_DIR) + "/" + fileName;
+        String newFileName = new File(configs.get(LOG_DIR) + File.separator + fileName).getAbsolutePath();
         LOGGER.info("\tNew file available here: " + newFileName);
         return newFileName;
     }
@@ -574,7 +577,7 @@ public class Setup {
         String authenticationKey = configs.get(CLOUD_KEY);
         String platformName = platform.name();
         String capabilityFile = configs.get(CAPS);
-        String appPath = configs.get(APP_PATH);
+        String appPath = new File(configs.get(APP_PATH)).getAbsolutePath();
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
@@ -592,9 +595,13 @@ public class Setup {
         String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
         hostMachines.put("machineIP", remoteServerURL);
         Map app = (Map) loadedPlatformCapability.get("app");
+        app.put("local", appPath);
         app.put("cloud", appIdFromBrowserStack);
         loadedPlatformCapability.put("browserstack.user", authenticationUser);
         loadedPlatformCapability.put("browserstack.key", authenticationKey);
+        String subsetOfLogDir = configs.get(LOG_DIR).replace("/", "").replace("\\","");
+        loadedPlatformCapability.put("build", configs.get(LAUNCH_NAME) + "-" + subsetOfLogDir);
+        loadedPlatformCapability.put("project", configs.get(APP_NAME));
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey, loadedCapabilityFile);
     }
 
@@ -602,8 +609,8 @@ public class Setup {
         String appName = getAppName(appPath);
         LOGGER.info(String.format("getAppIdFromBrowserStack for: '%s' and appName: '%s'%n", authenticationKey, appName));
         String[] curlCommand = new String[]{
-                "curl --insecure -u '" + authenticationKey + "'",
-                "-X GET 'https://api-cloud.browserstack.com/app-automate/recent_apps/" + appName + "'"
+                "curl --insecure -u \"" + authenticationKey + "\"",
+                "-X GET \"https://api-cloud.browserstack.com/app-automate/recent_apps/" + appName + "\""
         };
         String uploadedAppIdFromBrowserStack;
         try {
@@ -621,13 +628,12 @@ public class Setup {
 
     private String uploadAPKToBrowserStack(String authenticationKey, String appPath) {
         LOGGER.info(String.format("uploadAPKToBrowserStack for: '%s'%n", authenticationKey));
-        String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
         String[] curlCommand = new String[]{
-                "curl --insecure -u '" + authenticationKey + "'",
-                "-X POST 'https://api-cloud.browserstack.com/app-automate/upload'",
-                "-F 'file=@" + appPath + "'",
-                "-F 'custom_id=" + getAppName(appPath) + "'"
+                "curl --insecure -u \"" + authenticationKey + "\"",
+                "-X POST \"https://api-cloud.browserstack.com/app-automate/upload\"",
+                "-F \"file=@" + appPath + "\"",
+                "-F \"custom_id=" + getAppName(appPath) + "\""
         };
         CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(curlCommand);
 
@@ -639,8 +645,7 @@ public class Setup {
     }
 
     private String getAppName(String appPath) {
-        String[] appPaths = appPath.strip().split("/");
-        return appPaths[appPaths.length - 1];
+        return new File(appPath).getName();
     }
 
     private void updateHeadspinCapabilities() {
@@ -648,7 +653,6 @@ public class Setup {
         String platformName = platform.name();
         String capabilityFile = configs.get(CAPS);
         String appPath = configs.get(APP_PATH);
-        String[] splitAppPath = appPath.split("/");
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
@@ -678,7 +682,7 @@ public class Setup {
     }
 
     private String uploadAPKToHeadspin(String authenticationKey, String appPath) {
-        LOGGER.info(String.format("uploadAPKTopCloudy for: '%s'%n", authenticationKey));
+        LOGGER.info(String.format("uploadAPKToHeadspin for: '%s'%n", authenticationKey));
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
         String[] curlCommand = new String[]{
@@ -760,8 +764,7 @@ public class Setup {
         loadedPlatformCapability.remove("app");
         loadedPlatformCapability.put("pCloudy_Username", emailID);
         loadedPlatformCapability.put("pCloudy_ApiKey", authenticationKey);
-        String[] splitAppPath = appPath.split("/");
-        loadedPlatformCapability.put("pCloudy_ApplicationName", splitAppPath[splitAppPath.length - 1]);
+        loadedPlatformCapability.put("pCloudy_ApplicationName", getAppName(appPath));
         loadedPlatformCapability.put("pCloudy_DeviceVersion", osVersion);
 
         updateCapabilities(loadedCapabilityFile);
@@ -810,22 +813,11 @@ public class Setup {
     @NotNull
     private CommandLineResponse getListOfUploadedFilesInPCloudy(String authToken) {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
-        Map payload = new HashMap();
-        payload.put("\"token\"", "\"" + authToken + "\"");
-        payload.put("\"limit\"", 15);
-        payload.put("\"filter\"", "\"all\"");
-        String updatedPayload = payload.toString().replace("\"", "\\\"");
+        String[] listOfUploadedFiles;
+        listOfUploadedFiles = new String[]{
+                "curl --insecure -H Content-Type:application/json -d '{\"filter\":\"all\",\"limit\":15,\"token\":\"'" + authToken + "'\"}' '" + deviceLabURL + "/api/drive'\n"};
 
-        String[] listOfDevices;
-        listOfDevices = new String[]{
-                "curl --insecure",
-                "-H",
-                "Content-Type:application/json",
-                "-d",
-                "\"" + updatedPayload + "\"",
-                deviceLabURL + "/api/drive"};
-
-        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfDevices);
+        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfUploadedFiles);
         LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut()).getAsJsonObject("result");
         JsonElement resultCode = result.get("code");
