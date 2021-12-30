@@ -813,11 +813,22 @@ public class Setup {
     @NotNull
     private CommandLineResponse getListOfUploadedFilesInPCloudy(String authToken) {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
-        String[] listOfUploadedFiles;
-        listOfUploadedFiles = new String[]{
-                "curl --insecure -H \"Content-Type:application/json\" -d \"{\"filter\":\"all\",\"limit\":15,\"token\":\"" + authToken + "\"}\" " + deviceLabURL + "/api/drive\n"};
+        Map payload = new HashMap();
+        payload.put("\"token\"", "\"" + authToken + "\"");
+        payload.put("\"limit\"", 15);
+        payload.put("\"filter\"", "\"all\"");
+        String updatedPayload = payload.toString().replace("\"", "\\\"").replaceAll("=", ":");
 
-        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfUploadedFiles);
+        String[] listOfDevices;
+        listOfDevices = new String[]{
+                "curl --insecure",
+                "-H",
+                "Content-Type:application/json",
+                "-d",
+                "\"" + updatedPayload + "\"",
+                deviceLabURL + "/api/drive"};
+
+        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfDevices);
         LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut()).getAsJsonObject("result");
         JsonElement resultCode = result.get("code");
