@@ -815,7 +815,7 @@ public class Setup {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
         String[] listOfUploadedFiles;
         listOfUploadedFiles = new String[]{
-                "curl --insecure -H Content-Type:application/json -d '{\"filter\":\"all\",\"limit\":15,\"token\":\"'" + authToken + "'\"}' '" + deviceLabURL + "/api/drive'\n"};
+                "curl --insecure -H \"Content-Type:application/json\" -d \"{\"filter\":\"all\",\"limit\":15,\"token\":\"" + authToken + "\"}\" " + deviceLabURL + "/api/drive\n"};
 
         CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfUploadedFiles);
         LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());

@@ -340,4 +340,8 @@ public class Driver {
     public WebElement waitTillElementIsVisible (String locator, int numberOfSecondsToWait) {
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.visibilityOf(findElementByAccessibilityId(locator)));
     }
+
+    public void setWindowSize (int width, int height) {
+        driver.manage().window().setSize(new Dimension(width, height));
+    }
 }
