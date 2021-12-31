@@ -819,8 +819,8 @@ public class Setup {
         payload.put("\"filter\"", "\"all\"");
         String updatedPayload = payload.toString().replace("\"", "\\\"").replaceAll("=", ":");
 
-        String[] listOfDevices;
-        listOfDevices = new String[]{
+        String[] listOfUploadedFiles;
+        listOfUploadedFiles = new String[]{
                 "curl --insecure",
                 "-H",
                 "Content-Type:application/json",
@@ -828,7 +828,7 @@ public class Setup {
                 "\"" + updatedPayload + "\"",
                 deviceLabURL + "/api/drive"};
 
-        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfDevices);
+        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfUploadedFiles);
         LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut()).getAsJsonObject("result");
         JsonElement resultCode = result.get("code");
