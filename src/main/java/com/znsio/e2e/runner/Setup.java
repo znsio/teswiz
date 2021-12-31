@@ -817,11 +817,16 @@ public class Setup {
         payload.put("\"token\"", "\"" + authToken + "\"");
         payload.put("\"limit\"", 15);
         payload.put("\"filter\"", "\"all\"");
-        String updatedPayload = payload.toString().replace("\"", "\\\"");
+        String updatedPayload = payload.toString().replace("\"", "\\\"").replaceAll("=", ":");
 
         String[] listOfUploadedFiles;
         listOfUploadedFiles = new String[]{
-                "curl --insecure -H Content-Type:application/json -d '{\"filter\":\"all\",\"limit\":15,\"token\":\"'" + authToken + "'\"}' '" + deviceLabURL + "/api/drive'\n"};
+                "curl --insecure",
+                "-H",
+                "Content-Type:application/json",
+                "-d",
+                "\"" + updatedPayload + "\"",
+                deviceLabURL + "/api/drive"};
 
         CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfUploadedFiles);
         LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
