@@ -342,6 +342,8 @@ public class Driver {
     }
 
     public void setWindowSize (int width, int height) {
-        driver.manage().window().setSize(new Dimension(width, height));
+        if (this.type.equals(Driver.WEB_DRIVER)) {
+            driver.manage().window().setSize(new Dimension(width, height));
+        }
     }
 }
