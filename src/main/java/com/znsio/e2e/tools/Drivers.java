@@ -53,6 +53,7 @@ public class Drivers {
     private int numberOfAndroidDriversUsed = 0;
     private int numberOfWebDriversUsed = 0;
     private int numberOfWindowsDriversUsed = 0;
+    private int numberOfAppiumDriversUsed = 0;
 
     public Drivers () {
         MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
@@ -117,18 +118,22 @@ public class Drivers {
         LOGGER.info(String.format("createAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
-                numberOfAndroidDriversUsed));
+                numberOfAppiumDriversUsed));
+                //numberOfAndroidDriversUsed));
         Driver currentDriver;
-        if (Platform.android.equals(forPlatform) && numberOfAndroidDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        //if (Platform.android.equals(forPlatform) && numberOfAndroidDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        if (Platform.android.equals(forPlatform) && numberOfAppiumDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
             throw new InvalidTestDataException(
                     String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
-                            numberOfAndroidDriversUsed,
+                            numberOfAppiumDriversUsed,
+                            //numberOfAndroidDriversUsed,
                             userPersona,
                             forPlatform.name())
             );
         }
 
-        if (numberOfAndroidDriversUsed == 0) {
+        //if (numberOfAndroidDriversUsed == 0) {
+        if (numberOfAppiumDriversUsed == 0) {
             AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
             AppiumDevice deviceInfo = (AppiumDevice) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
             Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
@@ -152,16 +157,19 @@ public class Drivers {
             } catch (Exception e) {
                 throw new EnvironmentSetupException(
                         String.format("Unable to create Android driver '#%d' for user persona: '%s'",
-                                numberOfAndroidDriversUsed,
+                                //numberOfAndroidDriversUsed,
+                                numberOfAppiumDriversUsed,
                                 userPersona)
                 );
             }
         }
-        numberOfAndroidDriversUsed++;
+        //numberOfAndroidDriversUsed++;
+        numberOfAppiumDriversUsed++;
         LOGGER.info(String.format("createAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
-                numberOfAndroidDriversUsed));
+                //numberOfAndroidDriversUsed));
+                numberOfAppiumDriversUsed));
         disableNotificationsAndToastsOnDevice(currentDriver, context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON), (String) userPersonaDriverCapabilities.get(userPersona).getCapability("udid"));
         return currentDriver;
     }
@@ -208,18 +216,22 @@ public class Drivers {
         LOGGER.info(String.format("createWindowsDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
-                numberOfWindowsDriversUsed));
+                //numberOfWindowsDriversUsed));
+                numberOfAppiumDriversUsed));
 
         Driver currentDriver;
-        if (Platform.windows.equals(forPlatform) && numberOfWindowsDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        //if (Platform.windows.equals(forPlatform) && numberOfWindowsDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        if (Platform.windows.equals(forPlatform) && numberOfAppiumDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
             throw new InvalidTestDataException(
                     String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
-                            numberOfWindowsDriversUsed,
+                            //numberOfWindowsDriversUsed,
+                            numberOfAppiumDriversUsed,
                             userPersona,
                             forPlatform.name())
             );
         }
-        if (numberOfWindowsDriversUsed < MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        //if (numberOfWindowsDriversUsed < MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        if (numberOfAppiumDriversUsed < MAX_NUMBER_OF_APPIUM_DRIVERS) {
             AppiumDriver<WebElement> windowsDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
             String runningOn = Runner.isRunningInCI() ? "CI" : "local";
             context.addTestState(TEST_CONTEXT.WINDOWS_DEVICE_ON, runningOn);
@@ -235,14 +247,17 @@ public class Drivers {
                     String.format("Current number of WindowsDriver instances used: '%d'. " +
                                     "Unable to create more than '%d' drivers for user persona: '%s' " +
                                     "on platform: '%s'",
-                            numberOfWindowsDriversUsed,
+                            //numberOfWindowsDriversUsed,
+                            numberOfAppiumDriversUsed,
                             MAX_NUMBER_OF_APPIUM_DRIVERS,
                             userPersona,
                             forPlatform.name())
             );
         }
-        numberOfWindowsDriversUsed++;
-        LOGGER.info(String.format("createWindowsDriverForUser: done: userPersona: '%s', Platform: '%s', Number of windowsDrivers: '%d'", userPersona, forPlatform.name(), numberOfWindowsDriversUsed));
+        //numberOfWindowsDriversUsed++;
+        numberOfAppiumDriversUsed++;
+        //LOGGER.info(String.format("createWindowsDriverForUser: done: userPersona: '%s', Platform: '%s', Number of windowsDrivers: '%d'", userPersona, forPlatform.name(), numberOfWindowsDriversUsed));
+        LOGGER.info(String.format("createWindowsDriverForUser: done: userPersona: '%s', Platform: '%s', Number of windowsDrivers: '%d'", userPersona, forPlatform.name(), numberOfAppiumDriversUsed));
         return currentDriver;
     }
 
