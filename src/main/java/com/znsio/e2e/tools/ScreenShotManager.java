@@ -4,6 +4,7 @@ import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
 import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.AppiumDriver;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -67,7 +68,7 @@ public class ScreenShotManager {
 
     private File createScreenshotFile (String dirName, String fileName) {
         fileName = fileName.endsWith(".png") ? fileName : fileName + ".png";
-        return new File(System.getProperty("user.dir")
+        return new File(Runner.USER_NAME
                 + dirName
                 + File.separator
                 + fileName);

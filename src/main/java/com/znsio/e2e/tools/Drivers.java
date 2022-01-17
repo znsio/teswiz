@@ -42,7 +42,6 @@ import static com.znsio.e2e.runner.Setup.CAPS;
 import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
 
 public class Drivers {
-    private static final String USER_DIR = "user.dir";
     private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
     private final Map<String, Driver> userPersonaDrivers = new HashMap<>();
     private final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<String, Capabilities>();
