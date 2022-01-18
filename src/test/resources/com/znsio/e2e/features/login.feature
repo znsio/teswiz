@@ -11,6 +11,12 @@ Feature: Test valid and invalid login
 #        And I login with invalid credentials - "znsio", "znsio"
 #        Then I see the error "Invalid login credentials, please try again"
 
+  @android @web
+  Scenario: Verify error message on another invalid login
+    Given I login with invalid credentials - "znsio2", "2nd invalid password"
+    When I go back
+    Then I can echo "how are you too?" in the message box
+
   @multiuser-android-web
   Scenario: Orchestrating multiple users on different platforms as part of same test
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
