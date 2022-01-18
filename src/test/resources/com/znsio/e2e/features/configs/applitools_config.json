@@ -2,9 +2,11 @@
   "serverUrl": "https://eyesapi.applitools.com/",
   "defaultMatchLevel": "strict",
   "enableBenchmarkPerValidation": true,
-  "enableVerboseLogs": true,
   "sendDOM": true,
   "stitchMode": "css",
   "takeFullPageScreenShot": true,
-  "viewportSize": "1280x900"
+  "viewportSize": "1280x900",
+  "useUFG": true,
+  "testConcurrency": 10,
+  "showLogs": true
 }
