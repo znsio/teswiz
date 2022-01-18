@@ -33,20 +33,12 @@ public class RunTestCukes extends AbstractTestNGCucumberTests {
     @Before
     public void beforeTestScenario (Scenario scenario) {
         LOGGER.info(String.format("ThreadID: %d: in overridden beforeTestScenario%n", Thread.currentThread().getId()));
-//        Configuration ufgConfig = new Configuration();
-//        ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
-//        ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
-//        ufgConfig.addBrowser(1024, 1024, BrowserType.SAFARI);
-//        ufgConfig.addBrowser(1024, 1024, BrowserType.EDGE_CHROMIUM);
-//        ufgConfig.addBrowser(1600, 1200, BrowserType.CHROME);
-//        ufgConfig.addBrowser(1600, 1200, BrowserType.FIREFOX);
-//        ufgConfig.addBrowser(1600, 1200, BrowserType.SAFARI);
-//        ufgConfig.addBrowser(1600, 1200, BrowserType.EDGE_CHROMIUM);
-//        ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
-//        ufgConfig.addDeviceEmulation(DeviceName.iPad_Pro, ScreenOrientation.LANDSCAPE);
-//        ufgConfig.addDeviceEmulation(DeviceName.Nexus_5X, ScreenOrientation.PORTRAIT);
-//        ufgConfig.addDeviceEmulation(DeviceName.Nexus_6P, ScreenOrientation.LANDSCAPE);
-//        context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
+        Configuration ufgConfig = new Configuration();
+        ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
+        ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
+        ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
+        ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
+        context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
     }
 
     @After
