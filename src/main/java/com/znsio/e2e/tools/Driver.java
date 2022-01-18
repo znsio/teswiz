@@ -52,11 +52,11 @@ public class Driver {
         instantiateEyes(testName, webDriver);
     }
 
-    public WebElement waitForVisibilityOf (String elementId) {
-        return waitForVisibilityOf(elementId, 10);
+    public WebElement waitForClickabilityOf(String elementId) {
+        return waitForClickabilityOf(elementId, 10);
     }
 
-    public WebElement waitForVisibilityOf (String elementId, int numberOfSecondsToWait) {
+    public WebElement waitForClickabilityOf(String elementId, int numberOfSecondsToWait) {
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.elementToBeClickable(findElementByAccessibilityId(elementId)));
     }
 
@@ -307,17 +307,17 @@ public class Driver {
     }
 
     public void allowPermission (By element) {
-        waitForVisibilityOf(element);
+        waitForClickabilityOf(element);
         if (Runner.platform.equals(Platform.android)) {
             ((AndroidDriver) driver).findElement(element).click();
         }
     }
 
-    public WebElement waitForVisibilityOf (By elementId) {
-        return waitForVisibilityOf(elementId, 10);
+    public WebElement waitForClickabilityOf(By elementId) {
+        return waitForClickabilityOf(elementId, 10);
     }
 
-    public WebElement waitForVisibilityOf (By elementId, int numberOfSecondsToWait) {
+    public WebElement waitForClickabilityOf(By elementId, int numberOfSecondsToWait) {
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.elementToBeClickable(elementId));
     }
 
