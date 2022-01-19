@@ -123,7 +123,6 @@ public class Drivers {
             throw new InvalidTestDataException(
                     String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
                             numberOfAppiumDriversUsed,
-                            //numberOfAndroidDriversUsed,
                             userPersona,
                             forPlatform.name())
             );
@@ -615,15 +614,15 @@ public class Drivers {
         LOGGER.info("Application State: " + applicationState);
         appiumDriver.closeApp();
         //only when driver is not handled by ATD on local execution, quit the driver
-        if (!Runner.isRunningInCI() || driverFromATD != appiumDriver) {
-            appiumDriver.quit();
-        }
+//        if (!Runner.isRunningInCI() && driverFromATD != appiumDriver) {
+//            appiumDriver.quit();
+//        }
 
         //mark the device booked by ATD as 'free'
-        if (driverFromATD == appiumDriver) {
-            AppiumDevice deviceInfo = (AppiumDevice) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
-            deviceInfo.freeDevice();
-        }
+//        if (driverFromATD == appiumDriver) {
+//            AppiumDevice deviceInfo = (AppiumDevice) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
+//            deviceInfo.freeDevice();
+//        }
         logMessage = String.format("App: '%s' Current application state: '%s'%n",
                 appPackageName,
                 applicationState);
