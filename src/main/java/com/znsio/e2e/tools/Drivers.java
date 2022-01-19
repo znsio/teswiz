@@ -603,19 +603,26 @@ public class Drivers {
         String logMessage;
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
         AppiumDriver<WebElement> driverFromATD = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
-        if (driverFromATD == appiumDriver) {
-            logMessage = "current driver is set by ATD; skipping the terminating and closing actions";
-            LOGGER.info(logMessage);
-            ReportPortal.emitLog(logMessage, DEBUG, new Date());
-            return;
-        }
+//        if (driverFromATD == appiumDriver) {
+//            logMessage = "current driver is set by ATD; skipping the terminating and closing actions";
+//            LOGGER.info(logMessage);
+//            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+//            return;
+//        }
 
         LOGGER.info("Terminate app: " + appPackageName);
         ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
         LOGGER.info("Application State: " + applicationState);
         appiumDriver.closeApp();
-        if (!Runner.isRunningInCI()) {
+        //only when driver is not handled by ATD on local execution, quit the driver
+        if (!Runner.isRunningInCI() || driverFromATD != appiumDriver) {
             appiumDriver.quit();
+        }
+
+        //mark the device booked by ATD as 'free'
+        if (driverFromATD == appiumDriver) {
+            AppiumDevice deviceInfo = (AppiumDevice) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
+            deviceInfo.freeDevice();
         }
         logMessage = String.format("App: '%s' Current application state: '%s'%n",
                 appPackageName,
