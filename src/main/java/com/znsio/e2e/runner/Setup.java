@@ -951,6 +951,7 @@ public class Setup {
         cukeArgs.add("message:" + logDir + "/reports/results.ndjson");
         cukeArgs.add(PLUGIN);
         cukeArgs.add("timeline:" + logDir + "/reports/timeline");
+        System.setProperty("cucumber.publish.quiet", "true");
     }
 
     private String getCustomTags() {
