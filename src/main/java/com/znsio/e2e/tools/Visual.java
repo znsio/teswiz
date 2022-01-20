@@ -261,6 +261,9 @@ public class Visual {
     }
 
     private void getVisualResultsFromWeb(String userPersona) {
+        if(eyesOnWeb.getIsDisabled()) {
+            return;
+        }
         LOGGER.info("getVisualResultsFromWeb: user: " + userPersona);
         TestResults visualResults = eyesOnWeb.close(false);
         if(null != visualResults) {
@@ -273,6 +276,9 @@ public class Visual {
     }
 
     private void getVisualResultsFromApp(String userPersona) {
+        if(eyesOnApp.getIsDisabled()) {
+            return;
+        }
         LOGGER.info("getVisualResultsFromApp: user: " + userPersona);
         TestResults visualResults = eyesOnApp.close(false);
         String reportUrl = handleTestResults(userPersona, "app", visualResults);
