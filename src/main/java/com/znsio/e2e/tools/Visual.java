@@ -112,7 +112,6 @@ public class Visual {
         eyes.setIsDisabled(!isVisualTestingEnabled);
         eyes.setLogHandler(new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
 
-        LOGGER.info("Applitools Web Configuration: " + eyes.getConfiguration());
         eyes.open(innerDriver, appName, testName, (RectangleSize) getValueFromConfig(APPLITOOLS.RECTANGLE_SIZE));
         LOGGER.info("instantiateWebEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
         return eyes;
