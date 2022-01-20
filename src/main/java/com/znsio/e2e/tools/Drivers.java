@@ -381,6 +381,7 @@ public class Drivers {
         prefs.put("profile.default_content_setting_values.notifications", 1);
         prefs.put("profile.default_content_setting_values.media_stream_mic", 1);
         prefs.put("profile.default_content_setting_values.media_stream_camera", 1);
+        prefs.put("profile.default_content_setting_values.geolocation", 1);
         prefs.put("protocol_handler.excluded_schemes", excludedSchemes);
         chromeOptions.setExperimentalOption("prefs", prefs);
 
