@@ -346,4 +346,10 @@ public class Driver {
             driver.manage().window().setSize(new Dimension(width, height));
         }
     }
+
+    public void moveToElement(By moveToElementLocator) {
+        Actions actions = new Actions(driver);
+        actions.moveToElement(driver.findElement(moveToElementLocator)).build().perform();
+        waitFor(1);
+    }
 }

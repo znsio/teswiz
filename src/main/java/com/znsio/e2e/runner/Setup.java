@@ -599,7 +599,7 @@ public class Setup {
         app.put("cloud", appIdFromBrowserStack);
         loadedPlatformCapability.put("browserstack.user", authenticationUser);
         loadedPlatformCapability.put("browserstack.key", authenticationKey);
-        String subsetOfLogDir = configs.get(LOG_DIR).replace("/", "").replace("\\","");
+        String subsetOfLogDir = configs.get(LOG_DIR).replace("/", "").replace("\\", "");
         loadedPlatformCapability.put("build", configs.get(LAUNCH_NAME) + "-" + subsetOfLogDir);
         loadedPlatformCapability.put("project", configs.get(APP_NAME));
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey, loadedCapabilityFile);

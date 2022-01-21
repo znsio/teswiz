@@ -4,11 +4,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public class Randomizer {
 
-    public static String randomize (int size) {
+    public static String randomize(int size) {
         return RandomStringUtils.randomNumeric(size);
     }
 
-    public static String randomize (String randomizeTestData) {
+    public static String randomize(String randomizeTestData) {
         String randomizedValue = randomizeTestData;
         try {
             Long.parseLong(randomizeTestData);
@@ -17,5 +17,13 @@ public class Randomizer {
             randomizedValue = "e2e_" + RandomStringUtils.randomAlphanumeric(10) + "@getnada.com";
         }
         return randomizedValue;
+    }
+
+    public static String randomizeAlphaNumericString(int stringLength) {
+        return RandomStringUtils.randomAlphanumeric(stringLength);
+    }
+
+    public static String randomizeString(int stringLength) {
+        return RandomStringUtils.random(stringLength);
     }
 }
