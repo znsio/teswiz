@@ -47,8 +47,8 @@ public class Setup {
     static final String BROWSER_VERBOSE_LOGGING = "BROWSER_VERBOSE_LOGGING";
     static final String CONFIG_FILE = "CONFIG_FILE";
     static final String LAUNCH_NAME = "LAUNCH_NAME";
-    static final String RUN_IN_CI = "RUN_IN_CI";
-    static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
+    public static final String RUN_IN_CI = "RUN_IN_CI";
+    public static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
     static final String APP_PACKAGE_NAME = "APP_PACKAGE_NAME";
     static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
     static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
@@ -59,7 +59,7 @@ public class Setup {
     private static final Platform DEFAULT_PLATFORM = Platform.android;
     private static final int DEFAULT_PARALLEL = 1;
     private static final ArrayList<String> cukeArgs = new ArrayList<>();
-    private static final String BRANCH_NAME = "BRANCH_NAME";
+    public static final String BRANCH_NAME = "BRANCH_NAME";
     private static final String LOG_PROPERTIES_FILE = "LOG_PROPERTIES_FILE";
     private static final String DEFAULT_LOG_DIR = "target";
     private static final String APP_PATH = "APP_PATH";
@@ -74,7 +74,7 @@ public class Setup {
     private static final String EXECUTED_ON = "EXECUTED_ON";
     private static final String LOG_DIR = "LOG_DIR";
     private static final String PARALLEL = "PARALLEL";
-    private static final String PLATFORM = "PLATFORM";
+    public static final String PLATFORM = "PLATFORM";
     private static final String PROXY_KEY = "PROXY_KEY";
     private static final String TAG = "TAG";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";

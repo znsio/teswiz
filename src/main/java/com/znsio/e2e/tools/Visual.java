@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.znsio.e2e.runner.Setup.*;
+
 public class Visual {
     private static final Logger LOGGER = Logger.getLogger(Visual.class.getName());
     private final String visualTestNotEnabledMessage = "Visual Test is not enabled";
@@ -75,7 +77,14 @@ public class Visual {
         applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
         eyes.setLogHandler(new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
 
-        eyes.open(innerDriver, appName, testName);
+        eyes.addProperty(BRANCH_NAME, String.valueOf(getValueFromConfig(BRANCH_NAME)));
+        eyes.addProperty(PLATFORM, String.valueOf(getValueFromConfig(PLATFORM)));
+        eyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
+        eyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
+
+        if (isVisualTestingEnabled) {
+            eyes.open(innerDriver, appName, testName);
+        }
         LOGGER.info("instantiateAppiumEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
         return eyes;
     }
@@ -111,6 +120,11 @@ public class Visual {
         applitoolsLogFileNameForWeb = getApplitoolsLogFileNameFor("web");
         eyes.setIsDisabled(!isVisualTestingEnabled);
         eyes.setLogHandler(new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
+
+        eyes.addProperty(BRANCH_NAME, String.valueOf(getValueFromConfig(BRANCH_NAME)));
+        eyes.addProperty(PLATFORM, String.valueOf(getValueFromConfig(PLATFORM)));
+        eyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
+        eyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
 
         eyes.open(innerDriver, appName, testName, (RectangleSize) getValueFromConfig(APPLITOOLS.RECTANGLE_SIZE));
         LOGGER.info("instantiateWebEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
