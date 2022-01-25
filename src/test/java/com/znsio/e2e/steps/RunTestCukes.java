@@ -9,8 +9,6 @@ import io.cucumber.testng.*;
 import org.apache.log4j.*;
 import org.testng.annotations.*;
 
-import java.util.*;
-
 public class RunTestCukes extends AbstractTestNGCucumberTests {
     private static final Logger LOGGER = Logger.getLogger(RunTestCukes.class.getName());
     private final TestExecutionContext context;
@@ -23,7 +21,7 @@ public class RunTestCukes extends AbstractTestNGCucumberTests {
 
     @Override
     @DataProvider(parallel = true)
-    public Object[][] scenarios () {
+    public Object[][] scenarios() {
         LOGGER.info(String.format("ThreadID: %d: in overridden scenarios%n", Thread.currentThread().getId()));
         Object[][] scenarios = super.scenarios();
         LOGGER.info(scenarios);
@@ -31,7 +29,7 @@ public class RunTestCukes extends AbstractTestNGCucumberTests {
     }
 
     @Before
-    public void beforeTestScenario (Scenario scenario) {
+    public void beforeTestScenario(Scenario scenario) {
         LOGGER.info(String.format("ThreadID: %d: in overridden beforeTestScenario%n", Thread.currentThread().getId()));
         Configuration ufgConfig = new Configuration();
         ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
@@ -42,7 +40,7 @@ public class RunTestCukes extends AbstractTestNGCucumberTests {
     }
 
     @After
-    public void afterTestScenario (Scenario scenario) {
+    public void afterTestScenario(Scenario scenario) {
         LOGGER.info(String.format("ThreadID: %d: in overridden afterTestScenario%n", Thread.currentThread().getId()));
     }
 }

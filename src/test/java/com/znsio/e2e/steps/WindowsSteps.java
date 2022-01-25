@@ -1,14 +1,12 @@
 package com.znsio.e2e.steps;
 
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
-import com.znsio.e2e.businessLayer.NotepadBL;
-import com.znsio.e2e.entities.SAMPLE_TEST_CONTEXT;
-import com.znsio.e2e.runner.Runner;
-import com.znsio.e2e.tools.Drivers;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import org.apache.log4j.Logger;
+import com.context.*;
+import com.znsio.e2e.businessLayer.*;
+import com.znsio.e2e.entities.*;
+import com.znsio.e2e.runner.*;
+import com.znsio.e2e.tools.*;
+import io.cucumber.java.en.*;
+import org.apache.log4j.*;
 
 public class WindowsSteps {
     private static final Logger LOGGER = Logger.getLogger(WindowsSteps.class.getName());

@@ -1,16 +1,14 @@
 package com.znsio.e2e.screen;
 
-import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.runner.Runner;
-import com.znsio.e2e.screen.android.HomeScreenAndroid;
-import com.znsio.e2e.screen.web.HomeScreenWeb;
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Visual;
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.log4j.Logger;
+import com.znsio.e2e.entities.*;
+import com.znsio.e2e.runner.*;
+import com.znsio.e2e.screen.android.*;
+import com.znsio.e2e.screen.web.*;
+import com.znsio.e2e.tools.*;
+import org.apache.commons.lang3.*;
+import org.apache.log4j.*;
 
-import static com.znsio.e2e.runner.Runner.fetchDriver;
-import static com.znsio.e2e.runner.Runner.fetchEyes;
+import static com.znsio.e2e.runner.Runner.*;
 
 public abstract class HomeScreen {
     private static final String SCREEN_NAME = HomeScreen.class.getSimpleName();

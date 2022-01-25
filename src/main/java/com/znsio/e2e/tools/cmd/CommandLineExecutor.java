@@ -1,16 +1,16 @@
 package com.znsio.e2e.tools.cmd;
 
-import com.znsio.e2e.runner.Runner;
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import com.znsio.e2e.runner.*;
+import org.apache.commons.io.*;
+import org.apache.log4j.*;
 
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
+import java.nio.charset.*;
+import java.util.concurrent.*;
 
 public class CommandLineExecutor {
     private static final Logger LOGGER = Logger.getLogger(CommandLineExecutor.class.getName());
 
-    public static CommandLineResponse execCommand (final String[] command) {
+    public static CommandLineResponse execCommand(final String[] command) {
         String jointCommand = String.join(" ", command);
         String message = "\tExecuting Command: " + jointCommand;
         LOGGER.info(message);
@@ -27,7 +27,7 @@ public class CommandLineExecutor {
             response.setStdOut(IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8).trim());
             response.setErrOut(IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8).trim());
             response.setExitCode(process.exitValue());
-            LOGGER.info("\t" + response.toString());
+            LOGGER.info("\t" + response);
             return response;
         } catch (Exception e) {
             throw new RuntimeException("Error " + message, e);

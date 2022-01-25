@@ -1,23 +1,16 @@
 package com.znsio.e2e.tools;
 
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
-import com.epam.reportportal.service.ReportPortal;
-import com.znsio.e2e.entities.TEST_CONTEXT;
-import com.znsio.e2e.runner.Runner;
-import io.appium.java_client.AppiumDriver;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
+import com.context.*;
+import com.epam.reportportal.service.*;
+import com.znsio.e2e.entities.*;
+import com.znsio.e2e.runner.*;
+import org.apache.commons.io.*;
+import org.apache.commons.lang3.exception.*;
+import org.apache.log4j.*;
+import org.openqa.selenium.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-
-import static com.znsio.e2e.tools.Driver.WEB_DRIVER;
+import java.io.*;
+import java.util.*;
 
 
 public class ScreenShotManager {
@@ -27,7 +20,7 @@ public class ScreenShotManager {
     private final String directoryPath;
     private int counter;
 
-    public ScreenShotManager () {
+    public ScreenShotManager() {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         directoryPath = context.getTestStateAsString(TEST_CONTEXT.SCREENSHOT_DIRECTORY);
         counter = 0;
@@ -35,7 +28,7 @@ public class ScreenShotManager {
         file.getParentFile().mkdirs();
     }
 
-    public void takeScreenShot (String fileName) {
+    public void takeScreenShot(String fileName) {
         Driver driver = (Driver) context.getTestState(TEST_CONTEXT.CURRENT_DRIVER);
         if (null != driver) {
             fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
@@ -56,21 +49,21 @@ public class ScreenShotManager {
         }
     }
 
-    private String normaliseScenarioName (String scenarioName) {
+    private String normaliseScenarioName(String scenarioName) {
         return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_")
                 .replaceAll("__", "_")
                 .replaceAll("__", "_");
     }
 
-    private int getPrefix () {
+    private int getPrefix() {
         return ++counter;
     }
 
-    private File createScreenshotFile (String dirName, String fileName) {
+    private File createScreenshotFile(String dirName, String fileName) {
         fileName = fileName.endsWith(".png") ? fileName : fileName + ".png";
         return new File(Runner.USER_DIRECTORY
-                + dirName
-                + File.separator
-                + fileName);
+                                + dirName
+                                + File.separator
+                                + fileName);
     }
 }

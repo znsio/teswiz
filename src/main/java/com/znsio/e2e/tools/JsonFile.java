@@ -1,23 +1,20 @@
 package com.znsio.e2e.tools;
 
 import com.google.gson.*;
-import com.znsio.e2e.exceptions.EnvironmentSetupException;
-import com.znsio.e2e.exceptions.InvalidTestDataException;
-import org.apache.log4j.Logger;
+import com.znsio.e2e.exceptions.*;
+import org.apache.log4j.*;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Map;
+import java.nio.file.*;
+import java.util.*;
 
 public class JsonFile {
     private static final Logger LOGGER = Logger.getLogger(JsonFile.class.getName());
 
-    private JsonFile () {
+    private JsonFile() {
     }
 
-    public static void saveJsonToFile (Map<String, Map> jsonMap, String fileName) {
+    public static void saveJsonToFile(Map<String, Map> jsonMap, String fileName) {
         LOGGER.info("\tSave the following json to file: " + fileName + "   with jsonmap:  " + jsonMap);
         File file = new File(fileName);
         if (file.exists()) {
@@ -38,7 +35,7 @@ public class JsonFile {
         }
     }
 
-    public static Map<String, Map> getNodeValueAsMapFromJsonFile (String node, String fileName) {
+    public static Map<String, Map> getNodeValueAsMapFromJsonFile(String node, String fileName) {
         Map<String, Map> map = loadJsonFile(fileName);
         LOGGER.info("\tNode: " + node);
         Map<String, Map> envMap = map.get(node);
@@ -49,7 +46,7 @@ public class JsonFile {
         return envMap;
     }
 
-    public static Map<String, Map> loadJsonFile (String fileName) {
+    public static Map<String, Map> loadJsonFile(String fileName) {
         LOGGER.info("\tLoading Json file: " + fileName);
         try {
             Gson gson = new Gson();
@@ -62,7 +59,7 @@ public class JsonFile {
         }
     }
 
-    public static String getNodeValueAsStringFromJsonFile (String fileName, String[] nodeTree) {
+    public static String getNodeValueAsStringFromJsonFile(String fileName, String[] nodeTree) {
         Map<String, Map> map = loadJsonFile(fileName);
 
         String nodePath = "";
@@ -79,7 +76,7 @@ public class JsonFile {
         return retValue;
     }
 
-    public static ArrayList<Map> getNodeValueAsArrayListFromJsonFile (String fileName, String node) {
+    public static ArrayList<Map> getNodeValueAsArrayListFromJsonFile(String fileName, String node) {
         Map<String, Map> map = loadJsonFile(fileName);
         LOGGER.info("\tPlatform: " + node);
         ArrayList<Map> envMap = (ArrayList<Map>) map.get(node);
@@ -87,11 +84,11 @@ public class JsonFile {
         return envMap;
     }
 
-    public static JsonObject convertToMap (String jsonAsString) {
+    public static JsonObject convertToMap(String jsonAsString) {
         return JsonParser.parseString(jsonAsString).getAsJsonObject();
     }
 
-    public static JsonArray convertToArray (String jsonAsString) {
+    public static JsonArray convertToArray(String jsonAsString) {
         return JsonParser.parseString(jsonAsString).getAsJsonArray();
     }
 }

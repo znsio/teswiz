@@ -1,43 +1,41 @@
 package com.znsio.e2e.listener;
 
-import com.appium.filelocations.FileLocations;
-import com.context.TestExecutionContext;
-import com.znsio.e2e.entities.TEST_CONTEXT;
-import com.znsio.e2e.runner.Runner;
-import io.cucumber.plugin.ConcurrentEventListener;
+import com.appium.filelocations.*;
+import com.context.*;
+import com.znsio.e2e.entities.*;
+import com.znsio.e2e.runner.*;
+import io.cucumber.plugin.*;
 import io.cucumber.plugin.event.*;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.apache.log4j.Logger;
+import io.github.bonigarcia.wdm.*;
+import org.apache.log4j.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 
 public class CucumberWebScenarioListener implements ConcurrentEventListener {
     private static final Logger LOGGER = Logger.getLogger(CucumberWebScenarioListener.class.getName());
     private final Map<String, Integer> scenarioRunCounts = new HashMap<String, Integer>();
 
-    public CucumberWebScenarioListener () throws IOException {
+    public CucumberWebScenarioListener() throws IOException {
         LOGGER.info(String.format("ThreadID: %d: CucumberWebScenarioListener\n",
                 Thread.currentThread().getId()));
     }
 
     @Override
-    public void setEventPublisher (EventPublisher eventPublisher) {
+    public void setEventPublisher(EventPublisher eventPublisher) {
         eventPublisher.registerHandlerFor(TestRunStarted.class, this::webRunStartedHandler);
         eventPublisher.registerHandlerFor(TestCaseStarted.class, this::webCaseStartedHandler);
         eventPublisher.registerHandlerFor(TestCaseFinished.class, this::webCaseFinishedHandler);
         eventPublisher.registerHandlerFor(TestRunFinished.class, this::webRunFinishedHandler);
     }
 
-    private void webRunStartedHandler (TestRunStarted event) {
+    private void webRunStartedHandler(TestRunStarted event) {
         LOGGER.info("webRunStartedHandler");
         LOGGER.info(String.format("ThreadID: %d: beforeSuite: \n", Thread.currentThread().getId()));
     }
 
-    private void webCaseStartedHandler (TestCaseStarted event) {
+    private void webCaseStartedHandler(TestCaseStarted event) {
         String scenarioName = event.getTestCase().getName();
         TestExecutionContext testExecutionContext = new TestExecutionContext(scenarioName);
 
@@ -52,7 +50,7 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
         testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_INFO,
                 "Chrome browser - version: " + WebDriverManager.chromedriver().getDownloadedDriverVersion());
         testExecutionContext.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, FileLocations.REPORTS_DIRECTORY
-                + normalisedScenarioName);
+                                                                                       + normalisedScenarioName);
         testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_DIRECTORY,
                 FileLocations.REPORTS_DIRECTORY
                         + normalisedScenarioName
@@ -61,7 +59,7 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
                         + File.separator);
     }
 
-    private void webCaseFinishedHandler (TestCaseFinished event) {
+    private void webCaseFinishedHandler(TestCaseFinished event) {
         String scenarioName = event.getTestCase().getName();
         LOGGER.info("webCaseFinishedHandler Name: " + scenarioName);
         LOGGER.info("webCaseFinishedHandler Result: " + event.getResult().getStatus().toString());
@@ -73,12 +71,12 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
         LOGGER.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   TEST-CASE  -- " + scenarioName + "  ENDED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
     }
 
-    private void webRunFinishedHandler (TestRunFinished event) {
+    private void webRunFinishedHandler(TestRunFinished event) {
         LOGGER.info("webRunFinishedHandler: " + event.getResult().toString());
         LOGGER.info(String.format("ThreadID: %d: afterSuite: \n", Thread.currentThread().getId()));
     }
 
-    private Integer getScenarioRunCount (String scenarioName) {
+    private Integer getScenarioRunCount(String scenarioName) {
         if (scenarioRunCounts.containsKey(scenarioName)) {
             scenarioRunCounts.put(scenarioName, scenarioRunCounts.get(scenarioName) + 1);
         } else {
@@ -87,7 +85,7 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
         return scenarioRunCounts.get(scenarioName);
     }
 
-    private String normaliseScenarioName (String scenarioName) {
+    private String normaliseScenarioName(String scenarioName) {
         return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_");
     }
 }

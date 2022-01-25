@@ -1,28 +1,18 @@
 package com.znsio.e2e.runner;
 
-import com.applitools.eyes.BatchInfo;
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
-import com.znsio.e2e.entities.APPLITOOLS;
-import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.entities.TEST_CONTEXT;
-import com.znsio.e2e.exceptions.InvalidTestDataException;
-import com.znsio.e2e.exceptions.TestExecutionFailedException;
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Drivers;
-import com.znsio.e2e.tools.Visual;
-import io.cucumber.core.cli.Main;
+import com.applitools.eyes.*;
+import com.context.*;
+import com.znsio.e2e.entities.*;
+import com.znsio.e2e.exceptions.*;
+import com.znsio.e2e.tools.*;
+import io.cucumber.core.cli.*;
 import org.apache.log4j.Logger;
-import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.*;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.*;
+import java.util.*;
 
-import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
+import static com.appium.utils.OverriddenVariable.*;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class Runner {
@@ -45,7 +35,7 @@ public class Runner {
 
     public Runner(String configFilePath, String stepDefDirName, String featuresDirName) {
         Path path = Paths.get(configFilePath);
-        if(!Files.exists(path)) {
+        if (!Files.exists(path)) {
             throw new InvalidTestDataException(String.format("Invalid path ('%s') provided for config", configFilePath));
         }
         cukeArgs = new Setup(configFilePath).getExecutionArguments();
@@ -66,20 +56,6 @@ public class Runner {
 
     public static String getRemoteDriverGridPort() {
         return configs.get(REMOTE_WEBDRIVER_GRID_PORT);
-    }
-
-    public void run(ArrayList<String> args, String stepDefsDir, String featuresDir) {
-        args.add("--glue");
-        args.add(stepDefsDir);
-        args.add(featuresDir);
-        LOGGER.info("Begin running tests...");
-        LOGGER.info("Args: " + args);
-        String[] array = args.stream().toArray(String[]::new);
-        byte exitStatus = Main.run(array);
-        LOGGER.info("Output of test run: " + exitStatus);
-        if(exitStatus != 0) {
-            throw new TestExecutionFailedException("Test execution failed. Exit status: " + exitStatus);
-        }
     }
 
     public static int getMaxNumberOfAppiumDrivers() {
@@ -127,10 +103,10 @@ public class Runner {
         System.setProperty("OUTPUT_DIRECTORY", logDir);
         LOGGER.info("teswiz Runner");
         LOGGER.info("Provided parameters:");
-        for(int i = 0; i < args.length; i++) {
+        for (int i = 0; i < args.length; i++) {
             LOGGER.info("\t" + args[i]);
         }
-        if(args.length != 3) {
+        if (args.length != 3) {
             throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName");
         }
         new Runner(args[0], args[1], args[2]);
@@ -195,7 +171,7 @@ public class Runner {
     }
 
     public static Map initialiseApplitoolsConfiguration() {
-        if(applitoolsConfiguration.isEmpty()) {
+        if (applitoolsConfiguration.isEmpty()) {
             getApplitoolsConfigFromProvidedConfigFile();
             applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
             applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(APP_NAME));
@@ -246,5 +222,19 @@ public class Runner {
 
     public static boolean shouldAcceptInsecureCerts() {
         return configsBoolean.get(ACCEPT_INSECURE_CERTS);
+    }
+
+    public void run(ArrayList<String> args, String stepDefsDir, String featuresDir) {
+        args.add("--glue");
+        args.add(stepDefsDir);
+        args.add(featuresDir);
+        LOGGER.info("Begin running tests...");
+        LOGGER.info("Args: " + args);
+        String[] array = args.stream().toArray(String[]::new);
+        byte exitStatus = Main.run(array);
+        LOGGER.info("Output of test run: " + exitStatus);
+        if (exitStatus != 0) {
+            throw new TestExecutionFailedException("Test execution failed. Exit status: " + exitStatus);
+        }
     }
 }

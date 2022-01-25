@@ -6,32 +6,32 @@ public class CommandLineResponse {
     private String stdOut;
     private String errOut;
 
-    public int getExitCode () {
+    public int getExitCode() {
         return exitCode;
     }
 
-    public void setExitCode (int exitCode) {
+    public void setExitCode(int exitCode) {
         this.exitCode = exitCode;
     }
 
-    public String getStdOut () {
+    public String getStdOut() {
         return stdOut;
     }
 
-    public void setStdOut (String stdOut) {
+    public void setStdOut(String stdOut) {
         this.stdOut = stdOut;
     }
 
-    public String getErrOut () {
+    public String getErrOut() {
         return errOut;
     }
 
-    public void setErrOut (String errOut) {
+    public void setErrOut(String errOut) {
         this.errOut = errOut;
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "CommandLineResponse [exitCode=" + exitCode + ", stdOut=" + stdOut + ", errOut=" + errOut + "]";
     }
 }
