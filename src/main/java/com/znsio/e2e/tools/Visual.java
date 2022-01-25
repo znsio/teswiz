@@ -10,6 +10,7 @@ import com.epam.reportportal.service.ReportPortal;
 import com.znsio.e2e.entities.APPLITOOLS;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.runner.Runner;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -207,6 +208,23 @@ public class Visual {
     public void handleTestResults (String userPersona) {
         getVisualResultsFromWeb(userPersona);
         getVisualResultsFromApp(userPersona);
+    }
+
+    public void handleTestResults (String userPersona, String driverType) {
+        switch (driverType) {
+            case Driver.WEB_DRIVER:
+                this.takeScreenshot("afterHooks", "");
+                getVisualResultsFromWeb(userPersona);
+                break;
+
+            case Driver.APPIUM_DRIVER:
+                this.takeScreenshot("afterHooks", "");
+                getVisualResultsFromApp(userPersona);
+                break;
+
+            default:
+                throw new InvalidTestDataException(String.format("Unexpected driver type: '%s'", driverType));
+        }
     }
 
     private String getVisualResultsFromWeb (String userPersona) {

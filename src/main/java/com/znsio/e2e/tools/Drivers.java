@@ -533,7 +533,7 @@ public class Drivers {
         return userPersonaPlatforms.get(userPersona);
     }
 
-    public void attachLogsAndCloseAllWebDrivers (TestExecutionContext context) {
+    public void attachLogsAndCloseAllDrivers(TestExecutionContext context) {
         LOGGER.info("Close all drivers:");
         userPersonaDrivers.keySet().forEach(key -> {
             LOGGER.info("\tUser Persona: " + key);
@@ -544,7 +544,8 @@ public class Drivers {
 
     private void validateVisualTestResults (String key) {
         Driver driver = userPersonaDrivers.get(key);
-        driver.getVisual().handleTestResults(key);
+        driver.getVisual().handleTestResults(key, driver.getType());
+        //driver.getVisual().handleTestResults(key);
     }
 
     private void attachLogsAndCloseDriver (TestExecutionContext context, String key) {
