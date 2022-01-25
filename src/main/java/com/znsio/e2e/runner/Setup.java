@@ -215,10 +215,6 @@ public class Setup {
 //        cleanupDirectories();
         setupDirectories();
 
-        LOGGER.info("Updated string values from property file for missing properties: \n" + configs);
-        LOGGER.info("Updated boolean values from property file for missing properties: \n" + configsBoolean);
-        LOGGER.info("Updated integer values from property file for missing properties: \n" + configsInteger);
-
         PropertyConfigurator.configure(configs.get(LOG_PROPERTIES_FILE));
         System.setProperty(LOG_DIR, configs.get(LOG_DIR));
         LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
@@ -227,6 +223,11 @@ public class Setup {
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
         setupExecutionEnvironment();
+
+        LOGGER.info("Updated string values from property file for missing properties: \n" + configs);
+        LOGGER.info("Updated boolean values from property file for missing properties: \n" + configsBoolean);
+        LOGGER.info("Updated integer values from property file for missing properties: \n" + configsInteger);
+
         return cukeArgs;
     }
 
