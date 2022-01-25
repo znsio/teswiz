@@ -34,7 +34,7 @@ import static io.appium.java_client.remote.MobileCapabilityType.*;
 public class Drivers {
     private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
     private final Map<String, Driver> userPersonaDrivers = new HashMap<>();
-    private final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<String, Capabilities>();
+    private final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
     private final int MAX_NUMBER_OF_APPIUM_DRIVERS;
@@ -65,7 +65,7 @@ public class Drivers {
 
     public Driver createDriverFor(String userPersona, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("createDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
-        Driver currentDriver = null;
+        Driver currentDriver;
         if (userPersonaDrivers.containsKey(userPersona)) {
             String message = String.format("ERROR: Driver for user persona: '%s' ALREADY EXISTS%nAvailable drivers: '%s'",
                     userPersona,
@@ -515,9 +515,7 @@ public class Drivers {
     public Platform getPlatformForUser(String userPersona) {
         if (!userPersonaDrivers.containsKey(userPersona)) {
             LOGGER.info("getPlatformForUser: Platforms available for userPersonas: ");
-            userPersonaPlatforms.keySet().forEach(key -> {
-                LOGGER.info("\tUser Persona: " + key + ": Platform: " + userPersonaPlatforms.get(key).name());
-            });
+            userPersonaPlatforms.keySet().forEach(key -> LOGGER.info("\tUser Persona: " + key + ": Platform: " + userPersonaPlatforms.get(key).name()));
             throw new InvalidTestDataException(String.format("No Driver found for user persona: '%s'", userPersona));
         }
 

@@ -12,7 +12,7 @@ public class CucumberWebScenarioReporterListener extends ScenarioReporter {
     private static final String DUMMY_ROOT_SUITE_NAME = "End-2-End Tests";
     private static final String RP_STORY_TYPE = "SUITE";
 
-    public CucumberWebScenarioReporterListener() throws Exception {
+    public CucumberWebScenarioReporterListener() {
         LOGGER.info("CucumberWebScenarioReporterListener");
     }
 

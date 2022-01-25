@@ -1,7 +1,7 @@
 @login
 Feature: Test valid and invalid login
 
-  @android @web
+  @web
   Scenario: Verify error message on invalid login
     Given I login with invalid credentials - "znsio1", "invalid password"
     When I go back
@@ -11,7 +11,7 @@ Feature: Test valid and invalid login
 #        And I login with invalid credentials - "znsio", "znsio"
 #        Then I see the error "Invalid login credentials, please try again"
 
-  @android @web
+  @web
   Scenario: Verify error message on another invalid login
     Given I login with invalid credentials - "znsio2", "2nd invalid password"
     When I go back

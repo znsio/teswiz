@@ -15,9 +15,9 @@ import java.util.*;
 
 public class CucumberWebScenarioListener implements ConcurrentEventListener {
     private static final Logger LOGGER = Logger.getLogger(CucumberWebScenarioListener.class.getName());
-    private final Map<String, Integer> scenarioRunCounts = new HashMap<String, Integer>();
+    private final Map<String, Integer> scenarioRunCounts = new HashMap<>();
 
-    public CucumberWebScenarioListener() throws IOException {
+    public CucumberWebScenarioListener() {
         LOGGER.info(String.format("ThreadID: %d: CucumberWebScenarioListener\n",
                 Thread.currentThread().getId()));
     }

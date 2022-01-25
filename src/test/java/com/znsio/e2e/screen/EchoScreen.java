@@ -12,7 +12,7 @@ import static com.znsio.e2e.runner.Runner.*;
 
 public abstract class EchoScreen {
     private static final String SCREEN_NAME = EchoScreen.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(HomeScreen.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
 
     public static EchoScreen get() {
         Driver driver = fetchDriver(Thread.currentThread().getId());

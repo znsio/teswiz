@@ -40,7 +40,7 @@ public class BrowserStackDeviceFilter {
             ObjectMapper om = new ObjectMapper(new YAMLFactory());
             om.writeValue(new File(filteredDeviceFileName), filteredDevices);
         } catch (IOException e) {
-            throw new InvalidTestDataException(String.format("Unable to fetch / save list of available devices with %n\tfilter: '%s' %n\tto temp file: ", filters, filteredDeviceFileName));
+            throw new InvalidTestDataException(String.format("Unable to fetch / save list of available devices with %n\tfilter: '%s' %n\tto temp file: '%s'", filters, filteredDeviceFileName));
         }
         return filteredDevices;
     }

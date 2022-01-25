@@ -8,7 +8,7 @@ public class Wait {
     public synchronized static void waitFor(int seconds) {
         LOGGER.info("Wait for " + seconds + " seconds");
         try {
-            Thread.sleep(seconds * 1000);
+            Thread.sleep(seconds * 1000L);
         } catch (InterruptedException e) {
         }
     }

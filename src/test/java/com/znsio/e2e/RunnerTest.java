@@ -45,6 +45,16 @@ class RunnerTest {
     }
 
     @Test
+    void localAndroidCalculator() {
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty("PLATFORM", Platform.android.name());
+        System.setProperty("APP_PACKAGE_NAME", "com.android2.calculator3");
+        System.setProperty("APP_PATH", "./src/test/resources/sampleApps/AndroidCalculator.apk");
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+//        runner.printProcessedConfiguration();
+    }
+
+    @Test
     void localAndroid() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("PLATFORM", Platform.android.name());

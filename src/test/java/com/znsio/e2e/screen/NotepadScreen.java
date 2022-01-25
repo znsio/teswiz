@@ -11,7 +11,7 @@ import static com.znsio.e2e.runner.Runner.*;
 
 public abstract class NotepadScreen {
     private static final String SCREEN_NAME = NotepadScreen.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(NotepadScreen.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
 
     public static NotepadScreen get() {
         Driver driver = fetchDriver(Thread.currentThread().getId());

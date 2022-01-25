@@ -75,12 +75,12 @@ public class Setup {
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
     static Map<String, Map> environmentConfiguration;
     static Map<String, Map> testDataForEnvironment;
-    static Map applitoolsConfiguration = new HashMap();
+    static Map applitoolsConfiguration = new HashMap<>();
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
     private final Properties properties;
     private final String DEFAULT_LOG_PROPERTIES_FILE = "./src/main/resources/defaultLog4j.properties";
-    private final String configFilePath;
     private final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
+    private final String configFilePath;
     private List<Device> devices;
 
     Setup(String configFilePath) {
@@ -199,7 +199,7 @@ public class Setup {
         configs.put(APP_VERSION, NOT_SET);
     }
 
-    public ArrayList<String> getExecutionArguments() {
+    public List<String> getExecutionArguments() {
         loadAndUpdateConfigParameters(configFilePath);
 
 //        cleanupDirectories();
@@ -281,9 +281,7 @@ public class Setup {
 
     private void printLoadedConfigProperties(String configFilePath) {
         LOGGER.info("\nLoaded property file: " + configFilePath);
-        properties.keySet().forEach(key -> {
-            LOGGER.info("\t" + key + " :: " + properties.get(key));
-        });
+        properties.keySet().forEach(key -> LOGGER.info("\t" + key + " :: " + properties.get(key)));
     }
 
     private void setupWebExecution() {
@@ -375,7 +373,7 @@ public class Setup {
             String appFilePath = appFile.getCanonicalPath();
             String androidHomePath = System.getenv("ANDROID_HOME");
             File buildToolsFolder = new File(androidHomePath, "build-tools");
-            File buildVersionFolder = buildToolsFolder.listFiles()[0];
+            File buildVersionFolder = Objects.requireNonNull(buildToolsFolder.listFiles())[0];
             File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
 
             String[] commandToGetAppVersion = new String[]{aaptExecutable.toString(), "dump", "badging", appFilePath, "|", searchPattern, "versionName"};
@@ -412,7 +410,7 @@ public class Setup {
         String deviceName = String.valueOf(loadedCapabilityFile.get(platformName).get("device"));
         loadedCapabilityFile.get(platformName).remove("device");
 
-        Map<String, String> filters = new LinkedHashMap<String, String>();
+        Map<String, String> filters = new LinkedHashMap<>();
         filters.put("Platform", "mobile");// mobile-desktop
         filters.put("Os", platformName); // ios-android-Windows-OS X
         filters.put("Device", deviceName); // ios-android-Windows-OS X
@@ -480,7 +478,7 @@ public class Setup {
         startADBServer();
         if (null == devices) {
             JadbConnection jadb = new JadbConnection();
-            List<JadbDevice> deviceList = new ArrayList<>();
+            List<JadbDevice> deviceList;
             devices = new ArrayList<>();
             try {
                 deviceList = jadb.getDevices();
@@ -531,7 +529,7 @@ public class Setup {
     @NotNull
     private String getAdbCommandOutput(JadbDevice device, String command, String args) throws IOException, JadbException {
         InputStream inputStream = device.executeShell(command, args);
-        LOGGER.info("\tadb command: " + command + ", args: " + args + ", ");
+        LOGGER.info("\tadb command: '" + command + "', args: '" + args + "', ");
         String adbCommandOutput = Stream.readAll(inputStream, StandardCharsets.UTF_8).replaceAll("\n$", "");
         LOGGER.info("\tOutput: " + adbCommandOutput);
         return adbCommandOutput;
@@ -572,7 +570,7 @@ public class Setup {
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        String appIdFromBrowserStack = NOT_SET;
+        String appIdFromBrowserStack;
         if (configsBoolean.get(CLOUD_UPLOAD_APP)) {
             appIdFromBrowserStack = uploadAPKToBrowserStack(authenticationUser + ":" + authenticationKey, appPath);
         } else {
@@ -648,7 +646,7 @@ public class Setup {
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
-        String appIdFromHeadspin = NOT_SET;
+        String appIdFromHeadspin;
         if (configsBoolean.get(CLOUD_UPLOAD_APP)) {
             appIdFromHeadspin = uploadAPKToHeadspin(authenticationKey, appPath);
         } else {
@@ -764,8 +762,7 @@ public class Setup {
     private String getCloudNameFromCapabilities() {
         String capabilityFile = configs.get(CAPS);
         ArrayList<Map> hostMachines = JsonFile.getNodeValueAsArrayListFromJsonFile(capabilityFile, "hostMachines");
-        String cloudName = String.valueOf(hostMachines.get(0).get("cloudName"));
-        return cloudName;
+        return String.valueOf(hostMachines.get(0).get("cloudName"));
     }
 
     private void uploadAPKTopCloudy(String emailID, String authenticationKey) {
@@ -967,16 +964,12 @@ public class Setup {
 
     private void printSystemProperties() {
         LOGGER.info("system properties");
-        System.getProperties().forEach((key, value) -> {
-            LOGGER.info("\t" + key + "\t:: " + value);
-        });
+        System.getProperties().forEach((key, value) -> LOGGER.info("\t" + key + "\t:: " + value));
     }
 
     private void printEnvironmentVariables() {
         LOGGER.info("environment variables");
-        System.getenv().forEach((key, value) -> {
-            LOGGER.info("\t" + key + "\t:: " + value);
-        });
+        System.getenv().forEach((key, value) -> LOGGER.info("\t" + key + "\t:: " + value));
     }
 
     private void cleanupDirectories() {

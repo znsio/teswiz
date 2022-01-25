@@ -9,7 +9,7 @@ public class Randomizer {
     }
 
     public static String randomize(String randomizeTestData) {
-        String randomizedValue = randomizeTestData;
+        String randomizedValue;
         try {
             Long.parseLong(randomizeTestData);
             randomizedValue = "80" + RandomStringUtils.randomNumeric(8);

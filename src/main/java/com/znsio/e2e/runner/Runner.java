@@ -22,12 +22,11 @@ public class Runner {
     public static final String USER_DIRECTORY = System.getProperty("user.dir");
     public static final String USER_NAME = System.getProperty("user.name");
     public static final String NOT_SET = "not-set";
-    static final Map<String, String> configs = new HashMap();
-    static final Map<String, Boolean> configsBoolean = new HashMap();
-    static final Map<String, Integer> configsInteger = new HashMap();
+    static final Map<String, String> configs = new HashMap<>();
+    static final Map<String, Boolean> configsBoolean = new HashMap<>();
+    static final Map<String, Integer> configsInteger = new HashMap<>();
     private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
     public static Platform platform = Platform.android;
-    private static ArrayList<String> cukeArgs = new ArrayList<>();
 
     public Runner() {
         throw new InvalidTestDataException("Required args not provided to Runner");
@@ -38,7 +37,7 @@ public class Runner {
         if (!Files.exists(path)) {
             throw new InvalidTestDataException(String.format("Invalid path ('%s') provided for config", configFilePath));
         }
-        cukeArgs = new Setup(configFilePath).getExecutionArguments();
+        List<String> cukeArgs = new Setup(configFilePath).getExecutionArguments();
         run(cukeArgs, stepDefDirName, featuresDirName);
     }
 
@@ -103,8 +102,8 @@ public class Runner {
         System.setProperty("OUTPUT_DIRECTORY", logDir);
         LOGGER.info("teswiz Runner");
         LOGGER.info("Provided parameters:");
-        for (int i = 0; i < args.length; i++) {
-            LOGGER.info("\t" + args[i]);
+        for (String arg : args) {
+            LOGGER.info("\t" + arg);
         }
         if (args.length != 3) {
             throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName");
@@ -176,19 +175,19 @@ public class Runner {
             applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
             applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(APP_NAME));
             applitoolsConfiguration.put(APPLITOOLS.API_KEY, getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
-            BatchInfo batchInfo = new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
-            batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
-            batchInfo.addProperty(PLATFORM, platform.name());
-            batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
-            batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
             applitoolsConfiguration.put(BRANCH_NAME, configs.get(BRANCH_NAME));
             applitoolsConfiguration.put(PLATFORM, platform.name());
             applitoolsConfiguration.put(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
             applitoolsConfiguration.put(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
-            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, batchInfo);
             applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());
             applitoolsConfiguration.put(APPLITOOLS.RECTANGLE_SIZE, getViewportSize());
             applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED, isBenchmarkingEnabled());
+            BatchInfo batchInfo = new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
+            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, batchInfo);
+            batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
+            batchInfo.addProperty(PLATFORM, platform.name());
+            batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
+            batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
         }
         LOGGER.info("applitoolsConfiguration: " + applitoolsConfiguration);
         return applitoolsConfiguration;
@@ -224,13 +223,13 @@ public class Runner {
         return configsBoolean.get(ACCEPT_INSECURE_CERTS);
     }
 
-    public void run(ArrayList<String> args, String stepDefsDir, String featuresDir) {
+    public void run(List<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);
         args.add(featuresDir);
         LOGGER.info("Begin running tests...");
         LOGGER.info("Args: " + args);
-        String[] array = args.stream().toArray(String[]::new);
+        String[] array = args.toArray(String[]::new);
         byte exitStatus = Main.run(array);
         LOGGER.info("Output of test run: " + exitStatus);
         if (exitStatus != 0) {

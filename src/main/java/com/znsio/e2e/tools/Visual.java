@@ -35,6 +35,7 @@ public class Visual {
     private final Map applitoolsConfig;
     private final boolean isEnableBenchmarkPerValidation;
     private final boolean isVerboseLoggingEnabled;
+    private final int DEFAULT_UFG_CONCURRENCY = 5;
     private String applitoolsLogFileNameForWeb = NOT_SET;
     private String applitoolsLogFileNameForApp = NOT_SET;
 
@@ -88,7 +89,7 @@ public class Visual {
         LOGGER.info("instantiateWebEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         boolean isUFG = getValueFromConfig(APPLITOOLS.USE_UFG, false);
 
-        int ufgConcurrency = getValueFromConfig(APPLITOOLS.CONCURRENCY, 5);
+        int ufgConcurrency = getValueFromConfig(APPLITOOLS.CONCURRENCY, DEFAULT_UFG_CONCURRENCY);
         EyesRunner runner = isUFG ? new VisualGridRunner(ufgConcurrency) : new ClassicRunner();
         context.addTestState(TEST_CONTEXT.EYES_RUNNER, runner);
 
@@ -187,8 +188,7 @@ public class Visual {
     @NotNull
     private String getApplitoolsLogFileNameFor(String appType) {
         String scenarioLogDir = Runner.USER_DIRECTORY + context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
-        String eyesLogFile = scenarioLogDir + File.separator + "deviceLogs" + File.separator + "applitools-" + appType + ".log";
-        return eyesLogFile;
+        return scenarioLogDir + File.separator + "deviceLogs" + File.separator + "applitools-" + appType + ".log";
     }
 
     public Visual checkWindow(String fromScreen, String tag) {

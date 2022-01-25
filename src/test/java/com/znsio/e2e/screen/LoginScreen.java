@@ -12,7 +12,7 @@ import static com.znsio.e2e.runner.Runner.*;
 
 public abstract class LoginScreen {
     private static final String SCREEN_NAME = LoginScreen.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(LoginScreen.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
 
     public static LoginScreen get() {
         Driver driver = fetchDriver(Thread.currentThread().getId());
