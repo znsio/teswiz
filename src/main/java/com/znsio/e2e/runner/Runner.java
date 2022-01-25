@@ -64,6 +64,10 @@ public class Runner {
         return configs.get(CLOUD_KEY);
     }
 
+    public static String getRemoteDriverGridPort() {
+        return configs.get(REMOTE_WEBDRIVER_GRID_PORT);
+    }
+
     public void run(ArrayList<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);

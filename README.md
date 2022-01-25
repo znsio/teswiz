@@ -250,6 +250,7 @@ These can be overridden by providing the same either as environment variables or
     PARALLEL=1 -> How many tests should be run in parallel?
     PROXY_KEY=HTTP_PROXY -> If proxy should be set, what is the environment variable specifying the proxy?
     PROXY_URL=<proxy_url> -> What is the proxy url to be used if PROXY_KEY is set
+    REMOTE_WEBDRIVER_GRID_PORT=<environment variable name which holds the port to be used for RemoteWebDriver>
     REPORT_PORTAL_FILE=src/test/resources/reportportal.properties -> ReportPortal.io configuration
     RUN_IN_CI=false -> Are tests running in CI?
     TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE

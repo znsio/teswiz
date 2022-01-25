@@ -483,7 +483,7 @@ public class Drivers {
         try {
             String cloudName = Runner.getCloudName();
             String webdriverHubSuffix = "/wd/hub";
-            String remoteUrl = "http://localhost:4444" + webdriverHubSuffix;
+            String remoteUrl = "http://localhost:" + Runner.getRemoteDriverGridPort() + webdriverHubSuffix;
             if (cloudName.equalsIgnoreCase("headspin")) {
                 String authenticationKey = Runner.getCloudKey();
                 String capabilityFile = System.getProperty(CAPS);
