@@ -496,6 +496,7 @@ public class Drivers {
                         : remoteServerURL + "/" + authenticationKey + webdriverHubSuffix;
                 remoteUrl = remoteUrl.startsWith("https") ? remoteUrl : "https://" + remoteUrl;
             }
+            LOGGER.info("Starting RemoteWebDriver using url: " + remoteUrl);
             return new RemoteWebDriver(new URL(remoteUrl), chromeOptions);
         } catch (MalformedURLException e) {
             throw new EnvironmentSetupException("Unable to create a new RemoteWebDriver", e);
