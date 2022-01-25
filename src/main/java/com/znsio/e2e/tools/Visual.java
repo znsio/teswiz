@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.znsio.e2e.runner.Setup.*;
+import static com.znsio.e2e.runner.Runner.NOT_SET;
 
 public class Visual {
     private static final Logger LOGGER = Logger.getLogger(Visual.class.getName());
@@ -43,8 +44,8 @@ public class Visual {
     private final Map applitoolsConfig;
     private final boolean isEnableBenchmarkPerValidation;
     private final boolean isVerboseLoggingEnabled;
-    private String applitoolsLogFileNameForWeb = Runner.NOT_SET;
-    private String applitoolsLogFileNameForApp = Runner.NOT_SET;
+    private String applitoolsLogFileNameForWeb = NOT_SET;
+    private String applitoolsLogFileNameForApp = NOT_SET;
     private static final String DEFAULT_APPLITOOLS_SERVER_URL = "https://eyesapi.applitools.com";
 
     public Visual(String driverType, WebDriver innerDriver, String testName, boolean isVisualTestingEnabled) {
@@ -67,8 +68,8 @@ public class Visual {
         LOGGER.info("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         com.applitools.eyes.appium.Eyes eyes = new com.applitools.eyes.appium.Eyes();
 
-        eyes.setServerUrl(String.valueOf(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL)));
-        eyes.setApiKey(String.valueOf(getValueFromConfig(APPLITOOLS.API_KEY)));
+        eyes.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
+        eyes.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
         eyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
         eyes.setEnvName(targetEnvironment);
         eyes.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
@@ -95,23 +96,23 @@ public class Visual {
         }
         appName += Platform.web;
         LOGGER.info("instantiateWebEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
-        boolean isUFG = Boolean.parseBoolean(String.valueOf(getValueFromConfig(APPLITOOLS.USE_UFG, false)));
+        boolean isUFG = getValueFromConfig(APPLITOOLS.USE_UFG, false);
 
-        int ufgConcurrency = ((Double) getValueFromConfig(APPLITOOLS.CONCURRENCY, 5)).intValue();
+        int ufgConcurrency = getValueFromConfig(APPLITOOLS.CONCURRENCY, 5);
         EyesRunner runner = isUFG ? new VisualGridRunner(ufgConcurrency) : new ClassicRunner();
         context.addTestState(TEST_CONTEXT.EYES_RUNNER, runner);
 
         com.applitools.eyes.selenium.Eyes eyes = new com.applitools.eyes.selenium.Eyes(runner);
         Configuration configuration = eyes.getConfiguration();
-        configuration.setServerUrl(String.valueOf(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL)));
-        configuration.setApiKey(String.valueOf(getValueFromConfig(APPLITOOLS.API_KEY)));
+        configuration.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
+        configuration.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
         configuration.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
         configuration.setEnvironmentName(targetEnvironment);
         configuration.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
 
-        configuration.setSendDom((boolean) getValueFromConfig(APPLITOOLS.SEND_DOM, true));
+        configuration.setSendDom(getValueFromConfig(APPLITOOLS.SEND_DOM, true));
         configuration.setStitchMode(StitchMode.valueOf(String.valueOf(getValueFromConfig(APPLITOOLS.STITCH_MODE, StitchMode.CSS)).toUpperCase()));
-        configuration.setForceFullPageScreenshot((boolean) getValueFromConfig(APPLITOOLS.TAKE_FULL_PAGE_SCREENSHOT, true));
+        configuration.setForceFullPageScreenshot(getValueFromConfig(APPLITOOLS.TAKE_FULL_PAGE_SCREENSHOT, true));
 
         addBrowserAndDeviceConfigForUFG(isUFG, configuration);
 
@@ -164,12 +165,33 @@ public class Visual {
         return ufgConfig;
     }
 
+    private int getValueFromConfig(String key, int defaultValue) {
+        Object valueFromConfig = applitoolsConfig.get(key);
+        return (null == valueFromConfig) ? defaultValue : convertValueFromConfigToInt(valueFromConfig);
+    }
+
+    private int convertValueFromConfigToInt(Object valueFromConfig) {
+        try {
+            return Integer.parseInt(String.valueOf(valueFromConfig));
+        } catch (NumberFormatException e) {
+            return (int)((Double.parseDouble(String.valueOf(valueFromConfig))));
+        }
+    }
+
+    private boolean getValueFromConfig(String key, boolean defaultValue) {
+        return (null == applitoolsConfig.get(key)) ? defaultValue : Boolean.parseBoolean(String.valueOf(applitoolsConfig.get(key)));
+    }
+
+    private String getValueFromConfig(String key, String defaultValue) {
+        return (null == applitoolsConfig.get(key)) ? defaultValue : String.valueOf(applitoolsConfig.get(key));
+    }
+
     private Object getValueFromConfig(String key, Object defaultValue) {
         return (null == applitoolsConfig.get(key)) ? defaultValue : applitoolsConfig.get(key);
     }
 
     private Object getValueFromConfig(String key) {
-        return getValueFromConfig(key, null);
+        return applitoolsConfig.get(key);
     }
 
     @NotNull
