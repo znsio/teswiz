@@ -89,7 +89,7 @@ public class Setup {
     static Map<String, Map> environmentConfiguration;
     static Map<String, Map> testDataForEnvironment;
     static Map applitoolsConfiguration = new HashMap();
-    static String PROXY_URL;
+    static final String PROXY_URL = "PROXY_URL";
     private final Properties properties;
     private final String DEFAULT_LOG_PROPERTIES_FILE = "./src/main/resources/defaultLog4j.properties";
     private final String configFilePath;
