@@ -13,7 +13,7 @@ buildscript {
         googleCodeJsonSimpleVersion = '1.1.1'
         junitVersion = '5.8.2'
         slf4jVersion = '1.7.35'
-        reportportalAgentCucumberVersion = '5.0.6'
+        reportportalAgentCucumberVersion = '5.1.0'
         reportportalAgentTestNGVersion = '5.0.11'
         fasterxmlJacksonVersion = '2.13.1'
         jsonPathVersion = '2.6.0'
