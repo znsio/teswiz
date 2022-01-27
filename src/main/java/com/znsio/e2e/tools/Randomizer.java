@@ -24,6 +24,6 @@ public class Randomizer {
     }
 
     public static String randomizeString(int stringLength) {
-        return RandomStringUtils.random(stringLength);
+        return RandomStringUtils.randomAlphabetic(stringLength);
     }
 }
