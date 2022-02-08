@@ -109,6 +109,7 @@ public class Runner {
             throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName");
         }
         new Runner(args[0], args[1], args[2]);
+        System.exit(0);
     }
 
     public static Driver fetchDriver(long threadId) {
@@ -230,10 +231,11 @@ public class Runner {
         LOGGER.info("Begin running tests...");
         LOGGER.info("Args: " + args);
         String[] array = args.toArray(String[]::new);
-        byte exitStatus = Main.run(array);
-        LOGGER.info("Output of test run: " + exitStatus);
-        if (exitStatus != 0) {
-            throw new TestExecutionFailedException("Test execution failed. Exit status: " + exitStatus);
-        }
+        Main.run(array);
+//        int exitStatus = Main.run(array);
+//        LOGGER.info("Output of test run: " + exitStatus);
+//        if (exitStatus != 0) {
+//            throw new TestExecutionFailedException("Test execution failed. Exit status: " + exitStatus);
+//        }
     }
 }
