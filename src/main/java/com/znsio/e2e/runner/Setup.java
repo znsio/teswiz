@@ -194,7 +194,7 @@ public class Setup {
         configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
-        configsBoolean.put(ACCEPT_INSECURE_CERTS, getOverriddenBooleanValue(ACCEPT_INSECURE_CERTS, getBooleanValueFromPropertiesIfAvailable(ACCEPT_INSECURE_CERTS, false)));
+        configsBoolean.put(ACCEPT_INSECURE_CERTS, getOverriddenBooleanValue(ACCEPT_INSECURE_CERTS, getBooleanValueFromPropertiesIfAvailable(ACCEPT_INSECURE_CERTS, true)));
         configs.put(LAUNCH_NAME_SUFFIX, getOverriddenStringValue(LAUNCH_NAME_SUFFIX, getStringValueFromPropertiesIfAvailable(LAUNCH_NAME_SUFFIX, "")));
         configs.put(APP_VERSION, NOT_SET);
     }
