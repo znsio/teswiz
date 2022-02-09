@@ -33,6 +33,7 @@ public class Visual {
     private final Map applitoolsConfig;
     private final boolean isEnableBenchmarkPerValidation;
     private final boolean isVerboseLoggingEnabled;
+    private final WebDriver innerDriver;
     private String applitoolsLogFileNameForWeb = Runner.NOT_SET;
     private String applitoolsLogFileNameForApp = Runner.NOT_SET;
     private static final String DEFAULT_APPLITOOLS_SERVER_URL = "https://eyesapi.applitools.com";
@@ -44,6 +45,7 @@ public class Visual {
         this.applitoolsConfig = Runner.initialiseApplitoolsConfiguration();
         this.isEnableBenchmarkPerValidation = Boolean.parseBoolean(String.valueOf(this.applitoolsConfig.get(APPLITOOLS.ENABLE_BENCHMARK_PER_VALIDATION)));
         this.isVerboseLoggingEnabled = (boolean) getValueFromConfig(APPLITOOLS.ENABLE_VERBOSE_LOGS, true);
+        this.innerDriver = innerDriver;
         String appName = this.applitoolsConfig.get(APPLITOOLS.APP_NAME) + "-";
         eyesOnApp = instantiateAppiumEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
         eyesOnWeb = instantiateWebEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
@@ -138,7 +140,7 @@ public class Visual {
             LOGGER.info(fromScreen + " :" + tag + ":: App: checkWindow: Time taken: " + appDuration.getSeconds() + " sec ");
         }
 
-        screenShotManager.takeScreenShot(formattedTagName);
+        screenShotManager.takeScreenShot(innerDriver, formattedTagName);
         return this;
     }
 
@@ -169,7 +171,7 @@ public class Visual {
             LOGGER.info(fromScreen + " :" + tag + ":: App: checkWindow: Time taken: " + appDuration.getSeconds() + " sec ");
         }
 
-        screenShotManager.takeScreenShot(formattedTagName);
+        screenShotManager.takeScreenShot(innerDriver, formattedTagName);
         return this;
     }
 
@@ -196,12 +198,12 @@ public class Visual {
             LOGGER.info(fromScreen + ":" + tag + ":: App: checkWindow with MatchLevel: " + level.name() + ": Time taken: " + appDuration.getSeconds() + " sec");
         }
 
-        screenShotManager.takeScreenShot(getFormattedTagName(fromScreen, tag));
+        screenShotManager.takeScreenShot(innerDriver, getFormattedTagName(fromScreen, tag));
         return this;
     }
 
     public Visual takeScreenshot (String fromScreen, String tag) {
-        screenShotManager.takeScreenShot(getFormattedTagName(fromScreen, tag));
+        screenShotManager.takeScreenShot(innerDriver, getFormattedTagName(fromScreen, tag));
         return this;
     }
 
@@ -213,17 +215,36 @@ public class Visual {
     public void handleTestResults (String userPersona, String driverType) {
         switch (driverType) {
             case Driver.WEB_DRIVER:
-                this.takeScreenshot("afterHooks", "");
+                takeScreenshot(userPersona, "afterHooks");
                 getVisualResultsFromWeb(userPersona);
                 break;
 
             case Driver.APPIUM_DRIVER:
-                this.takeScreenshot("afterHooks", "");
+                takeScreenshot(userPersona, "afterHooks");
                 getVisualResultsFromApp(userPersona);
                 break;
 
             default:
                 throw new InvalidTestDataException(String.format("Unexpected driver type: '%s'", driverType));
+        }
+    }
+
+    public void handleTestResults (String userPersona, Driver currentDriver) {
+        switch (currentDriver.getType()) {
+            case Driver.WEB_DRIVER:
+                currentDriver.getVisual().takeScreenshot(userPersona, "afterHooks");
+                //this.takeScreenshot(userPersona, "afterHooks");
+                getVisualResultsFromWeb(userPersona);
+                break;
+
+            case Driver.APPIUM_DRIVER:
+                currentDriver.getVisual().takeScreenshot(userPersona, "afterHooks");
+                //this.takeScreenshot(userPersona, "afterHooks");
+                getVisualResultsFromApp(userPersona);
+                break;
+
+            default:
+                throw new InvalidTestDataException(String.format("Unexpected driver type: '%s'", currentDriver.getType()));
         }
     }
 

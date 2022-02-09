@@ -253,6 +253,7 @@ public class Drivers {
             deviceAllocationManager.allocateDevice(availableDevice);
             AppiumDriver driver = new AppiumDriverManager().startAppiumDriverInstance(testName);
             updateAvailableDeviceInformation(availableDevice);
+            ReportPortal.emitLog("allocateNewDeviceAndStartAppiumDriver: Device Info\n" + availableDevice, DEBUG, new Date());
             return driver;
         } catch (Exception e) {
             LOGGER.info(ExceptionUtils.getStackTrace(e));
@@ -545,6 +546,7 @@ public class Drivers {
     private void validateVisualTestResults (String key) {
         Driver driver = userPersonaDrivers.get(key);
         driver.getVisual().handleTestResults(key, driver.getType());
+        //driver.getVisual().handleTestResults(key, driver);
         //driver.getVisual().handleTestResults(key);
     }
 
