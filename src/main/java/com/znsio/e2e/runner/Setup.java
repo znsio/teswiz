@@ -84,6 +84,7 @@ public class Setup {
     private final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private final String configFilePath;
     private List<Device> devices;
+    private final String BUILD_ID = "BUILD_ID";
 
     Setup(String configFilePath) {
         this.configFilePath = configFilePath;
@@ -173,6 +174,7 @@ public class Setup {
         configsBoolean.put(BROWSER_HEADLESS, getOverriddenBooleanValue(BROWSER_HEADLESS, getBooleanValueFromPropertiesIfAvailable(BROWSER_HEADLESS, false)));
         configsBoolean.put(BROWSER_MAXIMIZE, getOverriddenBooleanValue(BROWSER_MAXIMIZE, getBooleanValueFromPropertiesIfAvailable(BROWSER_MAXIMIZE, false)));
         configsBoolean.put(BROWSER_VERBOSE_LOGGING, getOverriddenBooleanValue(BROWSER_VERBOSE_LOGGING, getBooleanValueFromPropertiesIfAvailable(BROWSER_VERBOSE_LOGGING, false)));
+        configs.put(BUILD_ID, getOverriddenStringValue(getStringValueFromPropertiesIfAvailable(BUILD_ID, NOT_SET), NOT_SET));
         configs.put(CAPS, getOverriddenStringValue(CAPS, getStringValueFromPropertiesIfAvailable(CAPS, NOT_SET)));
         configsBoolean.put(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION, getOverriddenBooleanValue(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION, getBooleanValueFromPropertiesIfAvailable(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION, true)));
         configs.put(CLOUD_KEY, getOverriddenStringValue(CLOUD_KEY, getStringValueFromPropertiesIfAvailable(CLOUD_KEY, NOT_SET)));
@@ -249,6 +251,10 @@ public class Setup {
 
         if (!configs.get(APP_VERSION).equals(NOT_SET)) {
             rpAttributes += "AppVersion: " + configs.get(APP_VERSION) + "; ";
+        }
+
+        if (!configs.get(BUILD_ID).equals(NOT_SET)) {
+            rpAttributes += "BuildId: " + configs.get(BUILD_ID) + "; ";
         }
 
         LOGGER.info("ReportPortal Test Execution Attributes: " + rpAttributes);
