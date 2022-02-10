@@ -546,8 +546,6 @@ public class Drivers {
     private void validateVisualTestResults (String key) {
         Driver driver = userPersonaDrivers.get(key);
         driver.getVisual().handleTestResults(key, driver.getType());
-        //driver.getVisual().handleTestResults(key, driver);
-        //driver.getVisual().handleTestResults(key);
     }
 
     private void attachLogsAndCloseDriver (TestExecutionContext context, String key) {
@@ -600,60 +598,28 @@ public class Drivers {
                 new Date());
     }
 
-    private void closeAppOnDevice (TestExecutionContext context, Driver driver) {
+    private void closeAppOnDevice (@NotNull TestExecutionContext context, @NotNull Driver driver) {
         String appPackageName = Runner.getAppPackageName();
         String logMessage;
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
-        AppiumDriver<WebElement> driverFromATD = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
-//        if (driverFromATD == appiumDriver) {
-//            logMessage = "current driver is set by ATD; skipping the terminating and closing actions";
-//            LOGGER.info(logMessage);
-//            ReportPortal.emitLog(logMessage, DEBUG, new Date());
-//            return;
-//        }
 
         LOGGER.info("Terminate app: " + appPackageName);
         ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
-        LOGGER.info("Application State: " + applicationState);
-        appiumDriver.closeApp();
-        //only when driver is not handled by ATD on local execution, quit the driver
-//        if (!Runner.isRunningInCI() && driverFromATD != appiumDriver) {
-//            appiumDriver.quit();
-//        }
 
-        //mark the device booked by ATD as 'free'
-//        if (driverFromATD == appiumDriver) {
-//            AppiumDevice deviceInfo = (AppiumDevice) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
-//            deviceInfo.freeDevice();
-//        }
-        logMessage = String.format("App: '%s' Current application state: '%s'%n",
+        logMessage = String.format("App: '%s' Application state before closing app: '%s'%n",
                 appPackageName,
                 applicationState);
         LOGGER.info(logMessage);
         ReportPortal.emitLog(logMessage, DEBUG, new Date());
 
-        /*if (Runner.isRunningInCI()) {
-            if (driverFromATD != appiumDriver) {
-                logMessage = "killing th";
-                appiumDriver.quit();
-            }
-            logMessage = "Skip terminating & closing app on Cloud device";
-            LOGGER.info(logMessage);
-            ReportPortal.emitLog(logMessage, DEBUG, new Date());
-            appiumDriver.quit();
-        } else {
-            LOGGER.info("Terminate app: " + appPackageName);
-            ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
-            LOGGER.info("Application State: " + applicationState);
-            appiumDriver.closeApp();
-            appiumDriver.quit();
-            ReportPortal.emitLog(
-                    String.format("App: '%s' Current application state: '%s'%n",
-                            appPackageName,
-                            applicationState),
-                    DEBUG,
-                    new Date());
-        }*/
+        appiumDriver.closeApp();
+        appiumDriver.terminateApp(appPackageName);
+        applicationState = appiumDriver.queryAppState(appPackageName);
+        logMessage = String.format("App: '%s' Application state after closing app: '%s'%n",
+                appPackageName,
+                applicationState);
+        LOGGER.info(logMessage);
+        ReportPortal.emitLog(logMessage, DEBUG, new Date());
     }
 
     public Set<String> getAvailableUserPersonas() {

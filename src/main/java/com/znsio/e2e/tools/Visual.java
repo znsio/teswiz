@@ -207,11 +207,6 @@ public class Visual {
         return this;
     }
 
-    public void handleTestResults (String userPersona) {
-        getVisualResultsFromWeb(userPersona);
-        getVisualResultsFromApp(userPersona);
-    }
-
     public void handleTestResults (String userPersona, String driverType) {
         switch (driverType) {
             case Driver.WEB_DRIVER:
@@ -226,25 +221,6 @@ public class Visual {
 
             default:
                 throw new InvalidTestDataException(String.format("Unexpected driver type: '%s'", driverType));
-        }
-    }
-
-    public void handleTestResults (String userPersona, Driver currentDriver) {
-        switch (currentDriver.getType()) {
-            case Driver.WEB_DRIVER:
-                currentDriver.getVisual().takeScreenshot(userPersona, "afterHooks");
-                //this.takeScreenshot(userPersona, "afterHooks");
-                getVisualResultsFromWeb(userPersona);
-                break;
-
-            case Driver.APPIUM_DRIVER:
-                currentDriver.getVisual().takeScreenshot(userPersona, "afterHooks");
-                //this.takeScreenshot(userPersona, "afterHooks");
-                getVisualResultsFromApp(userPersona);
-                break;
-
-            default:
-                throw new InvalidTestDataException(String.format("Unexpected driver type: '%s'", currentDriver.getType()));
         }
     }
 
