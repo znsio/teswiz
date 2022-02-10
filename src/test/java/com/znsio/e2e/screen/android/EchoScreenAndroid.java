@@ -1,9 +1,8 @@
 package com.znsio.e2e.screen.android;
 
-import com.znsio.e2e.screen.EchoScreen;
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Visual;
-import org.openqa.selenium.By;
+import com.znsio.e2e.screen.*;
+import com.znsio.e2e.tools.*;
+import org.openqa.selenium.*;
 
 public class EchoScreenAndroid extends EchoScreen {
     private final Driver driver;

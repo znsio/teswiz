@@ -1,6 +1,6 @@
 package com.znsio.e2e.runner;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 public class BrowserStackDevice {
 

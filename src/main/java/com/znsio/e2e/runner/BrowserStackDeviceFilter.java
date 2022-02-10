@@ -1,17 +1,15 @@
 package com.znsio.e2e.runner;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.jayway.jsonpath.JsonPath;
-import com.znsio.e2e.exceptions.InvalidTestDataException;
-import com.znsio.e2e.tools.cmd.CommandLineExecutor;
-import com.znsio.e2e.tools.cmd.CommandLineResponse;
-import org.apache.log4j.Logger;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.dataformat.yaml.*;
+import com.jayway.jsonpath.*;
+import com.znsio.e2e.exceptions.*;
+import com.znsio.e2e.tools.cmd.*;
+import org.apache.log4j.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
 public class BrowserStackDeviceFilter {
     public static final Map<String, String> env = System.getenv();
@@ -42,33 +40,33 @@ public class BrowserStackDeviceFilter {
             ObjectMapper om = new ObjectMapper(new YAMLFactory());
             om.writeValue(new File(filteredDeviceFileName), filteredDevices);
         } catch (IOException e) {
-            throw new InvalidTestDataException(String.format("Unable to fetch / save list of available devices with %n\tfilter: '%s' %n\tto temp file: ", filters, filteredDeviceFileName));
+            throw new InvalidTestDataException(String.format("Unable to fetch / save list of available devices with %n\tfilter: '%s' %n\tto temp file: '%s'", filters, filteredDeviceFileName));
         }
         return filteredDevices;
     }
 
     private static List<BrowserStackDevice> applyFilters(List<BrowserStackDevice> all_devices, Map<String, String> filters) {
-        for(Map.Entry<String, String> filter : filters.entrySet()) {
-            if(filter.getKey().equals("Platform")) {
-                if(filter.getValue().equals("mobile")) {
+        for (Map.Entry<String, String> filter : filters.entrySet()) {
+            if (filter.getKey().equals("Platform")) {
+                if (filter.getValue().equals("mobile")) {
                     all_devices = all_devices.stream().filter(browserStackDevice -> browserStackDevice.isRealMobile()).collect(Collectors.toList());
                 } else {
                     all_devices = all_devices.stream().filter(browserStackDevice -> !browserStackDevice.isRealMobile()).collect(Collectors.toList());
                 }
             }
-            if(filter.getKey().equals("Device")) {
+            if (filter.getKey().equals("Device")) {
                 all_devices = all_devices.stream().filter(browserStackDevice -> browserStackDevice.getDevice().contains(filter.getValue())).collect(Collectors.toList());
             }
-            if(filter.getKey().equals("Os")) {
+            if (filter.getKey().equals("Os")) {
                 all_devices = all_devices.stream().filter(browserStackDevice -> browserStackDevice.getOs().equals(filter.getValue())).collect(Collectors.toList());
             }
-            if(filter.getKey().equals("Os_version")) {
+            if (filter.getKey().equals("Os_version")) {
                 all_devices = all_devices.stream().filter(browserStackDevice -> browserStackDevice.getOs_version().contains(filter.getValue())).collect(Collectors.toList());
             }
-            if(filter.getKey().equals("Browser")) {
+            if (filter.getKey().equals("Browser")) {
                 all_devices = all_devices.stream().filter(browserStackDevice -> browserStackDevice.getBrowser().equals(filter.getValue())).collect(Collectors.toList());
             }
-            if(filter.getKey().equals("Browser_version")) {
+            if (filter.getKey().equals("Browser_version")) {
                 all_devices = all_devices.stream().filter(browserStackDevice -> Double.parseDouble(browserStackDevice.getBrowserVersion().split(" ")[0]) >= Double.parseDouble(filter.getValue())).collect(Collectors.toList());
             }
         }

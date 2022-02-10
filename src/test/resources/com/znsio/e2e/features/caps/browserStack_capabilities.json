@@ -20,6 +20,7 @@
     "browserstack.networkLogs": "true",
     "browserstack.gpsLocation": "22,75",
     "browserstack.locale": "IN",
+    "project": "teswiz",
     "app": {
       "local": "./src/test/resources/sampleApps/TheApp-VR-v1.apk"
     }

@@ -1,28 +1,18 @@
 package com.znsio.e2e.runner;
 
-import com.applitools.eyes.BatchInfo;
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
-import com.znsio.e2e.entities.APPLITOOLS;
-import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.entities.TEST_CONTEXT;
-import com.znsio.e2e.exceptions.InvalidTestDataException;
-import com.znsio.e2e.exceptions.TestExecutionFailedException;
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Drivers;
-import com.znsio.e2e.tools.Visual;
-import io.cucumber.core.cli.Main;
+import com.applitools.eyes.*;
+import com.context.*;
+import com.znsio.e2e.entities.*;
+import com.znsio.e2e.exceptions.*;
+import com.znsio.e2e.tools.*;
+import io.cucumber.core.cli.*;
 import org.apache.log4j.Logger;
-import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.*;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.*;
+import java.util.*;
 
-import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
+import static com.appium.utils.OverriddenVariable.*;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class Runner {
@@ -32,12 +22,11 @@ public class Runner {
     public static final String USER_DIRECTORY = System.getProperty("user.dir");
     public static final String USER_NAME = System.getProperty("user.name");
     public static final String NOT_SET = "not-set";
-    static final Map<String, String> configs = new HashMap();
-    static final Map<String, Boolean> configsBoolean = new HashMap();
-    static final Map<String, Integer> configsInteger = new HashMap();
+    static final Map<String, String> configs = new HashMap<>();
+    static final Map<String, Boolean> configsBoolean = new HashMap<>();
+    static final Map<String, Integer> configsInteger = new HashMap<>();
     private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
     public static Platform platform = Platform.android;
-    private static ArrayList<String> cukeArgs = new ArrayList<>();
 
     public Runner() {
         throw new InvalidTestDataException("Required args not provided to Runner");
@@ -45,10 +34,10 @@ public class Runner {
 
     public Runner(String configFilePath, String stepDefDirName, String featuresDirName) {
         Path path = Paths.get(configFilePath);
-        if(!Files.exists(path)) {
+        if (!Files.exists(path)) {
             throw new InvalidTestDataException(String.format("Invalid path ('%s') provided for config", configFilePath));
         }
-        cukeArgs = new Setup(configFilePath).getExecutionArguments();
+        List<String> cukeArgs = new Setup(configFilePath).getExecutionArguments();
         run(cukeArgs, stepDefDirName, featuresDirName);
     }
 
@@ -64,18 +53,8 @@ public class Runner {
         return configs.get(CLOUD_KEY);
     }
 
-    public void run(ArrayList<String> args, String stepDefsDir, String featuresDir) {
-        args.add("--glue");
-        args.add(stepDefsDir);
-        args.add(featuresDir);
-        LOGGER.info("Begin running tests...");
-        LOGGER.info("Args: " + args);
-        String[] array = args.stream().toArray(String[]::new);
-        byte exitStatus = Main.run(array);
-        LOGGER.info("Output of test run: " + exitStatus);
-        if(exitStatus != 0) {
-            throw new TestExecutionFailedException("Test execution failed. Exit status: " + exitStatus);
-        }
+    public static String getRemoteDriverGridPort() {
+        return configs.get(REMOTE_WEBDRIVER_GRID_PORT);
     }
 
     public static int getMaxNumberOfAppiumDrivers() {
@@ -123,10 +102,10 @@ public class Runner {
         System.setProperty("OUTPUT_DIRECTORY", logDir);
         LOGGER.info("teswiz Runner");
         LOGGER.info("Provided parameters:");
-        for(int i = 0; i < args.length; i++) {
-            LOGGER.info("\t" + args[i]);
+        for (String arg : args) {
+            LOGGER.info("\t" + arg);
         }
-        if(args.length != 3) {
+        if (args.length != 3) {
             throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName");
         }
         new Runner(args[0], args[1], args[2]);
@@ -171,7 +150,7 @@ public class Runner {
     public static void closeAllDrivers(long threadId) {
         TestExecutionContext context = getTestExecutionContext(threadId);
         Drivers allDrivers = (Drivers) context.getTestState(TEST_CONTEXT.ALL_DRIVERS);
-        allDrivers.attachLogsAndCloseAllDrivers(context);
+        allDrivers.attachLogsAndCloseAllWebDrivers(context);
     }
 
     public static String getTargetEnvironment() {
@@ -191,15 +170,24 @@ public class Runner {
     }
 
     public static Map initialiseApplitoolsConfiguration() {
-        if(applitoolsConfiguration.isEmpty()) {
+        if (applitoolsConfiguration.isEmpty()) {
             getApplitoolsConfigFromProvidedConfigFile();
             applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
             applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(APP_NAME));
             applitoolsConfiguration.put(APPLITOOLS.API_KEY, getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
-            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT)));
+            applitoolsConfiguration.put(BRANCH_NAME, configs.get(BRANCH_NAME));
+            applitoolsConfiguration.put(PLATFORM, platform.name());
+            applitoolsConfiguration.put(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
+            applitoolsConfiguration.put(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
             applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());
             applitoolsConfiguration.put(APPLITOOLS.RECTANGLE_SIZE, getViewportSize());
             applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED, isBenchmarkingEnabled());
+            BatchInfo batchInfo = new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
+            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, batchInfo);
+            batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
+            batchInfo.addProperty(PLATFORM, platform.name());
+            batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
+            batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
         }
         LOGGER.info("applitoolsConfiguration: " + applitoolsConfiguration);
         return applitoolsConfiguration;
@@ -233,5 +221,21 @@ public class Runner {
 
     public static boolean shouldAcceptInsecureCerts() {
         return configsBoolean.get(ACCEPT_INSECURE_CERTS);
+    }
+
+    public static String getWebDriverManagerProxyURL() {
+        String webDriverManagerProxyURL = configs.get(WEBDRIVER_MANAGER_PROXY_URL);
+        LOGGER.info("webDriverManagerProxyURL: " + webDriverManagerProxyURL);
+        return webDriverManagerProxyURL;
+    }
+
+    public void run(List<String> args, String stepDefsDir, String featuresDir) {
+        args.add("--glue");
+        args.add(stepDefsDir);
+        args.add(featuresDir);
+        LOGGER.info("Begin running tests...");
+        LOGGER.info("Args: " + args);
+        String[] array = args.toArray(String[]::new);
+        System.exit(Main.run(array));
     }
 }

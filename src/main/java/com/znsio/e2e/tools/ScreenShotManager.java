@@ -4,6 +4,7 @@ import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
 import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.runner.Runner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -22,7 +23,7 @@ public class ScreenShotManager {
     private final String directoryPath;
     private int counter;
 
-    public ScreenShotManager () {
+    public ScreenShotManager() {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         directoryPath = context.getTestStateAsString(TEST_CONTEXT.SCREENSHOT_DIRECTORY);
         counter = 0;
@@ -50,21 +51,21 @@ public class ScreenShotManager {
         }
     }
 
-    private String normaliseScenarioName (String scenarioName) {
+    private String normaliseScenarioName(String scenarioName) {
         return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_")
                 .replaceAll("__", "_")
                 .replaceAll("__", "_");
     }
 
-    private int getPrefix () {
+    private int getPrefix() {
         return ++counter;
     }
 
-    private File createScreenshotFile (String dirName, String fileName) {
+    private File createScreenshotFile(String dirName, String fileName) {
         fileName = fileName.endsWith(".png") ? fileName : fileName + ".png";
-        return new File(System.getProperty("user.dir")
-                + dirName
-                + File.separator
-                + fileName);
+        return new File(Runner.USER_DIRECTORY
+                                + dirName
+                                + File.separator
+                                + fileName);
     }
 }

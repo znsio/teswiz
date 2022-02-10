@@ -1,18 +1,17 @@
 package com.znsio.e2e;
 
-import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.runner.Runner;
-import org.joda.time.DateTime;
-import org.junit.jupiter.api.Test;
+import com.znsio.e2e.entities.*;
+import com.znsio.e2e.runner.*;
+import org.joda.time.*;
+import org.junit.jupiter.api.*;
 
-import java.util.Date;
-
-import static com.znsio.e2e.runner.Setup.CLOUD_KEY;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static com.znsio.e2e.runner.Setup.*;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 class RunnerTest {
     private final String stepDefDir = "com/znsio/e2e/steps";
     private final String logDir;
+
     {
         DateTime now = DateTime.now();
         logDir = "./target/" + now.getDayOfMonth() + "-" + now.getMonthOfYear() + "-" + now.getYear() + "_" + now.getHourOfDay() + "-" + now.getMinuteOfHour();
@@ -43,6 +42,16 @@ class RunnerTest {
         System.setProperty("PLATFORM", "windows");
         System.setProperty("TAG", "@notepad");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/windows_config.properties", stepDefDir, featuresDir);
+    }
+
+    @Test
+    void localAndroidCalculator() {
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty("PLATFORM", Platform.android.name());
+        System.setProperty("APP_PACKAGE_NAME", "com.android2.calculator3");
+        System.setProperty("APP_PATH", "./src/test/resources/sampleApps/AndroidCalculator.apk");
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+//        runner.printProcessedConfiguration();
     }
 
     @Test

@@ -42,11 +42,10 @@ import static com.znsio.e2e.runner.Setup.CAPS;
 import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
 
 public class Drivers {
-    private static final String USER_DIR = "user.dir";
     private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
     private static final String DEBUG = "DEBUG";
     private final Map<String, Driver> userPersonaDrivers = new HashMap<>();
-    private final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<String, Capabilities>();
+    private final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
     private final int MAX_NUMBER_OF_APPIUM_DRIVERS;
@@ -54,12 +53,12 @@ public class Drivers {
     private int numberOfWebDriversUsed = 0;
     private int numberOfAppiumDriversUsed = 0;
 
-    public Drivers () {
+    public Drivers() {
         MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
         MAX_NUMBER_OF_WEB_DRIVERS = Runner.getMaxNumberOfWebDrivers();
     }
 
-    public Driver setDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
+    public Driver setDriverFor(String userPersona, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("setDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
         if (!userPersonaDrivers.containsKey(userPersona)) {
             String message = String.format("ERROR: Driver for user persona: '%s' DOES NOT EXIST%nAvailable drivers: '%s'",
@@ -74,9 +73,9 @@ public class Drivers {
         return currentDriver;
     }
 
-    public Driver createDriverFor (String userPersona, Platform forPlatform, TestExecutionContext context) {
+    public Driver createDriverFor(String userPersona, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("createDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
-        Driver currentDriver = null;
+        Driver currentDriver;
         if (userPersonaDrivers.containsKey(userPersona)) {
             String message = String.format("ERROR: Driver for user persona: '%s' ALREADY EXISTS%nAvailable drivers: '%s'",
                     userPersona,
@@ -113,7 +112,7 @@ public class Drivers {
     }
 
     @NotNull
-    private Driver createAndroidDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
+    private Driver createAndroidDriverForUser(String userPersona, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("createAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
@@ -167,7 +166,7 @@ public class Drivers {
     }
 
     @NotNull
-    private Driver createWebDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
+    private Driver createWebDriverForUser(String userPersona, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("createWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
@@ -190,8 +189,8 @@ public class Drivers {
         } else {
             throw new InvalidTestDataException(
                     String.format("Current number of WebDriver instances used: '%d'. " +
-                                    "Unable to create more than '%d' drivers for user persona: '%s' " +
-                                    "on platform: '%s'",
+                                          "Unable to create more than '%d' drivers for user persona: '%s' " +
+                                          "on platform: '%s'",
                             numberOfWebDriversUsed,
                             MAX_NUMBER_OF_WEB_DRIVERS,
                             userPersona,
@@ -204,7 +203,7 @@ public class Drivers {
     }
 
     @NotNull
-    private Driver createWindowsDriverForUser (String userPersona, Platform forPlatform, TestExecutionContext context) {
+    private Driver createWindowsDriverForUser(String userPersona, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("createWindowsDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
@@ -261,7 +260,7 @@ public class Drivers {
         }
     }
 
-    private void disableNotificationsAndToastsOnDevice (Driver currentDriver, String deviceOn, String udid) {
+    private void disableNotificationsAndToastsOnDevice(Driver currentDriver, String deviceOn, String udid) {
         if (Runner.isRunningInCI()) {
             if (deviceOn.equalsIgnoreCase("pCloudy")) {
                 Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript("pCloudy_executeAdbCommand", "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW deny");
@@ -281,8 +280,8 @@ public class Drivers {
     }
 
     @NotNull
-    private WebDriver createNewWebDriver (String forUserPersona,
-                                          TestExecutionContext testExecutionContext) {
+    private WebDriver createNewWebDriver(String forUserPersona,
+                                         TestExecutionContext testExecutionContext) {
         String browserType = Runner.getBrowser();
         boolean shouldMaximizeBrowser = Runner.shouldMaximizeBrowser();
 
@@ -294,7 +293,10 @@ public class Drivers {
         LOGGER.info("baseUrl: " + baseUrl);
 
         DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
-        WebDriverManager.getInstance(driverManagerType).setup();
+        String proxyURL = null == Runner.getWebDriverManagerProxyURL() ? "" : Runner.getWebDriverManagerProxyURL();
+        LOGGER.info(String.format("Using proxyURL: '%s' for getting the WebDriver for browser: '%s'", proxyURL, browserType));
+
+        WebDriverManager.getInstance(driverManagerType).proxy(proxyURL).setup();
 
         WebDriver driver = null;
         switch (driverManagerType) {
@@ -320,15 +322,15 @@ public class Drivers {
         return driver;
     }
 
-    private AppiumDevice updateAvailableDeviceInformation (AppiumDevice availableDevice) {
+    private AppiumDevice updateAvailableDeviceInformation(AppiumDevice availableDevice) {
         org.openqa.selenium.Capabilities capabilities = AppiumDriverManager.getDriver()
                 .getCapabilities();
         LOGGER.info("allocateDeviceAndStartDriver: "
-                + capabilities);
+                            + capabilities);
 
         String udid = capabilities.is("udid")
-                ? getCapabilityFor(capabilities, "udid")
-                : getCapabilityFor(capabilities, "deviceUDID");
+                              ? getCapabilityFor(capabilities, "udid")
+                              : getCapabilityFor(capabilities, "deviceUDID");
         Device device = availableDevice.getDevice();
         device.setUdid(udid);
         device.setDeviceManufacturer(
@@ -349,8 +351,8 @@ public class Drivers {
     }
 
     @NotNull
-    private WebDriver createChromeDriver (String forUserPersona,
-                                          TestExecutionContext testExecutionContext) {
+    private WebDriver createChromeDriver(String forUserPersona,
+                                         TestExecutionContext testExecutionContext) {
         boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
         boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
         boolean acceptInsecureCerts = Runner.shouldAcceptInsecureCerts();
@@ -383,6 +385,7 @@ public class Drivers {
         prefs.put("profile.default_content_setting_values.notifications", 1);
         prefs.put("profile.default_content_setting_values.media_stream_mic", 1);
         prefs.put("profile.default_content_setting_values.media_stream_camera", 1);
+        prefs.put("profile.default_content_setting_values.geolocation", 1);
         prefs.put("protocol_handler.excluded_schemes", excludedSchemes);
         chromeOptions.setExperimentalOption("prefs", prefs);
 
@@ -415,8 +418,8 @@ public class Drivers {
         return driver;
     }
 
-    private WebDriver createFirefoxDriver (String forUserPersona,
-                                           TestExecutionContext testExecutionContext) {
+    private WebDriver createFirefoxDriver(String forUserPersona,
+                                          TestExecutionContext testExecutionContext) {
 
         boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
         boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
@@ -463,12 +466,12 @@ public class Drivers {
         return driver;
     }
 
-    private String getCapabilityFor (org.openqa.selenium.Capabilities capabilities, String name) {
+    private String getCapabilityFor(org.openqa.selenium.Capabilities capabilities, String name) {
         Object capability = capabilities.getCapability(name);
         return null == capability ? "" : capability.toString();
     }
 
-    private String setLogDirectory (String forUserPersona, TestExecutionContext testExecutionContext, String browserType) {
+    private String setLogDirectory(String forUserPersona, TestExecutionContext testExecutionContext, String browserType) {
         String scenarioLogDir = Runner.USER_DIRECTORY + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
         String logFile = scenarioLogDir + File.separator + "deviceLogs" + File.separator + browserType + "-" + forUserPersona + ".log";
 
@@ -480,11 +483,11 @@ public class Drivers {
     }
 
     @NotNull
-    private RemoteWebDriver createRemoteWebDriver (MutableCapabilities chromeOptions) {
+    private RemoteWebDriver createRemoteWebDriver(MutableCapabilities chromeOptions) {
         try {
             String cloudName = Runner.getCloudName();
             String webDriverHubSuffix = "/wd/hub";
-            String remoteUrl = "http://localhost:4444" + webDriverHubSuffix;
+            String remoteUrl = "http://localhost:" + Runner.getRemoteDriverGridPort() + webDriverHubSuffix;
             if (cloudName.equalsIgnoreCase("headspin")) {
                 String authenticationKey = Runner.getCloudKey();
                 String capabilityFile = System.getProperty(CAPS);
@@ -493,17 +496,18 @@ public class Drivers {
                 Map hostMachines = (Map) hostMachinesList.get(0);
                 String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
                 remoteUrl = remoteServerURL.endsWith("/")
-                        ? remoteServerURL + authenticationKey + webDriverHubSuffix
-                        : remoteServerURL + "/" + authenticationKey + webDriverHubSuffix;
+                                    ? remoteServerURL + authenticationKey + webDriverHubSuffix
+                                    : remoteServerURL + "/" + authenticationKey + webDriverHubSuffix;
                 remoteUrl = remoteUrl.startsWith("https") ? remoteUrl : "https://" + remoteUrl;
             }
+            LOGGER.info("Starting RemoteWebDriver using url: " + remoteUrl);
             return new RemoteWebDriver(new URL(remoteUrl), chromeOptions);
         } catch (MalformedURLException e) {
             throw new EnvironmentSetupException("Unable to create a new RemoteWebDriver", e);
         }
     }
 
-    public Driver getDriverForUser (String userPersona) {
+    public Driver getDriverForUser(String userPersona) {
         if (!userPersonaDrivers.containsKey(userPersona)) {
             LOGGER.info("getDriverForUser: Drivers available for userPersonas: " + userPersonaDrivers.keySet());
             throw new InvalidTestDataException(String.format("No Driver found for user persona: '%s'", userPersona));
@@ -512,7 +516,7 @@ public class Drivers {
         return userPersonaDrivers.get(userPersona);
     }
 
-    public String getDeviceNameForUser (String userPersona) {
+    public String getDeviceNameForUser(String userPersona) {
         Capabilities userPersonaCapabilities = userPersonaDriverCapabilities.get(userPersona);
         String deviceName = (String) userPersonaCapabilities.getCapability(DEVICE_NAME);
         if (null == deviceName) {
@@ -522,19 +526,17 @@ public class Drivers {
         return deviceName;
     }
 
-    public Platform getPlatformForUser (String userPersona) {
+    public Platform getPlatformForUser(String userPersona) {
         if (!userPersonaDrivers.containsKey(userPersona)) {
             LOGGER.info("getPlatformForUser: Platforms available for userPersonas: ");
-            userPersonaPlatforms.keySet().forEach(key -> {
-                LOGGER.info("\tUser Persona: " + key + ": Platform: " + userPersonaPlatforms.get(key).name());
-            });
+            userPersonaPlatforms.keySet().forEach(key -> LOGGER.info("\tUser Persona: " + key + ": Platform: " + userPersonaPlatforms.get(key).name()));
             throw new InvalidTestDataException(String.format("No Driver found for user persona: '%s'", userPersona));
         }
 
         return userPersonaPlatforms.get(userPersona);
     }
 
-    public void attachLogsAndCloseAllDrivers(TestExecutionContext context) {
+    public void attachLogsAndCloseAllWebDrivers(TestExecutionContext context) {
         LOGGER.info("Close all drivers:");
         userPersonaDrivers.keySet().forEach(key -> {
             LOGGER.info("\tUser Persona: " + key);
@@ -543,7 +545,7 @@ public class Drivers {
         });
     }
 
-    private void validateVisualTestResults (String key) {
+    private void validateVisualTestResults(String key) {
         Driver driver = userPersonaDrivers.get(key);
         driver.getVisual().handleTestResults(key, driver.getType());
     }
@@ -568,7 +570,7 @@ public class Drivers {
         }
     }
 
-    private void closeWebDriver (String key, Driver driver) {
+    private void closeWebDriver(String key, Driver driver) {
         String message = "Browser logs for user: " + key;
         String logFileName = userPersonaBrowserLogs.get(key);
         LOGGER.info(message + ": logFileName: " + logFileName);
@@ -585,7 +587,7 @@ public class Drivers {
         }
     }
 
-    private void closeAppOnMachine (Driver driver) {
+    private void closeAppOnMachine(Driver driver) {
         String appPackageName = Runner.getAppPackageName();
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
         LOGGER.info(String.format("Closing WindowsDriver for App '%s'", appPackageName));
@@ -626,7 +628,7 @@ public class Drivers {
         return userPersonaDrivers.keySet();
     }
 
-    public void assignNewPersonaToExistingDriver (String userPersona, String newUserPersona, TestExecutionContext context) {
+    public void assignNewPersonaToExistingDriver(String userPersona, String newUserPersona, TestExecutionContext context) {
         if (!userPersonaDrivers.containsKey(userPersona)) {
             LOGGER.info("assignNewPersonaToExistingDriver: Drivers available for userPersonas: " + userPersonaDrivers.keySet());
             throw new InvalidTestDataException(String.format("No Driver found for user persona: '%s'", userPersona));

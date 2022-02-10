@@ -14,7 +14,7 @@ them against
 * Windows Apps
 * Web
 
-Applitools is integrated with this framework, to provide Visual AI testing as part of functional automation.
+Applitools (https://applitools.com/) Visual AI, and Applitools Ultrafast Grid (https://applitools.com/product-ultrafast-test-cloud/) is integrated with this framework, to provide Visual AI testing as part of functional automation.
 
 Reports will be uploaded to reportportal.io, that you would need to setup separately, and provide the server details in
 src/test/resources/reportportal.properties file or provide the path to the file using this environment
@@ -136,6 +136,52 @@ provided:**
   Ex: "serverUrl": "https://eyesapi.applitools.com"
   * By Default, the free public Applitools cloud will be used
 
+**To enable Applitools Ultrafast Grid, follow these steps:**
+
+* In applitools_config.json, set`useUFG": true`
+* In applitools_config.json, set `testConcurrency": 5` to the appropriate concurrency level as per your Applitools 
+  license
+* In RunCukesTest file, or any file where you have your custom hooks, add the following lines:
+
+```
+import com.applitools.eyes.selenium.*;
+import com.applitools.eyes.visualgrid.model.*;
+```
+
+In beforeScenario, add the specific browser and device configurations to `Configuration` and add that to the 
+TestExecutionContext - `context` as shown below:
+```
+@Before
+public void beforeTestScenario (Scenario scenario) {
+    LOGGER.info(String.format("ThreadID: %d: in overridden beforeTestScenario%n", Thread.currentThread().getId()));
+    Configuration ufgConfig = new Configuration();
+    ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
+    ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
+    ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
+    ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
+    context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
+}
+```
+
+IF you have `useUFG` set to `true`, and if you do not specify the Ultrafast Grid configuration, then teswiz has a 
+default set of browser and devices specified which will be used for Visual Validation. The default configuration is 
+shown below:
+
+```
+  ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
+  ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
+  ufgConfig.addBrowser(1024, 1024, BrowserType.SAFARI);
+  ufgConfig.addBrowser(1024, 1024, BrowserType.EDGE_CHROMIUM);
+  ufgConfig.addBrowser(1600, 1200, BrowserType.CHROME);
+  ufgConfig.addBrowser(1600, 1200, BrowserType.FIREFOX);
+  ufgConfig.addBrowser(1600, 1200, BrowserType.SAFARI);
+  ufgConfig.addBrowser(1600, 1200, BrowserType.EDGE_CHROMIUM);
+  ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
+  ufgConfig.addDeviceEmulation(DeviceName.iPad_Pro, ScreenOrientation.LANDSCAPE);
+  ufgConfig.addDeviceEmulation(DeviceName.Nexus_5X, ScreenOrientation.PORTRAIT);
+  ufgConfig.addDeviceEmulation(DeviceName.Nexus_6P, ScreenOrientation.LANDSCAPE);
+```
+
 ### Running a subset of tests:
 
 To run a subset of tests, for a given platform, the following additional environment variables need to be provided:
@@ -188,6 +234,8 @@ These can be overridden by providing the same either as environment variables or
     BROWSER_HEADLESS=false -> Should browser be started in headless mode? If yes, set to true
     BROWSER_MAXIMIZE=true -> Should browser be maximised when started? If yes, set to true
     BROWSER_VERBOSE_LOGGING=true -> Should browser logs be verbose? If yes, set to true
+    BUILD_ID=BUILDID -> The key name of the environment variable that has the corresponding build id of the test 
+execution
     CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> Uninstall app from local Android devices before starting test execution
     CLOUD_KEY=<auth / api key> for pCloudy / Headspin
     CLOUD_USER=<username / email> for pCloudy -> Not required for Headspin
@@ -204,6 +252,12 @@ These can be overridden by providing the same either as environment variables or
     PARALLEL=1 -> How many tests should be run in parallel?
     PROXY_KEY=HTTP_PROXY -> If proxy should be set, what is the environment variable specifying the proxy?
     PROXY_URL=<proxy_url> -> What is the proxy url to be used if PROXY_KEY is set
+    WEBDRIVER_MANAGER_PROXY_KEY=HTTP_PROXY -> If proxy should be used for WebDriverManager, what is the environment 
+variable specifying the 
+proxy?
+    WEBDRIVER_MANAGER_PROXY_URL=<proxy_url> -> What is the proxy url to be used for WebDriverManager if 
+WEBDRIVER_MANAGER_PROXY_KEY is set
+    REMOTE_WEBDRIVER_GRID_PORT=<environment variable name which holds the port to be used for RemoteWebDriver>
     REPORT_PORTAL_FILE=src/test/resources/reportportal.properties -> ReportPortal.io configuration
     RUN_IN_CI=false -> Are tests running in CI?
     TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE

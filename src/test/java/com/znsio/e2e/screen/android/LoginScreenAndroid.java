@@ -1,12 +1,10 @@
 package com.znsio.e2e.screen.android;
 
-import com.znsio.e2e.screen.LoginScreen;
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Visual;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import com.znsio.e2e.screen.*;
+import com.znsio.e2e.tools.*;
+import org.openqa.selenium.*;
 
-import static com.znsio.e2e.tools.Wait.waitFor;
+import static com.znsio.e2e.tools.Wait.*;
 
 public class LoginScreenAndroid extends LoginScreen {
     private final Driver driver;
