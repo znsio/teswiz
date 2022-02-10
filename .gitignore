@@ -27,9 +27,6 @@ pipeline.gdsl
 *target*/
 .xcconfig_bac
 node_modules/
-*.apk
-*.app
-*.ipa
 *.exe
 local.properties
 upload

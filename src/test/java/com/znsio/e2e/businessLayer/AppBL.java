@@ -1,13 +1,11 @@
 package com.znsio.e2e.businessLayer;
 
-import com.context.TestExecutionContext;
-import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.entities.SAMPLE_TEST_CONTEXT;
-import com.znsio.e2e.runner.Runner;
-import com.znsio.e2e.screen.HomeScreen;
-import com.znsio.e2e.screen.LoginScreen;
-import org.apache.log4j.Logger;
-import org.assertj.core.api.SoftAssertions;
+import com.context.*;
+import com.znsio.e2e.entities.*;
+import com.znsio.e2e.runner.*;
+import com.znsio.e2e.screen.*;
+import org.apache.log4j.*;
+import org.assertj.core.api.*;
 
 public class AppBL {
     private static final Logger LOGGER = Logger.getLogger(AppBL.class.getName());

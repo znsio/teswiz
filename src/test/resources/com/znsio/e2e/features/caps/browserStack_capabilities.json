@@ -3,8 +3,9 @@
     "automationName": "UiAutomator2",
     "appPackage": "io.cloudgrey.the_app",
     "appActivity": "io.cloudgrey.the_app.MainActivity",
-    "platformVersion": "10.0",
+    "platformVersion": "10",
     "platformName": "Android",
+    "device": "Samsung",
     "autoGrantPermissions": true,
     "newCommandTimeout": 300,
     "launchTimeout": 90000,
@@ -13,6 +14,13 @@
     "noReset": true,
     "autoAcceptAlerts": true,
     "browserstack.enableCameraImageInjection": true,
+    "browserstack.geoLocation": "IN",
+    "browserstack.timezone": "Kolkata",
+    "browserstack.debug": "false",
+    "browserstack.networkLogs": "true",
+    "browserstack.gpsLocation": "22,75",
+    "browserstack.locale": "IN",
+    "project": "teswiz",
     "app": {
       "local": "./src/test/resources/sampleApps/TheApp-VR-v1.apk"
     }
