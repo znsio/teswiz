@@ -223,6 +223,12 @@ public class Runner {
         return configsBoolean.get(ACCEPT_INSECURE_CERTS);
     }
 
+    public static String getWebDriverManagerProxyURL() {
+        String webDriverManagerProxyURL = configs.get(WEBDRIVER_MANAGER_PROXY_URL);
+        LOGGER.info("webDriverManagerProxyURL: " + webDriverManagerProxyURL);
+        return webDriverManagerProxyURL;
+    }
+
     public void run(List<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);

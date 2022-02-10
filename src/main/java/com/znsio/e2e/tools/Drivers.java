@@ -282,7 +282,10 @@ public class Drivers {
         LOGGER.info("baseUrl: " + baseUrl);
 
         DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
-        WebDriverManager.getInstance(driverManagerType).setup();
+        String proxyURL = null == Runner.getWebDriverManagerProxyURL() ? "" : Runner.getWebDriverManagerProxyURL();
+        LOGGER.info(String.format("Using proxyURL: '%s' for getting the WebDriver for browser: '%s'", proxyURL, browserType));
+
+        WebDriverManager.getInstance(driverManagerType).proxy(proxyURL).setup();
 
         WebDriver driver = null;
         switch (driverManagerType) {

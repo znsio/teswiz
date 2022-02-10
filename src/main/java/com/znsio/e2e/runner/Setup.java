@@ -65,6 +65,7 @@ public class Setup {
     private static final String LOG_DIR = "LOG_DIR";
     private static final String PARALLEL = "PARALLEL";
     private static final String PROXY_KEY = "PROXY_KEY";
+    private static final String WEBDRIVER_MANAGER_PROXY_KEY = "WEBDRIVER_MANAGER_PROXY_KEY";
     private static final String TAG = "TAG";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
     private static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
@@ -73,6 +74,7 @@ public class Setup {
     private static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
     private static final String APPIUM_SETTINGS = "io.appium.settings";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
+    public static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
     static Map<String, Map> environmentConfiguration;
     static Map<String, Map> testDataForEnvironment;
     static Map applitoolsConfiguration = new HashMap<>();
@@ -188,6 +190,8 @@ public class Setup {
         configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, Integer.parseInt(getStringValueFromPropertiesIfAvailable(PARALLEL, String.valueOf(DEFAULT_PARALLEL)))));
         configs.put(PROXY_KEY, getOverriddenStringValue(PROXY_KEY, getStringValueFromPropertiesIfAvailable(PROXY_KEY, PROXY_KEY)));
         configs.put(PROXY_URL, getOverriddenStringValue(configs.get(PROXY_KEY)));
+        configs.put(WEBDRIVER_MANAGER_PROXY_KEY, getOverriddenStringValue(WEBDRIVER_MANAGER_PROXY_KEY, getStringValueFromPropertiesIfAvailable(WEBDRIVER_MANAGER_PROXY_KEY, WEBDRIVER_MANAGER_PROXY_KEY)));
+        configs.put(WEBDRIVER_MANAGER_PROXY_URL, getOverriddenStringValue(configs.get(WEBDRIVER_MANAGER_PROXY_KEY)));
         configs.put(REMOTE_WEBDRIVER_GRID_PORT_KEY, getStringValueFromPropertiesIfAvailable(REMOTE_WEBDRIVER_GRID_PORT, REMOTE_WEBDRIVER_GRID_PORT));
         configs.put(REMOTE_WEBDRIVER_GRID_PORT, getOverriddenStringValue(configs.get(REMOTE_WEBDRIVER_GRID_PORT_KEY), DEFAULT_WEBDRIVER_GRID_PORT));
         configsBoolean.put(RUN_IN_CI, getOverriddenBooleanValue(RUN_IN_CI, getBooleanValueFromPropertiesIfAvailable(RUN_IN_CI, false)));
