@@ -1,6 +1,7 @@
 package com.znsio.e2e.runner;
 
 import com.applitools.eyes.*;
+import com.epam.reportportal.service.ReportPortal;
 import com.github.device.*;
 import com.google.gson.*;
 import com.znsio.e2e.entities.*;
@@ -91,6 +92,13 @@ public class Setup {
         properties = loadProperties(this.configFilePath);
     }
 
+    private void printLoadedConfigFile(String configFilePath, Properties properties) {
+        final String[] propVars = {""};
+        properties.forEach((k, v) -> propVars[0] +=("\t" + k + ":" + v + "\n"));
+        LOGGER.info("Config properties: " + configFilePath + ":\n" + propVars[0]);
+        ReportPortal.emitLog("Config properties: " + configFilePath + ":\n" + propVars[0], "debug", new Date());
+    }
+
     private static Map<String, Map> loadEnvironmentConfiguration(String environment) {
         String envConfigFile = configs.get(ENVIRONMENT_CONFIG_FILE);
         LOGGER.info("Loading environment configuration from ENVIRONMENT_CONFIG_FILE: "
@@ -160,6 +168,7 @@ public class Setup {
     }
 
     void loadAndUpdateConfigParameters(String configFilePath) {
+        printLoadedConfigFile(configFilePath, properties);
         configs.put(CONFIG_FILE, configFilePath);
         buildMapOfRequiredProperties();
     }
