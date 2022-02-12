@@ -20,6 +20,8 @@ Reports will be uploaded to reportportal.io, that you would need to setup separa
 src/test/resources/reportportal.properties file or provide the path to the file using this environment
 variable: `REPORT_PORTAL_FILE`
 
+Test can run on local browsers / devices, or against any cloud provider, such as HeadSpin, BrowserStack, SauceLabs, pCloudy. 
+
 ## Tech stack used
 
 * cucumber-jvm (https://cucumber.io)
