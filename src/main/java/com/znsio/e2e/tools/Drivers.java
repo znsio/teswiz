@@ -283,7 +283,7 @@ public class Drivers {
     private WebDriver createNewWebDriver(String forUserPersona,
                                          TestExecutionContext testExecutionContext) {
         String browserType = Runner.getBrowser();
-        boolean shouldMaximizeBrowser = Runner.shouldMaximizeBrowser();
+        //boolean shouldMaximizeBrowser = Runner.shouldMaximizeBrowser();
 
         String providedBaseUrl = Runner.getBaseURLForWeb();
         if (null == providedBaseUrl) {
@@ -314,11 +314,11 @@ public class Drivers {
                 throw new InvalidTestDataException(String.format("Browser: '%s' is NOT supported", browserType));
         }
         driver.get(baseUrl);
-        if (shouldMaximizeBrowser && !Runner.isRunInHeadlessMode()) {
-            driver.manage().window().maximize();
-        } else if (Runner.isRunInHeadlessMode()) {
-            driver.manage().window().setSize(new Dimension(1920, 1080));
-        }
+//        if (shouldMaximizeBrowser && !Runner.isRunInHeadlessMode()) {
+//            driver.manage().window().maximize();
+//        } else if (Runner.isRunInHeadlessMode()) {
+//            driver.manage().window().setSize(new Dimension(1920, 1080));
+//        }
         return driver;
     }
 
@@ -353,41 +353,44 @@ public class Drivers {
     @NotNull
     private WebDriver createChromeDriver(String forUserPersona,
                                          TestExecutionContext testExecutionContext) {
-        boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
-        boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
-        boolean acceptInsecureCerts = Runner.shouldAcceptInsecureCerts();
+
+        String browserConfigFile = Runner.getBrowserConfigFile();
+        Map<String, Map> chromeConfig = JsonFile.getNodeValueAsMapFromJsonFile("chrome", browserConfigFile);
+
+        //boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
+        //boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
+        //boolean acceptInsecureCerts = Runner.shouldAcceptInsecureCerts();
+        //boolean isBrowserHeadless = Boolean.parseBoolean(chromeConfig.get("headless").toString());
+        boolean enableVerboseLogging = Boolean.parseBoolean(chromeConfig.get("verboseLogging").toString());
+        boolean acceptInsecureCerts = Boolean.parseBoolean(chromeConfig.get("acceptInsecureCerts").toString());
+        boolean shouldMaximizeBrowser = Boolean.parseBoolean(chromeConfig.get("maximize").toString());
         String proxyUrl = Runner.getProxyURL();
+
+        ChromeOptions chromeOptions = new ChromeOptions();
 
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Chrome");
         userPersonaBrowserLogs.put(forUserPersona, logFileName);
         LOGGER.info("Creating Chrome logs in file: " + logFileName);
         System.setProperty("webdriver.chrome.logfile", logFileName);
 
-        ChromeOptions chromeOptions = new ChromeOptions();
-        List<String> excludeSwitches = Arrays.asList(
-                "enable-automation",
-                "disable-notifications",
-                "disable-default-apps",
-                "disable-extensions",
-                "enable-user-metrics",
-                "incognito",
-                "show-taps",
-                "disable-infobars"
-        );
+        List<String> excludeSwitches = (List<String>) chromeConfig.get("excludeSwitches");
         chromeOptions.setExperimentalOption("excludeSwitches", excludeSwitches);
 
-        Map<String, Boolean> excludedSchemes = new HashMap<>();
-        excludedSchemes.put("jhb", true);
+        Map<String, Boolean> excludedSchemes = chromeConfig.get("excludedSchemes");
+        //excludedSchemes.put("jhb", true);
 
-        Map<String, Object> prefs = new HashMap<>();
+        /*Map<String, Object> prefs = new HashMap<>();
         prefs.put("credentials_enable_service", false);
         prefs.put("profile.password_manager_enabled", false);
         prefs.put("profile.default_content_setting_values.notifications", 1);
         prefs.put("profile.default_content_setting_values.media_stream_mic", 1);
         prefs.put("profile.default_content_setting_values.media_stream_camera", 1);
         prefs.put("profile.default_content_setting_values.geolocation", 1);
-        prefs.put("protocol_handler.excluded_schemes", excludedSchemes);
-        chromeOptions.setExperimentalOption("prefs", prefs);
+        prefs.put("protocol_handler.excluded_schemes", excludedSchemes);*/
+
+        Map<String, Object> preferences = chromeConfig.get("preferences");
+        preferences.put("protocol_handler.excluded_schemes", excludedSchemes);
+        chromeOptions.setExperimentalOption("prefs", preferences);
 
         LOGGER.info("Set Logging preferences");
         LoggingPreferences logPrefs = new LoggingPreferences();
@@ -397,6 +400,7 @@ public class Drivers {
         } else {
             logPrefs.enable(LogType.BROWSER, Level.ALL);
         }
+        chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
         LOGGER.info("Set Proxy:");
         LOGGER.info(proxyUrl);
@@ -405,16 +409,32 @@ public class Drivers {
             chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
         }
 
-        chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+        Map<String, Map> headlessOptions = chromeConfig.get("HeadlessOptions");
+        boolean isBrowserHeadless = Boolean.parseBoolean(headlessOptions.get("headless").toString());
+
         chromeOptions.setHeadless(isBrowserHeadless);
         chromeOptions.setAcceptInsecureCerts(acceptInsecureCerts);
-        chromeOptions.addArguments("use-fake-device-for-media-stream");
+
+        List<String> arguments = (List<String>) chromeConfig.get("arguments");
+        chromeOptions.addArguments(arguments);
+
+        if (isBrowserHeadless) {
+            List<String> includeArguments = (List<String>) headlessOptions.get("include");
+            chromeOptions.addArguments(includeArguments);
+        }
 
         LOGGER.info("ChromeOptions: " + chromeOptions.asMap());
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions) : new ChromeDriver(chromeOptions);
         Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities() : ((ChromeDriver) driver).getCapabilities();
         userPersonaDriverCapabilities.put(forUserPersona, capabilities);
+
+        if (shouldMaximizeBrowser && !Runner.isRunInHeadlessMode()) {
+            driver.manage().window().maximize();
+        } else if (Runner.isRunInHeadlessMode()) {
+            driver.manage().window().setSize(new Dimension(1920, 1080));
+        }
+
         return driver;
     }
 

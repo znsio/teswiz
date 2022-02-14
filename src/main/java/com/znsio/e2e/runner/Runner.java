@@ -229,6 +229,10 @@ public class Runner {
         return webDriverManagerProxyURL;
     }
 
+    public static String getBrowserConfigFile() {
+        return configs.get(BROWSER_CONFIG_FILE);
+    }
+
     public void run(List<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);

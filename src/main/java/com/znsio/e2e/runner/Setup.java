@@ -73,18 +73,22 @@ public class Setup {
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
     private static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
     private static final String APPIUM_SETTINGS = "io.appium.settings";
-    private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
     public static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
+    private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
+    public static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
+    private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
+
     static Map<String, Map> environmentConfiguration;
     static Map<String, Map> testDataForEnvironment;
     static Map applitoolsConfiguration = new HashMap<>();
-    private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
+
     private final Properties properties;
     private final String DEFAULT_LOG_PROPERTIES_FILE = "./src/main/resources/defaultLog4j.properties";
     private final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private final String configFilePath;
-    private List<Device> devices;
     private final String BUILD_ID = "BUILD_ID";
+
+    private List<Device> devices;
 
     Setup(String configFilePath) {
         this.configFilePath = configFilePath;
@@ -101,6 +105,12 @@ public class Setup {
                        ? new HashMap<>()
                        : JsonFile.getNodeValueAsMapFromJsonFile(environment, envConfigFile);
     }
+
+    /*private static Map<String, Map> loadBrowserConfiguration() {
+        String browserConfigFile = configs.get(BROWSER_CONFIG_FILE);
+        LOGGER.info("Loading browser configuration from BROWSER_CONFIG_FILE: "
+                + browserConfigFile);
+    }*/
 
     private static Map<String, Map> loadTestDataForEnvironment(String environment) {
         String testDataFile = configs.get(TEST_DATA_FILE);
@@ -203,6 +213,7 @@ public class Setup {
         configsBoolean.put(ACCEPT_INSECURE_CERTS, getOverriddenBooleanValue(ACCEPT_INSECURE_CERTS, getBooleanValueFromPropertiesIfAvailable(ACCEPT_INSECURE_CERTS, true)));
         configs.put(LAUNCH_NAME_SUFFIX, getOverriddenStringValue(LAUNCH_NAME_SUFFIX, getStringValueFromPropertiesIfAvailable(LAUNCH_NAME_SUFFIX, "")));
         configs.put(APP_VERSION, NOT_SET);
+        configs.put(BROWSER_CONFIG_FILE, getOverriddenStringValue(BROWSER_CONFIG_FILE, getStringValueFromPropertiesIfAvailable(BROWSER_CONFIG_FILE, NOT_SET)));
     }
 
     public List<String> getExecutionArguments() {
