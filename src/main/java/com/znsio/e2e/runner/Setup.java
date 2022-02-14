@@ -974,23 +974,6 @@ public class Setup {
         return customTags;
     }
 
-    private void printArguments(String[] args) {
-        LOGGER.info("Passed args: " + args.length);
-        for (int i = 0; i < args.length; i++) {
-            LOGGER.info("\targ: " + (i + 1) + " :: " + args[i]);
-        }
-    }
-
-    private void printSystemProperties() {
-        LOGGER.info("system properties");
-        System.getProperties().forEach((key, value) -> LOGGER.info("\t" + key + "\t:: " + value));
-    }
-
-    private void printEnvironmentVariables() {
-        LOGGER.info("environment variables");
-        System.getenv().forEach((key, value) -> LOGGER.info("\t" + key + "\t:: " + value));
-    }
-
     private void cleanupDirectories() {
         List<String> files = listOfDirectoriesToDelete();
         LOGGER.info("Delete Directories: " + files);
