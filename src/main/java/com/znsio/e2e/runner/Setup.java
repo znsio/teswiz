@@ -209,10 +209,9 @@ public class Setup {
     public List<String> getExecutionArguments() {
         loadAndUpdateConfigParameters(configFilePath);
 
-//        cleanupDirectories();
+        PropertyConfigurator.configure(configs.get(LOG_PROPERTIES_FILE));
         setupDirectories();
 
-        PropertyConfigurator.configure(configs.get(LOG_PROPERTIES_FILE));
         System.setProperty(LOG_DIR, configs.get(LOG_DIR));
         LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
         printLoadedConfigProperties(configFilePath);
@@ -291,7 +290,7 @@ public class Setup {
     }
 
     private void printLoadedConfigProperties(String configFilePath) {
-        LOGGER.info("\nLoaded property file: " + configFilePath);
+        LOGGER.info("Loaded property file: " + configFilePath);
         final String[] propVars = {""};
         properties.forEach((k, v) -> propVars[0] +=("\t" + k + ":" + v + "\n"));
         LOGGER.info("Config properties: " + configFilePath + ":\n" + propVars[0]);
