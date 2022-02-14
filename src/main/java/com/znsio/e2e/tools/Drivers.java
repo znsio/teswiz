@@ -1,47 +1,57 @@
 package com.znsio.e2e.tools;
 
-import com.appium.manager.*;
-import com.context.*;
-import com.epam.reportportal.service.*;
-import com.github.device.*;
+import com.appium.manager.AppiumDevice;
+import com.appium.manager.AppiumDriverManager;
+import com.appium.manager.DeviceAllocationManager;
+import com.context.TestExecutionContext;
+import com.epam.reportportal.service.ReportPortal;
+import com.github.device.Device;
 import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.entities.*;
-import com.znsio.e2e.exceptions.*;
-import com.znsio.e2e.runner.*;
-import com.znsio.e2e.tools.cmd.*;
-import io.appium.java_client.*;
-import io.appium.java_client.appmanagement.*;
-import io.github.bonigarcia.wdm.*;
-import io.github.bonigarcia.wdm.config.*;
-import org.apache.commons.lang3.exception.*;
+import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.exceptions.EnvironmentSetupException;
+import com.znsio.e2e.exceptions.InvalidTestDataException;
+import com.znsio.e2e.runner.Runner;
+import com.znsio.e2e.tools.cmd.CommandLineExecutor;
+import com.znsio.e2e.tools.cmd.CommandLineResponse;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.appmanagement.ApplicationState;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import io.github.bonigarcia.wdm.config.DriverManagerType;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.*;
-import org.openqa.selenium.Proxy;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.*;
-import org.openqa.selenium.firefox.*;
-import org.openqa.selenium.logging.*;
-import org.openqa.selenium.remote.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 
-import static com.znsio.e2e.runner.Setup.*;
-import static io.appium.java_client.remote.MobileCapabilityType.*;
+import static com.znsio.e2e.runner.Setup.CAPS;
+import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
 
 public class Drivers {
     private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
+    private static final String DEBUG = "DEBUG";
     private final Map<String, Driver> userPersonaDrivers = new HashMap<>();
     private final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
     private final int MAX_NUMBER_OF_APPIUM_DRIVERS;
     private final int MAX_NUMBER_OF_WEB_DRIVERS;
-    private int numberOfAndroidDriversUsed = 0;
     private int numberOfWebDriversUsed = 0;
-    private int numberOfWindowsDriversUsed = 0;
+    private int numberOfAppiumDriversUsed = 0;
 
     public Drivers() {
         MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
@@ -106,18 +116,18 @@ public class Drivers {
         LOGGER.info(String.format("createAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
-                numberOfAndroidDriversUsed));
+                numberOfAppiumDriversUsed));
         Driver currentDriver;
-        if (Platform.android.equals(forPlatform) && numberOfAndroidDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        if (Platform.android.equals(forPlatform) && numberOfAppiumDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
             throw new InvalidTestDataException(
                     String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
-                            numberOfAndroidDriversUsed,
+                            numberOfAppiumDriversUsed,
                             userPersona,
                             forPlatform.name())
             );
         }
 
-        if (numberOfAndroidDriversUsed == 0) {
+        if (numberOfAppiumDriversUsed == 0) {
             AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
             AppiumDevice deviceInfo = (AppiumDevice) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
             Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
@@ -141,16 +151,16 @@ public class Drivers {
             } catch (Exception e) {
                 throw new EnvironmentSetupException(
                         String.format("Unable to create Android driver '#%d' for user persona: '%s'",
-                                numberOfAndroidDriversUsed,
+                                numberOfAppiumDriversUsed,
                                 userPersona)
                 );
             }
         }
-        numberOfAndroidDriversUsed++;
+        numberOfAppiumDriversUsed++;
         LOGGER.info(String.format("createAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of appiumDrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
-                numberOfAndroidDriversUsed));
+                numberOfAppiumDriversUsed));
         disableNotificationsAndToastsOnDevice(currentDriver, context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON), (String) userPersonaDriverCapabilities.get(userPersona).getCapability("udid"));
         return currentDriver;
     }
@@ -197,18 +207,18 @@ public class Drivers {
         LOGGER.info(String.format("createWindowsDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
                 userPersona,
                 forPlatform.name(),
-                numberOfWindowsDriversUsed));
+                numberOfAppiumDriversUsed));
 
         Driver currentDriver;
-        if (Platform.windows.equals(forPlatform) && numberOfWindowsDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        if (Platform.windows.equals(forPlatform) && numberOfAppiumDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
             throw new InvalidTestDataException(
                     String.format("Unable to create more than '%d' drivers for user persona: '%s' on platform: '%s'",
-                            numberOfWindowsDriversUsed,
+                            numberOfAppiumDriversUsed,
                             userPersona,
                             forPlatform.name())
             );
         }
-        if (numberOfWindowsDriversUsed < MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        if (numberOfAppiumDriversUsed < MAX_NUMBER_OF_APPIUM_DRIVERS) {
             AppiumDriver<WebElement> windowsDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
             String runningOn = Runner.isRunningInCI() ? "CI" : "local";
             context.addTestState(TEST_CONTEXT.WINDOWS_DEVICE_ON, runningOn);
@@ -222,16 +232,16 @@ public class Drivers {
         } else {
             throw new InvalidTestDataException(
                     String.format("Current number of WindowsDriver instances used: '%d'. " +
-                                          "Unable to create more than '%d' drivers for user persona: '%s' " +
-                                          "on platform: '%s'",
-                            numberOfWindowsDriversUsed,
+                                    "Unable to create more than '%d' drivers for user persona: '%s' " +
+                                    "on platform: '%s'",
+                            numberOfAppiumDriversUsed,
                             MAX_NUMBER_OF_APPIUM_DRIVERS,
                             userPersona,
                             forPlatform.name())
             );
         }
-        numberOfWindowsDriversUsed++;
-        LOGGER.info(String.format("createWindowsDriverForUser: done: userPersona: '%s', Platform: '%s', Number of windowsDrivers: '%d'", userPersona, forPlatform.name(), numberOfWindowsDriversUsed));
+        numberOfAppiumDriversUsed++;
+        LOGGER.info(String.format("createWindowsDriverForUser: done: userPersona: '%s', Platform: '%s', Number of windowsDrivers: '%d'", userPersona, forPlatform.name(), numberOfAppiumDriversUsed));
         return currentDriver;
     }
 
@@ -242,6 +252,7 @@ public class Drivers {
             deviceAllocationManager.allocateDevice(availableDevice);
             AppiumDriver driver = new AppiumDriverManager().startAppiumDriverInstance(testName);
             updateAvailableDeviceInformation(availableDevice);
+            ReportPortal.emitLog("allocateNewDeviceAndStartAppiumDriver: Device Info\n" + availableDevice, DEBUG, new Date());
             return driver;
         } catch (Exception e) {
             LOGGER.info(ExceptionUtils.getStackTrace(e));
@@ -475,8 +486,8 @@ public class Drivers {
     private RemoteWebDriver createRemoteWebDriver(MutableCapabilities chromeOptions) {
         try {
             String cloudName = Runner.getCloudName();
-            String webdriverHubSuffix = "/wd/hub";
-            String remoteUrl = "http://localhost:" + Runner.getRemoteDriverGridPort() + webdriverHubSuffix;
+            String webDriverHubSuffix = "/wd/hub";
+            String remoteUrl = "http://localhost:" + Runner.getRemoteDriverGridPort() + webDriverHubSuffix;
             if (cloudName.equalsIgnoreCase("headspin")) {
                 String authenticationKey = Runner.getCloudKey();
                 String capabilityFile = System.getProperty(CAPS);
@@ -485,8 +496,8 @@ public class Drivers {
                 Map hostMachines = (Map) hostMachinesList.get(0);
                 String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
                 remoteUrl = remoteServerURL.endsWith("/")
-                                    ? remoteServerURL + authenticationKey + webdriverHubSuffix
-                                    : remoteServerURL + "/" + authenticationKey + webdriverHubSuffix;
+                                    ? remoteServerURL + authenticationKey + webDriverHubSuffix
+                                    : remoteServerURL + "/" + authenticationKey + webDriverHubSuffix;
                 remoteUrl = remoteUrl.startsWith("https") ? remoteUrl : "https://" + remoteUrl;
             }
             LOGGER.info("Starting RemoteWebDriver using url: " + remoteUrl);
@@ -530,16 +541,16 @@ public class Drivers {
         userPersonaDrivers.keySet().forEach(key -> {
             LOGGER.info("\tUser Persona: " + key);
             validateVisualTestResults(key);
-            attachLogsAndCloseDriver(key);
+            attachLogsAndCloseDriver(context, key);
         });
     }
 
     private void validateVisualTestResults(String key) {
         Driver driver = userPersonaDrivers.get(key);
-        driver.getVisual().handleTestResults(key);
+        driver.getVisual().handleTestResults(key, driver.getType());
     }
 
-    private void attachLogsAndCloseDriver(String key) {
+    private void attachLogsAndCloseDriver (TestExecutionContext context, String key) {
         Driver driver = userPersonaDrivers.get(key);
 
         switch (driver.getType()) {
@@ -550,7 +561,7 @@ public class Drivers {
                 if (Runner.platform.equals(Platform.windows)) {
                     closeAppOnMachine(driver);
                 } else {
-                    closeAppOnDevice(driver);
+                    closeAppOnDevice(context, driver);
                 }
                 break;
             default:
@@ -565,7 +576,7 @@ public class Drivers {
         LOGGER.info(message + ": logFileName: " + logFileName);
         ReportPortal.emitLog(
                 message,
-                "DEBUG",
+                DEBUG,
                 new Date(), new File(logFileName));
         WebDriver webDriver = driver.getInnerDriver();
         if (null == webDriver) {
@@ -585,30 +596,32 @@ public class Drivers {
         ReportPortal.emitLog(
                 String.format("App: '%s' terminated",
                         appPackageName),
-                "DEBUG",
+                DEBUG,
                 new Date());
     }
 
-    private void closeAppOnDevice(Driver driver) {
+    private void closeAppOnDevice (@NotNull TestExecutionContext context, @NotNull Driver driver) {
         String appPackageName = Runner.getAppPackageName();
+        String logMessage;
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
-        if (Runner.isRunningInCI()) {
-            String message = "Skip terminating & closing app on Cloud device";
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
-        } else {
-            LOGGER.info("Terminate app: " + appPackageName);
-            ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
-            LOGGER.info("Application State: " + applicationState);
-            appiumDriver.closeApp();
-            appiumDriver.quit();
-            ReportPortal.emitLog(
-                    String.format("App: '%s' Current application state: '%s'%n",
-                            appPackageName,
-                            applicationState),
-                    "DEBUG",
-                    new Date());
-        }
+
+        LOGGER.info("Terminate app: " + appPackageName);
+        ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
+
+        logMessage = String.format("App: '%s' Application state before closing app: '%s'%n",
+                appPackageName,
+                applicationState);
+        LOGGER.info(logMessage);
+        ReportPortal.emitLog(logMessage, DEBUG, new Date());
+
+        appiumDriver.closeApp();
+        appiumDriver.terminateApp(appPackageName);
+        applicationState = appiumDriver.queryAppState(appPackageName);
+        logMessage = String.format("App: '%s' Application state after closing app: '%s'%n",
+                appPackageName,
+                applicationState);
+        LOGGER.info(logMessage);
+        ReportPortal.emitLog(logMessage, DEBUG, new Date());
     }
 
     public Set<String> getAvailableUserPersonas() {

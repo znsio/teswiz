@@ -1,24 +1,34 @@
 package com.znsio.e2e.tools;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableMap;
 import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.exceptions.*;
-import com.znsio.e2e.runner.*;
-import io.appium.java_client.*;
-import io.appium.java_client.android.*;
-import io.appium.java_client.ios.*;
-import io.appium.java_client.touch.*;
-import io.appium.java_client.touch.offset.*;
-import org.apache.log4j.*;
+import com.znsio.e2e.exceptions.InvalidTestDataException;
+import com.znsio.e2e.runner.Runner;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileBy;
+import io.appium.java_client.MobileElement;
+import io.appium.java_client.PerformsTouchActions;
+import io.appium.java_client.TouchAction;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.StartsActivity;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.touch.LongPressOptions;
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.ElementOption;
+import io.appium.java_client.touch.offset.PointOption;
+import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.*;
-import org.openqa.selenium.support.ui.*;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.*;
-import java.time.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.List;
 
-import static com.znsio.e2e.tools.Wait.*;
+import static com.znsio.e2e.tools.Wait.waitFor;
 
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
@@ -47,11 +57,11 @@ public class Driver {
         this.visually = new Visual(this.type, innerDriver, testName, Runner.isVisualTestingEnabled());
     }
 
-    public WebElement waitForVisibilityOf(String elementId) {
-        return waitForVisibilityOf(elementId, 10);
+    public WebElement waitForClickabilityOf(String elementId) {
+        return waitForClickabilityOf(elementId, 10);
     }
 
-    public WebElement waitForVisibilityOf(String elementId, int numberOfSecondsToWait) {
+    public WebElement waitForClickabilityOf(String elementId, int numberOfSecondsToWait) {
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.elementToBeClickable(findElementByAccessibilityId(elementId)));
     }
 
@@ -301,18 +311,18 @@ public class Driver {
         }
     }
 
-    public void allowPermission(By element) {
-        waitForVisibilityOf(element);
+    public void allowPermission (By element) {
+        waitForClickabilityOf(element);
         if (Runner.platform.equals(Platform.android)) {
             driver.findElement(element).click();
         }
     }
 
-    public WebElement waitForVisibilityOf(By elementId) {
-        return waitForVisibilityOf(elementId, 10);
+    public WebElement waitForClickabilityOf(By elementId) {
+        return waitForClickabilityOf(elementId, 10);
     }
 
-    public WebElement waitForVisibilityOf(By elementId, int numberOfSecondsToWait) {
+    public WebElement waitForClickabilityOf(By elementId, int numberOfSecondsToWait) {
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.elementToBeClickable(elementId));
     }
 

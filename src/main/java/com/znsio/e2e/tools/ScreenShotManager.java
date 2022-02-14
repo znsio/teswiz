@@ -1,17 +1,20 @@
 package com.znsio.e2e.tools;
 
-import com.context.*;
-import com.epam.reportportal.service.*;
-import com.znsio.e2e.entities.*;
-import com.znsio.e2e.runner.*;
-import org.apache.commons.io.*;
-import org.apache.commons.lang3.exception.*;
-import org.apache.log4j.*;
-import org.openqa.selenium.*;
+import com.context.SessionContext;
+import com.context.TestExecutionContext;
+import com.epam.reportportal.service.ReportPortal;
+import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.runner.Runner;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 
-import java.io.*;
-import java.util.*;
-
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 
 public class ScreenShotManager {
 
@@ -28,14 +31,13 @@ public class ScreenShotManager {
         file.getParentFile().mkdirs();
     }
 
-    public void takeScreenShot(String fileName) {
-        Driver driver = (Driver) context.getTestState(TEST_CONTEXT.CURRENT_DRIVER);
-        if (null != driver) {
+    public void takeScreenShot(WebDriver innerDriver, String fileName) {
+        if (null != innerDriver) {
             fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
             LOGGER.info("The screenshot will be placed here : " + destinationFile.getAbsolutePath());
             try {
-                File screenshot = ((TakesScreenshot) driver.getInnerDriver()).getScreenshotAs(OutputType.FILE);
+                File screenshot = ((TakesScreenshot) innerDriver).getScreenshotAs(OutputType.FILE);
                 LOGGER.info("Original screenshot : " + screenshot.getAbsolutePath());
                 FileUtils.copyFile(screenshot, destinationFile);
                 LOGGER.info("The screenshot is available here : " + destinationFile.getAbsolutePath());

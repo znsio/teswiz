@@ -10,6 +10,7 @@ import com.context.*;
 import com.epam.reportportal.service.*;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.*;
+import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.runner.*;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.*;
@@ -20,7 +21,7 @@ import java.io.*;
 import java.time.*;
 import java.util.*;
 
-import static com.znsio.e2e.runner.Runner.*;
+import static com.znsio.e2e.runner.Runner.NOT_SET;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class Visual {
@@ -35,6 +36,7 @@ public class Visual {
     private final Map applitoolsConfig;
     private final boolean isEnableBenchmarkPerValidation;
     private final boolean isVerboseLoggingEnabled;
+    private final WebDriver innerDriver;
     private final int DEFAULT_UFG_CONCURRENCY = 5;
     private String applitoolsLogFileNameForWeb = NOT_SET;
     private String applitoolsLogFileNameForApp = NOT_SET;
@@ -45,6 +47,7 @@ public class Visual {
         this.screenShotManager = (ScreenShotManager) context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
         this.applitoolsConfig = Runner.initialiseApplitoolsConfiguration();
         this.isEnableBenchmarkPerValidation = Boolean.parseBoolean(String.valueOf(this.applitoolsConfig.get(APPLITOOLS.ENABLE_BENCHMARK_PER_VALIDATION)));
+        this.innerDriver = innerDriver;
         this.isVerboseLoggingEnabled = getValueFromConfig(APPLITOOLS.SHOW_LOGS, true);
         String appName = this.applitoolsConfig.get(APPLITOOLS.APP_NAME) + "-";
         eyesOnApp = instantiateAppiumEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
@@ -213,7 +216,7 @@ public class Visual {
             LOGGER.info(fromScreen + " :" + tag + ":: App: checkWindow: Time taken: " + appDuration.getSeconds() + " sec ");
         }
 
-        screenShotManager.takeScreenShot(formattedTagName);
+        screenShotManager.takeScreenShot(innerDriver, formattedTagName);
         return this;
     }
 
@@ -244,7 +247,7 @@ public class Visual {
             LOGGER.info(fromScreen + " :" + tag + ":: App: checkWindow: Time taken: " + appDuration.getSeconds() + " sec ");
         }
 
-        screenShotManager.takeScreenShot(formattedTagName);
+        screenShotManager.takeScreenShot(innerDriver, formattedTagName);
         return this;
     }
 
@@ -271,18 +274,30 @@ public class Visual {
             LOGGER.info(fromScreen + ":" + tag + ":: App: checkWindow with MatchLevel: " + level.name() + ": Time taken: " + appDuration.getSeconds() + " sec");
         }
 
-        screenShotManager.takeScreenShot(getFormattedTagName(fromScreen, tag));
+        screenShotManager.takeScreenShot(innerDriver, getFormattedTagName(fromScreen, tag));
         return this;
     }
 
-    public Visual takeScreenshot(String fromScreen, String tag) {
-        screenShotManager.takeScreenShot(getFormattedTagName(fromScreen, tag));
+    public Visual takeScreenshot (String fromScreen, String tag) {
+        screenShotManager.takeScreenShot(innerDriver, getFormattedTagName(fromScreen, tag));
         return this;
     }
 
-    public void handleTestResults(String userPersona) {
-        getVisualResultsFromWeb(userPersona);
-        getVisualResultsFromApp(userPersona);
+    public void handleTestResults (String userPersona, String driverType) {
+        switch (driverType) {
+            case Driver.WEB_DRIVER:
+                takeScreenshot(userPersona, "afterHooks");
+                getVisualResultsFromWeb(userPersona);
+                break;
+
+            case Driver.APPIUM_DRIVER:
+                takeScreenshot(userPersona, "afterHooks");
+                getVisualResultsFromApp(userPersona);
+                break;
+
+            default:
+                throw new InvalidTestDataException(String.format("Unexpected driver type: '%s'", driverType));
+        }
     }
 
     private void getVisualResultsFromWeb(String userPersona) {

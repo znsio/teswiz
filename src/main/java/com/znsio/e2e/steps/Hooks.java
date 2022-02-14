@@ -45,17 +45,8 @@ public class Hooks {
     public void afterScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();
         LOGGER.info("ThreadId:  " + threadId + "  In RunCukes - After: " + scenario.getName());
-        TestExecutionContext testExecutionContext = Runner.getTestExecutionContext(threadId);
-        ScreenShotManager screenShotManager = (ScreenShotManager) testExecutionContext.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
-        takeScreenShotOnTestCompletion(scenario, screenShotManager);
         Runner.closeAllDrivers(threadId);
         SoftAssertions softly = Runner.getSoftAssertion(threadId);
         softly.assertAll();
-    }
-
-    private void takeScreenShotOnTestCompletion(Scenario scenario, ScreenShotManager screenShotManager) {
-        if (scenario.isFailed()) {
-            screenShotManager.takeScreenShot(scenario.getName() + "-AfterTest");
-        }
     }
 }

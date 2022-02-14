@@ -44,7 +44,7 @@ public class LoginScreenAndroid extends LoginScreen {
 
     @Override
     public String getInvalidLoginError() {
-        WebElement alertText = driver.waitForVisibilityOf(errorMessageId);
+        WebElement alertText = driver.waitForClickabilityOf(errorMessageId);
         visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert");
         visually.checkWindow(SCREEN_NAME, "Invalid Login alert");
         return alertText.getText();
@@ -52,7 +52,7 @@ public class LoginScreenAndroid extends LoginScreen {
 
     @Override
     public LoginScreen dismissAlert() {
-        driver.waitForVisibilityOf(dismissAlertId).click();
+        driver.waitForClickabilityOf(dismissAlertId).click();
         waitFor(2);
         visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert dismissed");
         return this;

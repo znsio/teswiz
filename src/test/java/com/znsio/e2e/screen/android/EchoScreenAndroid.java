@@ -19,11 +19,11 @@ public class EchoScreenAndroid extends EchoScreen {
 
     @Override
     public EchoScreen echoMessage(String message) {
-        driver.waitForVisibilityOf(bySaveMessageButtonXpath);
+        driver.waitForClickabilityOf(bySaveMessageButtonXpath);
         driver.findElementByAccessibilityId(byMessageInputAccessibilityId).click();
         driver.findElementByAccessibilityId(byMessageInputAccessibilityId).sendKeys(message);
-        driver.waitForVisibilityOf(bySaveMessageButtonXpath).click();
-        driver.waitForVisibilityOf(byGoBackToHomeScreenButtonXpath).click();
+        driver.waitForClickabilityOf(bySaveMessageButtonXpath).click();
+        driver.waitForClickabilityOf(byGoBackToHomeScreenButtonXpath).click();
         return this;
     }
 }

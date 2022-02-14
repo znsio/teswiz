@@ -27,13 +27,13 @@ public class HomeScreenAndroid extends HomeScreen {
 
     @Override
     public HomeScreen goBack() {
-        driver.waitForVisibilityOf(byGoBackToHomeScreenButtonXpath).click();
+        driver.waitForClickabilityOf(byGoBackToHomeScreenButtonXpath).click();
         return this;
     }
 
     @Override
     public EchoScreen selectEcho() {
-        driver.waitForVisibilityOf(byEchoMessageXpath).click();
+        driver.waitForClickabilityOf(byEchoMessageXpath).click();
         return EchoScreen.get();
     }
 }

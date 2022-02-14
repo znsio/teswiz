@@ -41,7 +41,7 @@ public class LoginScreenWeb extends LoginScreen {
 
     @Override
     public String getInvalidLoginError() {
-        WebElement alertText = driver.waitForVisibilityOf(errorMessageId);
+        WebElement alertText = driver.waitForClickabilityOf(errorMessageId);
         visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert");
         visually.checkWindow(SCREEN_NAME, "Invalid Login alert");
         return alertText.getText().trim();
