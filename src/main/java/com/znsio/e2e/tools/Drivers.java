@@ -293,10 +293,10 @@ public class Drivers {
         LOGGER.info("baseUrl: " + baseUrl);
 
         DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
-        String proxyURL = null == Runner.getWebDriverManagerProxyURL() ? "" : Runner.getWebDriverManagerProxyURL();
-        LOGGER.info(String.format("Using proxyURL: '%s' for getting the WebDriver for browser: '%s'", proxyURL, browserType));
+        String webDriverManagerProxyUrl = null == Runner.getWebDriverManagerProxyURL() ? "" : Runner.getWebDriverManagerProxyURL();
+        LOGGER.info(String.format("Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'", webDriverManagerProxyUrl, browserType));
 
-        WebDriverManager.getInstance(driverManagerType).proxy(proxyURL).setup();
+        WebDriverManager.getInstance(driverManagerType).proxy(webDriverManagerProxyUrl).setup();
 
         WebDriver driver = null;
         switch (driverManagerType) {
@@ -398,8 +398,6 @@ public class Drivers {
             logPrefs.enable(LogType.BROWSER, Level.ALL);
         }
 
-        LOGGER.info("Set Proxy:");
-        LOGGER.info(proxyUrl);
         if (null != proxyUrl) {
             LOGGER.info("Setting Proxy for browser: " + proxyUrl);
             chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));

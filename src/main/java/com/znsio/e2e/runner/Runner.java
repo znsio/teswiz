@@ -211,7 +211,7 @@ public class Runner {
 
     public static String getProxyURL() {
         String proxyURL = configs.get(PROXY_URL);
-        LOGGER.info("proxyURL: " + proxyURL);
+        LOGGER.info("Using proxyURL: " + proxyURL);
         return proxyURL;
     }
 
