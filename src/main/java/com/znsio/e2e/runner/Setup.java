@@ -92,13 +92,6 @@ public class Setup {
         properties = loadProperties(this.configFilePath);
     }
 
-    private void printLoadedConfigFile(String configFilePath, Properties properties) {
-        final String[] propVars = {""};
-        properties.forEach((k, v) -> propVars[0] +=("\t" + k + ":" + v + "\n"));
-        LOGGER.info("Config properties: " + configFilePath + ":\n" + propVars[0]);
-        ReportPortal.emitLog("Config properties: " + configFilePath + ":\n" + propVars[0], "debug", new Date());
-    }
-
     private static Map<String, Map> loadEnvironmentConfiguration(String environment) {
         String envConfigFile = configs.get(ENVIRONMENT_CONFIG_FILE);
         LOGGER.info("Loading environment configuration from ENVIRONMENT_CONFIG_FILE: "
@@ -168,7 +161,6 @@ public class Setup {
     }
 
     void loadAndUpdateConfigParameters(String configFilePath) {
-        printLoadedConfigFile(configFilePath, properties);
         configs.put(CONFIG_FILE, configFilePath);
         buildMapOfRequiredProperties();
     }
@@ -283,8 +275,8 @@ public class Setup {
     }
 
     private void getBranchName() {
-        String[] listOfDevices = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
-        CommandLineResponse response = CommandLineExecutor.execCommand(listOfDevices);
+        String[] getBranchNameCommand = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
+        CommandLineResponse response = CommandLineExecutor.execCommand(getBranchNameCommand);
         String branchName = response.getStdOut();
         LOGGER.info("BRANCH_NAME: " + branchName);
         configs.put(BRANCH_NAME, branchName);
@@ -300,7 +292,9 @@ public class Setup {
 
     private void printLoadedConfigProperties(String configFilePath) {
         LOGGER.info("\nLoaded property file: " + configFilePath);
-        properties.keySet().forEach(key -> LOGGER.info("\t" + key + " :: " + properties.get(key)));
+        final String[] propVars = {""};
+        properties.forEach((k, v) -> propVars[0] +=("\t" + k + ":" + v + "\n"));
+        LOGGER.info("Config properties: " + configFilePath + ":\n" + propVars[0]);
     }
 
     private void setupWebExecution() {
