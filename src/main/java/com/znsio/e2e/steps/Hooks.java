@@ -23,7 +23,6 @@ public class Hooks {
         testExecutionContext.addTestState(TEST_CONTEXT.ALL_DRIVERS, new Drivers());
         SoftAssertions softly = new SoftAssertions();
         testExecutionContext.addTestState(TEST_CONTEXT.SOFT_ASSERTIONS, softly);
-        ReportPortal.emitLog(testExecutionContext.getTestState(TEST_CONTEXT.DEVICE_INFO).toString(), "info", new Date());
         addEnvironmentVariablesToReportPortal();
         addSystemPropertiesToReportPortal();
     }

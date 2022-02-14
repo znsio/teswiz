@@ -47,8 +47,6 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
         LOGGER.info(
                 String.format("ThreadID: %d: beforeScenario: for scenario: %s\n",
                         Thread.currentThread().getId(), scenarioName));
-        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_INFO,
-                "Chrome browser - version: " + WebDriverManager.chromedriver().getDownloadedDriverVersion());
         testExecutionContext.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, FileLocations.REPORTS_DIRECTORY
                                                                                        + normalisedScenarioName);
         testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_DIRECTORY,

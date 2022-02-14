@@ -287,16 +287,12 @@ public class Drivers {
 
         String providedBaseUrl = Runner.getBaseURLForWeb();
         if (null == providedBaseUrl) {
-            throw new InvalidTestDataException("baseUrl not provided as an environment variable");
+            throw new InvalidTestDataException("baseUrl not provided");
         }
         String baseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrl));
         LOGGER.info("baseUrl: " + baseUrl);
 
-        DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
-        String webDriverManagerProxyUrl = null == Runner.getWebDriverManagerProxyURL() ? "" : Runner.getWebDriverManagerProxyURL();
-        LOGGER.info(String.format("Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'", webDriverManagerProxyUrl, browserType));
-
-        WebDriverManager.getInstance(driverManagerType).proxy(webDriverManagerProxyUrl).setup();
+        DriverManagerType driverManagerType = setupBrowserDriver(testExecutionContext, browserType);
 
         WebDriver driver = null;
         switch (driverManagerType) {
@@ -320,6 +316,22 @@ public class Drivers {
             driver.manage().window().setSize(new Dimension(1920, 1080));
         }
         return driver;
+    }
+
+    @NotNull
+    private DriverManagerType setupBrowserDriver(TestExecutionContext testExecutionContext, String browserType) {
+        DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
+        String webDriverManagerProxyUrl = null == Runner.getWebDriverManagerProxyURL() ? "" : Runner.getWebDriverManagerProxyURL();
+        LOGGER.info(String.format("Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'", webDriverManagerProxyUrl, browserType));
+
+        WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType).proxy(webDriverManagerProxyUrl);
+        webDriverManager.setup();
+        String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
+
+        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_INFO, driverManagerType + " browser - version: " + downloadedDriverVersion);
+
+        ReportPortal.emitLog(testExecutionContext.getTestStateAsString(TEST_CONTEXT.DEVICE_INFO), "info", new Date());
+        return driverManagerType;
     }
 
     private AppiumDevice updateAvailableDeviceInformation(AppiumDevice availableDevice) {
