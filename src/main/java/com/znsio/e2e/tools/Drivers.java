@@ -361,9 +361,14 @@ public class Drivers {
         //boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
         //boolean acceptInsecureCerts = Runner.shouldAcceptInsecureCerts();
         //boolean isBrowserHeadless = Boolean.parseBoolean(chromeConfig.get("headless").toString());
-        boolean enableVerboseLogging = Boolean.parseBoolean(chromeConfig.get("verboseLogging").toString());
-        boolean acceptInsecureCerts = Boolean.parseBoolean(chromeConfig.get("acceptInsecureCerts").toString());
-        boolean shouldMaximizeBrowser = Boolean.parseBoolean(chromeConfig.get("maximize").toString());
+
+//        boolean enableVerboseLogging = Boolean.parseBoolean(chromeConfig.get("verboseLogging").toString());
+//        boolean acceptInsecureCerts = Boolean.parseBoolean(chromeConfig.get("acceptInsecureCerts").toString());
+//        boolean shouldMaximizeBrowser = Boolean.parseBoolean(chromeConfig.get("maximize").toString());
+
+        boolean enableVerboseLogging = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"chrome", "verboseLogging"}));
+        boolean acceptInsecureCerts = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"chrome", "acceptInsecureCerts"}));
+        boolean shouldMaximizeBrowser = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"chrome", "maximize"}));
         String proxyUrl = Runner.getProxyURL();
 
         ChromeOptions chromeOptions = new ChromeOptions();
