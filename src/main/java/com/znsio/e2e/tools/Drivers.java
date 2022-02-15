@@ -292,6 +292,8 @@ public class Drivers {
         String baseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrl));
         LOGGER.info("baseUrl: " + baseUrl);
 
+        checkConnectivityToBaseUrl(baseUrl);
+
         DriverManagerType driverManagerType = setupBrowserDriver(testExecutionContext, browserType);
 
         WebDriver driver = null;
@@ -316,6 +318,12 @@ public class Drivers {
             driver.manage().window().setSize(new Dimension(1920, 1080));
         }
         return driver;
+    }
+
+    private void checkConnectivityToBaseUrl(String baseUrl) {
+        LOGGER.info(String.format("Check connectivity to baseUrl: '%s'", baseUrl));
+        String[] curlCommand = new String[]{"curl --insecure -I " + baseUrl};
+        CommandLineExecutor.execCommand(curlCommand);
     }
 
     @NotNull
