@@ -1,5 +1,6 @@
 package com.znsio.e2e.tools;
 
+import com.epam.reportportal.service.ReportPortal;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import org.apache.log4j.Logger;
 import org.everit.json.schema.Schema;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 
 public class JsonSchemaValidator {
     private static final Logger LOGGER = Logger.getLogger(JsonSchemaValidator.class.getName());
@@ -44,8 +46,10 @@ public class JsonSchemaValidator {
             schema.validate(jsonObject);
             LOGGER.info(String.format("Json file '%s' validated successfully against the schema", jsonFilePath));
         } catch (ValidationException validationException) {
-            throw new InvalidTestDataException(
-                    String.format("Json file '%s' failed schema checks:%n%s", jsonFilePath, validationException.getAllMessages()));
+            String exceptionMessage = String.format("Json file '%s' failed schema checks:%n%s", jsonFilePath, validationException.getAllMessages());
+            LOGGER.info(exceptionMessage);
+            ReportPortal.emitLog(exceptionMessage, "DEBUG", new Date());
+            throw new InvalidTestDataException(exceptionMessage);
         }
     }
 }
