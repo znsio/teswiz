@@ -497,8 +497,6 @@ public class Drivers {
         }
         firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
-        LOGGER.info("Set Proxy:");
-        LOGGER.info(proxyUrl);
         if (null != proxyUrl) {
             LOGGER.info("Setting Proxy for browser: " + proxyUrl);
             firefoxOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
