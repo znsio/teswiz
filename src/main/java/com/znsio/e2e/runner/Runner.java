@@ -201,26 +201,10 @@ public class Runner {
         return configs.get(BROWSER);
     }
 
-    public static boolean isRunInHeadlessMode() {
-        return configsBoolean.get(BROWSER_HEADLESS);
-    }
-
-    public static boolean enableVerboseLoggingInBrowser() {
-        return configsBoolean.get(BROWSER_VERBOSE_LOGGING);
-    }
-
     public static String getProxyURL() {
         String proxyURL = configs.get(PROXY_URL);
         LOGGER.info("proxyURL: " + proxyURL);
         return proxyURL;
-    }
-
-    public static boolean shouldMaximizeBrowser() {
-        return configsBoolean.get(BROWSER_MAXIMIZE);
-    }
-
-    public static boolean shouldAcceptInsecureCerts() {
-        return configsBoolean.get(ACCEPT_INSECURE_CERTS);
     }
 
     public static String getWebDriverManagerProxyURL() {

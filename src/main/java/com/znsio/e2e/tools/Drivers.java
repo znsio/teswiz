@@ -35,6 +35,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -44,6 +45,7 @@ import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
 public class Drivers {
     private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
     private static final String DEBUG = "DEBUG";
+    private static final String BROWSER_CONFIG_SCHEMA_FILE = "BrowserConfigSchema.json";
     private final Map<String, Driver> userPersonaDrivers = new HashMap<>();
     private final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
@@ -52,6 +54,8 @@ public class Drivers {
     private final int MAX_NUMBER_OF_WEB_DRIVERS;
     private int numberOfWebDriversUsed = 0;
     private int numberOfAppiumDriversUsed = 0;
+    private boolean shouldBrowserBeMaximized = false;
+    private boolean isRunInHeadlessMode = false;
 
     public Drivers() {
         MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
@@ -172,6 +176,10 @@ public class Drivers {
                 forPlatform.name(),
                 numberOfWebDriversUsed));
 
+        if (numberOfWebDriversUsed == 0) {
+            validateBrowserConfigAgainstSchema();
+        }
+
         Driver currentDriver;
         if (Platform.web.equals(forPlatform) && numberOfWebDriversUsed == MAX_NUMBER_OF_WEB_DRIVERS) {
             throw new InvalidTestDataException(
@@ -185,7 +193,7 @@ public class Drivers {
         String runningOn = Runner.isRunningInCI() ? "CI" : "local";
         context.addTestState(TEST_CONTEXT.WEB_BROWSER_ON, runningOn);
         if (numberOfWebDriversUsed < MAX_NUMBER_OF_WEB_DRIVERS) {
-            currentDriver = new Driver(updatedTestName, runningOn, createNewWebDriver(userPersona, context));
+            currentDriver = new Driver(updatedTestName, runningOn, createNewWebDriver(userPersona, context), isRunInHeadlessMode, shouldBrowserBeMaximized);
         } else {
             throw new InvalidTestDataException(
                     String.format("Current number of WebDriver instances used: '%d'. " +
@@ -283,7 +291,6 @@ public class Drivers {
     private WebDriver createNewWebDriver(String forUserPersona,
                                          TestExecutionContext testExecutionContext) {
         String browserType = Runner.getBrowser();
-        //boolean shouldMaximizeBrowser = Runner.shouldMaximizeBrowser();
 
         String providedBaseUrl = Runner.getBaseURLForWeb();
         if (null == providedBaseUrl) {
@@ -314,12 +321,18 @@ public class Drivers {
                 throw new InvalidTestDataException(String.format("Browser: '%s' is NOT supported", browserType));
         }
         driver.get(baseUrl);
-//        if (shouldMaximizeBrowser && !Runner.isRunInHeadlessMode()) {
-//            driver.manage().window().maximize();
-//        } else if (Runner.isRunInHeadlessMode()) {
-//            driver.manage().window().setSize(new Dimension(1920, 1080));
-//        }
+
+        if (shouldBrowserBeMaximized && !isRunInHeadlessMode) {
+            driver.manage().window().maximize();
+        } else if (isRunInHeadlessMode) {
+            driver.manage().window().setSize(new Dimension(1920, 1080));
+        }
         return driver;
+    }
+
+    private void validateBrowserConfigAgainstSchema() {
+        String browserConfigFile = Runner.getBrowserConfigFile();
+        JsonSchemaValidator.validateJsonFileAgainstSchema(browserConfigFile, BROWSER_CONFIG_SCHEMA_FILE);
     }
 
     private AppiumDevice updateAvailableDeviceInformation(AppiumDevice availableDevice) {
@@ -357,18 +370,9 @@ public class Drivers {
         String browserConfigFile = Runner.getBrowserConfigFile();
         Map<String, Map> chromeConfig = JsonFile.getNodeValueAsMapFromJsonFile("chrome", browserConfigFile);
 
-        //boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
-        //boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
-        //boolean acceptInsecureCerts = Runner.shouldAcceptInsecureCerts();
-        //boolean isBrowserHeadless = Boolean.parseBoolean(chromeConfig.get("headless").toString());
-
-//        boolean enableVerboseLogging = Boolean.parseBoolean(chromeConfig.get("verboseLogging").toString());
-//        boolean acceptInsecureCerts = Boolean.parseBoolean(chromeConfig.get("acceptInsecureCerts").toString());
-//        boolean shouldMaximizeBrowser = Boolean.parseBoolean(chromeConfig.get("maximize").toString());
-
         boolean enableVerboseLogging = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"chrome", "verboseLogging"}));
         boolean acceptInsecureCerts = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"chrome", "acceptInsecureCerts"}));
-        boolean shouldMaximizeBrowser = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"chrome", "maximize"}));
+        shouldBrowserBeMaximized = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"chrome", "maximize"}));
         String proxyUrl = Runner.getProxyURL();
 
         ChromeOptions chromeOptions = new ChromeOptions();
@@ -382,17 +386,6 @@ public class Drivers {
         chromeOptions.setExperimentalOption("excludeSwitches", excludeSwitches);
 
         Map<String, Boolean> excludedSchemes = chromeConfig.get("excludedSchemes");
-        //excludedSchemes.put("jhb", true);
-
-        /*Map<String, Object> prefs = new HashMap<>();
-        prefs.put("credentials_enable_service", false);
-        prefs.put("profile.password_manager_enabled", false);
-        prefs.put("profile.default_content_setting_values.notifications", 1);
-        prefs.put("profile.default_content_setting_values.media_stream_mic", 1);
-        prefs.put("profile.default_content_setting_values.media_stream_camera", 1);
-        prefs.put("profile.default_content_setting_values.geolocation", 1);
-        prefs.put("protocol_handler.excluded_schemes", excludedSchemes);*/
-
         Map<String, Object> preferences = chromeConfig.get("preferences");
         preferences.put("protocol_handler.excluded_schemes", excludedSchemes);
         chromeOptions.setExperimentalOption("prefs", preferences);
@@ -414,16 +407,16 @@ public class Drivers {
             chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
         }
 
-        Map<String, Map> headlessOptions = chromeConfig.get("HeadlessOptions");
-        boolean isBrowserHeadless = Boolean.parseBoolean(headlessOptions.get("headless").toString());
+        Map<String, Map> headlessOptions = chromeConfig.get("headlessOptions");
+        isRunInHeadlessMode = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"chrome", "headlessOptions", "headless"}));
 
-        chromeOptions.setHeadless(isBrowserHeadless);
+        chromeOptions.setHeadless(isRunInHeadlessMode);
         chromeOptions.setAcceptInsecureCerts(acceptInsecureCerts);
 
         List<String> arguments = (List<String>) chromeConfig.get("arguments");
         chromeOptions.addArguments(arguments);
 
-        if (isBrowserHeadless) {
+        if (isRunInHeadlessMode) {
             List<String> includeArguments = (List<String>) headlessOptions.get("include");
             chromeOptions.addArguments(includeArguments);
         }
@@ -433,40 +426,51 @@ public class Drivers {
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions) : new ChromeDriver(chromeOptions);
         Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities() : ((ChromeDriver) driver).getCapabilities();
         userPersonaDriverCapabilities.put(forUserPersona, capabilities);
-
-        if (shouldMaximizeBrowser && !Runner.isRunInHeadlessMode()) {
-            driver.manage().window().maximize();
-        } else if (Runner.isRunInHeadlessMode()) {
-            driver.manage().window().setSize(new Dimension(1920, 1080));
-        }
-
         return driver;
     }
 
     private WebDriver createFirefoxDriver(String forUserPersona,
                                           TestExecutionContext testExecutionContext) {
 
-        boolean isBrowserHeadless = Runner.isRunInHeadlessMode();
-        boolean enableVerboseLogging = Runner.enableVerboseLoggingInBrowser();
-        boolean acceptInsecureCerts = Runner.shouldAcceptInsecureCerts();
+        String browserConfigFile = Runner.getBrowserConfigFile();
+        Map<String, Map> firefoxConfig = JsonFile.getNodeValueAsMapFromJsonFile("firefox", browserConfigFile);
+
+        boolean enableVerboseLogging = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"firefox", "verboseLogging"}));
+        boolean acceptInsecureCerts = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"firefox", "acceptInsecureCerts"}));
+        shouldBrowserBeMaximized = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"firefox", "maximize"}));
         String proxyUrl = Runner.getProxyURL();
+
+        FirefoxOptions firefoxOptions = new FirefoxOptions();
 
         String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Firefox");
         userPersonaBrowserLogs.put(forUserPersona, logFileName);
         LOGGER.info("Creating Firefox logs in file: " + logFileName);
         System.setProperty("webdriver.firefox.logfile", logFileName);
 
-        FirefoxOptions firefoxOptions = new FirefoxOptions();
         FirefoxProfile firefoxProfile = new FirefoxProfile();
-        firefoxProfile.setPreference("dom.push.enabled", false);
+        Map<String, Object> profile = firefoxConfig.get("firefoxProfile");
+        profile.forEach((key, value) -> {
+            if (value instanceof Boolean) {
+                firefoxProfile.setPreference(key, Boolean.parseBoolean(String.valueOf(value)));
+            } else if (value instanceof String) {
+                firefoxProfile.setPreference(key, String.valueOf(value));
+            }
+        });
         firefoxOptions.setProfile(firefoxProfile);
-        firefoxOptions.addPreference("dom.webnotifications.enabled", false);
-        firefoxOptions.addArguments("disable-infobars");
-        firefoxOptions.addArguments("--disable-extensions");
-        firefoxOptions.addArguments("--disable-notifications");
+
+        Map<String, Object> preferences = firefoxConfig.get("preferences");
+        preferences.forEach((key, value) -> {
+            if (value instanceof Boolean) {
+                firefoxOptions.addPreference(key, Boolean.parseBoolean(String.valueOf(value)));
+            } else if (value instanceof String) {
+                firefoxOptions.addPreference(key, String.valueOf(value));
+            }
+        });
+
+        List<String> arguments = (List<String>) firefoxConfig.get("arguments");
+        firefoxOptions.addArguments(arguments);
 
         LoggingPreferences logPrefs = new LoggingPreferences();
-
         if (enableVerboseLogging) {
             firefoxOptions.setLogLevel(FirefoxDriverLogLevel.DEBUG);
             logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
@@ -474,13 +478,19 @@ public class Drivers {
             firefoxOptions.setLogLevel(FirefoxDriverLogLevel.INFO);
             logPrefs.enable(LogType.BROWSER, Level.ALL);
         }
+        firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
+        LOGGER.info("Set Proxy:");
+        LOGGER.info(proxyUrl);
         if (null != proxyUrl) {
             LOGGER.info("Setting Proxy for browser: " + proxyUrl);
             firefoxOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
         }
-        firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
-        firefoxOptions.setHeadless(isBrowserHeadless);
+
+        Map<String, Map> headlessOptions = firefoxConfig.get("headlessOptions");
+        isRunInHeadlessMode = Boolean.parseBoolean(JsonFile.getNodeValueAsStringFromJsonFile(browserConfigFile, new String[] {"firefox", "headlessOptions", "headless"}));
+
+        firefoxOptions.setHeadless(isRunInHeadlessMode);
         firefoxOptions.setAcceptInsecureCerts(acceptInsecureCerts);
 
         LOGGER.info("FirefoxOptions: " + firefoxOptions.asMap());

@@ -17,6 +17,7 @@ buildscript {
         reportportalAgentTestNGVersion = '5.0.11'
         fasterxmlJacksonVersion = '2.13.1'
         jsonPathVersion = '2.7.0'
+        everitSchemaValidatorVersion = '1.5.1'
     }
 }
 
@@ -78,6 +79,7 @@ dependencies {
         exclude group: 'selenium-java'
         exclude group: 'eyes-connectivity-java3-jersey2x'
     }
+    implementation "org.everit.json:org.everit.json.schema:$project.everitSchemaValidatorVersion"
 }
 
 shadowJar {

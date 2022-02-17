@@ -37,12 +37,16 @@ public class Driver {
     private final String type;
     private final WebDriver driver;
     private final String deviceOn;
+    private final boolean shouldBrowserBeMaximized;
+    private final boolean isRunInHeadlessMode;
     private Visual visually;
 
     public Driver(String testName, String deviceOn, AppiumDriver<WebElement> appiumDriver) {
         this.driver = appiumDriver;
         this.deviceOn = deviceOn;
         this.type = APPIUM_DRIVER;
+        this.shouldBrowserBeMaximized = false;
+        this.isRunInHeadlessMode = false;
         instantiateEyes(testName, appiumDriver);
     }
 
@@ -50,6 +54,17 @@ public class Driver {
         this.driver = webDriver;
         this.type = WEB_DRIVER;
         this.deviceOn = browserOn;
+        this.shouldBrowserBeMaximized = false;
+        this.isRunInHeadlessMode = false;
+        instantiateEyes(testName, webDriver);
+    }
+
+    public Driver(String testName, String browserOn, WebDriver webDriver, boolean isRunInHeadlessMode, boolean shouldBrowserBeMaximized) {
+        this.driver = webDriver;
+        this.type = WEB_DRIVER;
+        this.deviceOn = browserOn;
+        this.shouldBrowserBeMaximized = shouldBrowserBeMaximized;
+        this.isRunInHeadlessMode = isRunInHeadlessMode;
         instantiateEyes(testName, webDriver);
     }
 
@@ -356,5 +371,9 @@ public class Driver {
         Actions actions = new Actions(driver);
         actions.moveToElement(driver.findElement(moveToElementLocator)).build().perform();
         waitFor(1);
+    }
+
+    public boolean isDriverRunningInHeadlessMode() {
+        return this.isRunInHeadlessMode;
     }
 }
