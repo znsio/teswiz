@@ -18,6 +18,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import se.vidstige.jadb.JadbConnection;
 import se.vidstige.jadb.JadbDevice;
 import se.vidstige.jadb.JadbException;
@@ -89,6 +91,7 @@ public class Setup {
     public static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
     public static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
+    public static final String BROWSER_CONFIG_FILE_CONTENTS = "BROWSER_CONFIG_FILE_CONTENTS";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
 
     static Map<String, Map> environmentConfiguration;
@@ -97,6 +100,7 @@ public class Setup {
 
     private final Properties properties;
     private final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
+    public static final String DEFAULT_BROWSER_CONFIG_FILE = "/default_browser_config.json";
     private final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private final String configFilePath;
     private final String BUILD_ID = "BUILD_ID";
@@ -215,7 +219,6 @@ public class Setup {
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
         configs.put(LAUNCH_NAME_SUFFIX, getOverriddenStringValue(LAUNCH_NAME_SUFFIX, getStringValueFromPropertiesIfAvailable(LAUNCH_NAME_SUFFIX, "")));
         configs.put(APP_VERSION, NOT_SET);
-        configs.put(BROWSER_CONFIG_FILE, getOverriddenStringValue(BROWSER_CONFIG_FILE, getStringValueFromPropertiesIfAvailable(BROWSER_CONFIG_FILE, NOT_SET)));
     }
 
     public List<String> getExecutionArguments() {
@@ -223,6 +226,7 @@ public class Setup {
 
         setupDirectories();
         setLogPropertiesFile();
+        setBrowserConfigFile();
 
         System.setProperty(LOG_DIR, configs.get(LOG_DIR));
         LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
@@ -253,6 +257,23 @@ public class Setup {
             PropertyConfigurator.configure(inputStream);
         } catch (Exception e) {
             throw new InvalidTestDataException("There was a problem while setting log properties file");
+        }
+    }
+
+    private void setBrowserConfigFile() {
+        InputStream inputStream;
+        try {
+            if (properties.containsKey(BROWSER_CONFIG_FILE)) {
+                Path browserConfigFilePath = Paths.get(properties.get(BROWSER_CONFIG_FILE).toString());
+                configs.put(BROWSER_CONFIG_FILE, browserConfigFilePath.toString());
+                inputStream = Files.newInputStream(browserConfigFilePath);
+            } else {
+                configs.put(BROWSER_CONFIG_FILE, DEFAULT_BROWSER_CONFIG_FILE);
+                inputStream = getClass().getResourceAsStream(DEFAULT_BROWSER_CONFIG_FILE);
+            }
+            configs.put(BROWSER_CONFIG_FILE_CONTENTS, new JSONObject(new JSONTokener(inputStream)).toString());
+        } catch (Exception e) {
+            throw new InvalidTestDataException("There was a problem while setting browser config file");
         }
     }
 

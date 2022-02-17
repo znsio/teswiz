@@ -1,0 +1,41 @@
+{
+  "chrome": {
+    "excludeSwitches": [
+      "enable-automation", "disable-notifications",
+      "disable-default-apps", "disable-extensions",
+      "enable-user-metrics", "incognito", "show-taps", "disable-infobars"],
+    "preferences": {
+      "credentials_enable_service": false,
+      "profile.password_manager_enabled": false,
+      "profile.default_content_setting_values.notifications": 1,
+      "profile.default_content_setting_values.media_stream_mic": 1,
+      "profile.default_content_setting_values.media_stream_camera": 1
+    },
+    "excludedSchemes": {
+      "jhb": true
+    },
+    "arguments": ["use-fake-device-for-media-stream"],
+    "maximize": true,
+    "acceptInsecureCerts": true,
+    "verboseLogging": true,
+    "headlessOptions": {
+      "headless": false,
+      "include": ["disable-gpu"]
+    }
+  },
+  "firefox": {
+    "firefoxProfile": {
+      "dom.push.enabled": false
+    },
+    "excludeSwitches": [],
+    "preferences": {
+      "dom.webnotifications.enabled": false
+    },
+    "arguments": [
+      "disable-infobars", "--disable-extensions",
+      "--disable-notifications"],
+    "headlessOptions": {
+      "headless": true
+    }
+  }
+}

@@ -50,15 +50,6 @@ public class Driver {
         instantiateEyes(testName, appiumDriver);
     }
 
-    public Driver(String testName, String browserOn, WebDriver webDriver) {
-        this.driver = webDriver;
-        this.type = WEB_DRIVER;
-        this.deviceOn = browserOn;
-        this.shouldBrowserBeMaximized = false;
-        this.isRunInHeadlessMode = false;
-        instantiateEyes(testName, webDriver);
-    }
-
     public Driver(String testName, String browserOn, WebDriver webDriver, boolean isRunInHeadlessMode, boolean shouldBrowserBeMaximized) {
         this.driver = webDriver;
         this.type = WEB_DRIVER;

@@ -213,6 +213,10 @@ public class Runner {
         return webDriverManagerProxyURL;
     }
 
+    public static String getBrowserConfigFileContents() {
+        return configs.get(BROWSER_CONFIG_FILE_CONTENTS);
+    }
+
     public static String getBrowserConfigFile() {
         return configs.get(BROWSER_CONFIG_FILE);
     }
