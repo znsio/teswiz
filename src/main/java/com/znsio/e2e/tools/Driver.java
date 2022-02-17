@@ -158,9 +158,9 @@ public class Driver {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage().window().getSize();
         LOGGER.info("dimension: " + windowSize.toString());
-        int width = windowSize.width * (percentScreenWidth / 100);
-        int fromHeight = windowSize.height * (fromPercentScreenHeight / 100);
-        int toHeight = windowSize.height * (toPercentScreenHeight / 100);
+        int width = (windowSize.width * percentScreenWidth) / 100;
+        int fromHeight = (windowSize.height * fromPercentScreenHeight) / 100;
+        int toHeight = (windowSize.height * toPercentScreenHeight) / 100;
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
 

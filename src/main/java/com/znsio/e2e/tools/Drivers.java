@@ -35,7 +35,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -294,16 +293,14 @@ public class Drivers {
 
         String providedBaseUrl = Runner.getBaseURLForWeb();
         if (null == providedBaseUrl) {
-            throw new InvalidTestDataException("baseUrl not provided as an environment variable");
+            throw new InvalidTestDataException("baseUrl not provided");
         }
         String baseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrl));
         LOGGER.info("baseUrl: " + baseUrl);
 
-        DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
-        String proxyURL = null == Runner.getWebDriverManagerProxyURL() ? "" : Runner.getWebDriverManagerProxyURL();
-        LOGGER.info(String.format("Using proxyURL: '%s' for getting the WebDriver for browser: '%s'", proxyURL, browserType));
+        checkConnectivityToBaseUrl(baseUrl);
 
-        WebDriverManager.getInstance(driverManagerType).proxy(proxyURL).setup();
+        DriverManagerType driverManagerType = setupBrowserDriver(testExecutionContext, browserType);
 
         WebDriver driver = null;
         switch (driverManagerType) {
@@ -333,6 +330,28 @@ public class Drivers {
     private void validateBrowserConfigAgainstSchema() {
         String browserConfigFile = Runner.getBrowserConfigFile();
         JsonSchemaValidator.validateJsonFileAgainstSchema(browserConfigFile, BROWSER_CONFIG_SCHEMA_FILE);
+    }
+
+    private void checkConnectivityToBaseUrl(String baseUrl) {
+        LOGGER.info(String.format("Check connectivity to baseUrl: '%s'", baseUrl));
+        String[] curlCommand = new String[]{"curl --insecure -I " + baseUrl};
+        CommandLineExecutor.execCommand(curlCommand);
+    }
+
+    @NotNull
+    private DriverManagerType setupBrowserDriver(TestExecutionContext testExecutionContext, String browserType) {
+        DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
+        String webDriverManagerProxyUrl = (null == Runner.getWebDriverManagerProxyURL()) ? "" : Runner.getWebDriverManagerProxyURL();
+        LOGGER.info(String.format("Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'", webDriverManagerProxyUrl, browserType));
+
+        WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType).proxy(webDriverManagerProxyUrl);
+        webDriverManager.setup();
+        String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
+
+        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_INFO, driverManagerType + " browser - version: " + downloadedDriverVersion);
+
+        ReportPortal.emitLog(testExecutionContext.getTestStateAsString(TEST_CONTEXT.DEVICE_INFO), "info", new Date());
+        return driverManagerType;
     }
 
     private AppiumDevice updateAvailableDeviceInformation(AppiumDevice availableDevice) {
@@ -400,8 +419,6 @@ public class Drivers {
         }
         chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
-        LOGGER.info("Set Proxy:");
-        LOGGER.info(proxyUrl);
         if (null != proxyUrl) {
             LOGGER.info("Setting Proxy for browser: " + proxyUrl);
             chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
