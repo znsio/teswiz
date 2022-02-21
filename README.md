@@ -9,17 +9,8 @@
 
 ```mermaid
 flowchart LR
-  id(BROWSER_CONFIG_FILE) --> Provide custom browser configuration 
+  id(BROWSER_CONFIG_FILE - Provide custom browser configuration) 
 ```
-
-
-[comment]: <> (```mermaid)
-
-[comment]: <> (graph TD;)
-
-[comment]: <> (  driver.waitForVisibilityOf-->driver.waitForClickabilityOf;)
-
-[comment]: <> (```)
 
 ```mermaid
 flowchart LR;
@@ -27,15 +18,6 @@ flowchart LR;
   style id1 fill:#f9f
   style id2 fill:#bbf
 ```
-
-[comment]: <> (```diff)
-
-[comment]: <> (+ driver.waitForVisibilityOf)
-
-[comment]: <> (- driver.waitForClickabilityOf;)
-
-[comment]: <> (```)
-
 
 # What is this repository about?
 
