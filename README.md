@@ -5,7 +5,7 @@
 
 
 
-### Breaking changes:
+# Important changes:
 
 ```mermaid
 flowchart LR
