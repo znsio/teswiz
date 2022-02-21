@@ -6,6 +6,13 @@
 
 ### Note: Important changes: Browser config is mandatory. Refer to the config property BROWSER_CONFIG_FILE
 
+### Breaking changes:
+
+```mermaid
+graph TD;
+  driver.waitForVisibilityOf-->driver.waitForClickabilityOf;
+```
+
 # What is this repository about?
 
 This repository implements automated tests for Android & iOS apps, specified using cucumber-jvm and intelligently run
