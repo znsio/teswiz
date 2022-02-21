@@ -49,6 +49,7 @@ public class Setup {
     public static final String CAPS = "CAPS";
     public static final String CLOUD_KEY = "CLOUD_KEY";
     public static final String PLATFORM = "PLATFORM";
+    static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     static final String APP_NAME = "APP_NAME";
     static final String IS_VISUAL = "IS_VISUAL";
@@ -62,6 +63,9 @@ public class Setup {
     static final String CLOUD_NAME = "CLOUD_NAME";
     static final String PROXY_URL = "PROXY_URL";
     static final String REMOTE_WEBDRIVER_GRID_PORT = "REMOTE_WEBDRIVER_GRID_PORT";
+    static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
+    static final String BROWSER_CONFIG_FILE_CONTENTS = "BROWSER_CONFIG_FILE_CONTENTS";
+    static final String DEFAULT_BROWSER_CONFIG_FILE = "/default_browser_config.json";
     private static final String CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = "CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION";
     private static final String CHROME = "chrome";
     private static final String PLUGIN = "--plugin";
@@ -88,10 +92,7 @@ public class Setup {
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
     private static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
     private static final String APPIUM_SETTINGS = "io.appium.settings";
-    public static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
-    public static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
-    public static final String BROWSER_CONFIG_FILE_CONTENTS = "BROWSER_CONFIG_FILE_CONTENTS";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
 
     static Map<String, Map> environmentConfiguration;
@@ -100,7 +101,6 @@ public class Setup {
 
     private final Properties properties;
     private final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
-    public static final String DEFAULT_BROWSER_CONFIG_FILE = "/default_browser_config.json";
     private final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private final String configFilePath;
     private final String BUILD_ID = "BUILD_ID";
