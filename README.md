@@ -15,7 +15,9 @@ graph TD;
 
 ```mermaid
 flowchart LR;
-  driver.waitForVisibilityOf--is now changed to---driver.waitForClickabilityOf;
+  id1(driver.waitForVisibilityOf)--is now changed to---id2(driver.waitForClickabilityOf);
+  style id1 fill:#f9f
+  style id2 fill:#bbf
 ```
 
 ```diff
