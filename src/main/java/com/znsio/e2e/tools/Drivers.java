@@ -180,6 +180,9 @@ public class Drivers {
 
         if (numberOfWebDriversUsed == 0) {
             browserConfig = getBrowserConfig();
+            context.addTestState(TEST_CONTEXT.BROWSER_CONFIG, browserConfig);
+        } else {
+            browserConfig = (JSONObject) context.getTestState(TEST_CONTEXT.BROWSER_CONFIG);
         }
 
         Driver currentDriver;
