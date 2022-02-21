@@ -13,6 +13,17 @@ graph TD;
   driver.waitForVisibilityOf-->driver.waitForClickabilityOf;
 ```
 
+```mermaid
+flowchart LR;
+  driver.waitForVisibilityOf--is now changed to---driver.waitForClickabilityOf;
+```
+
+```diff
++ driver.waitForVisibilityOf
+- driver.waitForClickabilityOf;
+```
+
+
 # What is this repository about?
 
 This repository implements automated tests for Android & iOS apps, specified using cucumber-jvm and intelligently run
