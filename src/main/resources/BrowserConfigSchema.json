@@ -1,0 +1,374 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "Browser Configuration schema",
+  "description": "The schema comprises JSON document with all browser related configurations",
+  "default": {},
+  "required": [
+    "chrome",
+    "firefox"
+  ],
+  "examples": [
+    {
+      "chrome": {
+        "excludeSwitches": [
+          "enable-automation",
+          "disable-notifications",
+          "disable-default-apps",
+          "disable-extensions",
+          "enable-user-metrics",
+          "incognito",
+          "show-taps",
+          "disable-infobars"
+        ],
+        "preferences": {
+          "credentials_enable_service": false,
+          "profile.password_manager_enabled": false,
+          "profile.default_content_setting_values.notifications": 1,
+          "profile.default_content_setting_values.media_stream_mic": 1,
+          "profile.default_content_setting_values.media_stream_camera": 1
+        },
+        "excludedSchemes": {
+          "jhb": true
+        },
+        "arguments": [
+          "use-fake-device-for-media-stream",
+          "use-file-for-fake-video-capture=./src/test/resources/testFiles/sample_640x360.mjpeg",
+          "use-file-for-fake-audio-capture=./src/test/resources/testFiles/test.wav"
+        ],
+        "maximize": true,
+        "acceptInsecureCerts": true,
+        "verboseLogging": true,
+        "headlessOptions": {
+          "headless": true,
+          "include": [
+            "disable-gpu"
+          ]
+        }
+      },
+      "firefox": {
+        "firefoxProfile": {
+          "dom.push.enabled": false
+        },
+        "excludeSwitches": [],
+        "preferences": {
+          "dom.webnotifications.enabled": false
+        },
+        "arguments": [
+          "disable-infobars",
+          "--disable-extensions",
+          "--disable-notifications"
+        ],
+        "headlessOptions": {
+          "headless": true
+        }
+      }
+    }
+  ],
+  "properties": {
+    "chrome": {
+      "$id": "#/properties/chrome",
+      "type": "object",
+      "title": "chromeSchema",
+      "description": "all the configurations related to Chrome browser",
+      "default": {},
+      "required": [
+        "excludeSwitches",
+        "preferences",
+        "excludedSchemes",
+        "arguments",
+        "maximize",
+        "acceptInsecureCerts",
+        "verboseLogging",
+        "headlessOptions"
+      ],
+      "properties": {
+        "excludeSwitches": {
+          "$id": "#/properties/chrome/properties/excludeSwitches",
+          "type": "array",
+          "title": "excludeSwitchesSchema",
+          "description": "The array of switches that are to be excluded",
+          "default": [],
+          "additionalItems": true,
+          "items": {
+            "$id": "#/properties/chrome/properties/excludeSwitches/items",
+            "anyOf": [
+              {
+                "$id": "#/properties/chrome/properties/excludeSwitches/items/anyOf/0",
+                "type": "string",
+                "title": "excludeSwitchesArray",
+                "description": "any of the mentioned array elements",
+                "default": ""
+              }
+            ]
+          }
+        },
+        "preferences": {
+          "$id": "#/properties/chrome/properties/preferences",
+          "type": "object",
+          "title": "preferencesSchema",
+          "description": "Map of preferences",
+          "default": {},
+          "required": [
+            "credentials_enable_service",
+            "profile.password_manager_enabled",
+            "profile.default_content_setting_values.notifications",
+            "profile.default_content_setting_values.media_stream_mic",
+            "profile.default_content_setting_values.media_stream_camera"
+          ],
+          "properties": {
+            "credentials_enable_service": {
+              "$id": "#/properties/chrome/properties/preferences/properties/credentials_enable_service",
+              "type": "boolean",
+              "title": "The credentials_enable_service schema",
+              "description": "Flag to toggle credentials enable service",
+              "default": false
+            },
+            "profile.password_manager_enabled": {
+              "$id": "#/properties/chrome/properties/preferences/properties/profile.password_manager_enabled",
+              "type": "boolean",
+              "title": "The profile.password_manager_enabled schema",
+              "description": "Flag to toggle password manager",
+              "default": false
+            },
+            "profile.default_content_setting_values.notifications": {
+              "$id": "#/properties/chrome/properties/preferences/properties/profile.default_content_setting_values.notifications",
+              "type": "integer",
+              "title": "The profile.default_content_setting_values.notifications schema",
+              "description": "Value to set default content setting values for notifications",
+              "default": 0
+            },
+            "profile.default_content_setting_values.media_stream_mic": {
+              "$id": "#/properties/chrome/properties/preferences/properties/profile.default_content_setting_values.media_stream_mic",
+              "type": "integer",
+              "title": "The profile.default_content_setting_values.media_stream_mic schema",
+              "description": "Value to set default content setting values for media stream mic",
+              "default": 0
+            },
+            "profile.default_content_setting_values.media_stream_camera": {
+              "$id": "#/properties/chrome/properties/preferences/properties/profile.default_content_setting_values.media_stream_camera",
+              "type": "integer",
+              "title": "The profile.default_content_setting_values.media_stream_camera schema",
+              "description": "Value to set default content setting values for media stream camera",
+              "default": 0
+            }
+          },
+          "additionalProperties": true
+        },
+        "excludedSchemes": {
+          "$id": "#/properties/chrome/properties/excludedSchemes",
+          "type": "object",
+          "title": "excludedSchemesSchema",
+          "description": "Map of excluded schemes",
+          "default": {},
+          "required": [
+            "jhb"
+          ],
+          "properties": {
+            "jhb": {
+              "$id": "#/properties/chrome/properties/excludedSchemes/properties/jhb",
+              "type": "boolean",
+              "title": "The jhb schema",
+              "description": "Flag to set jhb",
+              "default": false
+            }
+          },
+          "additionalProperties": true
+        },
+        "arguments": {
+          "$id": "#/properties/chrome/properties/arguments",
+          "type": "array",
+          "title": "argumentsSchema",
+          "description": "The array of arguments",
+          "default": [],
+          "additionalItems": true,
+          "items": {
+            "$id": "#/properties/chrome/properties/arguments/items",
+            "anyOf": [
+              {
+                "$id": "#/properties/chrome/properties/arguments/items/anyOf/0",
+                "type": "string",
+                "title": "argumentsArray",
+                "description": "any of the mentioned array elements",
+                "default": ""
+              }
+            ]
+          }
+        },
+        "maximize": {
+          "$id": "#/properties/chrome/properties/maximize",
+          "type": "boolean",
+          "title": "maximizeSchema",
+          "description": "whether to maximize the web browser",
+          "default": false
+        },
+        "acceptInsecureCerts": {
+          "$id": "#/properties/chrome/properties/acceptInsecureCerts",
+          "type": "boolean",
+          "title": "acceptInsecureCertsSchema",
+          "description": "whether the web browser to accept insecure certs",
+          "default": false
+        },
+        "verboseLogging": {
+          "$id": "#/properties/chrome/properties/verboseLogging",
+          "type": "boolean",
+          "title": "verboseLoggingSchema",
+          "description": "whether verbose logging to be enabled for web browser",
+          "default": false
+        },
+        "headlessOptions": {
+          "$id": "#/properties/chrome/properties/headlessOptions",
+          "type": "object",
+          "title": "headlessOptionsSchema",
+          "description": "Map of headless options",
+          "default": {},
+          "required": [
+            "headless",
+            "include"
+          ],
+          "properties": {
+            "headless": {
+              "$id": "#/properties/chrome/properties/headlessOptions/properties/headless",
+              "type": "boolean",
+              "title": "The headless schema",
+              "description": "should the web browser be headless",
+              "default": false
+            },
+            "include": {
+              "$id": "#/properties/chrome/properties/headlessOptions/properties/include",
+              "type": "array",
+              "title": "The include schema",
+              "description": "Array of arguments to be included when the web browser is headless",
+              "default": [],
+              "additionalItems": true,
+              "items": {
+                "$id": "#/properties/chrome/properties/headlessOptions/properties/include/items",
+                "anyOf": [
+                  {
+                    "$id": "#/properties/chrome/properties/headlessOptions/properties/include/items/anyOf/0",
+                    "type": "string",
+                    "title": "argumentsArray",
+                    "description": "any of the mentioned array elements",
+                    "default": ""
+                  }
+                ]
+              }
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "firefox": {
+      "$id": "#/properties/firefox",
+      "type": "object",
+      "title": "firefoxSchema",
+      "description": "all the configurations related to Firefox browser",
+      "default": {},
+      "required": [
+        "firefoxProfile",
+        "excludeSwitches",
+        "preferences",
+        "arguments",
+        "headlessOptions"
+      ],
+      "properties": {
+        "firefoxProfile": {
+          "$id": "#/properties/firefox/properties/firefoxProfile",
+          "type": "object",
+          "title": "The firefoxProfile schema",
+          "description": "Map of firefox profile options",
+          "default": {},
+          "required": [
+            "dom.push.enabled"
+          ],
+          "properties": {
+            "dom.push.enabled": {
+              "$id": "#/properties/firefox/properties/firefoxProfile/properties/dom.push.enabled",
+              "type": "boolean",
+              "title": "The dom.push.enabled schema",
+              "description": "Flag to enable dom push",
+              "default": false
+            }
+          },
+          "additionalProperties": true
+        },
+        "excludeSwitches": {
+          "$id": "#/properties/firefox/properties/excludeSwitches",
+          "type": "array",
+          "title": "excludeSwitchesSchema",
+          "description": "The array of switches that are to be excluded",
+          "default": [],
+          "additionalItems": true,
+          "items": {
+            "$id": "#/properties/firefox/properties/excludeSwitches/items"
+          }
+        },
+        "preferences": {
+          "$id": "#/properties/firefox/properties/preferences",
+          "type": "object",
+          "title": "preferencesSchema",
+          "description": "Map of preferences",
+          "default": {},
+          "required": [
+            "dom.webnotifications.enabled"
+          ],
+          "properties": {
+            "dom.webnotifications.enabled": {
+              "$id": "#/properties/firefox/properties/preferences/properties/dom.webnotifications.enabled",
+              "type": "boolean",
+              "title": "The dom.webnotifications.enabled schema",
+              "description": "Flag to enable dom web notifications",
+              "default": false
+            }
+          },
+          "additionalProperties": true
+        },
+        "arguments": {
+          "$id": "#/properties/firefox/properties/arguments",
+          "type": "array",
+          "title": "argumentsSchema",
+          "description": "The array of arguments",
+          "default": [],
+          "additionalItems": true,
+          "items": {
+            "$id": "#/properties/firefox/properties/arguments/items",
+            "anyOf": [
+              {
+                "$id": "#/properties/firefox/properties/arguments/items/anyOf/0",
+                "type": "string",
+                "title": "argumentsArray",
+                "description": "any of the mentioned array elements",
+                "default": ""
+              }
+            ]
+          }
+        },
+        "headlessOptions": {
+          "$id": "#/properties/firefox/properties/headlessOptions",
+          "type": "object",
+          "title": "headlessOptionsSchema",
+          "description": "Map of headless options",
+          "default": {},
+          "required": [
+            "headless"
+          ],
+          "properties": {
+            "headless": {
+              "$id": "#/properties/firefox/properties/headlessOptions/properties/headless",
+              "type": "boolean",
+              "title": "The headless schema",
+              "description": "should the web browser be headless",
+              "default": false
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -18,6 +18,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import se.vidstige.jadb.JadbConnection;
 import se.vidstige.jadb.JadbDevice;
 import se.vidstige.jadb.JadbException;
@@ -47,13 +49,11 @@ public class Setup {
     public static final String CAPS = "CAPS";
     public static final String CLOUD_KEY = "CLOUD_KEY";
     public static final String PLATFORM = "PLATFORM";
+    static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     static final String APP_NAME = "APP_NAME";
     static final String IS_VISUAL = "IS_VISUAL";
     static final String BROWSER = "BROWSER";
-    static final String BROWSER_HEADLESS = "BROWSER_HEADLESS";
-    static final String BROWSER_MAXIMIZE = "BROWSER_MAXIMIZE";
-    static final String BROWSER_VERBOSE_LOGGING = "BROWSER_VERBOSE_LOGGING";
     static final String CONFIG_FILE = "CONFIG_FILE";
     static final String LAUNCH_NAME = "LAUNCH_NAME";
     static final String APP_PACKAGE_NAME = "APP_PACKAGE_NAME";
@@ -61,9 +61,11 @@ public class Setup {
     static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
     static final String CLOUD_USER = "CLOUD_USER";
     static final String CLOUD_NAME = "CLOUD_NAME";
-    static final String ACCEPT_INSECURE_CERTS = "ACCEPT_INSECURE_CERTS";
     static final String PROXY_URL = "PROXY_URL";
     static final String REMOTE_WEBDRIVER_GRID_PORT = "REMOTE_WEBDRIVER_GRID_PORT";
+    static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
+    static final String BROWSER_CONFIG_FILE_CONTENTS = "BROWSER_CONFIG_FILE_CONTENTS";
+    static final String DEFAULT_BROWSER_CONFIG_FILE = "/default_browser_config.json";
     private static final String CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = "CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION";
     private static final String CHROME = "chrome";
     private static final String PLUGIN = "--plugin";
@@ -90,18 +92,20 @@ public class Setup {
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
     private static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
     private static final String APPIUM_SETTINGS = "io.appium.settings";
+    private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
-    public static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
+
     static Map<String, Map> environmentConfiguration;
     static Map<String, Map> testDataForEnvironment;
     static Map applitoolsConfiguration = new HashMap<>();
-    private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
+
     private final Properties properties;
-    private final String DEFAULT_LOG_PROPERTIES_FILE = "./src/main/resources/defaultLog4j.properties";
+    private final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
     private final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private final String configFilePath;
-    private List<Device> devices;
     private final String BUILD_ID = "BUILD_ID";
+
+    private List<Device> devices;
 
     Setup(String configFilePath) {
         this.configFilePath = configFilePath;
@@ -188,9 +192,6 @@ public class Setup {
         configs.put(APPLITOOLS_CONFIGURATION, getStringValueFromPropertiesIfAvailable(APPLITOOLS_CONFIGURATION, NOT_SET));
         configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB, getStringValueFromPropertiesIfAvailable(BASE_URL_FOR_WEB, NOT_SET)));
         configs.put(BROWSER, getOverriddenStringValue(BROWSER, getStringValueFromPropertiesIfAvailable(BROWSER, CHROME)));
-        configsBoolean.put(BROWSER_HEADLESS, getOverriddenBooleanValue(BROWSER_HEADLESS, getBooleanValueFromPropertiesIfAvailable(BROWSER_HEADLESS, false)));
-        configsBoolean.put(BROWSER_MAXIMIZE, getOverriddenBooleanValue(BROWSER_MAXIMIZE, getBooleanValueFromPropertiesIfAvailable(BROWSER_MAXIMIZE, false)));
-        configsBoolean.put(BROWSER_VERBOSE_LOGGING, getOverriddenBooleanValue(BROWSER_VERBOSE_LOGGING, getBooleanValueFromPropertiesIfAvailable(BROWSER_VERBOSE_LOGGING, false)));
         configs.put(BUILD_ID, getOverriddenStringValue(getStringValueFromPropertiesIfAvailable(BUILD_ID, NOT_SET), NOT_SET));
         configs.put(CAPS, getOverriddenStringValue(CAPS, getStringValueFromPropertiesIfAvailable(CAPS, NOT_SET)));
         configsBoolean.put(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION, getOverriddenBooleanValue(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION, getBooleanValueFromPropertiesIfAvailable(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION, true)));
@@ -202,7 +203,6 @@ public class Setup {
         configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE, getStringValueFromPropertiesIfAvailable(ENVIRONMENT_CONFIG_FILE, NOT_SET)));
         configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL, getBooleanValueFromPropertiesIfAvailable(IS_VISUAL, false)));
         configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR, getStringValueFromPropertiesIfAvailable(LOG_DIR, DEFAULT_LOG_DIR)));
-        configs.put(LOG_PROPERTIES_FILE, getStringValueFromPropertiesIfAvailable(LOG_PROPERTIES_FILE, DEFAULT_LOG_PROPERTIES_FILE));
         configsInteger.put(MAX_NUMBER_OF_APPIUM_DRIVERS, getOverriddenIntValue(MAX_NUMBER_OF_APPIUM_DRIVERS, Integer.parseInt(getStringValueFromPropertiesIfAvailable(MAX_NUMBER_OF_APPIUM_DRIVERS, "5"))));
         configsInteger.put(MAX_NUMBER_OF_WEB_DRIVERS, getOverriddenIntValue(MAX_NUMBER_OF_WEB_DRIVERS, Integer.parseInt(getStringValueFromPropertiesIfAvailable(MAX_NUMBER_OF_WEB_DRIVERS, "5"))));
         platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, getStringValueFromPropertiesIfAvailable(PLATFORM, Platform.android.name())));
@@ -217,7 +217,6 @@ public class Setup {
         configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
-        configsBoolean.put(ACCEPT_INSECURE_CERTS, getOverriddenBooleanValue(ACCEPT_INSECURE_CERTS, getBooleanValueFromPropertiesIfAvailable(ACCEPT_INSECURE_CERTS, true)));
         configs.put(LAUNCH_NAME_SUFFIX, getOverriddenStringValue(LAUNCH_NAME_SUFFIX, getStringValueFromPropertiesIfAvailable(LAUNCH_NAME_SUFFIX, "")));
         configs.put(APP_VERSION, NOT_SET);
     }
@@ -225,8 +224,9 @@ public class Setup {
     public List<String> getExecutionArguments() {
         loadAndUpdateConfigParameters(configFilePath);
 
-        PropertyConfigurator.configure(configs.get(LOG_PROPERTIES_FILE));
         setupDirectories();
+        setLogPropertiesFile();
+        setBrowserConfigFile();
 
         System.setProperty(LOG_DIR, configs.get(LOG_DIR));
         LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
@@ -241,6 +241,40 @@ public class Setup {
         LOGGER.info(printIntegerMap("Using integer values", configsInteger));
 
         return cukeArgs;
+    }
+
+    private void setLogPropertiesFile() {
+        InputStream inputStream;
+        try {
+            if (properties.containsKey(LOG_PROPERTIES_FILE)) {
+                Path logFilePath = Paths.get(properties.get(LOG_PROPERTIES_FILE).toString());
+                configs.put(LOG_PROPERTIES_FILE, logFilePath.toString());
+                inputStream = Files.newInputStream(logFilePath);
+            } else {
+                configs.put(LOG_PROPERTIES_FILE, DEFAULT_LOG_PROPERTIES_FILE);
+                inputStream = getClass().getResourceAsStream(DEFAULT_LOG_PROPERTIES_FILE);
+            }
+            PropertyConfigurator.configure(inputStream);
+        } catch (Exception e) {
+            throw new InvalidTestDataException("There was a problem while setting log properties file");
+        }
+    }
+
+    private void setBrowserConfigFile() {
+        InputStream inputStream;
+        try {
+            if (properties.containsKey(BROWSER_CONFIG_FILE)) {
+                Path browserConfigFilePath = Paths.get(properties.get(BROWSER_CONFIG_FILE).toString());
+                configs.put(BROWSER_CONFIG_FILE, browserConfigFilePath.toString());
+                inputStream = Files.newInputStream(browserConfigFilePath);
+            } else {
+                configs.put(BROWSER_CONFIG_FILE, DEFAULT_BROWSER_CONFIG_FILE);
+                inputStream = getClass().getResourceAsStream(DEFAULT_BROWSER_CONFIG_FILE);
+            }
+            configs.put(BROWSER_CONFIG_FILE_CONTENTS, new JSONObject(new JSONTokener(inputStream)).toString());
+        } catch (Exception e) {
+            throw new InvalidTestDataException("There was a problem while setting browser config file");
+        }
     }
 
     @NotNull
