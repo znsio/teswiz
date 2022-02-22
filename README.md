@@ -4,7 +4,19 @@
 [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)
 
 
-### Note: Important changes: Browser config is mandatory. Refer to the config property BROWSER_CONFIG_FILE
+# Important changes:
+
+```mermaid
+flowchart LR
+  id(BROWSER_CONFIG_FILE - Provide custom browser configuration) 
+```
+
+```mermaid
+flowchart LR;
+  id1(driver.waitForVisibilityOf)--is now changed to---id2(driver.waitForClickabilityOf);
+  style id1 fill:#f9f
+  style id2 fill:#bbf
+```
 
 # What is this repository about?
 
