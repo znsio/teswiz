@@ -355,9 +355,7 @@ public class Drivers {
         webDriverManager.setup();
         String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
 
-        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_INFO, driverManagerType + " browser - version: " + downloadedDriverVersion);
-
-        ReportPortal.emitLog(testExecutionContext.getTestStateAsString(TEST_CONTEXT.DEVICE_INFO), "info", new Date());
+        ReportPortal.emitLog(driverManagerType + " browser - version: " + downloadedDriverVersion, "info", new Date());
         return driverManagerType;
     }
 
