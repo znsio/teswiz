@@ -1,6 +1,7 @@
 package com.znsio.e2e.tools;
 
-import org.apache.commons.lang3.*;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 
 public class Randomizer {
 
@@ -25,5 +26,13 @@ public class Randomizer {
 
     public static String randomizeString(int stringLength) {
         return RandomStringUtils.randomAlphabetic(stringLength);
+    }
+
+    public static int getRandomNumberBetween(int min, int max) {
+        return RandomUtils.nextInt(min, max);
+    }
+
+    public static long getRandomNumberBetween(long min, long max) {
+        return RandomUtils.nextLong(min, max);
     }
 }

@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 
 import static com.znsio.e2e.tools.Wait.waitFor;
 
@@ -366,5 +367,20 @@ public class Driver {
 
     public boolean isDriverRunningInHeadlessMode() {
         return this.isRunInHeadlessMode;
+    }
+
+    public WebDriver setWebViewContext(Driver driver) {
+        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver.getInnerDriver();
+        Set<String> contextNames = appiumDriver.getContextHandles();
+        return appiumDriver.context((String) contextNames.toArray()[contextNames.size()-1]);
+    }
+
+    public WebDriver setNativeAppContext(Driver driver) {
+        return setNativeAppContext(driver, "NATIVE_APP");
+    }
+
+    public WebDriver setNativeAppContext(Driver driver, String contextName) {
+        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver.getInnerDriver();
+        return appiumDriver.context(contextName);
     }
 }
