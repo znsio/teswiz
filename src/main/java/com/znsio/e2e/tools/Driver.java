@@ -369,18 +369,18 @@ public class Driver {
         return this.isRunInHeadlessMode;
     }
 
-    public WebDriver setWebViewContext(Driver driver) {
-        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver.getInnerDriver();
+    public WebDriver setWebViewContext() {
+        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver;
         Set<String> contextNames = appiumDriver.getContextHandles();
         return appiumDriver.context((String) contextNames.toArray()[contextNames.size()-1]);
     }
 
-    public WebDriver setNativeAppContext(Driver driver) {
-        return setNativeAppContext(driver, "NATIVE_APP");
+    public WebDriver setNativeAppContext() {
+        return setNativeAppContext("NATIVE_APP");
     }
 
-    public WebDriver setNativeAppContext(Driver driver, String contextName) {
-        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver.getInnerDriver();
+    public WebDriver setNativeAppContext(String contextName) {
+        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver;
         return appiumDriver.context(contextName);
     }
 }
