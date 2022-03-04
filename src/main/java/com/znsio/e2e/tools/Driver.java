@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 
 import static com.znsio.e2e.tools.Wait.waitFor;
 
@@ -37,19 +38,25 @@ public class Driver {
     private final String type;
     private final WebDriver driver;
     private final String deviceOn;
+    private final boolean shouldBrowserBeMaximized;
+    private final boolean isRunInHeadlessMode;
     private Visual visually;
 
     public Driver(String testName, String deviceOn, AppiumDriver<WebElement> appiumDriver) {
         this.driver = appiumDriver;
         this.deviceOn = deviceOn;
         this.type = APPIUM_DRIVER;
+        this.shouldBrowserBeMaximized = false;
+        this.isRunInHeadlessMode = false;
         instantiateEyes(testName, appiumDriver);
     }
 
-    public Driver(String testName, String browserOn, WebDriver webDriver) {
+    public Driver(String testName, String browserOn, WebDriver webDriver, boolean isRunInHeadlessMode, boolean shouldBrowserBeMaximized) {
         this.driver = webDriver;
         this.type = WEB_DRIVER;
         this.deviceOn = browserOn;
+        this.shouldBrowserBeMaximized = shouldBrowserBeMaximized;
+        this.isRunInHeadlessMode = isRunInHeadlessMode;
         instantiateEyes(testName, webDriver);
     }
 
@@ -143,9 +150,9 @@ public class Driver {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage().window().getSize();
         LOGGER.info("dimension: " + windowSize.toString());
-        int width = windowSize.width * (percentScreenWidth / 100);
-        int fromHeight = windowSize.height * (fromPercentScreenHeight / 100);
-        int toHeight = windowSize.height * (toPercentScreenHeight / 100);
+        int width = (windowSize.width * percentScreenWidth) / 100;
+        int fromHeight = (windowSize.height * fromPercentScreenHeight) / 100;
+        int toHeight = (windowSize.height * toPercentScreenHeight) / 100;
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
 
@@ -356,5 +363,24 @@ public class Driver {
         Actions actions = new Actions(driver);
         actions.moveToElement(driver.findElement(moveToElementLocator)).build().perform();
         waitFor(1);
+    }
+
+    public boolean isDriverRunningInHeadlessMode() {
+        return this.isRunInHeadlessMode;
+    }
+
+    public WebDriver setWebViewContext() {
+        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver;
+        Set<String> contextNames = appiumDriver.getContextHandles();
+        return appiumDriver.context((String) contextNames.toArray()[contextNames.size()-1]);
+    }
+
+    public WebDriver setNativeAppContext() {
+        return setNativeAppContext("NATIVE_APP");
+    }
+
+    public WebDriver setNativeAppContext(String contextName) {
+        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver;
+        return appiumDriver.context(contextName);
     }
 }
