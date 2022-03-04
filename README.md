@@ -4,6 +4,20 @@
 [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)
 
 
+# Important changes:
+
+```mermaid
+flowchart LR
+  id(BROWSER_CONFIG_FILE - Provide custom browser configuration) 
+```
+
+```mermaid
+flowchart LR;
+  id1(driver.waitForVisibilityOf)--is now changed to---id2(driver.waitForClickabilityOf);
+  style id1 fill:#f9f
+  style id2 fill:#bbf
+```
+
 # What is this repository about?
 
 This repository implements automated tests for Android & iOS apps, specified using cucumber-jvm and intelligently run
@@ -20,6 +34,8 @@ Reports will be uploaded to reportportal.io, that you would need to setup separa
 src/test/resources/reportportal.properties file or provide the path to the file using this environment
 variable: `REPORT_PORTAL_FILE`
 
+Test can run on local browsers / devices, or against any cloud provider, such as HeadSpin, BrowserStack, SauceLabs, pCloudy. 
+
 ## Tech stack used
 
 * cucumber-jvm (https://cucumber.io)
@@ -29,7 +45,7 @@ variable: `REPORT_PORTAL_FILE`
 * WebDriver (https://selenium.dev)
 * reportportal.io (https://reportportal.io)
 * Applitools (https://applitools.com)
-* Build tool: gradle 7.1
+* Build tool: gradle 7.3.3
 
 ## Getting Started, or how can you use teswiz?
 It is very easy to use teswiz in your framework.
@@ -231,11 +247,7 @@ These can be overridden by providing the same either as environment variables or
     BASE_URL_FOR_WEB=BASE_URL -> Key name of the property in TEST_DATA_FILE for environment specific base url
     BROWSER=chrome -> Which browser to use for Web execution? Supported: chrome || firefox
                       Browsers should to be installed. Corresponding WebDriver for the browser will be downloaded automatically
-    BROWSER_HEADLESS=false -> Should browser be started in headless mode? If yes, set to true
-    BROWSER_MAXIMIZE=true -> Should browser be maximised when started? If yes, set to true
-    BROWSER_VERBOSE_LOGGING=true -> Should browser logs be verbose? If yes, set to true
-    BUILD_ID=BUILDID -> The key name of the environment variable that has the corresponding build id of the test 
-execution
+    BUILD_ID=BUILDID -> The key name of the environment variable that has the corresponding build id of the test execution
     CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> Uninstall app from local Android devices before starting test execution
     CLOUD_KEY=<auth / api key> for pCloudy / Headspin
     CLOUD_USER=<username / email> for pCloudy -> Not required for Headspin
@@ -252,17 +264,14 @@ execution
     PARALLEL=1 -> How many tests should be run in parallel?
     PROXY_KEY=HTTP_PROXY -> If proxy should be set, what is the environment variable specifying the proxy?
     PROXY_URL=<proxy_url> -> What is the proxy url to be used if PROXY_KEY is set
-    WEBDRIVER_MANAGER_PROXY_KEY=HTTP_PROXY -> If proxy should be used for WebDriverManager, what is the environment 
-variable specifying the 
-proxy?
-    WEBDRIVER_MANAGER_PROXY_URL=<proxy_url> -> What is the proxy url to be used for WebDriverManager if 
-WEBDRIVER_MANAGER_PROXY_KEY is set
+    WEBDRIVER_MANAGER_PROXY_KEY=HTTP_PROXY -> If proxy should be used for WebDriverManager, what is the environment variable specifying the proxy?
+    WEBDRIVER_MANAGER_PROXY_URL=<proxy_url> -> What is the proxy url to be used for WebDriverManager if WEBDRIVER_MANAGER_PROXY_KEY is set
     REMOTE_WEBDRIVER_GRID_PORT=<environment variable name which holds the port to be used for RemoteWebDriver>
     REPORT_PORTAL_FILE=src/test/resources/reportportal.properties -> ReportPortal.io configuration
     RUN_IN_CI=false -> Are tests running in CI?
     TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE
     TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
-    ACCEPT_INSECURE_CERTS=true -> Accept all insecure SSL certificates on web browser
+    BROWSER_CONFIG_FILE=./src/test/resources/com/znsio/e2e/features/configs/browser_config.json -> json containing browser configurations
 
 ## Troubleshooting / FAQs
 
