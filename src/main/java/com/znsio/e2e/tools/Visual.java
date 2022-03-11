@@ -27,6 +27,7 @@ import static com.znsio.e2e.runner.Setup.*;
 public class Visual {
     private static final Logger LOGGER = Logger.getLogger(Visual.class.getName());
     private static final String DEFAULT_APPLITOOLS_SERVER_URL = "https://eyesapi.applitools.com";
+    private static final String DEBUG = "DEBUG";
     private final String visualTestNotEnabledMessage = "Visual Test is not enabled";
     private final com.applitools.eyes.selenium.Eyes eyesOnWeb;
     private final com.applitools.eyes.appium.Eyes eyesOnApp;
@@ -155,7 +156,7 @@ public class Visual {
             ufgConfig.addDeviceEmulation(DeviceName.Nexus_6P, ScreenOrientation.LANDSCAPE);
         }
         LOGGER.info(applitoolsUFGConfigMessage);
-        ReportPortal.emitLog(applitoolsUFGConfigMessage + ufgConfig, "DEBUG", new Date());
+        ReportPortal.emitLog(applitoolsUFGConfigMessage + ufgConfig, DEBUG, new Date());
         return ufgConfig;
     }
 
@@ -311,7 +312,7 @@ public class Visual {
             String message = String.format("Web Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
             LOGGER.info(message);
             LOGGER.info("Applitools logs available here: " + applitoolsLogFileNameForWeb);
-            ReportPortal.emitLog(message, "DEBUG", new Date(), new File(applitoolsLogFileNameForWeb));
+            ReportPortal.emitLog(message, DEBUG, new Date(), new File(applitoolsLogFileNameForWeb));
         }
     }
 
@@ -325,7 +326,7 @@ public class Visual {
         String message = String.format("App Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
         LOGGER.info(message);
         LOGGER.info("Applitools logs available here: " + applitoolsLogFileNameForApp);
-        ReportPortal.emitLog(message, "DEBUG", new Date(), new File(applitoolsLogFileNameForApp));
+        ReportPortal.emitLog(message, DEBUG, new Date(), new File(applitoolsLogFileNameForApp));
     }
 
     private String handleTestResults(String userPersona, String onPlatform, TestResults result) {
@@ -338,7 +339,7 @@ public class Visual {
                            + "\n\t\tisPassed: " + result.isPassed()
                            + "\n\t\tResults url: " + result.getUrl();
         LOGGER.info(message);
-        ReportPortal.emitLog(message, "DEBUG", new Date());
+        ReportPortal.emitLog(message, DEBUG, new Date());
         boolean hasMismatches = result.getMismatches() != 0;
         LOGGER.info("Visual testing differences found? - " + hasMismatches);
         long threadId = Thread.currentThread().getId();

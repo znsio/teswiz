@@ -26,6 +26,7 @@ public class CommandLineExecutor {
             process.waitFor(120, TimeUnit.SECONDS);
             response.setStdOut(IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8).trim());
             response.setErrOut(IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8).trim());
+            LOGGER.info("\t:Exit Code: " + process.exitValue());
             response.setExitCode(process.exitValue());
             LOGGER.info("\t" + response);
             return response;

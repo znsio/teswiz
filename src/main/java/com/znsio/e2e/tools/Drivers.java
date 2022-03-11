@@ -57,6 +57,7 @@ public class Drivers {
     private int numberOfAppiumDriversUsed = 0;
     private boolean shouldBrowserBeMaximized = false;
     private boolean isRunInHeadlessMode = false;
+    private String baseUrl = null;
 
     public Drivers() {
         MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
@@ -181,6 +182,7 @@ public class Drivers {
         if (numberOfWebDriversUsed == 0) {
             browserConfig = getBrowserConfig();
             context.addTestState(TEST_CONTEXT.BROWSER_CONFIG, browserConfig);
+            checkConnectivityToBaseUrl();
         } else {
             browserConfig = (JSONObject) context.getTestState(TEST_CONTEXT.BROWSER_CONFIG);
         }
@@ -297,15 +299,6 @@ public class Drivers {
                                          TestExecutionContext testExecutionContext, JSONObject browserConfig) {
         String browserType = Runner.getBrowser();
 
-        String providedBaseUrl = Runner.getBaseURLForWeb();
-        if (null == providedBaseUrl) {
-            throw new InvalidTestDataException("baseUrl not provided");
-        }
-        String baseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrl));
-        LOGGER.info("baseUrl: " + baseUrl);
-
-        checkConnectivityToBaseUrl(baseUrl);
-
         DriverManagerType driverManagerType = setupBrowserDriver(testExecutionContext, browserType);
 
         WebDriver driver = null;
@@ -339,9 +332,14 @@ public class Drivers {
         return JsonSchemaValidator.validateJsonFileAgainstSchema(browserConfigFile, browserConfigFileContents, BROWSER_CONFIG_SCHEMA_FILE);
     }
 
-    private void checkConnectivityToBaseUrl(String baseUrl) {
+    private void checkConnectivityToBaseUrl() {
+        String providedBaseUrl = Runner.getBaseURLForWeb();
+        if (null == providedBaseUrl) {
+            throw new InvalidTestDataException("baseUrl not provided");
+        }
+        baseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrl));
         LOGGER.info(String.format("Check connectivity to baseUrl: '%s'", baseUrl));
-        String[] curlCommand = new String[]{"curl --insecure -I " + baseUrl};
+        String[] curlCommand = new String[]{"curl -m 60 --insecure -I " + baseUrl};
         CommandLineExecutor.execCommand(curlCommand);
     }
 

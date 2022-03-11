@@ -110,7 +110,8 @@ public class Driver {
         touchAction.press(PointOption.point(fromPoint))
                 .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)))
                 .moveTo(PointOption.point(toPoint))
-                .release().perform();
+                .release()
+                .perform();
     }
 
     public WebElement scrollToAnElementByText(String text) {
@@ -143,7 +144,8 @@ public class Driver {
         touchAction.press(PointOption.point(new Point(width, fromHeight)))
                 .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
                 .moveTo(PointOption.point(new Point(width, toHeight)))
-                .release().perform();
+                .release()
+                .perform();
     }
 
     public void scrollVertically(int fromPercentScreenHeight, int toPercentScreenHeight, int percentScreenWidth) {
