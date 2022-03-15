@@ -608,9 +608,9 @@ public class Drivers {
                 break;
             case Driver.APPIUM_DRIVER:
                 if (Runner.platform.equals(Platform.windows)) {
-                    closeAppOnMachine(driver);
+                    closeAppOnMachine(key, driver);
                 } else {
-                    closeAppOnDevice(context, driver);
+                    closeAppOnDevice(key, driver);
                 }
                 break;
             default:
@@ -619,58 +619,75 @@ public class Drivers {
         }
     }
 
-    private void closeWebDriver(String key, Driver driver) {
-        String message = "Browser logs for user: " + key;
+    private void closeWebDriver(String key, @NotNull Driver driver) {
+        String logMessage = "Browser logs for user: " + key;
         String logFileName = userPersonaBrowserLogs.get(key);
-        LOGGER.info(message + ": logFileName: " + logFileName);
+        LOGGER.info(logMessage + ": logFileName: " + logFileName);
         ReportPortal.emitLog(
-                message,
+                logMessage,
                 DEBUG,
                 new Date(), new File(logFileName));
+
         WebDriver webDriver = driver.getInnerDriver();
         if (null == webDriver) {
-            LOGGER.info(String.format("Strange. But WebDriver for user: '%s' already closed", key));
+            logMessage = String.format("Strange. But WebDriver for user '%s' already closed", key);
+            LOGGER.info(logMessage);
+            ReportPortal.emitLog(logMessage, DEBUG, new Date());
         } else {
-            LOGGER.info(String.format("Closing WebDriver for user: '%s'", key));
+            logMessage = String.format("Closing WebDriver for user: '%s'", key);
+            LOGGER.info(logMessage);
+            ReportPortal.emitLog(logMessage, DEBUG, new Date());
             webDriver.quit();
         }
     }
 
-    private void closeAppOnMachine(Driver driver) {
+    private void closeAppOnMachine(String key, @NotNull Driver driver) {
+        String logMessage;
         String appPackageName = Runner.getAppPackageName();
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
-        LOGGER.info(String.format("Closing WindowsDriver for App '%s'", appPackageName));
-        appiumDriver.closeApp();
-        appiumDriver.quit();
-        ReportPortal.emitLog(
-                String.format("App: '%s' terminated",
-                        appPackageName),
-                DEBUG,
-                new Date());
+        if (null == appiumDriver) {
+            logMessage = String.format("Strange. But WindowsDriver for user '%s' already closed", key);
+            LOGGER.info(logMessage);
+            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+        } else {
+            logMessage = String.format("Closing WindowsDriver for App '%s' for user '%s'", appPackageName, key);
+            LOGGER.info(logMessage);
+            appiumDriver.closeApp();
+            appiumDriver.quit();
+
+            logMessage = String.format("App: '%s' terminated", appPackageName);
+            LOGGER.info(logMessage);
+            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+        }
     }
 
-    private void closeAppOnDevice (@NotNull TestExecutionContext context, @NotNull Driver driver) {
+    private void closeAppOnDevice(String key, @NotNull Driver driver) {
         String appPackageName = Runner.getAppPackageName();
         String logMessage;
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
+        if (null == appiumDriver) {
+            logMessage = String.format("Strange. But AppiumDriver for user '%s' already closed", key);
+            LOGGER.info(logMessage);
+            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+        } else {
+            LOGGER.info("Terminate app: " + appPackageName);
+            ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
 
-        LOGGER.info("Terminate app: " + appPackageName);
-        ApplicationState applicationState = appiumDriver.queryAppState(appPackageName);
+            logMessage = String.format("App: '%s' Application state before closing app: '%s'%n",
+                    appPackageName,
+                    applicationState);
+            LOGGER.info(logMessage);
+            ReportPortal.emitLog(logMessage, DEBUG, new Date());
 
-        logMessage = String.format("App: '%s' Application state before closing app: '%s'%n",
-                appPackageName,
-                applicationState);
-        LOGGER.info(logMessage);
-        ReportPortal.emitLog(logMessage, DEBUG, new Date());
-
-        appiumDriver.closeApp();
-        appiumDriver.terminateApp(appPackageName);
-        applicationState = appiumDriver.queryAppState(appPackageName);
-        logMessage = String.format("App: '%s' Application state after closing app: '%s'%n",
-                appPackageName,
-                applicationState);
-        LOGGER.info(logMessage);
-        ReportPortal.emitLog(logMessage, DEBUG, new Date());
+            appiumDriver.closeApp();
+            appiumDriver.terminateApp(appPackageName);
+            applicationState = appiumDriver.queryAppState(appPackageName);
+            logMessage = String.format("App: '%s' Application state after closing app: '%s'%n",
+                    appPackageName,
+                    applicationState);
+            LOGGER.info(logMessage);
+            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+        }
     }
 
     public Set<String> getAvailableUserPersonas() {
