@@ -396,9 +396,8 @@ public class Drivers {
 
         ChromeOptions chromeOptions = new ChromeOptions();
 
-        String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Chrome");
+        String logFileName = setLogFileName(forUserPersona, testExecutionContext, "Chrome");
         userPersonaBrowserLogs.put(forUserPersona, logFileName);
-        LOGGER.info("Creating Chrome logs in file: " + logFileName);
         System.setProperty("webdriver.chrome.logfile", logFileName);
 
         JSONArray excludeSwitches = chromeConfiguration.getJSONArray("excludeSwitches");
@@ -458,9 +457,8 @@ public class Drivers {
 
         FirefoxOptions firefoxOptions = new FirefoxOptions();
 
-        String logFileName = setLogDirectory(forUserPersona, testExecutionContext, "Firefox");
+        String logFileName = setLogFileName(forUserPersona, testExecutionContext, "Firefox");
         userPersonaBrowserLogs.put(forUserPersona, logFileName);
-        LOGGER.info("Creating Firefox logs in file: " + logFileName);
         System.setProperty("webdriver.firefox.logfile", logFileName);
 
         FirefoxProfile firefoxProfile = new FirefoxProfile();
@@ -520,14 +518,16 @@ public class Drivers {
         return null == capability ? "" : capability.toString();
     }
 
-    private String setLogDirectory(String forUserPersona, TestExecutionContext testExecutionContext, String browserType) {
+    private String setLogFileName(String forUserPersona, TestExecutionContext testExecutionContext, String browserType) {
         String scenarioLogDir = Runner.USER_DIRECTORY + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
         String logFile = scenarioLogDir + File.separator + "deviceLogs" + File.separator + browserType + "-" + forUserPersona + ".log";
 
         File file = new File(logFile);
         file.getParentFile().mkdirs();
 
-        LOGGER.info("Creating " + browserType + " logs in file: " + logFile);
+        String logMessage = String.format("Creating %s logs in file: %s", browserType, logFile);
+        LOGGER.info(logMessage);
+        ReportPortal.emitLog(logMessage, DEBUG, new Date());
         return logFile;
     }
 
@@ -620,9 +620,10 @@ public class Drivers {
     }
 
     private void closeWebDriver(String key, @NotNull Driver driver) {
-        String logMessage = "Browser logs for user: " + key;
         String logFileName = userPersonaBrowserLogs.get(key);
-        LOGGER.info(logMessage + ": logFileName: " + logFileName);
+        String logMessage = String.format("Browser logs for user: %s" +
+                "%nlogFileName: %s", key, logFileName);
+        LOGGER.info(logMessage);
         ReportPortal.emitLog(
                 logMessage,
                 DEBUG,
