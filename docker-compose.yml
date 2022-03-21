@@ -23,7 +23,7 @@ services:
     image: selenium/node-chrome:3.141.59-20210929
     volumes:
       - /dev/shm:/dev/shm
-      - ./src/test/resources:/tmp/
+      - ./src:/tmp/src/
     depends_on:
       - selenium-hub
     deploy:
