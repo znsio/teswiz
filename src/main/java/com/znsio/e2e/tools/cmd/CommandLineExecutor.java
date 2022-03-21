@@ -9,8 +9,13 @@ import java.util.concurrent.*;
 
 public class CommandLineExecutor {
     private static final Logger LOGGER = Logger.getLogger(CommandLineExecutor.class.getName());
+    private static final int DEFAULT_COMMAND_TIMEOUT = 120;
 
     public static CommandLineResponse execCommand(final String[] command) {
+        return execCommand(command, DEFAULT_COMMAND_TIMEOUT);
+    }
+
+    public static CommandLineResponse execCommand(final String[] command, int timeoutInSeconds) {
         String jointCommand = String.join(" ", command);
         String message = "\tExecuting Command: " + jointCommand;
         LOGGER.info(message);
@@ -23,7 +28,7 @@ public class CommandLineExecutor {
                 builder.command("sh", "-c", jointCommand);
             }
             Process process = builder.start();
-            process.waitFor(120, TimeUnit.SECONDS);
+            process.waitFor(timeoutInSeconds, TimeUnit.SECONDS);
             response.setStdOut(IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8).trim());
             response.setErrOut(IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8).trim());
             LOGGER.info("\t:Exit Code: " + process.exitValue());

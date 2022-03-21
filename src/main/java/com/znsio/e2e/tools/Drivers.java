@@ -287,9 +287,9 @@ public class Drivers {
             String[] disableToastsCommand = new String[]{"adb", "-s", udid, "shell", "appops", "set", Runner.getAppPackageName(), "TOAST_WINDOW", "deny"};
             String[] disableNotificationsCommand = new String[]{"adb", "-s", udid, "shell", "settings", "put", "global", "heads_up_notifications_enabled", "0"};
 
-            CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand);
+            CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand, 60);
             LOGGER.info("disableToastsCommandResponse: " + disableToastsCommandResponse);
-            CommandLineResponse disableNotificationsCommandResponse = CommandLineExecutor.execCommand(disableNotificationsCommand);
+            CommandLineResponse disableNotificationsCommandResponse = CommandLineExecutor.execCommand(disableNotificationsCommand, 60);
             LOGGER.info("disableNotificationsCommandResponse: " + disableNotificationsCommandResponse);
         }
     }
@@ -340,7 +340,7 @@ public class Drivers {
         baseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrl));
         LOGGER.info(String.format("Check connectivity to baseUrl: '%s'", baseUrl));
         String[] curlCommand = new String[]{"curl -m 60 --insecure -I " + baseUrl};
-        CommandLineExecutor.execCommand(curlCommand);
+        CommandLineExecutor.execCommand(curlCommand, 60);
     }
 
     @NotNull
