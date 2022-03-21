@@ -385,4 +385,13 @@ public class Driver {
         AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver;
         return appiumDriver.context(contextName);
     }
+
+    public void scrollToBottom() {
+        ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
+    }
+
+    public void scrollTillElementIntoView(By elementId) {
+        WebElement element = driver.findElement(elementId);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+    }
 }
