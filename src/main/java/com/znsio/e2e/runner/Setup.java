@@ -352,7 +352,7 @@ public class Setup {
 
     private void getBranchName() {
         String[] getBranchNameCommand = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
-        CommandLineResponse response = CommandLineExecutor.execCommand(getBranchNameCommand, 60);
+        CommandLineResponse response = CommandLineExecutor.execCommand(getBranchNameCommand);
         String branchName = response.getStdOut();
         LOGGER.info("BRANCH_NAME: " + branchName);
         configs.put(BRANCH_NAME, branchName);
@@ -473,7 +473,7 @@ public class Setup {
     }
 
     private void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {
-        CommandLineResponse commandResponse = CommandLineExecutor.execCommand(commandToGetAppVersion, 60);
+        CommandLineResponse commandResponse = CommandLineExecutor.execCommand(commandToGetAppVersion);
         String commandOutput = commandResponse.getStdOut();
         if(!(null == commandOutput || commandOutput.isEmpty())) {
             Matcher matcher = pattern.matcher(commandOutput);
@@ -603,13 +603,13 @@ public class Setup {
 
     private void uninstallAppFromDevice(Device device, String appPackageName) {
         String[] uninstallAppiumAutomator2Server = new String[]{"adb", "-s", device.getUdid(), "uninstall", APPIUM_UI_AUTOMATOR2_SERVER};
-        CommandLineExecutor.execCommand(uninstallAppiumAutomator2Server, 60);
+        CommandLineExecutor.execCommand(uninstallAppiumAutomator2Server);
         String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall", APPIUM_SETTINGS};
-        CommandLineExecutor.execCommand(uninstallAppiumSettings, 60);
+        CommandLineExecutor.execCommand(uninstallAppiumSettings);
 
         if(configsBoolean.get(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
             String[] uninstallApp = new String[]{"adb", "-s", device.getUdid(), "uninstall", appPackageName};
-            CommandLineExecutor.execCommand(uninstallApp, 60);
+            CommandLineExecutor.execCommand(uninstallApp);
         } else {
             LOGGER.info("skipping uninstalling of apk as the flag CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = false");
         }
@@ -627,7 +627,7 @@ public class Setup {
     private void startADBServer() {
         LOGGER.info("Start ADB server");
         String[] listOfDevices = new String[]{"adb", "devices"};
-        CommandLineExecutor.execCommand(listOfDevices, 60);
+        CommandLineExecutor.execCommand(listOfDevices);
     }
 
     private void setupCloudExecution() {
@@ -692,7 +692,7 @@ public class Setup {
         };
         String uploadedAppIdFromBrowserStack;
         try {
-            CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(curlCommand, 60);
+            CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(curlCommand);
             LOGGER.debug("uploadAPKToBrowserStackResponse: " + uploadAPKToBrowserStackResponse);
 
             JsonArray uploadResponse = JsonFile.convertToArray(uploadAPKToBrowserStackResponse.getStdOut());
@@ -713,7 +713,7 @@ public class Setup {
                 "-F \"file=@" + appPath + "\"",
                 "-F \"custom_id=" + getAppName(appPath) + "\""
         };
-        CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(curlCommand, 60);
+        CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(curlCommand);
 
         JsonObject uploadResponse = JsonFile.convertToMap(uploadAPKToBrowserStackResponse.getStdOut()).getAsJsonObject();
         String uploadedApkId = uploadResponse.get("app_url").getAsString();
@@ -766,7 +766,7 @@ public class Setup {
         String[] curlCommand = new String[]{
                 "curl --insecure -X POST ",
                 "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apk/upload --data-binary '@" + appPath + "'"};
-        CommandLineResponse uploadAPKToHeadspinResponse = CommandLineExecutor.execCommand(curlCommand, 60);
+        CommandLineResponse uploadAPKToHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
 
         JsonObject uploadResponse = JsonFile.convertToMap(uploadAPKToHeadspinResponse.getStdOut()).getAsJsonObject();
         String uploadedApkId = uploadResponse.get("apk_id").getAsString();
@@ -815,7 +815,7 @@ public class Setup {
         String[] curlCommand = new String[]{
                 "curl --insecure",
                 "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apks"};
-        CommandLineResponse listOfUploadedFilesInHeadspinResponse = CommandLineExecutor.execCommand(curlCommand, 60);
+        CommandLineResponse listOfUploadedFilesInHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
 
         JsonObject listOfAppPackages = JsonFile.convertToMap(listOfUploadedFilesInHeadspinResponse.getStdOut()).getAsJsonObject();
         JsonElement statusCode = listOfAppPackages.get("status_code");
@@ -905,7 +905,7 @@ public class Setup {
                 "\"" + updatedPayload + "\"",
                 deviceLabURL + "/api/drive"};
 
-        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfUploadedFiles, 60);
+        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfUploadedFiles);
         LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut()).getAsJsonObject("result");
         JsonElement resultCode = result.get("code");
@@ -934,7 +934,7 @@ public class Setup {
                 "\"filter=apk\"",
                 deviceLabURL + "/api/upload_file"};
 
-        CommandLineResponse uploadApkResponse = CommandLineExecutor.execCommand(listOfDevices, 60);
+        CommandLineResponse uploadApkResponse = CommandLineExecutor.execCommand(listOfDevices);
         LOGGER.info("\tuploadApkResponse: " + uploadApkResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(uploadApkResponse.getStdOut()).getAsJsonObject("result");
         int uploadStatus = result.get("code").getAsInt();
@@ -955,7 +955,7 @@ public class Setup {
                 "\"" + emailID + ":" + authenticationKey + "\"",
                 deviceLabURL + "/api/access"
         };
-        CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken, 60);
+        CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken);
         LOGGER.info("\tauthTokenResponse: " + authTokenResponse.getStdOut());
         if(authTokenResponse.getStdOut().contains("error")) {
             throw new EnvironmentSetupException(String.format("Unable to get auth: '%s' to '%s'%n%s", appPath, deviceLabURL, authTokenResponse));

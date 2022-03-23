@@ -150,7 +150,7 @@ public class Runner {
     public static void closeAllDrivers(long threadId) {
         TestExecutionContext context = getTestExecutionContext(threadId);
         Drivers allDrivers = (Drivers) context.getTestState(TEST_CONTEXT.ALL_DRIVERS);
-        allDrivers.attachLogsAndCloseAllWebDrivers(context);
+        allDrivers.attachLogsAndCloseAllWebDrivers();
     }
 
     public static String getTargetEnvironment() {

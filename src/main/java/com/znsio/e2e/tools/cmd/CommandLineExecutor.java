@@ -9,7 +9,7 @@ import java.util.concurrent.*;
 
 public class CommandLineExecutor {
     private static final Logger LOGGER = Logger.getLogger(CommandLineExecutor.class.getName());
-    private static final int DEFAULT_COMMAND_TIMEOUT = 120;
+    private static final int DEFAULT_COMMAND_TIMEOUT = 60;
 
     public static CommandLineResponse execCommand(final String[] command) {
         return execCommand(command, DEFAULT_COMMAND_TIMEOUT);

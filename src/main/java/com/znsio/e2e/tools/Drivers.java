@@ -287,9 +287,9 @@ public class Drivers {
             String[] disableToastsCommand = new String[]{"adb", "-s", udid, "shell", "appops", "set", Runner.getAppPackageName(), "TOAST_WINDOW", "deny"};
             String[] disableNotificationsCommand = new String[]{"adb", "-s", udid, "shell", "settings", "put", "global", "heads_up_notifications_enabled", "0"};
 
-            CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand, 60);
+            CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand);
             LOGGER.info("disableToastsCommandResponse: " + disableToastsCommandResponse);
-            CommandLineResponse disableNotificationsCommandResponse = CommandLineExecutor.execCommand(disableNotificationsCommand, 60);
+            CommandLineResponse disableNotificationsCommandResponse = CommandLineExecutor.execCommand(disableNotificationsCommand);
             LOGGER.info("disableNotificationsCommandResponse: " + disableNotificationsCommandResponse);
         }
     }
@@ -340,7 +340,7 @@ public class Drivers {
         baseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrl));
         LOGGER.info(String.format("Check connectivity to baseUrl: '%s'", baseUrl));
         String[] curlCommand = new String[]{"curl -m 60 --insecure -I " + baseUrl};
-        CommandLineExecutor.execCommand(curlCommand, 60);
+        CommandLineExecutor.execCommand(curlCommand);
     }
 
     @NotNull
@@ -585,32 +585,32 @@ public class Drivers {
         return userPersonaPlatforms.get(userPersona);
     }
 
-    public void attachLogsAndCloseAllWebDrivers(TestExecutionContext context) {
+    public void attachLogsAndCloseAllWebDrivers() {
         LOGGER.info("Close all drivers:");
-        userPersonaDrivers.keySet().forEach(key -> {
-            LOGGER.info("\tUser Persona: " + key);
-            validateVisualTestResults(key);
-            attachLogsAndCloseDriver(context, key);
+        userPersonaDrivers.keySet().forEach(userPersona -> {
+            LOGGER.info("\tUser Persona: " + userPersona);
+            validateVisualTestResults(userPersona);
+            attachLogsAndCloseDriver(userPersona);
         });
     }
 
-    private void validateVisualTestResults(String key) {
-        Driver driver = userPersonaDrivers.get(key);
-        driver.getVisual().handleTestResults(key, driver.getType());
+    private void validateVisualTestResults(String userPersona) {
+        Driver driver = userPersonaDrivers.get(userPersona);
+        driver.getVisual().handleTestResults(userPersona, driver.getType());
     }
 
-    private void attachLogsAndCloseDriver (TestExecutionContext context, String key) {
-        Driver driver = userPersonaDrivers.get(key);
+    private void attachLogsAndCloseDriver(String userPersona) {
+        Driver driver = userPersonaDrivers.get(userPersona);
 
         switch (driver.getType()) {
             case Driver.WEB_DRIVER:
-                closeWebDriver(key, driver);
+                closeWebDriver(userPersona, driver);
                 break;
             case Driver.APPIUM_DRIVER:
                 if (Runner.platform.equals(Platform.windows)) {
-                    closeAppOnMachine(key, driver);
+                    closeWindowsAppOnMachine(userPersona, driver);
                 } else {
-                    closeAppOnDevice(key, driver);
+                    closeAndroidAppOnDevice(userPersona, driver);
                 }
                 break;
             default:
@@ -619,10 +619,10 @@ public class Drivers {
         }
     }
 
-    private void closeWebDriver(String key, @NotNull Driver driver) {
-        String logFileName = userPersonaBrowserLogs.get(key);
+    private void closeWebDriver(String userPersona, @NotNull Driver driver) {
+        String logFileName = userPersonaBrowserLogs.get(userPersona);
         String logMessage = String.format("Browser logs for user: %s" +
-                "%nlogFileName: %s", key, logFileName);
+                "%nlogFileName: %s", userPersona, logFileName);
         LOGGER.info(logMessage);
         ReportPortal.emitLog(
                 logMessage,
@@ -631,27 +631,27 @@ public class Drivers {
 
         WebDriver webDriver = driver.getInnerDriver();
         if (null == webDriver) {
-            logMessage = String.format("Strange. But WebDriver for user '%s' already closed", key);
+            logMessage = String.format("Strange. But WebDriver for user '%s' already closed", userPersona);
             LOGGER.info(logMessage);
             ReportPortal.emitLog(logMessage, DEBUG, new Date());
         } else {
-            logMessage = String.format("Closing WebDriver for user: '%s'", key);
+            logMessage = String.format("Closing WebDriver for user: '%s'", userPersona);
             LOGGER.info(logMessage);
             ReportPortal.emitLog(logMessage, DEBUG, new Date());
             webDriver.quit();
         }
     }
 
-    private void closeAppOnMachine(String key, @NotNull Driver driver) {
+    private void closeWindowsAppOnMachine(String userPersona, @NotNull Driver driver) {
         String logMessage;
         String appPackageName = Runner.getAppPackageName();
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
         if (null == appiumDriver) {
-            logMessage = String.format("Strange. But WindowsDriver for user '%s' already closed", key);
+            logMessage = String.format("Strange. But WindowsDriver for user '%s' already closed", userPersona);
             LOGGER.info(logMessage);
             ReportPortal.emitLog(logMessage, DEBUG, new Date());
         } else {
-            logMessage = String.format("Closing WindowsDriver for App '%s' for user '%s'", appPackageName, key);
+            logMessage = String.format("Closing WindowsDriver for App '%s' for user '%s'", appPackageName, userPersona);
             LOGGER.info(logMessage);
             appiumDriver.closeApp();
             appiumDriver.quit();
@@ -662,12 +662,12 @@ public class Drivers {
         }
     }
 
-    private void closeAppOnDevice(String key, @NotNull Driver driver) {
+    private void closeAndroidAppOnDevice(String userPersona, @NotNull Driver driver) {
         String appPackageName = Runner.getAppPackageName();
         String logMessage;
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
         if (null == appiumDriver) {
-            logMessage = String.format("Strange. But AppiumDriver for user '%s' already closed", key);
+            logMessage = String.format("Strange. But AppiumDriver for user '%s' already closed", userPersona);
             LOGGER.info(logMessage);
             ReportPortal.emitLog(logMessage, DEBUG, new Date());
         } else {
