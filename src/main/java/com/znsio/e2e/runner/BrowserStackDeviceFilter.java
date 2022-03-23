@@ -29,7 +29,7 @@ public class BrowserStackDeviceFilter {
                     "\"https://api.browserstack.com/automate/browsers.json\"",
                     "> " + allAvailableBrowsersAndDevicesFileName
             };
-            CommandLineResponse listofBrowsersAndDevicesAvailableInBrowserStack = CommandLineExecutor.execCommand(curlCommand);
+            CommandLineResponse listOfBrowsersAndDevicesAvailableInBrowserStack = CommandLineExecutor.execCommand(curlCommand);
 
             String documentContext = JsonPath.parse(new File(allAvailableBrowsersAndDevicesFileName)).jsonString();
             final ObjectMapper objectMapper = new ObjectMapper();
