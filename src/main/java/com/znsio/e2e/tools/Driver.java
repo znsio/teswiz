@@ -386,7 +386,7 @@ public class Driver {
         return appiumDriver.context(contextName);
     }
 
-    public WebDriver swichFrameToDefault(){
+    public WebDriver switchFrameToDefault(){
         return driver.switchTo().defaultContent();
     }
 
