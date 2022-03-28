@@ -386,6 +386,10 @@ public class Driver {
         return appiumDriver.context(contextName);
     }
 
+    public WebDriver swichFrameToDefault(){
+        return driver.switchTo().defaultContent();
+    }
+
     public void scrollToBottom() {
         ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
     }
