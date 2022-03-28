@@ -4,11 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.runner.Runner;
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileBy;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.PerformsTouchActions;
-import io.appium.java_client.TouchAction;
+import io.appium.java_client.*;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.StartsActivity;
 import io.appium.java_client.ios.IOSDriver;
@@ -17,7 +13,6 @@ import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
 import org.apache.log4j.Logger;
-import org.openqa.selenium.By;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -386,8 +381,12 @@ public class Driver {
         return appiumDriver.context(contextName);
     }
 
-    public WebDriver switchFrameToDefault(){
+    public WebDriver switchFrameToDefault() {
         return driver.switchTo().defaultContent();
+    }
+
+    public WebDriver switchToFrame(String id) {
+        return driver.switchTo().frame(id);
     }
 
     public void scrollToBottom() {
