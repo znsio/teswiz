@@ -107,8 +107,8 @@ public class Visual {
 
         configuration.setSendDom(getValueFromConfig(APPLITOOLS.SEND_DOM, true));
         configuration.setStitchMode(StitchMode.valueOf(String.valueOf(getValueFromConfig(APPLITOOLS.STITCH_MODE, StitchMode.CSS)).toUpperCase()));
-        eyes.setForceFullPageScreenshot(getValueFromConfig(APPLITOOLS.TAKE_FULL_PAGE_SCREENSHOT, true));
-        eyes.setStitchMode(StitchMode.SCROLL);
+        configuration.setForceFullPageScreenshot(getValueFromConfig(APPLITOOLS.TAKE_FULL_PAGE_SCREENSHOT, true));
+        configuration.setStitchMode(StitchMode.CSS);
 
         addBrowserAndDeviceConfigForUFG(isUFG, configuration);
 
