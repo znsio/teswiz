@@ -22,6 +22,8 @@ import com.znsio.e2e.runner.Runner;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 import org.jetbrains.annotations.NotNull;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
 import java.io.File;
@@ -132,9 +134,32 @@ public class Visual {
         eyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
         eyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
 
-        eyes.open(innerDriver, appName, testName, (RectangleSize) getValueFromConfig(APPLITOOLS.RECTANGLE_SIZE));
+        RectangleSize setBrowserViewPortSize = getBrowserViewPortSize(innerDriver);
+        LOGGER.info("Using browser dimensions for Applitools: " + setBrowserViewPortSize);
+
+        eyes.open(innerDriver, appName, testName, setBrowserViewPortSize);
         LOGGER.info("instantiateWebEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
         return eyes;
+    }
+
+    private RectangleSize getBrowserViewPortSize(WebDriver innerDriver) {
+        RectangleSize providedBrowserViewPortSizeFromConfig = (RectangleSize) getValueFromConfig(APPLITOOLS.RECTANGLE_SIZE);
+        int providedBrowserViewPortSizeFromConfigHeight = providedBrowserViewPortSizeFromConfig.getHeight();
+        int providedBrowserViewPortSizeFromConfigWidth = providedBrowserViewPortSizeFromConfig.getWidth();
+        LOGGER.info("Provided browser dimensions: " + providedBrowserViewPortSizeFromConfig);
+
+        JavascriptExecutor js = (JavascriptExecutor) innerDriver;
+        Dimension actualBrowserSize = innerDriver.manage().window().getSize();
+        LOGGER.info("Actual browser dimensions: " + actualBrowserSize);
+        Long actualHeight = (Long) js.executeScript("return (window.innerHeight);");
+        Long actualWidth = (Long) js.executeScript("return (window.innerWidth);");
+
+        if(providedBrowserViewPortSizeFromConfigHeight > actualHeight.intValue()
+                || providedBrowserViewPortSizeFromConfigWidth > actualWidth.intValue()) {
+            return new RectangleSize(actualWidth.intValue(), actualHeight.intValue());
+        } else {
+            return providedBrowserViewPortSizeFromConfig;
+        }
     }
 
     private void addBrowserAndDeviceConfigForUFG(boolean isUFG, Configuration configuration) {
