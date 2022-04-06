@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.znsio.e2e.runner.Runner.NOT_SET;
+import static com.znsio.e2e.runner.Runner.USER_NAME;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class Visual {
@@ -133,6 +134,7 @@ public class Visual {
         eyes.addProperty(PLATFORM, String.valueOf(getValueFromConfig(PLATFORM)));
         eyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
         eyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
+        eyes.addProperty(USER_NAME, USER_NAME);
 
         RectangleSize setBrowserViewPortSize = getBrowserViewPortSize(driverType, innerDriver);
         LOGGER.info("Using browser dimensions for Applitools: " + setBrowserViewPortSize);
