@@ -442,8 +442,10 @@ public class Drivers {
         LOGGER.info("ChromeOptions: " + chromeOptions.asMap());
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions) : new ChromeDriver(chromeOptions);
+        LOGGER.info("Chrome driver created");
         Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities() : ((ChromeDriver) driver).getCapabilities();
         userPersonaDriverCapabilities.put(forUserPersona, capabilities);
+        LOGGER.info("Chrome driver capabilities extracted for further use");
         return driver;
     }
 
@@ -508,8 +510,10 @@ public class Drivers {
         LOGGER.info("FirefoxOptions: " + firefoxOptions.asMap());
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(firefoxOptions) : new FirefoxDriver(firefoxOptions);
+        LOGGER.info("Firefox driver created");
         Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities() : ((FirefoxDriver) driver).getCapabilities();
         userPersonaDriverCapabilities.put(forUserPersona, capabilities);
+        LOGGER.info("Firefox driver capabilities extracted for further use");
         return driver;
     }
 
@@ -550,7 +554,9 @@ public class Drivers {
                 remoteUrl = remoteUrl.startsWith("https") ? remoteUrl : "https://" + remoteUrl;
             }
             LOGGER.info("Starting RemoteWebDriver using url: " + remoteUrl);
-            return new RemoteWebDriver(new URL(remoteUrl), chromeOptions);
+            RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(remoteUrl), chromeOptions);
+            LOGGER.info("RemoteWebDriver created using url: " + remoteUrl);
+            return remoteWebDriver;
         } catch (MalformedURLException e) {
             throw new EnvironmentSetupException("Unable to create a new RemoteWebDriver", e);
         }
