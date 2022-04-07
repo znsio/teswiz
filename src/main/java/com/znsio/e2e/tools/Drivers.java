@@ -362,7 +362,9 @@ public class Drivers {
         webDriverManager.setup();
         String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
 
-        ReportPortal.emitLog(driverManagerType + " browser - version: " + downloadedDriverVersion, "info", new Date());
+        String message = String.format("Using %s browser version: %s", driverManagerType,downloadedDriverVersion);
+        LOGGER.info(message);
+        ReportPortal.emitLog(message, "info", new Date());
         return driverManagerType;
     }
 
