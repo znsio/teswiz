@@ -202,7 +202,11 @@ public class Drivers {
         String runningOn = Runner.isRunningInCI() ? "CI" : "local";
         context.addTestState(TEST_CONTEXT.WEB_BROWSER_ON, runningOn);
         if (numberOfWebDriversUsed < MAX_NUMBER_OF_WEB_DRIVERS) {
-            currentDriver = new Driver(updatedTestName, runningOn, createNewWebDriver(userPersona, context, browserConfig), isRunInHeadlessMode, shouldBrowserBeMaximized);
+            LOGGER.info("Create new webdriver instance");
+            WebDriver newWebDriver = createNewWebDriver(userPersona, context, browserConfig);
+            LOGGER.info("Webdriver instance created");
+            currentDriver = new Driver(updatedTestName, runningOn, newWebDriver, isRunInHeadlessMode, shouldBrowserBeMaximized);
+            LOGGER.info("New Driver with Visual instance created");
         } else {
             throw new InvalidTestDataException(
                     String.format("Current number of WebDriver instances used: '%d'. " +
@@ -318,13 +322,16 @@ public class Drivers {
             case SAFARI:
                 throw new InvalidTestDataException(String.format("Browser: '%s' is NOT supported", browserType));
         }
+        LOGGER.info("Driver created");
         driver.get(baseUrl);
+        LOGGER.info("Navigated to baseUrl: " + baseUrl);
 
         if (shouldBrowserBeMaximized && !isRunInHeadlessMode) {
             driver.manage().window().maximize();
         } else if (isRunInHeadlessMode) {
             driver.manage().window().setSize(new Dimension(1920, 1080));
         }
+        LOGGER.info("Reset browser window size");
         return driver;
     }
 
