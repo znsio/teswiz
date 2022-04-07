@@ -40,6 +40,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 
+import static com.znsio.e2e.runner.Runner.NOT_SET;
+import static com.znsio.e2e.runner.Runner.isRunningInCI;
 import static com.znsio.e2e.runner.Setup.CAPS;
 import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
 
@@ -396,9 +398,7 @@ public class Drivers {
 
         ChromeOptions chromeOptions = new ChromeOptions();
 
-        String logFileName = setLogFileName(forUserPersona, testExecutionContext, "Chrome");
-        userPersonaBrowserLogs.put(forUserPersona, logFileName);
-        System.setProperty("webdriver.chrome.logfile", logFileName);
+        setLogFileName(forUserPersona, testExecutionContext, "Chrome");
 
         JSONArray excludeSwitches = chromeConfiguration.getJSONArray("excludeSwitches");
         List<String> excludeSwitchesAsString = new ArrayList<>();
@@ -459,9 +459,7 @@ public class Drivers {
 
         FirefoxOptions firefoxOptions = new FirefoxOptions();
 
-        String logFileName = setLogFileName(forUserPersona, testExecutionContext, "Firefox");
-        userPersonaBrowserLogs.put(forUserPersona, logFileName);
-        System.setProperty("webdriver.firefox.logfile", logFileName);
+        setLogFileName(forUserPersona, testExecutionContext, "Firefox");
 
         FirefoxProfile firefoxProfile = new FirefoxProfile();
         JSONObject profileObject = firefoxConfiguration.getJSONObject("firefoxProfile");
@@ -522,17 +520,25 @@ public class Drivers {
         return null == capability ? "" : capability.toString();
     }
 
-    private String setLogFileName(String forUserPersona, TestExecutionContext testExecutionContext, String browserType) {
-        String scenarioLogDir = Runner.USER_DIRECTORY + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
-        String logFile = scenarioLogDir + File.separator + "deviceLogs" + File.separator + browserType + "-" + forUserPersona + ".log";
+    private void setLogFileName(String forUserPersona, TestExecutionContext testExecutionContext, String browserType) {
+        String logFile = NOT_SET;
+        if (!Runner.isRunningInCI()) {
+            String scenarioLogDir = Runner.USER_DIRECTORY + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+            logFile = scenarioLogDir + File.separator + "deviceLogs" + File.separator + browserType + "-" + forUserPersona + ".log";
 
-        File file = new File(logFile);
-        file.getParentFile().mkdirs();
+            File file = new File(logFile);
+            file.getParentFile().mkdirs();
 
-        String logMessage = String.format("Creating %s logs in file: %s", browserType, logFile);
-        LOGGER.info(logMessage);
-        ReportPortal.emitLog(logMessage, DEBUG, new Date());
-        return logFile;
+            String logMessage = String.format("Creating %s logs in file: %s", browserType, logFile);
+            LOGGER.info(logMessage);
+            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+            System.setProperty("webdriver." + browserType.toLowerCase() + ".logfile", logFile);
+        } else {
+            String logMessage = String.format("Skipping capturing %s logs in CI: %s", browserType, logFile);
+            LOGGER.info(logMessage);
+            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+        }
+        userPersonaBrowserLogs.put(forUserPersona, logFile);
     }
 
     @NotNull
@@ -630,10 +636,11 @@ public class Drivers {
         String logMessage = String.format("Browser logs for user: %s" +
                 "%nlogFileName: %s", userPersona, logFileName);
         LOGGER.info(logMessage);
-        ReportPortal.emitLog(
-                logMessage,
-                DEBUG,
-                new Date(), new File(logFileName));
+        if (isRunningInCI()) {
+            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+        } else {
+            ReportPortal.emitLog(logMessage, DEBUG, new Date(), new File(logFileName));
+        }
 
         WebDriver webDriver = driver.getInnerDriver();
         if (null == webDriver) {
