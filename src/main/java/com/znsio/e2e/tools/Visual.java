@@ -134,7 +134,7 @@ public class Visual {
         eyes.addProperty(PLATFORM, String.valueOf(getValueFromConfig(PLATFORM)));
         eyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
         eyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
-        eyes.addProperty(USER_NAME, USER_NAME);
+        eyes.addProperty("USER_NAME", USER_NAME);
 
         RectangleSize setBrowserViewPortSize = getBrowserViewPortSize(driverType, innerDriver);
         LOGGER.info("Using browser dimensions for Applitools: " + setBrowserViewPortSize);
