@@ -49,6 +49,13 @@ configurations {
 
 compileJava { options.encoding = "UTF-8" }
 
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
     implementation files("$buildDir/classes/main")
