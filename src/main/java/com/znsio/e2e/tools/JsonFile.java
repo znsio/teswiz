@@ -68,7 +68,7 @@ public class JsonFile {
             nodePath.append(nodeTree[nodeCount]).append(" -> ");
             map = map.get(nodeTree[nodeCount]);
             if (null == map) {
-                throw new InvalidTestDataException(String.format("Node: '%s' not found in file: '%s'", nodePath.toString(), fileName));
+                throw new InvalidTestDataException(String.format("Node: '%s' not found in file: '%s'", nodePath, fileName));
             }
         }
         String retValue = String.valueOf(map.get(nodeTree[nodeTree.length - 1]));

@@ -8,9 +8,6 @@ import com.znsio.e2e.tools.*;
 import io.cucumber.java.en.*;
 import org.apache.log4j.*;
 
-import java.io.*;
-import java.net.*;
-
 public class CalculatorSteps {
     private static final Logger LOGGER = Logger.getLogger(CalculatorSteps.class.getName());
     private final TestExecutionContext context;

@@ -1,45 +1,24 @@
 package com.znsio.e2e.runner;
 
-import com.applitools.eyes.MatchLevel;
-import com.applitools.eyes.RectangleSize;
-import com.github.device.Device;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import com.znsio.e2e.entities.APPLITOOLS;
-import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.exceptions.EnvironmentSetupException;
-import com.znsio.e2e.exceptions.InvalidTestDataException;
-import com.znsio.e2e.tools.JsonFile;
-import com.znsio.e2e.tools.cmd.CommandLineExecutor;
-import com.znsio.e2e.tools.cmd.CommandLineResponse;
-import io.cucumber.java.eo.*;
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-import se.vidstige.jadb.JadbConnection;
-import se.vidstige.jadb.JadbDevice;
-import se.vidstige.jadb.JadbException;
-import se.vidstige.jadb.Stream;
+import com.applitools.eyes.*;
+import com.github.device.*;
+import com.google.gson.*;
+import com.znsio.e2e.entities.*;
+import com.znsio.e2e.exceptions.*;
+import com.znsio.e2e.tools.*;
+import com.znsio.e2e.tools.cmd.*;
+import org.apache.commons.io.*;
+import org.apache.log4j.*;
+import org.jetbrains.annotations.*;
+import org.json.*;
+import se.vidstige.jadb.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.*;
+import java.nio.charset.*;
+import java.nio.file.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.atomic.*;
+import java.util.regex.*;
 
 import static com.appium.utils.OverriddenVariable.*;
 import static com.znsio.e2e.runner.Runner.*;
@@ -117,20 +96,20 @@ public class Setup {
     private static Map<String, Map> loadEnvironmentConfiguration(String environment) {
         String envConfigFile = configs.get(ENVIRONMENT_CONFIG_FILE);
         LOGGER.info("Loading environment configuration from ENVIRONMENT_CONFIG_FILE: "
-                + envConfigFile
-                + " for environment: "
-                + environment);
+                            + envConfigFile
+                            + " for environment: "
+                            + environment);
         return (NOT_SET.equalsIgnoreCase(envConfigFile))
-                ? new HashMap<>()
-                : JsonFile.getNodeValueAsMapFromJsonFile(environment, envConfigFile);
+                       ? new HashMap<>()
+                       : JsonFile.getNodeValueAsMapFromJsonFile(environment, envConfigFile);
     }
 
     private static Map<String, Map> loadTestDataForEnvironment(String environment) {
         String testDataFile = configs.get(TEST_DATA_FILE);
         LOGGER.info("Loading test data from TEST_DATA_FILE: "
-                + testDataFile
-                + " for environment: "
-                + environment);
+                            + testDataFile
+                            + " for environment: "
+                            + environment);
         return (NOT_SET.equalsIgnoreCase(testDataFile)) ? new HashMap<>() : JsonFile.getNodeValueAsMapFromJsonFile(environment, testDataFile);
     }
 
@@ -140,7 +119,7 @@ public class Setup {
 
     static void getApplitoolsConfigFromProvidedConfigFile() {
         String applitoolsConfigurationFileName = configs.get(APPLITOOLS_CONFIGURATION);
-        if(applitoolsConfigurationFileName.equals(NOT_SET)) {
+        if (applitoolsConfigurationFileName.equals(NOT_SET)) {
             LOGGER.info("Applitools configuration not provided. Will use defaults%n");
         } else {
             LOGGER.info("Loading Applitools configuration from: " + applitoolsConfigurationFileName);
@@ -282,7 +261,7 @@ public class Setup {
     @NotNull
     private String printStringMap(String prefix, Map<String, String> printConfig) {
         StringBuilder printString = new StringBuilder(prefix + ": \n");
-        for(Map.Entry<String, String> entry : printConfig.entrySet()) {
+        for (Map.Entry<String, String> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
         }
         return printString.toString() + printConfig;
@@ -291,7 +270,7 @@ public class Setup {
     @NotNull
     private String printBooleanMap(String prefix, Map<String, Boolean> printConfig) {
         StringBuilder printString = new StringBuilder(prefix + ": \n");
-        for(Map.Entry<String, Boolean> entry : printConfig.entrySet()) {
+        for (Map.Entry<String, Boolean> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
         }
         return printString.toString() + printConfig;
@@ -300,7 +279,7 @@ public class Setup {
     @NotNull
     private String printIntegerMap(String prefix, Map<String, Integer> printConfig) {
         StringBuilder printString = new StringBuilder(prefix + ": \n");
-        for(Map.Entry<String, Integer> entry : printConfig.entrySet()) {
+        for (Map.Entry<String, Integer> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
         }
         return printString.toString() + printConfig;
@@ -328,11 +307,11 @@ public class Setup {
                         "Username:" + USER_NAME + "; " +
                         "VisualEnabled:" + configsBoolean.get(IS_VISUAL) + "; ";
 
-        if(!configs.get(APP_VERSION).equals(NOT_SET)) {
+        if (!configs.get(APP_VERSION).equals(NOT_SET)) {
             rpAttributes += "AppVersion: " + configs.get(APP_VERSION) + "; ";
         }
 
-        if(!configs.get(BUILD_ID).equals(NOT_SET)) {
+        if (!configs.get(BUILD_ID).equals(NOT_SET)) {
             rpAttributes += "BuildId: " + configs.get(BUILD_ID) + "; ";
         }
 
@@ -376,7 +355,7 @@ public class Setup {
     }
 
     private void setupWebExecution() {
-        if(platform.equals(Platform.web)) {
+        if (platform.equals(Platform.web)) {
             configs.put(APP_PATH, configs.get(BROWSER));
             cukeArgs.add("--threads");
             cukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
@@ -389,9 +368,9 @@ public class Setup {
     }
 
     private void setupAndroidExecution() {
-        if(platform.equals(Platform.android)) {
+        if (platform.equals(Platform.android)) {
             verifyAppExistsAtMentionedPath();
-            if(configsBoolean.get(RUN_IN_CI)) {
+            if (configsBoolean.get(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
                 setupLocalExecution();
@@ -407,7 +386,7 @@ public class Setup {
     }
 
     private void setupWindowsExecution() {
-        if(platform.equals(Platform.windows)) {
+        if (platform.equals(Platform.windows)) {
             verifyAppExistsAtMentionedPath();
             fetchWindowsAppVersion();
             cukeArgs.add(PLUGIN);
@@ -421,7 +400,7 @@ public class Setup {
     private void verifyAppExistsAtMentionedPath() {
         String appPath = String.valueOf(configs.get(APP_PATH));
         LOGGER.info("Update path to Apk: " + appPath);
-        if(appPath.equals(NOT_SET)) {
+        if (appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
             configs.put(APP_PATH, appPath);
             String capabilitiesFileName = configs.get(CAPS);
@@ -432,7 +411,7 @@ public class Setup {
     }
 
     private void checkIfAppExistsAtTheMentionedPath(String appPath, String capabilitiesFileName) {
-        if(Files.exists(Paths.get(appPath))) {
+        if (Files.exists(Paths.get(appPath))) {
             LOGGER.info("\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName + ":: " + platform);
         } else {
             LOGGER.info("\tAppPath: " + appPath + " not found!");
@@ -455,7 +434,7 @@ public class Setup {
     private void fetchAndroidAppVersion() {
         Pattern VERSION_NAME_PATTERN = Pattern.compile("versionName='([0-9]+(\\.[0-9]+)+)'", Pattern.MULTILINE);
         String searchPattern = "grep";
-        if(Runner.IS_WINDOWS) {
+        if (Runner.IS_WINDOWS) {
             searchPattern = "findstr";
         }
 
@@ -477,9 +456,9 @@ public class Setup {
     private void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {
         CommandLineResponse commandResponse = CommandLineExecutor.execCommand(commandToGetAppVersion);
         String commandOutput = commandResponse.getStdOut();
-        if(!(null == commandOutput || commandOutput.isEmpty())) {
+        if (!(null == commandOutput || commandOutput.isEmpty())) {
             Matcher matcher = pattern.matcher(commandOutput);
-            if(matcher.find()) {
+            if (matcher.find()) {
                 configs.put(APP_VERSION, matcher.group(1));
             }
         } else {
@@ -509,7 +488,7 @@ public class Setup {
 
         List<BrowserStackDevice> availableDevices = BrowserStackDeviceFilter.getFilteredDevices(authenticationUser, authenticationKey, filters, configs.get(LOG_DIR));
 
-        for(int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS); numDevices++) {
+        for (int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS); numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", availableDevices.get(numDevices).getOs_version());
             deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
@@ -530,7 +509,7 @@ public class Setup {
         String capabilityFile = configs.get(CAPS);
         String platformName = platform.name();
         ArrayList listOfAndroidDevices = new ArrayList();
-        for(int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS); numDevices++) {
+        for (int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS); numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", String.valueOf(loadedCapabilityFile.get(platformName).get("platformVersion")));
             deviceInfo.put("deviceName", String.valueOf(loadedCapabilityFile.get(platformName).get("platformName")));
@@ -558,7 +537,7 @@ public class Setup {
     private void setupLocalExecution() {
         setupLocalDevices();
         int parallelCount = devices.size();
-        if(parallelCount == 0) {
+        if (parallelCount == 0) {
             throw new EnvironmentSetupException("No devices available to run the tests");
         }
         configsInteger.put(PARALLEL, parallelCount);
@@ -567,7 +546,7 @@ public class Setup {
 
     private List<Device> setupLocalDevices() {
         startADBServer();
-        if(null == devices) {
+        if (null == devices) {
             JadbConnection jadb = new JadbConnection();
             List<JadbDevice> deviceList;
             devices = new ArrayList<>();
@@ -609,7 +588,7 @@ public class Setup {
         String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall", APPIUM_SETTINGS};
         CommandLineExecutor.execCommand(uninstallAppiumSettings);
 
-        if(configsBoolean.get(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
+        if (configsBoolean.get(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
             String[] uninstallApp = new String[]{"adb", "-s", device.getUdid(), "uninstall", appPackageName};
             CommandLineExecutor.execCommand(uninstallApp);
         } else {
@@ -662,7 +641,7 @@ public class Setup {
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String appIdFromBrowserStack;
-        if(configsBoolean.get(CLOUD_UPLOAD_APP)) {
+        if (configsBoolean.get(CLOUD_UPLOAD_APP)) {
             appIdFromBrowserStack = uploadAPKToBrowserStack(authenticationUser + ":" + authenticationKey, appPath);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
@@ -738,7 +717,7 @@ public class Setup {
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
         String appIdFromHeadspin;
-        if(configsBoolean.get(CLOUD_UPLOAD_APP)) {
+        if (configsBoolean.get(CLOUD_UPLOAD_APP)) {
             appIdFromHeadspin = uploadAPKToHeadspin(authenticationKey, appPath);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
@@ -786,11 +765,11 @@ public class Setup {
 
         AtomicReference<String> uploadedAppId = new AtomicReference<>(NOT_SET);
         JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey);
-        if(listOfAppPackages.keySet().size() > 0) {
+        if (listOfAppPackages.keySet().size() > 0) {
             getAppIdFromAvailableAppsFromHeadspin(appPackageName, listOfAppPackages, uploadedAppId);
         }
 
-        if(uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
+        if (uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
             throw new InvalidTestDataException(String.format("App with package: '%s' not available in Headspin", appPackageName));
         }
 
@@ -799,11 +778,11 @@ public class Setup {
 
     private void getAppIdFromAvailableAppsFromHeadspin(String appPackageName, JsonObject listOfAppPackages, AtomicReference<String> uploadedAppId) {
         listOfAppPackages.keySet().forEach(appId -> {
-            if(uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
+            if (uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
                 JsonObject appInfoAsJson = listOfAppPackages.getAsJsonObject(appId);
                 String retrievedAppPackage = appInfoAsJson.get("app_package").getAsString();
                 LOGGER.info("retrievedAppPackage: " + retrievedAppPackage);
-                if(retrievedAppPackage.equals(appPackageName)) {
+                if (retrievedAppPackage.equals(appPackageName)) {
                     LOGGER.info("\tThis file is available in Device Farm: " + appId);
                     uploadedAppId.set(appId);
                     configs.put(APP_PATH, appInfoAsJson.get("app_name").getAsString());
@@ -821,7 +800,7 @@ public class Setup {
 
         JsonObject listOfAppPackages = JsonFile.convertToMap(listOfUploadedFilesInHeadspinResponse.getStdOut()).getAsJsonObject();
         JsonElement statusCode = listOfAppPackages.get("status_code");
-        if(null != statusCode && statusCode.getAsInt() != 200) {
+        if (null != statusCode && statusCode.getAsInt() != 200) {
             throw new InvalidTestDataException("There was a problem getting the list of apps in Headspin");
         }
         return listOfAppPackages;
@@ -830,7 +809,7 @@ public class Setup {
     private void updatePCloudyCapabilities() {
         String emailID = configs.get(CLOUD_USER);
         String authenticationKey = configs.get(CLOUD_KEY);
-        if(configsBoolean.get(CLOUD_UPLOAD_APP)) {
+        if (configsBoolean.get(CLOUD_UPLOAD_APP)) {
             uploadAPKTopCloudy(emailID, authenticationKey);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
@@ -862,7 +841,7 @@ public class Setup {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
         String authToken = getpCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
-        if(isAPKAlreadyAvailableInPCloudy(authToken, appPath)) {
+        if (isAPKAlreadyAvailableInPCloudy(authToken, appPath)) {
             LOGGER.info("\tAPK is already available in cloud. No need to upload it again");
         } else {
             LOGGER.info("\tAPK is NOT available in cloud. Upload it");
@@ -882,7 +861,7 @@ public class Setup {
         availableFiles.forEach(file -> {
             String fileName = ((JsonObject) file).get("file").getAsString();
             LOGGER.info("\tThis file is available in Device Farm: " + fileName);
-            if(appNameFromPath.equals(fileName)) {
+            if (appNameFromPath.equals(fileName)) {
                 isFileAlreadyUploaded.set(true);
             }
         });
@@ -912,7 +891,7 @@ public class Setup {
         JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut()).getAsJsonObject("result");
         JsonElement resultCode = result.get("code");
         int uploadStatus = (null == resultCode) ? 400 : resultCode.getAsInt();
-        if(200 != uploadStatus) {
+        if (200 != uploadStatus) {
             throw new EnvironmentSetupException(String.format("Unable to get list of uploaded files%n%s",
                     listFilesInPCloudyResponse));
         }
@@ -940,7 +919,7 @@ public class Setup {
         LOGGER.info("\tuploadApkResponse: " + uploadApkResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(uploadApkResponse.getStdOut()).getAsJsonObject("result");
         int uploadStatus = result.get("code").getAsInt();
-        if(200 != uploadStatus) {
+        if (200 != uploadStatus) {
             throw new EnvironmentSetupException(String.format("Unable to upload app: '%s' to '%s'%n%s",
                     appPath, deviceLabURL, uploadApkResponse));
         }
@@ -959,7 +938,7 @@ public class Setup {
         };
         CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken);
         LOGGER.info("\tauthTokenResponse: " + authTokenResponse.getStdOut());
-        if(authTokenResponse.getStdOut().contains("error")) {
+        if (authTokenResponse.getStdOut().contains("error")) {
             throw new EnvironmentSetupException(String.format("Unable to get auth: '%s' to '%s'%n%s", appPath, deviceLabURL, authTokenResponse));
         }
         String authToken = JsonFile.convertToMap(authTokenResponse.getStdOut()).getAsJsonObject("result").get("token").getAsString();
@@ -970,32 +949,32 @@ public class Setup {
     private void getPlatformTagsAndLaunchName() {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME) + " Automated Tests Report";
-        if(configsBoolean.get(RUN_IN_CI)) {
+        if (configsBoolean.get(RUN_IN_CI)) {
             launchName += " on Device Farm";
         }
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);
-        if(providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
+        if (providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
             LOGGER.info("\tTags not specified");
             launchName += " - " + platform;
         } else {
-            if(providedTags.contains("multiuser-android-web")) {
+            if (providedTags.contains("multiuser-android-web")) {
                 platform = Platform.android;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Android & Web";
-            } else if(providedTags.contains("multiuser-android")) {
+            } else if (providedTags.contains("multiuser-android")) {
                 platform = Platform.android;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on multiple Androids";
-            } else if(providedTags.contains("multiuser-web")) {
+            } else if (providedTags.contains("multiuser-web")) {
                 platform = Platform.web;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Web";
-            } else if(providedTags.contains("multiuser-windows-web")) {
+            } else if (providedTags.contains("multiuser-windows-web")) {
                 platform = Platform.windows;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Windows & Web";
-            } else if(providedTags.contains("multiuser-windows-android")) {
+            } else if (providedTags.contains("multiuser-windows-android")) {
                 platform = Platform.windows;
                 inferredTags = providedTags + " and not @wip";
                 launchName += " - Real User Simulation on Windows & Android";
@@ -1036,8 +1015,8 @@ public class Setup {
     private String getCustomTags() {
         String customTags = "@" + platform + " and not @wip";
         String providedTags = configs.get(TAG);
-        if(!providedTags.equalsIgnoreCase(NOT_SET)) {
-            if(!providedTags.startsWith("@")) {
+        if (!providedTags.equalsIgnoreCase(NOT_SET)) {
+            if (!providedTags.startsWith("@")) {
                 providedTags = "@" + providedTags;
             }
             customTags = providedTags + " and " + customTags;
@@ -1049,7 +1028,7 @@ public class Setup {
     private void cleanupDirectories() {
         List<String> files = listOfDirectoriesToDelete();
         LOGGER.info("Delete Directories: " + files);
-        for(String file : files) {
+        for (String file : files) {
             LOGGER.info("\tDeleting directory: " + file);
             try {
                 FileUtils.deleteDirectory(new java.io.File(file));
@@ -1068,7 +1047,7 @@ public class Setup {
     private void setupDirectories() {
         List<String> files = listOfDirectoriesToCreate();
         LOGGER.info("Create Directories: " + files);
-        for(String file : files) {
+        for (String file : files) {
             LOGGER.info("\tCreating directory: " + file);
             try {
                 FileUtils.forceMkdir(new java.io.File(file));

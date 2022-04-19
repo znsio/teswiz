@@ -4,11 +4,8 @@ import com.context.*;
 import com.znsio.e2e.entities.*;
 import com.znsio.e2e.runner.*;
 import com.znsio.e2e.screen.*;
-import io.appium.java_client.*;
 import org.apache.log4j.*;
 import org.assertj.core.api.*;
-
-import static com.znsio.e2e.tools.Wait.waitFor;
 
 public class CalculatorBL {
     private static final Logger LOGGER = Logger.getLogger(CalculatorBL.class.getName());

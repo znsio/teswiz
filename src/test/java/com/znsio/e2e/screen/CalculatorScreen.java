@@ -3,7 +3,6 @@ package com.znsio.e2e.screen;
 import com.znsio.e2e.entities.*;
 import com.znsio.e2e.runner.*;
 import com.znsio.e2e.screen.android.*;
-import com.znsio.e2e.steps.*;
 import com.znsio.e2e.tools.*;
 import org.apache.commons.lang3.*;
 import org.apache.log4j.*;

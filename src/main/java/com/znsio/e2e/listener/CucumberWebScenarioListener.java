@@ -6,7 +6,6 @@ import com.znsio.e2e.entities.*;
 import com.znsio.e2e.runner.*;
 import io.cucumber.plugin.*;
 import io.cucumber.plugin.event.*;
-import io.github.bonigarcia.wdm.*;
 import org.apache.log4j.*;
 
 import java.io.*;

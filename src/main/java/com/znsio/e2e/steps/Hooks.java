@@ -39,7 +39,7 @@ public class Hooks {
     private void addEnvironmentVariablesToReportPortal() {
         Map<String, String> env = System.getenv();
         final String[] envVars = {""};
-        env.forEach((k, v) -> envVars[0] +=("\t" + k + ":" + v + "\n"));
+        env.forEach((k, v) -> envVars[0] += ("\t" + k + ":" + v + "\n"));
         ReportPortal.emitLog("Environment Variables:\n" + envVars[0], DEBUG, new Date());
     }
 

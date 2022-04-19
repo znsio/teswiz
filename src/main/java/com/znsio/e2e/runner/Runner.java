@@ -6,7 +6,6 @@ import com.znsio.e2e.entities.*;
 import com.znsio.e2e.exceptions.*;
 import com.znsio.e2e.tools.*;
 import io.cucumber.core.cli.*;
-import org.apache.log4j.Logger;
 import org.assertj.core.api.*;
 
 import java.nio.file.*;

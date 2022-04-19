@@ -1,16 +1,14 @@
 package com.znsio.e2e.tools;
 
-import com.epam.reportportal.service.ReportPortal;
-import com.znsio.e2e.exceptions.InvalidTestDataException;
-import org.apache.log4j.Logger;
-import org.everit.json.schema.Schema;
-import org.everit.json.schema.ValidationException;
-import org.everit.json.schema.loader.SchemaLoader;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import com.epam.reportportal.service.*;
+import com.znsio.e2e.exceptions.*;
+import org.apache.log4j.*;
+import org.everit.json.schema.*;
+import org.everit.json.schema.loader.*;
+import org.json.*;
 
-import java.io.InputStream;
-import java.util.Date;
+import java.io.*;
+import java.util.*;
 
 public class JsonSchemaValidator {
     private static final Logger LOGGER = Logger.getLogger(JsonSchemaValidator.class.getName());

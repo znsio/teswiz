@@ -1,20 +1,16 @@
 package com.znsio.e2e.tools;
 
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
-import com.epam.reportportal.service.ReportPortal;
-import com.znsio.e2e.entities.TEST_CONTEXT;
-import com.znsio.e2e.runner.Runner;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
+import com.context.*;
+import com.epam.reportportal.service.*;
+import com.znsio.e2e.entities.*;
+import com.znsio.e2e.runner.*;
+import org.apache.commons.io.*;
+import org.apache.commons.lang3.exception.*;
+import org.apache.log4j.*;
+import org.openqa.selenium.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
+import java.io.*;
+import java.util.*;
 
 public class ScreenShotManager {
 

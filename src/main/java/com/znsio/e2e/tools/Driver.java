@@ -1,30 +1,24 @@
 package com.znsio.e2e.tools;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.*;
 import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.exceptions.InvalidTestDataException;
-import com.znsio.e2e.runner.Runner;
+import com.znsio.e2e.exceptions.*;
+import com.znsio.e2e.runner.*;
 import io.appium.java_client.*;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.StartsActivity;
-import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.touch.LongPressOptions;
-import io.appium.java_client.touch.WaitOptions;
-import io.appium.java_client.touch.offset.ElementOption;
-import io.appium.java_client.touch.offset.PointOption;
-import org.apache.log4j.Logger;
+import io.appium.java_client.android.*;
+import io.appium.java_client.ios.*;
+import io.appium.java_client.touch.*;
+import io.appium.java_client.touch.offset.*;
+import org.apache.log4j.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.interactions.*;
+import org.openqa.selenium.support.ui.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.Duration;
-import java.util.List;
-import java.util.Set;
+import java.io.*;
+import java.time.*;
+import java.util.*;
 
-import static com.znsio.e2e.tools.Wait.waitFor;
+import static com.znsio.e2e.tools.Wait.*;
 
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
@@ -315,7 +309,7 @@ public class Driver {
         }
     }
 
-    public void allowPermission (By element) {
+    public void allowPermission(By element) {
         waitForClickabilityOf(element);
         if (Runner.platform.equals(Platform.android)) {
             driver.findElement(element).click();
@@ -369,7 +363,7 @@ public class Driver {
     public WebDriver setWebViewContext() {
         AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver;
         Set<String> contextNames = appiumDriver.getContextHandles();
-        return appiumDriver.context((String) contextNames.toArray()[contextNames.size()-1]);
+        return appiumDriver.context((String) contextNames.toArray()[contextNames.size() - 1]);
     }
 
     public WebDriver setNativeAppContext() {

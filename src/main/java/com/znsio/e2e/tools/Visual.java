@@ -1,40 +1,26 @@
 package com.znsio.e2e.tools;
 
 import com.applitools.eyes.*;
-import com.applitools.eyes.selenium.BrowserType;
-import com.applitools.eyes.selenium.ClassicRunner;
-import com.applitools.eyes.selenium.Configuration;
-import com.applitools.eyes.selenium.StitchMode;
-import com.applitools.eyes.selenium.fluent.SeleniumCheckSettings;
-import com.applitools.eyes.selenium.fluent.Target;
-import com.applitools.eyes.visualgrid.model.DeviceName;
-import com.applitools.eyes.visualgrid.model.RenderBrowserInfo;
+import com.applitools.eyes.selenium.*;
+import com.applitools.eyes.selenium.fluent.*;
 import com.applitools.eyes.visualgrid.model.ScreenOrientation;
-import com.applitools.eyes.visualgrid.services.VisualGridRunner;
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
-import com.epam.reportportal.service.ReportPortal;
-import com.znsio.e2e.entities.APPLITOOLS;
+import com.applitools.eyes.visualgrid.model.*;
+import com.applitools.eyes.visualgrid.services.*;
+import com.context.*;
+import com.epam.reportportal.service.*;
 import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.entities.TEST_CONTEXT;
-import com.znsio.e2e.exceptions.InvalidTestDataException;
-import com.znsio.e2e.runner.Runner;
-import org.apache.log4j.Logger;
-import org.assertj.core.api.SoftAssertions;
-import org.jetbrains.annotations.NotNull;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
+import com.znsio.e2e.entities.*;
+import com.znsio.e2e.exceptions.*;
+import com.znsio.e2e.runner.*;
+import org.assertj.core.api.*;
+import org.jetbrains.annotations.*;
+import org.openqa.selenium.*;
 
-import java.io.File;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.time.*;
+import java.util.*;
 
-import static com.znsio.e2e.runner.Runner.NOT_SET;
-import static com.znsio.e2e.runner.Runner.USER_NAME;
+import static com.znsio.e2e.runner.Runner.*;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class Visual {
@@ -69,7 +55,7 @@ public class Visual {
     }
 
     private com.applitools.eyes.appium.Eyes instantiateAppiumEyes(String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
-        if(driverType.equals(Driver.WEB_DRIVER)) {
+        if (driverType.equals(Driver.WEB_DRIVER)) {
             isVisualTestingEnabled = false;
         }
         appName += Platform.android;
@@ -91,7 +77,7 @@ public class Visual {
         eyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
         eyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
 
-        if(isVisualTestingEnabled) {
+        if (isVisualTestingEnabled) {
             eyes.open(innerDriver, appName, testName);
         }
         LOGGER.info("instantiateAppiumEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
@@ -99,7 +85,7 @@ public class Visual {
     }
 
     private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
-        if(driverType.equals(Driver.APPIUM_DRIVER)) {
+        if (driverType.equals(Driver.APPIUM_DRIVER)) {
             isVisualTestingEnabled = false;
         }
         appName += Platform.web;
@@ -150,7 +136,7 @@ public class Visual {
         int providedBrowserViewPortSizeFromConfigWidth = providedBrowserViewPortSizeFromConfig.getWidth();
         LOGGER.info("Provided browser dimensions: " + providedBrowserViewPortSizeFromConfig);
 
-        if(driverType.equals(Driver.APPIUM_DRIVER)) {
+        if (driverType.equals(Driver.APPIUM_DRIVER)) {
             return providedBrowserViewPortSizeFromConfig;
         } else {
             JavascriptExecutor js = (JavascriptExecutor) innerDriver;
@@ -159,8 +145,8 @@ public class Visual {
             Long actualHeight = (Long) js.executeScript("return (window.innerHeight);");
             Long actualWidth = (Long) js.executeScript("return (window.innerWidth);");
 
-            if(providedBrowserViewPortSizeFromConfigHeight > actualHeight.intValue()
-                    || providedBrowserViewPortSizeFromConfigWidth > actualWidth.intValue()) {
+            if (providedBrowserViewPortSizeFromConfigHeight > actualHeight.intValue()
+                        || providedBrowserViewPortSizeFromConfigWidth > actualWidth.intValue()) {
                 return new RectangleSize(actualWidth.intValue(), actualHeight.intValue());
             } else {
                 return providedBrowserViewPortSizeFromConfig;
@@ -169,7 +155,7 @@ public class Visual {
     }
 
     private void addBrowserAndDeviceConfigForUFG(boolean isUFG, Configuration configuration) {
-        if(isUFG) {
+        if (isUFG) {
             Configuration ufgConfig = (Configuration) context.getTestState(APPLITOOLS.UFG_CONFIG);
             ufgConfig = defaultApplitoolsUFGConfig(ufgConfig);
             List<RenderBrowserInfo> browsersInfo = ufgConfig.getBrowsersInfo();
@@ -180,7 +166,7 @@ public class Visual {
     @NotNull
     private Configuration defaultApplitoolsUFGConfig(Configuration ufgConfig) {
         String applitoolsUFGConfigMessage = "Using browser & device configuration provided for Applitools Ultrafast Grid";
-        if(null == ufgConfig) {
+        if (null == ufgConfig) {
             applitoolsUFGConfigMessage = "Using default browser & device configuration for Applitools Ultrafast Grid: ";
             ufgConfig = new Configuration();
             ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
@@ -246,7 +232,7 @@ public class Visual {
         eyesOnWeb.checkWindow(formattedTagName);
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
-        if(isEnableBenchmarkPerValidation) {
+        if (isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + " :" + tag + ":: Web: checkWindow: Time taken: " + webDuration.getSeconds() + " sec ");
         }
 
@@ -254,7 +240,7 @@ public class Visual {
         eyesOnApp.checkWindow(formattedTagName);
         LocalDateTime appFinish = LocalDateTime.now();
         Duration appDuration = Duration.between(appStart, appFinish);
-        if(isEnableBenchmarkPerValidation) {
+        if (isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + " :" + tag + ":: App: checkWindow: Time taken: " + appDuration.getSeconds() + " sec ");
         }
 
@@ -277,7 +263,7 @@ public class Visual {
         eyesOnWeb.check(formattedTagName, checkSettings);
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
-        if(isEnableBenchmarkPerValidation) {
+        if (isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + " :" + tag + ":: Web: checkWindow: Time taken: " + webDuration.getSeconds() + " sec ");
         }
 
@@ -285,7 +271,7 @@ public class Visual {
         eyesOnApp.check(formattedTagName, checkSettings);
         LocalDateTime appFinish = LocalDateTime.now();
         Duration appDuration = Duration.between(appStart, appFinish);
-        if(isEnableBenchmarkPerValidation) {
+        if (isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + " :" + tag + ":: App: checkWindow: Time taken: " + appDuration.getSeconds() + " sec ");
         }
 
@@ -304,7 +290,7 @@ public class Visual {
         eyesOnWeb.check(getFormattedTagName(fromScreen, tag), Target.window().matchLevel(level));
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
-        if(isEnableBenchmarkPerValidation) {
+        if (isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + ":" + tag + ":: Web: checkWindow with MatchLevel: " + level.name() + ": Time taken: " + webDuration.getSeconds() + " sec");
         }
 
@@ -312,7 +298,7 @@ public class Visual {
         eyesOnApp.check(getFormattedTagName(fromScreen, tag), Target.window().matchLevel(level));
         LocalDateTime appFinish = LocalDateTime.now();
         Duration appDuration = Duration.between(appStart, appFinish);
-        if(isEnableBenchmarkPerValidation) {
+        if (isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + ":" + tag + ":: App: checkWindow with MatchLevel: " + level.name() + ": Time taken: " + appDuration.getSeconds() + " sec");
         }
 
@@ -343,12 +329,12 @@ public class Visual {
     }
 
     private void getVisualResultsFromWeb(String userPersona) {
-        if(eyesOnWeb.getIsDisabled()) {
+        if (eyesOnWeb.getIsDisabled()) {
             return;
         }
         LOGGER.info("getVisualResultsFromWeb: user: " + userPersona);
         TestResults visualResults = eyesOnWeb.close(false);
-        if(null != visualResults) {
+        if (null != visualResults) {
             String reportUrl = handleTestResults(userPersona, "web", visualResults);
             String message = String.format("Web Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
             LOGGER.info(message);
@@ -358,7 +344,7 @@ public class Visual {
     }
 
     private void getVisualResultsFromApp(String userPersona) {
-        if(eyesOnApp.getIsDisabled()) {
+        if (eyesOnApp.getIsDisabled()) {
             return;
         }
         LOGGER.info("getVisualResultsFromApp: user: " + userPersona);
@@ -373,12 +359,12 @@ public class Visual {
     private String handleTestResults(String userPersona, String onPlatform, TestResults result) {
         String message = String.format("Visual Testing Results for user persona: '%s' onPlatform '%s'\n", userPersona, onPlatform);
         message += "\n\t\t" + result
-                + "\n\t\tmatched = " + result.getMatches()
-                + "\n\t\tmismatched = " + result.getMismatches()
-                + "\n\t\tmissing = " + result.getMissing()
-                + "\n\t\tisNew: " + result.isNew()
-                + "\n\t\tisPassed: " + result.isPassed()
-                + "\n\t\tResults url: " + result.getUrl();
+                           + "\n\t\tmatched = " + result.getMatches()
+                           + "\n\t\tmismatched = " + result.getMismatches()
+                           + "\n\t\tmissing = " + result.getMissing()
+                           + "\n\t\tisNew: " + result.isNew()
+                           + "\n\t\tisPassed: " + result.isPassed()
+                           + "\n\t\tResults url: " + result.getUrl();
         LOGGER.info(message);
         ReportPortal.emitLog(message, DEBUG, new Date());
         boolean hasMismatches = result.getMismatches() != 0;
