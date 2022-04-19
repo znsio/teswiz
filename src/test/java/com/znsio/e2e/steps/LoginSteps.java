@@ -8,6 +8,8 @@ import com.znsio.e2e.tools.*;
 import io.cucumber.java.en.*;
 import org.apache.log4j.*;
 
+import java.util.*;
+
 public class LoginSteps {
     private static final Logger LOGGER = Logger.getLogger(LoginSteps.class.getName());
     private final TestExecutionContext context;
@@ -51,5 +53,15 @@ public class LoginSteps {
     @Then("I can echo {string} in the message box")
     public void iCanEchoInTheMessageBox(String message) {
         new EchoBL().echoMessage(message);
+    }
+
+    @Given("{string} start {string}")
+    public void startOn(String userPersona, String appName) {
+        String[] appNameParts = appName.split("-");
+        appName = appNameParts[0].toLowerCase(Locale.ROOT);
+        String onPlatform = appNameParts[appNameParts.length - 1].toLowerCase(Locale.ROOT);
+        LOGGER.info(System.out.printf("startOn - Persona:'%s', AppName: '%s', Platform: '%s'", userPersona, appName, onPlatform));
+        context.addTestState(userPersona, userPersona);
+        allDrivers.createDriverFor(userPersona, appName, Platform.valueOf(onPlatform), context);
     }
 }

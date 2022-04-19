@@ -52,6 +52,7 @@ public class Drivers {
     private final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<>();
     private final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private final Map<String, String> userPersonaBrowserLogs = new HashMap<>();
+    private final Map<String, String> userPersonaApps = new HashMap<>();
     private final int MAX_NUMBER_OF_APPIUM_DRIVERS;
     private final int MAX_NUMBER_OF_WEB_DRIVERS;
     private int numberOfWebDriversUsed = 0;
@@ -59,6 +60,7 @@ public class Drivers {
     private boolean shouldBrowserBeMaximized = false;
     private boolean isRunInHeadlessMode = false;
     private String baseUrl = null;
+    private String capabilityDirectory = null;
 
     public Drivers() {
         MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
@@ -81,7 +83,16 @@ public class Drivers {
     }
 
     public Driver createDriverFor(String userPersona, Platform forPlatform, TestExecutionContext context) {
+        return createDriverFor(userPersona, "default", forPlatform, context);
+    }
+
+    public Driver createDriverFor(String userPersona, String appName, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("createDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
+        context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
+        context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, forPlatform);
+        userPersonaApps.put(userPersona, appName);
+        userPersonaPlatforms.put(userPersona, forPlatform);
+
         Driver currentDriver;
         if(userPersonaDrivers.containsKey(userPersona)) {
             String message = String.format("ERROR: Driver for user persona: '%s' ALREADY EXISTS%nAvailable drivers: '%s'",
@@ -107,10 +118,7 @@ public class Drivers {
                                 userPersona));
         }
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
-        context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
-        context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, forPlatform);
         userPersonaDrivers.put(userPersona, currentDriver);
-        userPersonaPlatforms.put(userPersona, forPlatform);
         LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n",
                 userPersona,
                 forPlatform.name()));
@@ -134,6 +142,15 @@ public class Drivers {
             );
         }
 
+        String capabilityFile = System.getProperty(CAPS);
+        capabilityDirectory = new File(capabilityFile).getParent();
+
+        String appName = userPersonaApps.get(userPersona);
+        String resource = capabilityDirectory + File.separator + (appName+"_capabilities.json");
+        File capFile = new File(resource);
+        System.out.println("capFile: " + capFile.getAbsolutePath());
+        System.out.println("capFile.exists(): " + capFile.exists());
+
         if(numberOfAppiumDriversUsed == 0) {
             AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
             AppiumDevice deviceInfo = (AppiumDevice) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
@@ -147,7 +164,7 @@ public class Drivers {
                     appiumDriver);
         } else {
             try {
-                AppiumDriver appiumDriver = allocateNewDeviceAndStartAppiumDriver(context.getTestName());
+                AppiumDriver appiumDriver = allocateNewDeviceAndStartAppiumDriver(context.getTestName(), capFile.getAbsolutePath());
                 currentDriver = new Driver(context.getTestName() + "-" + userPersona, context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON), appiumDriver);
                 Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
                 LOGGER.info("CAPABILITIES: " + appiumDriverCapabilities);
@@ -265,12 +282,12 @@ public class Drivers {
         return currentDriver;
     }
 
-    private AppiumDriver allocateNewDeviceAndStartAppiumDriver(String testName) {
+    private AppiumDriver allocateNewDeviceAndStartAppiumDriver(String testName, String capabilityFile) {
         try {
             DeviceAllocationManager deviceAllocationManager = DeviceAllocationManager.getInstance();
             AppiumDevice availableDevice = deviceAllocationManager.getNextAvailableDevice();
             deviceAllocationManager.allocateDevice(availableDevice);
-            AppiumDriver driver = new AppiumDriverManager().startAppiumDriverInstance(testName);
+            AppiumDriver driver = new AppiumDriverManager().startAppiumDriverInstance(testName, capabilityFile);
             updateAvailableDeviceInformation(availableDevice);
             ReportPortal.emitLog("allocateNewDeviceAndStartAppiumDriver: Device Info\n" + availableDevice, DEBUG, new Date());
             return driver;

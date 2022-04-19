@@ -49,7 +49,20 @@ class RunnerTest {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("PLATFORM", Platform.android.name());
         System.setProperty("APP_PACKAGE_NAME", "com.android2.calculator3");
+        System.setProperty("atd_android_appPackage", "com.android2.calculator3");
         System.setProperty("APP_PATH", "./src/test/resources/sampleApps/AndroidCalculator.apk");
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+//        runner.printProcessedConfiguration();
+    }
+
+    @Test
+    void localAndroidMultiDevice() {
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty("TAG", "@multiuser-android and @multidevice");
+        System.setProperty("PLATFORM", Platform.android.name());
+        System.setProperty("atd_android_appPackage", "com.grab.grabrider");
+        System.setProperty("atd_calculator_capabilities_android_appPackage", "com.android2.calculator3");
+        System.setProperty("atd_calculator_capabilities_android_app_local", "./src/test/resources/sampleApps/AndroidCalculator.apk");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
 //        runner.printProcessedConfiguration();
     }
@@ -145,6 +158,10 @@ class RunnerTest {
     void browserStackAndroidCloudTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
+        System.setProperty("PLATFORM", Platform.android.name());
+        System.setProperty("APP_PACKAGE_NAME", "io.cloudgrey.the_app");
+        System.setProperty("atd_android_appPackage", "io.cloudgrey.the_app");
+        System.setProperty("APP_PATH", "./src/test/resources/sampleApps/AndroidCalculator.apk");
 //        System.setProperty("TAG", "@login");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/browserStack_config.properties", stepDefDir, featuresDir);
     }

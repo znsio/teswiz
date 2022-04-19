@@ -8,6 +8,9 @@ import com.znsio.e2e.tools.*;
 import io.cucumber.java.en.*;
 import org.apache.log4j.*;
 
+import java.io.*;
+import java.net.*;
+
 public class CalculatorSteps {
     private static final Logger LOGGER = Logger.getLogger(CalculatorSteps.class.getName());
     private final TestExecutionContext context;
@@ -39,5 +42,17 @@ public class CalculatorSteps {
         LOGGER.info(System.out.printf("iStartTheCalculator - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
         allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).startCalculator();
+    }
+
+    @And("{string} select {string}")
+    public void select(String userPersona, String action) {
+        Platform onPlatform = allDrivers.getPlatformForUser(userPersona);
+        new CalculatorBL(userPersona, onPlatform).startCalculator().selectNumber(action);
+    }
+
+    @And("{string} press {string}")
+    public void press(String userPersona, String action) {
+        Platform onPlatform = allDrivers.getPlatformForUser(userPersona);
+        new CalculatorBL(userPersona, onPlatform).pressOperation(action);
     }
 }
