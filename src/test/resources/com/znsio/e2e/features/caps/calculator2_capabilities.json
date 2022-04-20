@@ -1,0 +1,28 @@
+{
+  "android": {
+    "adbExecTimeout": 45000,
+    "app": {
+      "local": "./src/test/resources/sampleApps/AndroidCalculator.apk"
+    },
+    "appPackage": "com.android2.calculator3",
+    "appActivity": "com.android2.calculator3.Calculator",
+    "appWaitDuration": 45000,
+    "automationName": "UiAutomator2",
+    "autoGrantPermissions": true,
+    "deviceName": "android",
+    "dontStopAppOnReset": true,
+    "enablePerformanceLogging": true,
+    "eventTimings": true,
+    "newCommandTimeout": 12000,
+    "noSign": true,
+    "platformName": "android",
+    "platformVersion": "11.0",
+    "printPageSourceOnFindFailure": true,
+    "skipUnlock": true
+  },
+  "hostMachines": [
+    {
+      "machineIP": "127.0.0.1"
+    }
+  ]
+}

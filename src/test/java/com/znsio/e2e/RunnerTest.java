@@ -60,7 +60,6 @@ class RunnerTest {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("TAG", "@multiuser-android and @multidevice");
         System.setProperty("PLATFORM", Platform.android.name());
-        System.setProperty("atd_android_appPackage", "com.grab.grabrider");
         System.setProperty("atd_calculator_capabilities_android_appPackage", "com.android2.calculator3");
         System.setProperty("atd_calculator_capabilities_android_app_local", "./src/test/resources/sampleApps/AndroidCalculator.apk");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
