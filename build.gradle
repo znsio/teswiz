@@ -4,7 +4,7 @@ buildscript {
     ext {
         gradleVersion = '7.3.3'
         assertJVersion = '3.22.0'
-        atdVersion = '8fd348bf98'
+        atdVersion = '897bfea493'
         applitoolsVersion = '3.213.0'
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.13.8'
@@ -147,7 +147,7 @@ task run(type: JavaExec) {
         def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
         println "isRunningInCI: $isRunInCI"
 
-        def configFile = isRunInCI ? "./src/test/resources/com/znsio/e2e/features/configs/browserStack_config.properties" : "./src/test/resources/com/znsio/e2e/features/configs/config.properties"
+        def configFile = isRunInCI ? "./src/test/resources/com/znsio/e2e/features/configs/pcloudy_config.properties" : "./src/test/resources/com/znsio/e2e/features/configs/config.properties"
         systemProperties = System.properties
         def runnerArgs = [
                 "${configFile}",
