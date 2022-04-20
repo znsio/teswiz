@@ -67,6 +67,15 @@ class RunnerTest {
     }
 
     @Test
+    void pCloudyAndroidMultiDevice() {
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty("TAG", "@multiuser-android and @multidevice");
+        System.setProperty("PLATFORM", Platform.android.name());
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/pcloudy_config.properties", stepDefDir, featuresDir);
+//        runner.printProcessedConfiguration();
+    }
+
+    @Test
     void localAndroid() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("PLATFORM", Platform.android.name());

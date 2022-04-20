@@ -8,6 +8,8 @@ import com.znsio.e2e.tools.*;
 import io.cucumber.java.en.*;
 import org.apache.log4j.*;
 
+import static com.znsio.e2e.tools.Wait.waitFor;
+
 public class CalculatorSteps {
     private static final Logger LOGGER = Logger.getLogger(CalculatorSteps.class.getName());
     private final TestExecutionContext context;
@@ -51,5 +53,8 @@ public class CalculatorSteps {
     public void press(String userPersona, String action) {
         Platform onPlatform = allDrivers.getPlatformForUser(userPersona);
         new CalculatorBL(userPersona, onPlatform).pressOperation(action);
+        if (action.equalsIgnoreCase("equals")) {
+            waitFor(10);
+        }
     }
 }
