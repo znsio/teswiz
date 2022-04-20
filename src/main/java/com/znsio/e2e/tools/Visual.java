@@ -1,26 +1,40 @@
 package com.znsio.e2e.tools;
 
 import com.applitools.eyes.*;
-import com.applitools.eyes.selenium.*;
-import com.applitools.eyes.selenium.fluent.*;
+import com.applitools.eyes.selenium.BrowserType;
+import com.applitools.eyes.selenium.ClassicRunner;
+import com.applitools.eyes.selenium.Configuration;
+import com.applitools.eyes.selenium.StitchMode;
+import com.applitools.eyes.selenium.fluent.SeleniumCheckSettings;
+import com.applitools.eyes.selenium.fluent.Target;
+import com.applitools.eyes.visualgrid.model.DeviceName;
+import com.applitools.eyes.visualgrid.model.RenderBrowserInfo;
 import com.applitools.eyes.visualgrid.model.ScreenOrientation;
-import com.applitools.eyes.visualgrid.model.*;
-import com.applitools.eyes.visualgrid.services.*;
-import com.context.*;
-import com.epam.reportportal.service.*;
+import com.applitools.eyes.visualgrid.services.VisualGridRunner;
+import com.context.SessionContext;
+import com.context.TestExecutionContext;
+import com.epam.reportportal.service.ReportPortal;
+import com.znsio.e2e.entities.APPLITOOLS;
 import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.entities.*;
-import com.znsio.e2e.exceptions.*;
-import com.znsio.e2e.runner.*;
-import org.assertj.core.api.*;
-import org.jetbrains.annotations.*;
-import org.openqa.selenium.*;
+import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.exceptions.InvalidTestDataException;
+import com.znsio.e2e.runner.Runner;
+import org.apache.log4j.Logger;
+import org.assertj.core.api.SoftAssertions;
+import org.jetbrains.annotations.NotNull;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 
-import java.io.*;
-import java.time.*;
-import java.util.*;
+import java.io.File;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-import static com.znsio.e2e.runner.Runner.*;
+import static com.znsio.e2e.runner.Runner.NOT_SET;
+import static com.znsio.e2e.runner.Runner.USER_NAME;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class Visual {
@@ -145,8 +159,7 @@ public class Visual {
             Long actualHeight = (Long) js.executeScript("return (window.innerHeight);");
             Long actualWidth = (Long) js.executeScript("return (window.innerWidth);");
 
-            if (providedBrowserViewPortSizeFromConfigHeight > actualHeight.intValue()
-                        || providedBrowserViewPortSizeFromConfigWidth > actualWidth.intValue()) {
+            if (providedBrowserViewPortSizeFromConfigHeight > actualHeight.intValue() || providedBrowserViewPortSizeFromConfigWidth > actualWidth.intValue()) {
                 return new RectangleSize(actualWidth.intValue(), actualHeight.intValue());
             } else {
                 return providedBrowserViewPortSizeFromConfig;

@@ -1,17 +1,27 @@
 package com.znsio.e2e.runner;
 
-import com.applitools.eyes.*;
-import com.context.*;
-import com.znsio.e2e.entities.*;
-import com.znsio.e2e.exceptions.*;
-import com.znsio.e2e.tools.*;
-import io.cucumber.core.cli.*;
-import org.assertj.core.api.*;
+import com.applitools.eyes.BatchInfo;
+import com.context.SessionContext;
+import com.context.TestExecutionContext;
+import com.znsio.e2e.entities.APPLITOOLS;
+import com.znsio.e2e.entities.Platform;
+import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.exceptions.InvalidTestDataException;
+import com.znsio.e2e.tools.Driver;
+import com.znsio.e2e.tools.Drivers;
+import com.znsio.e2e.tools.Visual;
+import io.cucumber.core.cli.Main;
+import org.apache.log4j.Logger;
+import org.assertj.core.api.SoftAssertions;
 
-import java.nio.file.*;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.appium.utils.OverriddenVariable.*;
+import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class Runner {
