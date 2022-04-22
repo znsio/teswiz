@@ -353,6 +353,7 @@ public class Drivers {
         Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities() : ((SafariDriver) driver).getCapabilities();
         userPersonaDriverCapabilities.put(forUserPersona, capabilities);
         LOGGER.info("Safari driver capabilities extracted for further use");
+        // webpush notifications are disabled bydefault in safari , headless is not supported by safari browser and user profiles cannot be set in safari
         return driver;
     }
 
