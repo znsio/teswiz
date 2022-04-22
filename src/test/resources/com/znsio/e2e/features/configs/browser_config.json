@@ -49,5 +49,8 @@
     "headlessOptions": {
       "headless": true
     }
+  },
+  "safari": {
+    "maximize": true
   }
 }
