@@ -51,6 +51,7 @@
     }
   },
   "safari": {
-    "maximize": true
+    "maximize": true,
+    "acceptInsecureCerts":true
   }
 }
