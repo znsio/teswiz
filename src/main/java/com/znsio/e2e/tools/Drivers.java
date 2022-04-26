@@ -350,17 +350,12 @@ public class Drivers {
         boolean acceptInsecureCerts = safariConfigurations.getBoolean("acceptInsecureCerts");
         String proxyUrl = Runner.getProxyURL();
         shouldBrowserBeMaximized = safariConfigurations.getBoolean("maximize");
-        if(acceptInsecureCerts) {
-            caps.setCapability("acceptInsecureCerts",true);
-            LOGGER.info("Insecure certs are accepted on Safari");
-        }
+        caps.setCapability("acceptInsecureCerts",acceptInsecureCerts);
         if (null != proxyUrl) {
             LOGGER.info("Setting Proxy for browser: " + proxyUrl);
             safariOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
         }
-        if(setUseTechnologyPreview) {
-            safariOptions.setUseTechnologyPreview(true);
-        }
+        safariOptions.setUseTechnologyPreview(setUseTechnologyPreview); // setUseTechnologyPreview is false bydefault turn it on only if system supports
         LOGGER.info("SafariOptions: " + safariOptions.asMap());
         setLogFileName(forUserPersona, testExecutionContext, "Safari");
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(safariOptions) : new SafariDriver(safariOptions);
