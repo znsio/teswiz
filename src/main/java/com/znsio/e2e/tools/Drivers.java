@@ -346,16 +346,20 @@ public class Drivers {
     private WebDriver createSafariDriver(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject safariConfigurations) {
         SafariOptions safariOptions = new SafariOptions();
         DesiredCapabilities caps = DesiredCapabilities.safari();
+        boolean setUseTechnologyPreview = safariConfigurations.getBoolean("setUseTechnologyPreview");
         boolean acceptInsecureCerts = safariConfigurations.getBoolean("acceptInsecureCerts");
         String proxyUrl = Runner.getProxyURL();
         shouldBrowserBeMaximized = safariConfigurations.getBoolean("maximize");
-        if(acceptInsecureCerts){
+        if(acceptInsecureCerts) {
             caps.setCapability("acceptInsecureCerts",true);
             LOGGER.info("Insecure certs are accepted on Safari");
         }
         if (null != proxyUrl) {
             LOGGER.info("Setting Proxy for browser: " + proxyUrl);
             safariOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
+        }
+        if(setUseTechnologyPreview) {
+            safariOptions.setUseTechnologyPreview(true);
         }
         LOGGER.info("SafariOptions: " + safariOptions.asMap());
         setLogFileName(forUserPersona, testExecutionContext, "Safari");
