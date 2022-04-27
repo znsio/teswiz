@@ -49,5 +49,10 @@
     "headlessOptions": {
       "headless": true
     }
+  },
+  "safari": {
+    "maximize": true,
+    "acceptInsecureCerts": true,
+    "setUseTechnologyPreview": false
   }
 }

@@ -22,6 +22,8 @@ import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.firefox.*;
 import org.openqa.selenium.logging.*;
 import org.openqa.selenium.remote.*;
+import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.safari.SafariOptions;
 
 import java.io.*;
 import java.net.*;
@@ -319,11 +321,13 @@ public class Drivers {
             case FIREFOX:
                 driver = createFirefoxDriver(forUserPersona, testExecutionContext, browserConfig.getJSONObject(driverManagerType.getBrowserNameLowerCase()));
                 break;
-            case OPERA:
+            case SAFARI:
+                driver = createSafariDriver(forUserPersona, testExecutionContext, browserConfig.getJSONObject(driverManagerType.getBrowserNameLowerCase()));
+                break;
             case EDGE:
             case IEXPLORER:
             case CHROMIUM:
-            case SAFARI:
+            case OPERA:
                 throw new InvalidTestDataException(String.format("Browser: '%s' is NOT supported", browserType));
         }
         LOGGER.info("Driver created");
@@ -336,6 +340,30 @@ public class Drivers {
             driver.manage().window().setSize(new Dimension(1920, 1080));
         }
         LOGGER.info("Reset browser window size");
+        return driver;
+    }
+
+    private WebDriver createSafariDriver(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject safariConfigurations) {
+        SafariOptions safariOptions = new SafariOptions();
+        DesiredCapabilities caps = DesiredCapabilities.safari();
+        boolean setUseTechnologyPreview = safariConfigurations.getBoolean("setUseTechnologyPreview");
+        boolean acceptInsecureCerts = safariConfigurations.getBoolean("acceptInsecureCerts");
+        String proxyUrl = Runner.getProxyURL();
+        shouldBrowserBeMaximized = safariConfigurations.getBoolean("maximize");
+        caps.setCapability("acceptInsecureCerts",acceptInsecureCerts);
+        if (null != proxyUrl) {
+            LOGGER.info("Setting Proxy for browser: " + proxyUrl);
+            safariOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
+        }
+        safariOptions.setUseTechnologyPreview(setUseTechnologyPreview); // setUseTechnologyPreview is false bydefault turn it on only if system supports
+        LOGGER.info("SafariOptions: " + safariOptions.asMap());
+        setLogFileName(forUserPersona, testExecutionContext, "Safari");
+        WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(safariOptions) : new SafariDriver(safariOptions);
+        LOGGER.info("Safari driver created");
+        Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities() : ((SafariDriver) driver).getCapabilities();
+        userPersonaDriverCapabilities.put(forUserPersona, capabilities);
+        LOGGER.info("Safari driver capabilities extracted for further use");
+        // webpush notifications are disabled bydefault in safari , headless is not supported by safari browser and user profiles cannot be set in safari
         return driver;
     }
 
