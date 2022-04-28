@@ -50,7 +50,7 @@ public class Drivers {
     private boolean shouldBrowserBeMaximized = false;
     private boolean isRunInHeadlessMode = false;
     private String baseUrl = null;
-    private String capabilityDirectory = null;
+    private String DEFAULT_APP_NAME = "default";
 
     public Drivers() {
         MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
@@ -73,7 +73,7 @@ public class Drivers {
     }
 
     public Driver createDriverFor(String userPersona, Platform forPlatform, TestExecutionContext context) {
-        return createDriverFor(userPersona, "default", forPlatform, context);
+        return createDriverFor(userPersona, DEFAULT_APP_NAME, forPlatform, context);
     }
 
     public Driver createDriverFor(String userPersona, String appName, Platform forPlatform, TestExecutionContext context) {
@@ -132,14 +132,16 @@ public class Drivers {
             );
         }
 
-        String capabilityFile = System.getProperty(CAPS);
-        capabilityDirectory = new File(capabilityFile).getParent();
+        String capabilityFileNameToUseForDriverCreation = System.getProperty(CAPS);
 
         String appName = userPersonaApps.get(userPersona);
-        String resource = capabilityDirectory + File.separator + (appName + "_capabilities.json");
-        File capFile = new File(resource);
-        System.out.println("capFile: " + capFile.getAbsolutePath());
-        System.out.println("capFile.exists(): " + capFile.exists());
+        if (!appName.equalsIgnoreCase(DEFAULT_APP_NAME)) {
+            String capabilityFileDirectory = new File(capabilityFileNameToUseForDriverCreation).getParent();
+            capabilityFileNameToUseForDriverCreation = capabilityFileDirectory + File.separator + (appName + "_capabilities.json");
+        }
+        File capabilityFileToUseForDriverCreation = new File(capabilityFileNameToUseForDriverCreation);
+        System.out.println("capabilityFileToUseForDriverCreation: " + capabilityFileToUseForDriverCreation.getAbsolutePath());
+        System.out.println("capabilityFileToUseForDriverCreation.exists(): " + capabilityFileToUseForDriverCreation.exists());
 
         if (numberOfAppiumDriversUsed == 0) {
             AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
@@ -154,7 +156,7 @@ public class Drivers {
                     appiumDriver);
         } else {
             try {
-                AppiumDriver appiumDriver = allocateNewDeviceAndStartAppiumDriver(context.getTestName(), capFile.getAbsolutePath());
+                AppiumDriver appiumDriver = allocateNewDeviceAndStartAppiumDriver(context.getTestName(), capabilityFileToUseForDriverCreation.getAbsolutePath());
                 currentDriver = new Driver(context.getTestName() + "-" + userPersona, context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON), appiumDriver);
                 Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
                 LOGGER.info("CAPABILITIES: " + appiumDriverCapabilities);
