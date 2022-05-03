@@ -21,14 +21,14 @@ public class CalculatorScreenAndroid extends CalculatorScreen {
     public CalculatorScreen handlePopupIfPresent() {
         waitFor(1);
         visually.checkWindow(SCREEN_NAME, "Calculator launched");
-        MobileElement upgradeAppNotificationElement = (MobileElement) driver.findElementById("android:id/button1");
-        if (null != upgradeAppNotificationElement) {
-            upgradeAppNotificationElement.click();
+        boolean isUpgradeAppNotificationElement = driver.isElementPresent(By.id("android:id/button1"));
+        if (isUpgradeAppNotificationElement) {
+            driver.findElement(By.id("android:id/button1")).click();
             waitFor(1);
         }
-        MobileElement gotItElement = (MobileElement) driver.findElementById("com.android2.calculator3:id/cling_dismiss");
-        if (null != gotItElement) {
-            gotItElement.click();
+        boolean isClingElementPresent = driver.isElementPresent(By.id("com.android2.calculator3:id/cling_dismiss"));
+        if (isClingElementPresent) {
+            driver.findElementById("com.android2.calculator3:id/cling_dismiss").click();
             waitFor(1);
         }
         visually.checkWindow(SCREEN_NAME, "Calculator popup handled");
