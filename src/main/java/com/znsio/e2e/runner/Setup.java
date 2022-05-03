@@ -557,11 +557,15 @@ public class Setup {
 
     private void setupLocalExecution() {
         setupLocalDevices();
-        int parallelCount = devices.size();
-        if (parallelCount == 0) {
+        int numberOfDevicesForParallelExecution = devices.size();
+        if (numberOfDevicesForParallelExecution == 0) {
             throw new EnvironmentSetupException("No devices available to run the tests");
         }
-        configsInteger.put(PARALLEL, parallelCount);
+        Integer providedParallelCount = configsInteger.get(PARALLEL);
+        if (numberOfDevicesForParallelExecution < providedParallelCount) {
+            throw new EnvironmentSetupException(String.format("Fewer devices (%d) available to run the tests in parallel (Expected more than: %d)", numberOfDevicesForParallelExecution, providedParallelCount));
+        }
+        configsInteger.put(PARALLEL, providedParallelCount);
         configs.put(EXECUTED_ON, "Local Devices");
     }
 
