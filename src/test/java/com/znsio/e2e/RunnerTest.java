@@ -23,7 +23,8 @@ class RunnerTest {
     void localDefault() {
         String featuresDir = "./src/test/resources";
         System.setProperty("RUN_IN_CI", "false");
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+        System.setProperty("TAG", "@theapp");
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties", stepDefDir, featuresDir);
         String baseUrl = Runner.getFromEnvironmentConfiguration("BASE_URL");
         assertThat(baseUrl)
                 .as("environment config is incorrect")
@@ -48,10 +49,24 @@ class RunnerTest {
     void localAndroidCalculator() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("PLATFORM", Platform.android.name());
-        System.setProperty("APP_PACKAGE_NAME", "com.android2.calculator3");
-        System.setProperty("atd_android_appPackage", "com.android2.calculator3");
-        System.setProperty("APP_PATH", "./src/test/resources/sampleApps/AndroidCalculator.apk");
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+        System.setProperty("TAG", "@calculator");
+//        System.setProperty("APP_PACKAGE_NAME", "com.android2.calculator3");
+//        System.setProperty("atd_android_appPackage", "com.android2.calculator3");
+//        System.setProperty("APP_PATH", "./src/test/resources/sampleApps/AndroidCalculator.apk");
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties", stepDefDir, featuresDir);
+//        runner.printProcessedConfiguration();
+    }
+
+    @Test
+    void localAndroidTheApp() {
+        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
+        System.setProperty("PLATFORM", Platform.android.name());
+        System.setProperty("TAG", "@theapp");
+        System.setProperty("CAPS", "src/test/resources/com/znsio/e2e/features/caps/theapp_capabilities.json");
+//        System.setProperty("APP_PACKAGE_NAME", "com.android2.calculator3");
+//        System.setProperty("atd_android_appPackage", "com.android2.calculator3");
+//        System.setProperty("APP_PATH", "./src/test/resources/sampleApps/AndroidCalculator.apk");
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/theapp_config.properties", stepDefDir, featuresDir);
 //        runner.printProcessedConfiguration();
     }
 
@@ -62,7 +77,7 @@ class RunnerTest {
         System.setProperty("PLATFORM", Platform.android.name());
         System.setProperty("atd_calculator_capabilities_android_appPackage", "com.android2.calculator3");
         System.setProperty("atd_calculator_capabilities_android_app_local", "./src/test/resources/sampleApps/AndroidCalculator.apk");
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties", stepDefDir, featuresDir);
 //        runner.printProcessedConfiguration();
     }
 
@@ -79,14 +94,14 @@ class RunnerTest {
     void localAndroid() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("PLATFORM", Platform.android.name());
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties", stepDefDir, featuresDir);
     }
 
     @Test
     void localWeb() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("PLATFORM", Platform.web.name());
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties", stepDefDir, featuresDir);
 //        runner.printProcessedConfiguration();
     }
 
@@ -94,14 +109,14 @@ class RunnerTest {
     void localMultiUserAndroidWebTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("TAG", "@multiuser-android-web");
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties", stepDefDir, featuresDir);
     }
 
     @Test
     void multiUserAndroidTest() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("TAG", "@multiuser-android and @login");
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/config.properties", stepDefDir, featuresDir);
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties", stepDefDir, featuresDir);
     }
 
     @Test
