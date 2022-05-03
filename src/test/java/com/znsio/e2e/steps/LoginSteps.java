@@ -43,6 +43,12 @@ public class LoginSteps {
         new AppBL(userPersona, Platform.valueOf(onPlatform)).provideInvalidDetailsForSignup(username, password);
     }
 
+    @Then("I try to login again with invalid credentials - {string}, {string}")
+    public void iTryToLoginAgainWithInvalidCredentials(String username, String password) {
+        LOGGER.info(System.out.printf("iTryToLoginAgainWithInvalidCredentials - Username: '%s', Password:'%s'", username, password));
+        new AppBL().loginAgain(username, password);
+    }
+
     @When("{string} login again with invalid credentials - {string}, {string}")
     public void loginAgainWithInvalidCredentials(String userPersona, String username, String password) {
         Platform onPlatform = allDrivers.getPlatformForUser(userPersona);

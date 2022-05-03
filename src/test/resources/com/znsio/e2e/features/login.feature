@@ -1,17 +1,12 @@
 @login
 Feature: Test valid and invalid login
 
-  @web
+  @android @web @invalidLogin
   Scenario: Verify error message on invalid login
     Given I login with invalid credentials - "znsio1", "invalid password"
-    When I go back
-    Then I can echo "how are you?" in the message box
-#        Then I see the error "Invalid login credentials, please try again"
-#        When I dismiss the alert
-#        And I login with invalid credentials - "znsio", "znsio"
-#        Then I see the error "Invalid login credentials, please try again"
+    Then I try to login again with invalid credentials - "znsio2", "another invalid password"
 
-  @web
+  @android @echo
   Scenario: Verify error message on another invalid login
     Given I login with invalid credentials - "znsio2", "2nd invalid password"
     When I go back

@@ -32,25 +32,8 @@ public class AppBL {
     }
 
     public LoginBL provideInvalidDetailsForSignup(String username, String password) {
-        String errorMessage = "Invalid login credentials error message is incorrect";
-        String androidErrorMessage = "Invalid login credentials, please try again";
-        String webErrorMessage = "Your username is invalid!";
-        String expectedErrorMessage = currentPlatform.equals(Platform.android) ? androidErrorMessage : webErrorMessage;
-
-        LoginScreen loginScreen = HomeScreen.get()
-                .selectLogin()
-                .enterLoginDetails(username, password)
-                .login();
-        String actualErrorMessage = loginScreen
-                .getInvalidLoginError();
-        LOGGER.info("actualErrorMessage: " + actualErrorMessage);
-
-        loginScreen.dismissAlert();
-
-        softly.assertThat(actualErrorMessage)
-                .as(errorMessage)
-                .contains(expectedErrorMessage);
-        return new LoginBL(currentUserPersona, currentPlatform);
+        HomeScreen.get().selectLogin();
+        return loginAgain(username, password);
     }
 
     public LoginBL loginAgain(String username, String password) {
