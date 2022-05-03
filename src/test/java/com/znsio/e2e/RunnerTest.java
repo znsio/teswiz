@@ -91,17 +91,10 @@ class RunnerTest {
     }
 
     @Test
-    void localAndroid() {
-        String featuresDir = "./src/test/resources/com/znsio/e2e/features";
-        System.setProperty("PLATFORM", Platform.android.name());
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties", stepDefDir, featuresDir);
-    }
-
-    @Test
     void localWeb() {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("PLATFORM", Platform.web.name());
-        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties", stepDefDir, featuresDir);
+        Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/theapp_config.properties", stepDefDir, featuresDir);
 //        runner.printProcessedConfiguration();
     }
 
