@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat
 buildscript {
     ext {
         gradleVersion = '7.3.3'
-        teswizVersion = '25cff7ecf7'
+        teswizVersion = '43be6a1c07'
     }
     repositories {
         mavenLocal()
@@ -60,6 +60,8 @@ task run(type: JavaExec) {
         println "isRunningInCI: $isRunInCI"
 
         def configFile = isRunInCI ? "./configs/pcloudy_config.properties" : "./configs/config.properties"
+        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
+
         systemProperties = System.properties
         def runnerArgs = [
                 "${configFile}",
