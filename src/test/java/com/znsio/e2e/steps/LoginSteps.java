@@ -1,14 +1,19 @@
 package com.znsio.e2e.steps;
 
-import com.context.*;
-import com.znsio.e2e.businessLayer.*;
-import com.znsio.e2e.entities.*;
-import com.znsio.e2e.runner.*;
-import com.znsio.e2e.tools.*;
-import io.cucumber.java.en.*;
-import org.apache.log4j.*;
+import com.context.SessionContext;
+import com.context.TestExecutionContext;
+import com.znsio.e2e.businessLayer.AppBL;
+import com.znsio.e2e.businessLayer.EchoBL;
+import com.znsio.e2e.entities.Platform;
+import com.znsio.e2e.entities.SAMPLE_TEST_CONTEXT;
+import com.znsio.e2e.runner.Runner;
+import com.znsio.e2e.tools.Drivers;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Locale;
 
 public class LoginSteps {
     private static final Logger LOGGER = Logger.getLogger(LoginSteps.class.getName());
@@ -47,6 +52,13 @@ public class LoginSteps {
     public void iTryToLoginAgainWithInvalidCredentials(String username, String password) {
         LOGGER.info(System.out.printf("iTryToLoginAgainWithInvalidCredentials - Username: '%s', Password:'%s'", username, password));
         new AppBL().loginAgain(username, password);
+    }
+
+    @When("{string} login with invalid credentials - {string}, {string}")
+    public void loginWithInvalidCredentials(String userPersona, String username, String password) {
+        Platform onPlatform = allDrivers.getPlatformForUser(userPersona);
+        LOGGER.info(System.out.printf("LoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', Platform: '%s'", SAMPLE_TEST_CONTEXT.ME, username, password, onPlatform.name()));
+        new AppBL(userPersona, onPlatform).provideInvalidDetailsForSignup(username, password);
     }
 
     @When("{string} login again with invalid credentials - {string}, {string}")
