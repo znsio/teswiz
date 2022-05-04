@@ -1,6 +1,8 @@
 {
   "prod": {
     "BASE_URL_API": "http://the-internet.herokuapp.com",
-    "BASE_URL": "http://the-internet.herokuapp.com/"
+    "BASE_URL": "http://the-internet.herokuapp.com/",
+    "IMAGES_BASE_URL": "http://images.google.com/",
+    "BING_BASE_URL": "http://bing.com/images"
   }
 }

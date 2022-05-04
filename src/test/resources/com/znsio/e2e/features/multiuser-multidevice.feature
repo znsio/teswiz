@@ -18,3 +18,10 @@ Feature: Test valid and invalid login
     And "you" press "plus"
     When "I" login with invalid credentials - "znsio5", "invalid password"
     Then "you" select "5"
+
+  @multiuser-web
+  Scenario: Verify 2 different website orchestration
+    Given "someone" starts "images-web" on "chrome"
+    And "someone-else" starts "bing-web" on "firefox"
+    When "someone" searches for "bear"
+    Then "someone-else" searches for "tiger"

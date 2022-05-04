@@ -49,8 +49,7 @@ public class Drivers {
     private int numberOfAppiumDriversUsed = 0;
     private boolean shouldBrowserBeMaximized = false;
     private boolean isRunInHeadlessMode = false;
-    private String baseUrl = null;
-    private String DEFAULT_APP_NAME = "default";
+    private String DEFAULT = "default";
 
     public Drivers() {
         MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
@@ -73,10 +72,14 @@ public class Drivers {
     }
 
     public Driver createDriverFor(String userPersona, Platform forPlatform, TestExecutionContext context) {
-        return createDriverFor(userPersona, DEFAULT_APP_NAME, forPlatform, context);
+        return createDriverFor(userPersona, DEFAULT, Runner.getBrowser(), forPlatform, context);
     }
 
     public Driver createDriverFor(String userPersona, String appName, Platform forPlatform, TestExecutionContext context) {
+        return createDriverFor(userPersona, appName, Runner.getBrowser(), forPlatform, context);
+    }
+
+    public Driver createDriverFor(String userPersona, String appName, String browserName, Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format("createDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona, forPlatform.name()));
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, forPlatform);
@@ -96,7 +99,7 @@ public class Drivers {
                 currentDriver = createAndroidDriverForUser(userPersona, forPlatform, context);
                 break;
             case web:
-                currentDriver = createWebDriverForUser(userPersona, forPlatform, context);
+                currentDriver = createWebDriverForUser(userPersona, browserName, forPlatform, context);
                 break;
             case windows:
                 currentDriver = createWindowsDriverForUser(userPersona, forPlatform, context);
@@ -135,7 +138,7 @@ public class Drivers {
         String capabilityFileNameToUseForDriverCreation = System.getProperty(CAPS);
 
         String appName = userPersonaApps.get(userPersona);
-        if (!appName.equalsIgnoreCase(DEFAULT_APP_NAME)) {
+        if (!appName.equalsIgnoreCase(DEFAULT)) {
             String capabilityFileDirectory = new File(capabilityFileNameToUseForDriverCreation).getParent();
             capabilityFileNameToUseForDriverCreation = capabilityFileDirectory + File.separator + (appName + "_capabilities.json");
         }
@@ -182,17 +185,20 @@ public class Drivers {
     }
 
     @NotNull
-    private Driver createWebDriverForUser(String userPersona, Platform forPlatform, TestExecutionContext context) {
+    private Driver createWebDriverForUser(String userPersona, String browserName, Platform forPlatform, TestExecutionContext context) {
         JSONObject browserConfig = null;
-        LOGGER.info(String.format("createWebDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
+        LOGGER.info(String.format("createWebDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: '%s', Number of webdrivers: '%d'%n",
                 userPersona,
+                browserName,
                 forPlatform.name(),
                 numberOfWebDriversUsed));
+
+        String baseUrl = getBaseUrl(userPersona);
 
         if (numberOfWebDriversUsed == 0) {
             browserConfig = getBrowserConfig();
             context.addTestState(TEST_CONTEXT.BROWSER_CONFIG, browserConfig);
-            checkConnectivityToBaseUrl();
+            checkConnectivityToBaseUrl(baseUrl);
         } else {
             browserConfig = (JSONObject) context.getTestState(TEST_CONTEXT.BROWSER_CONFIG);
         }
@@ -211,8 +217,10 @@ public class Drivers {
         context.addTestState(TEST_CONTEXT.WEB_BROWSER_ON, runningOn);
         if (numberOfWebDriversUsed < MAX_NUMBER_OF_WEB_DRIVERS) {
             LOGGER.info("Create new webdriver instance");
-            WebDriver newWebDriver = createNewWebDriver(userPersona, context, browserConfig);
+            WebDriver newWebDriver = createNewWebDriver(userPersona, browserName, context, browserConfig);
             LOGGER.info("Webdriver instance created");
+            newWebDriver.get(baseUrl);
+            LOGGER.info("Navigated to baseUrl: " + baseUrl);
             currentDriver = new Driver(updatedTestName, runningOn, newWebDriver, isRunInHeadlessMode, shouldBrowserBeMaximized);
             LOGGER.info("New Driver with Visual instance created");
         } else {
@@ -227,6 +235,7 @@ public class Drivers {
             );
         }
         numberOfWebDriversUsed++;
+
         LOGGER.info(String.format("createWebDriverForUser: done: userPersona: '%s', Platform: '%s', Number of webdrivers: '%d'", userPersona, forPlatform.name(), numberOfWebDriversUsed));
         return currentDriver;
     }
@@ -309,9 +318,8 @@ public class Drivers {
     }
 
     @NotNull
-    private WebDriver createNewWebDriver(String forUserPersona,
+    private WebDriver createNewWebDriver(String forUserPersona, String browserType,
                                          TestExecutionContext testExecutionContext, JSONObject browserConfig) {
-        String browserType = Runner.getBrowser();
 
         DriverManagerType driverManagerType = setupBrowserDriver(testExecutionContext, browserType);
 
@@ -333,8 +341,6 @@ public class Drivers {
                 throw new InvalidTestDataException(String.format("Browser: '%s' is NOT supported", browserType));
         }
         LOGGER.info("Driver created");
-        driver.get(baseUrl);
-        LOGGER.info("Navigated to baseUrl: " + baseUrl);
 
         if (shouldBrowserBeMaximized && !isRunInHeadlessMode) {
             driver.manage().window().maximize();
@@ -375,15 +381,25 @@ public class Drivers {
         return JsonSchemaValidator.validateJsonFileAgainstSchema(browserConfigFile, browserConfigFileContents, BROWSER_CONFIG_SCHEMA_FILE);
     }
 
-    private void checkConnectivityToBaseUrl() {
-        String providedBaseUrl = Runner.getBaseURLForWeb();
-        if (null == providedBaseUrl) {
-            throw new InvalidTestDataException("baseUrl not provided");
-        }
-        baseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrl));
+    private void checkConnectivityToBaseUrl(String baseUrl) {
         LOGGER.info(String.format("Check connectivity to baseUrl: '%s'", baseUrl));
         String[] curlCommand = new String[]{"curl -m 60 --insecure -I " + baseUrl};
         CommandLineExecutor.execCommand(curlCommand);
+    }
+
+    private String getBaseUrl(String userPersona) {
+        String providedBaseUrlKey = Runner.getBaseURLForWeb();
+
+        String appName = userPersonaApps.get(userPersona);
+        if (!appName.equalsIgnoreCase(DEFAULT)) {
+            providedBaseUrlKey = appName.toUpperCase() + "_BASE_URL";
+        }
+        System.out.println("Using BaseURL key: " + providedBaseUrlKey);
+
+        if (null == providedBaseUrlKey) {
+            throw new InvalidTestDataException("baseUrl not provided");
+        }
+        return String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrlKey));
     }
 
     @NotNull
