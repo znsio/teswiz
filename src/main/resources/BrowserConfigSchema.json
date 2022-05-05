@@ -346,6 +346,27 @@
             ]
           }
         },
+        "maximize": {
+          "$id": "#/properties/firefox/properties/maximize",
+          "type": "boolean",
+          "title": "maximizeSchema",
+          "description": "whether to maximize the web browser",
+          "default": true
+        },
+        "acceptInsecureCerts": {
+          "$id": "#/properties/firefox/properties/acceptInsecureCerts",
+          "type": "boolean",
+          "title": "acceptInsecureCertsSchema",
+          "description": "whether the web browser to accept insecure certs",
+          "default": true
+        },
+        "verboseLogging": {
+          "$id": "#/properties/firefox/properties/verboseLogging",
+          "type": "boolean",
+          "title": "verboseLoggingSchema",
+          "description": "whether verbose logging to be enabled for web browser",
+          "default": true
+        },
         "headlessOptions": {
           "$id": "#/properties/firefox/properties/headlessOptions",
           "type": "object",

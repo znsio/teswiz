@@ -46,8 +46,16 @@
       "--disable-extensions",
       "--disable-notifications"
     ],
+    "maximize": true,
+    "acceptInsecureCerts": true,
+    "verboseLogging": true,
     "headlessOptions": {
       "headless": true
     }
+  },
+  "safari": {
+    "maximize": true,
+    "acceptInsecureCerts": true,
+    "setUseTechnologyPreview": false
   }
 }
