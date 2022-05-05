@@ -33,8 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.znsio.e2e.runner.Runner.NOT_SET;
-import static com.znsio.e2e.runner.Runner.USER_NAME;
+import static com.znsio.e2e.runner.Runner.*;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class Visual {
@@ -52,10 +51,11 @@ public class Visual {
     private final boolean isVerboseLoggingEnabled;
     private final WebDriver innerDriver;
     private final int DEFAULT_UFG_CONCURRENCY = 5;
+    private final String userPersona;
     private String applitoolsLogFileNameForWeb = NOT_SET;
     private String applitoolsLogFileNameForApp = NOT_SET;
 
-    public Visual(String driverType, WebDriver innerDriver, String testName, boolean isVisualTestingEnabled) {
+    public Visual(String driverType, WebDriver innerDriver, String testName, String userPersona, String appName, boolean isVisualTestingEnabled) {
         LOGGER.info("Visual constructor: Driver type: " + driverType + ", testName: " + testName + ", isVisualTestingEnabled:  " + isVisualTestingEnabled);
         this.context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         this.screenShotManager = (ScreenShotManager) context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
@@ -63,7 +63,8 @@ public class Visual {
         this.isEnableBenchmarkPerValidation = Boolean.parseBoolean(String.valueOf(this.applitoolsConfig.get(APPLITOOLS.ENABLE_BENCHMARK_PER_VALIDATION)));
         this.innerDriver = innerDriver;
         this.isVerboseLoggingEnabled = getValueFromConfig(APPLITOOLS.SHOW_LOGS, true);
-        String appName = this.applitoolsConfig.get(APPLITOOLS.APP_NAME) + "-";
+        this.userPersona = userPersona;
+        appName = appName.equalsIgnoreCase(DEFAULT) ? (String) this.applitoolsConfig.get(APPLITOOLS.APP_NAME) : appName;
         eyesOnApp = instantiateAppiumEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
         eyesOnWeb = instantiateWebEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
     }
@@ -72,7 +73,6 @@ public class Visual {
         if (driverType.equals(Driver.WEB_DRIVER)) {
             isVisualTestingEnabled = false;
         }
-        appName += Platform.android;
         LOGGER.info("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         com.applitools.eyes.appium.Eyes eyes = new com.applitools.eyes.appium.Eyes();
 
@@ -86,23 +86,28 @@ public class Visual {
         applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
         eyes.setLogHandler(new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
 
+        eyes.addProperty(APP_NAME, appName);
+        eyes.addProperty("USER_PERSONA", userPersona);
         eyes.addProperty(BRANCH_NAME, String.valueOf(getValueFromConfig(BRANCH_NAME)));
         eyes.addProperty(PLATFORM, String.valueOf(getValueFromConfig(PLATFORM)));
         eyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
         eyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
 
         if (isVisualTestingEnabled) {
-            eyes.open(innerDriver, appName, testName);
+            eyes.open(innerDriver, appName + "-" + Platform.android, testName);
         }
         LOGGER.info("instantiateAppiumEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
         return eyes;
     }
 
-    private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
+    private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType,
+                                                                 WebDriver innerDriver,
+                                                                 String appName,
+                                                                 String testName,
+                                                                 boolean isVisualTestingEnabled) {
         if (driverType.equals(Driver.APPIUM_DRIVER)) {
             isVisualTestingEnabled = false;
         }
-        appName += Platform.web;
         LOGGER.info("instantiateWebEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         boolean isUFG = getValueFromConfig(APPLITOOLS.USE_UFG, false);
 
@@ -130,6 +135,8 @@ public class Visual {
         eyes.setIsDisabled(!isVisualTestingEnabled);
         eyes.setLogHandler(new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
 
+        eyes.addProperty(APP_NAME, appName);
+        eyes.addProperty("USER_PERSONA", userPersona);
         eyes.addProperty(BRANCH_NAME, String.valueOf(getValueFromConfig(BRANCH_NAME)));
         eyes.addProperty(PLATFORM, String.valueOf(getValueFromConfig(PLATFORM)));
         eyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
@@ -139,7 +146,7 @@ public class Visual {
         RectangleSize setBrowserViewPortSize = getBrowserViewPortSize(driverType, innerDriver);
         LOGGER.info("Using browser dimensions for Applitools: " + setBrowserViewPortSize);
 
-        eyes.open(innerDriver, appName, testName, setBrowserViewPortSize);
+        eyes.open(innerDriver, appName + "-" + Platform.web, testName, setBrowserViewPortSize);
         LOGGER.info("instantiateWebEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
         return eyes;
     }

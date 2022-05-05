@@ -51,7 +51,7 @@ public class Setup {
     public static final String PLATFORM = "PLATFORM";
     static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
-    static final String APP_NAME = "APP_NAME";
+    public static final String APP_NAME = "APP_NAME";
     static final String IS_VISUAL = "IS_VISUAL";
     static final String BROWSER = "BROWSER";
     static final String CONFIG_FILE = "CONFIG_FILE";

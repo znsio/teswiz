@@ -20,7 +20,7 @@ public class NotepadScreenWeb extends NotepadScreen {
 
     @Override
     public NotepadScreen takeScreenshot() {
-        visually.takeScreenshot(SCREEN_NAME, "Notepad launched");
+        visually.checkWindow(SCREEN_NAME, "takeScreenshot");
         return this;
     }
 

@@ -29,28 +29,34 @@ public class Driver {
     private final String deviceOn;
     private final boolean shouldBrowserBeMaximized;
     private final boolean isRunInHeadlessMode;
+    private final String userPersona;
+    private final String appName;
     private Visual visually;
 
-    public Driver(String testName, String deviceOn, AppiumDriver<WebElement> appiumDriver) {
+    public Driver(String testName, String deviceOn, String userPersona, String appName, AppiumDriver<WebElement> appiumDriver) {
         this.driver = appiumDriver;
         this.deviceOn = deviceOn;
         this.type = APPIUM_DRIVER;
         this.shouldBrowserBeMaximized = false;
         this.isRunInHeadlessMode = false;
+        this.userPersona = userPersona;
+        this.appName = appName;
         instantiateEyes(testName, appiumDriver);
     }
 
-    public Driver(String testName, String browserOn, WebDriver webDriver, boolean isRunInHeadlessMode, boolean shouldBrowserBeMaximized) {
+    public Driver(String testName, String browserOn, String userPersona, String appName, WebDriver webDriver, boolean isRunInHeadlessMode, boolean shouldBrowserBeMaximized) {
         this.driver = webDriver;
         this.type = WEB_DRIVER;
         this.deviceOn = browserOn;
         this.shouldBrowserBeMaximized = shouldBrowserBeMaximized;
         this.isRunInHeadlessMode = isRunInHeadlessMode;
+        this.userPersona = userPersona;
+        this.appName = appName;
         instantiateEyes(testName, webDriver);
     }
 
     private void instantiateEyes(String testName, WebDriver innerDriver) {
-        this.visually = new Visual(this.type, innerDriver, testName, Runner.isVisualTestingEnabled());
+        this.visually = new Visual(this.type, innerDriver, testName, userPersona, appName, Runner.isVisualTestingEnabled());
     }
 
     public WebElement waitForClickabilityOf(String elementId) {

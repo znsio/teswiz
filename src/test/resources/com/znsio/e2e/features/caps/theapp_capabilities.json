@@ -6,7 +6,7 @@
     "autoGrantPermissions": true,
     "appPackage": "io.cloudgrey.the_app",
     "uiautomator2ServerInstallTimeout": 10000,
-    "adbExecTimeout": 15000,
+    "adbExecTimeout": 45000,
     "eventTimings": true,
     "enablePerformanceLogging": true,
     "printPageSourceOnFindFailure": true,

@@ -31,6 +31,8 @@ public class Runner {
     public static final String USER_DIRECTORY = System.getProperty("user.dir");
     public static final String USER_NAME = System.getProperty("user.name");
     public static final String NOT_SET = "not-set";
+    public static final String DEFAULT = "default";
+
     static final Map<String, String> configs = new HashMap<>();
     static final Map<String, Boolean> configsBoolean = new HashMap<>();
     static final Map<String, Integer> configsInteger = new HashMap<>();
