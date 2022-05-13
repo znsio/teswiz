@@ -149,7 +149,8 @@ public class Drivers {
         if (numberOfAppiumDriversUsed == 0) {
             AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
             AppiumDevice deviceInfo = (AppiumDevice) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
-            additionalDevices.add(deviceInfo);
+            // Do not add the device info to additionalDevices for the driver created by ATD
+            // additionalDevices.add(deviceInfo);
             Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
             context.addTestState(TEST_CONTEXT.DEVICE_ON, deviceInfo.getDeviceOn());
             LOGGER.info("CAPABILITIES: " + appiumDriverCapabilities);
@@ -754,8 +755,14 @@ public class Drivers {
             logMessage = String.format("Closing WindowsDriver for App '%s' for user '%s'", appPackageName, userPersona);
             LOGGER.info(logMessage);
             appiumDriver.closeApp();
-            appiumDriver.quit();
-
+            TestExecutionContext context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
+            AppiumDriver<WebElement> atdAppiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
+            if (appiumDriver.equals(atdAppiumDriver)) {
+                LOGGER.info(String.format("ATD will quit the driver for persona: '%s'", userPersona);
+            } else {
+                LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
+                appiumDriver.quit();
+            }
             logMessage = String.format("App: '%s' terminated", appPackageName);
             LOGGER.info(logMessage);
             ReportPortal.emitLog(logMessage, DEBUG, new Date());
@@ -787,7 +794,14 @@ public class Drivers {
                     appPackageName,
                     applicationState);
             LOGGER.info(logMessage);
-            appiumDriver.quit();
+            TestExecutionContext context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
+            AppiumDriver<WebElement> atdAppiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
+            if (appiumDriver.equals(atdAppiumDriver)) {
+                LOGGER.info(String.format("ATD will quit the driver for persona: '%s'", userPersona);
+            } else {
+                LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
+                appiumDriver.quit();
+            }
             ReportPortal.emitLog(logMessage, DEBUG, new Date());
         }
     }
