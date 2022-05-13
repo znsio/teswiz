@@ -758,7 +758,7 @@ public class Drivers {
             TestExecutionContext context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
             AppiumDriver<WebElement> atdAppiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
             if (appiumDriver.equals(atdAppiumDriver)) {
-                LOGGER.info(String.format("ATD will quit the driver for persona: '%s'", userPersona);
+                LOGGER.info(String.format("ATD will quit the driver for persona: '%s'", userPersona));
             } else {
                 LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
                 appiumDriver.quit();
@@ -797,7 +797,7 @@ public class Drivers {
             TestExecutionContext context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
             AppiumDriver<WebElement> atdAppiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
             if (appiumDriver.equals(atdAppiumDriver)) {
-                LOGGER.info(String.format("ATD will quit the driver for persona: '%s'", userPersona);
+                LOGGER.info(String.format("ATD will quit the driver for persona: '%s'", userPersona));
             } else {
                 LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
                 appiumDriver.quit();
