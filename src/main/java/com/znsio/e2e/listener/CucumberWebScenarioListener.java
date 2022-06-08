@@ -70,6 +70,7 @@ public class CucumberWebScenarioListener implements ConcurrentEventListener {
 
     private void webRunFinishedHandler(TestRunFinished event) {
         LOGGER.info("webRunFinishedHandler: " + event.getResult().toString());
+        SessionContext.setReportPortalLaunchURL();
         LOGGER.info(String.format("ThreadID: %d: afterSuite: \n", Thread.currentThread().getId()));
     }
 
