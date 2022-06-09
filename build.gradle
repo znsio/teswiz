@@ -39,7 +39,9 @@ repositories {
         dirs 'libs'
     }
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 configurations {
@@ -48,7 +50,9 @@ configurations {
     }
 }
 
-compileJava { options.encoding = "UTF-8" }
+compileJava {
+    options.encoding = "UTF-8"
+}
 
 idea {
     module {
@@ -147,7 +151,9 @@ task run(type: JavaExec) {
         def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
         println "isRunningInCI: $isRunInCI"
 
-        def configFile = isRunInCI ? "./src/test/resources/com/znsio/e2e/features/configs/pcloudy_config.properties" : "./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties"
+        def configFile = isRunInCI
+                ? "./src/test/resources/com/znsio/e2e/features/configs/pcloudy_config.properties"
+                : "./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties"
         configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
 
         systemProperties = System.properties
