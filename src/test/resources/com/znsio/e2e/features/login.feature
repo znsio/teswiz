@@ -6,6 +6,11 @@ Feature: Test valid and invalid login
     Given I login with invalid credentials - "znsio1", "invalid password"
     Then I try to login again with invalid credentials - "znsio2", "another invalid password"
 
+  @android @web @invalidLogin @theapp
+  Scenario: Another Verify error message on invalid login test
+    Given I login with invalid credentials - "anotheruser1", "invalid password"
+    Then I try to login again with invalid credentials - "anotheruser2", "another invalid password"
+
   @android @echo @theapp
   Scenario: Verify error message on another invalid login
     Given I login with invalid credentials - "znsio2", "2nd invalid password"
