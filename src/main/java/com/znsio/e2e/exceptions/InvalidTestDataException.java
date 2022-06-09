@@ -1,6 +1,7 @@
 package com.znsio.e2e.exceptions;
 
-public class InvalidTestDataException extends RuntimeException {
+public class InvalidTestDataException
+        extends RuntimeException {
     public InvalidTestDataException(String message) {
         super(message);
     }

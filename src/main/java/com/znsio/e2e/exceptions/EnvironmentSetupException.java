@@ -1,6 +1,7 @@
 package com.znsio.e2e.exceptions;
 
-public class EnvironmentSetupException extends RuntimeException {
+public class EnvironmentSetupException
+        extends RuntimeException {
     public EnvironmentSetupException(String message) {
         super(message);
     }
