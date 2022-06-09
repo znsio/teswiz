@@ -1,22 +1,19 @@
 package com.znsio.e2e.tools;
 
-import com.epam.reportportal.service.*;
-import com.znsio.e2e.exceptions.*;
-import org.apache.log4j.*;
-import org.everit.json.schema.*;
-import org.everit.json.schema.loader.*;
-import org.json.*;
+import com.epam.reportportal.service.ReportPortal;
+import com.znsio.e2e.exceptions.InvalidTestDataException;
+import org.apache.log4j.Logger;
+import org.everit.json.schema.Schema;
+import org.everit.json.schema.ValidationException;
+import org.everit.json.schema.loader.SchemaLoader;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
-import java.io.*;
-import java.util.*;
+import java.io.InputStream;
+import java.util.Date;
 
 public class JsonSchemaValidator {
     private static final Logger LOGGER = Logger.getLogger(JsonSchemaValidator.class.getName());
-
-    private static InputStream loadJsonResourceFileAsStream(String fileName) {
-        String fileAsResource = "/" + fileName;
-        return JsonSchemaValidator.class.getResourceAsStream(fileAsResource);
-    }
 
     public static JSONObject validateJsonFileAgainstSchema(String jsonFilePath, String jsonContents, String schemaFile) {
         try {
@@ -31,11 +28,16 @@ public class JsonSchemaValidator {
             schema.validate(jsonObject);
             LOGGER.info(String.format("Json file '%s' validated successfully against the schema", jsonFilePath));
             return jsonObject;
-        } catch (ValidationException validationException) {
+        } catch(ValidationException validationException) {
             String exceptionMessage = String.format("Json file '%s' failed schema checks:%n%s", jsonFilePath, validationException.getAllMessages());
             LOGGER.info(exceptionMessage);
             ReportPortal.emitLog(exceptionMessage, "DEBUG", new Date());
             throw new InvalidTestDataException(exceptionMessage);
         }
+    }
+
+    private static InputStream loadJsonResourceFileAsStream(String fileName) {
+        String fileAsResource = "/" + fileName;
+        return JsonSchemaValidator.class.getResourceAsStream(fileAsResource);
     }
 }

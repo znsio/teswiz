@@ -57,7 +57,8 @@ public class Visual {
 
     public Visual(String driverType, WebDriver innerDriver, String testName, String userPersona, String appName, boolean isVisualTestingEnabled) {
         LOGGER.info("Visual constructor: Driver type: " + driverType + ", testName: " + testName + ", isVisualTestingEnabled:  " + isVisualTestingEnabled);
-        this.context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
+        this.context = SessionContext.getTestExecutionContext(Thread.currentThread()
+                                                                    .getId());
         this.screenShotManager = (ScreenShotManager) context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
         this.applitoolsConfig = Runner.initialiseApplitoolsConfiguration();
         this.isEnableBenchmarkPerValidation = Boolean.parseBoolean(String.valueOf(this.applitoolsConfig.get(APPLITOOLS.ENABLE_BENCHMARK_PER_VALIDATION)));
@@ -69,8 +70,12 @@ public class Visual {
         eyesOnWeb = instantiateWebEyes(driverType, innerDriver, appName, testName, isVisualTestingEnabled);
     }
 
+    private boolean getValueFromConfig(String key, boolean defaultValue) {
+        return (null == applitoolsConfig.get(key)) ? defaultValue : Boolean.parseBoolean(String.valueOf(applitoolsConfig.get(key)));
+    }
+
     private com.applitools.eyes.appium.Eyes instantiateAppiumEyes(String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
-        if (driverType.equals(Driver.WEB_DRIVER)) {
+        if(driverType.equals(Driver.WEB_DRIVER)) {
             isVisualTestingEnabled = false;
         }
         LOGGER.info("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
@@ -93,19 +98,15 @@ public class Visual {
         eyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
         eyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
 
-        if (isVisualTestingEnabled) {
+        if(isVisualTestingEnabled) {
             eyes.open(innerDriver, appName + "-" + Platform.android, testName);
         }
         LOGGER.info("instantiateAppiumEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
         return eyes;
     }
 
-    private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType,
-                                                                 WebDriver innerDriver,
-                                                                 String appName,
-                                                                 String testName,
-                                                                 boolean isVisualTestingEnabled) {
-        if (driverType.equals(Driver.APPIUM_DRIVER)) {
+    private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
+        if(driverType.equals(Driver.APPIUM_DRIVER)) {
             isVisualTestingEnabled = false;
         }
         LOGGER.info("instantiateWebEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
@@ -124,7 +125,8 @@ public class Visual {
         configuration.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
 
         configuration.setSendDom(getValueFromConfig(APPLITOOLS.SEND_DOM, true));
-        configuration.setStitchMode(StitchMode.valueOf(String.valueOf(getValueFromConfig(APPLITOOLS.STITCH_MODE, StitchMode.CSS)).toUpperCase()));
+        configuration.setStitchMode(StitchMode.valueOf(String.valueOf(getValueFromConfig(APPLITOOLS.STITCH_MODE, StitchMode.CSS))
+                                                             .toUpperCase()));
         configuration.setForceFullPageScreenshot(getValueFromConfig(APPLITOOLS.TAKE_FULL_PAGE_SCREENSHOT, true));
 
         addBrowserAndDeviceConfigForUFG(isUFG, configuration);
@@ -151,31 +153,31 @@ public class Visual {
         return eyes;
     }
 
-    private RectangleSize getBrowserViewPortSize(String driverType, WebDriver innerDriver) {
-        RectangleSize providedBrowserViewPortSizeFromConfig = (RectangleSize) getValueFromConfig(APPLITOOLS.RECTANGLE_SIZE);
-        int providedBrowserViewPortSizeFromConfigHeight = providedBrowserViewPortSizeFromConfig.getHeight();
-        int providedBrowserViewPortSizeFromConfigWidth = providedBrowserViewPortSizeFromConfig.getWidth();
-        LOGGER.info("Provided browser dimensions: " + providedBrowserViewPortSizeFromConfig);
+    private String getValueFromConfig(String key, String defaultValue) {
+        return (null == applitoolsConfig.get(key)) ? defaultValue : String.valueOf(applitoolsConfig.get(key));
+    }
 
-        if (driverType.equals(Driver.APPIUM_DRIVER)) {
-            return providedBrowserViewPortSizeFromConfig;
-        } else {
-            JavascriptExecutor js = (JavascriptExecutor) innerDriver;
-            Dimension actualBrowserSize = innerDriver.manage().window().getSize();
-            LOGGER.info("Actual browser dimensions: " + actualBrowserSize);
-            Long actualHeight = (Long) js.executeScript("return (window.innerHeight);");
-            Long actualWidth = (Long) js.executeScript("return (window.innerWidth);");
+    private Object getValueFromConfig(String key) {
+        return applitoolsConfig.get(key);
+    }
 
-            if (providedBrowserViewPortSizeFromConfigHeight > actualHeight.intValue() || providedBrowserViewPortSizeFromConfigWidth > actualWidth.intValue()) {
-                return new RectangleSize(actualWidth.intValue(), actualHeight.intValue());
-            } else {
-                return providedBrowserViewPortSizeFromConfig;
-            }
-        }
+    private Object getValueFromConfig(String key, Object defaultValue) {
+        return (null == applitoolsConfig.get(key)) ? defaultValue : applitoolsConfig.get(key);
+    }
+
+    @NotNull
+    private String getApplitoolsLogFileNameFor(String appType) {
+        String scenarioLogDir = Runner.USER_DIRECTORY + context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+        return scenarioLogDir + File.separator + "deviceLogs" + File.separator + "applitools-" + appType + ".log";
+    }
+
+    private int getValueFromConfig(String key, int defaultValue) {
+        Object valueFromConfig = applitoolsConfig.get(key);
+        return (null == valueFromConfig) ? defaultValue : convertValueFromConfigToInt(valueFromConfig);
     }
 
     private void addBrowserAndDeviceConfigForUFG(boolean isUFG, Configuration configuration) {
-        if (isUFG) {
+        if(isUFG) {
             Configuration ufgConfig = (Configuration) context.getTestState(APPLITOOLS.UFG_CONFIG);
             ufgConfig = defaultApplitoolsUFGConfig(ufgConfig);
             List<RenderBrowserInfo> browsersInfo = ufgConfig.getBrowsersInfo();
@@ -183,10 +185,43 @@ public class Visual {
         }
     }
 
+    private RectangleSize getBrowserViewPortSize(String driverType, WebDriver innerDriver) {
+        RectangleSize providedBrowserViewPortSizeFromConfig = (RectangleSize) getValueFromConfig(APPLITOOLS.RECTANGLE_SIZE);
+        int providedBrowserViewPortSizeFromConfigHeight = providedBrowserViewPortSizeFromConfig.getHeight();
+        int providedBrowserViewPortSizeFromConfigWidth = providedBrowserViewPortSizeFromConfig.getWidth();
+        LOGGER.info("Provided browser dimensions: " + providedBrowserViewPortSizeFromConfig);
+
+        if(driverType.equals(Driver.APPIUM_DRIVER)) {
+            return providedBrowserViewPortSizeFromConfig;
+        } else {
+            JavascriptExecutor js = (JavascriptExecutor) innerDriver;
+            Dimension actualBrowserSize = innerDriver.manage()
+                                                     .window()
+                                                     .getSize();
+            LOGGER.info("Actual browser dimensions: " + actualBrowserSize);
+            Long actualHeight = (Long) js.executeScript("return (window.innerHeight);");
+            Long actualWidth = (Long) js.executeScript("return (window.innerWidth);");
+
+            if(providedBrowserViewPortSizeFromConfigHeight > actualHeight.intValue() || providedBrowserViewPortSizeFromConfigWidth > actualWidth.intValue()) {
+                return new RectangleSize(actualWidth.intValue(), actualHeight.intValue());
+            } else {
+                return providedBrowserViewPortSizeFromConfig;
+            }
+        }
+    }
+
+    private int convertValueFromConfigToInt(Object valueFromConfig) {
+        try {
+            return Integer.parseInt(String.valueOf(valueFromConfig));
+        } catch(NumberFormatException e) {
+            return (int) ((Double.parseDouble(String.valueOf(valueFromConfig))));
+        }
+    }
+
     @NotNull
     private Configuration defaultApplitoolsUFGConfig(Configuration ufgConfig) {
         String applitoolsUFGConfigMessage = "Using browser & device configuration provided for Applitools Ultrafast Grid";
-        if (null == ufgConfig) {
+        if(null == ufgConfig) {
             applitoolsUFGConfigMessage = "Using default browser & device configuration for Applitools Ultrafast Grid: ";
             ufgConfig = new Configuration();
             ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
@@ -207,41 +242,6 @@ public class Visual {
         return ufgConfig;
     }
 
-    private int getValueFromConfig(String key, int defaultValue) {
-        Object valueFromConfig = applitoolsConfig.get(key);
-        return (null == valueFromConfig) ? defaultValue : convertValueFromConfigToInt(valueFromConfig);
-    }
-
-    private int convertValueFromConfigToInt(Object valueFromConfig) {
-        try {
-            return Integer.parseInt(String.valueOf(valueFromConfig));
-        } catch (NumberFormatException e) {
-            return (int) ((Double.parseDouble(String.valueOf(valueFromConfig))));
-        }
-    }
-
-    private boolean getValueFromConfig(String key, boolean defaultValue) {
-        return (null == applitoolsConfig.get(key)) ? defaultValue : Boolean.parseBoolean(String.valueOf(applitoolsConfig.get(key)));
-    }
-
-    private String getValueFromConfig(String key, String defaultValue) {
-        return (null == applitoolsConfig.get(key)) ? defaultValue : String.valueOf(applitoolsConfig.get(key));
-    }
-
-    private Object getValueFromConfig(String key, Object defaultValue) {
-        return (null == applitoolsConfig.get(key)) ? defaultValue : applitoolsConfig.get(key);
-    }
-
-    private Object getValueFromConfig(String key) {
-        return applitoolsConfig.get(key);
-    }
-
-    @NotNull
-    private String getApplitoolsLogFileNameFor(String appType) {
-        String scenarioLogDir = Runner.USER_DIRECTORY + context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
-        return scenarioLogDir + File.separator + "deviceLogs" + File.separator + "applitools-" + appType + ".log";
-    }
-
     public Visual checkWindow(String fromScreen, String tag) {
         String formattedTagName = getFormattedTagName(fromScreen, tag);
         LOGGER.info("checkWindow: fromScreen: " + fromScreen + ", tag: " + formattedTagName);
@@ -252,7 +252,7 @@ public class Visual {
         eyesOnWeb.checkWindow(formattedTagName);
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
-        if (isEnableBenchmarkPerValidation) {
+        if(isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + " :" + tag + ":: Web: checkWindow: Time taken: " + webDuration.getSeconds() + " sec ");
         }
 
@@ -260,7 +260,7 @@ public class Visual {
         eyesOnApp.checkWindow(formattedTagName);
         LocalDateTime appFinish = LocalDateTime.now();
         Duration appDuration = Duration.between(appStart, appFinish);
-        if (isEnableBenchmarkPerValidation) {
+        if(isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + " :" + tag + ":: App: checkWindow: Time taken: " + appDuration.getSeconds() + " sec ");
         }
 
@@ -283,7 +283,7 @@ public class Visual {
         eyesOnWeb.check(formattedTagName, checkSettings);
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
-        if (isEnableBenchmarkPerValidation) {
+        if(isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + " :" + tag + ":: Web: checkWindow: Time taken: " + webDuration.getSeconds() + " sec ");
         }
 
@@ -291,7 +291,7 @@ public class Visual {
         eyesOnApp.check(formattedTagName, checkSettings);
         LocalDateTime appFinish = LocalDateTime.now();
         Duration appDuration = Duration.between(appStart, appFinish);
-        if (isEnableBenchmarkPerValidation) {
+        if(isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + " :" + tag + ":: App: checkWindow: Time taken: " + appDuration.getSeconds() + " sec ");
         }
 
@@ -307,18 +307,20 @@ public class Visual {
 
 
         LocalDateTime webStart = LocalDateTime.now();
-        eyesOnWeb.check(getFormattedTagName(fromScreen, tag), Target.window().matchLevel(level));
+        eyesOnWeb.check(getFormattedTagName(fromScreen, tag), Target.window()
+                                                                    .matchLevel(level));
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
-        if (isEnableBenchmarkPerValidation) {
+        if(isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + ":" + tag + ":: Web: checkWindow with MatchLevel: " + level.name() + ": Time taken: " + webDuration.getSeconds() + " sec");
         }
 
         LocalDateTime appStart = LocalDateTime.now();
-        eyesOnApp.check(getFormattedTagName(fromScreen, tag), Target.window().matchLevel(level));
+        eyesOnApp.check(getFormattedTagName(fromScreen, tag), Target.window()
+                                                                    .matchLevel(level));
         LocalDateTime appFinish = LocalDateTime.now();
         Duration appDuration = Duration.between(appStart, appFinish);
-        if (isEnableBenchmarkPerValidation) {
+        if(isEnableBenchmarkPerValidation) {
             LOGGER.info(fromScreen + ":" + tag + ":: App: checkWindow with MatchLevel: " + level.name() + ": Time taken: " + appDuration.getSeconds() + " sec");
         }
 
@@ -326,13 +328,8 @@ public class Visual {
         return this;
     }
 
-    public Visual takeScreenshot(String fromScreen, String tag) {
-        screenShotManager.takeScreenShot(innerDriver, getFormattedTagName(fromScreen, tag));
-        return this;
-    }
-
     public void handleTestResults(String userPersona, String driverType) {
-        switch (driverType) {
+        switch(driverType) {
             case Driver.WEB_DRIVER:
                 takeScreenshot(userPersona, "afterHooks");
                 getVisualResultsFromWeb(userPersona);
@@ -348,13 +345,18 @@ public class Visual {
         }
     }
 
+    public Visual takeScreenshot(String fromScreen, String tag) {
+        screenShotManager.takeScreenShot(innerDriver, getFormattedTagName(fromScreen, tag));
+        return this;
+    }
+
     private void getVisualResultsFromWeb(String userPersona) {
-        if (eyesOnWeb.getIsDisabled()) {
+        if(eyesOnWeb.getIsDisabled()) {
             return;
         }
         LOGGER.info("getVisualResultsFromWeb: user: " + userPersona);
         TestResults visualResults = eyesOnWeb.close(false);
-        if (null != visualResults) {
+        if(null != visualResults) {
             String reportUrl = handleTestResults(userPersona, "web", visualResults);
             String message = String.format("Web Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
             LOGGER.info(message);
@@ -364,7 +366,7 @@ public class Visual {
     }
 
     private void getVisualResultsFromApp(String userPersona) {
-        if (eyesOnApp.getIsDisabled()) {
+        if(eyesOnApp.getIsDisabled()) {
             return;
         }
         LOGGER.info("getVisualResultsFromApp: user: " + userPersona);
@@ -378,20 +380,19 @@ public class Visual {
 
     private String handleTestResults(String userPersona, String onPlatform, TestResults result) {
         String message = String.format("Visual Testing Results for user persona: '%s' onPlatform '%s'\n", userPersona, onPlatform);
-        message += "\n\t\t" + result
-                           + "\n\t\tmatched = " + result.getMatches()
-                           + "\n\t\tmismatched = " + result.getMismatches()
-                           + "\n\t\tmissing = " + result.getMissing()
-                           + "\n\t\tisNew: " + result.isNew()
-                           + "\n\t\tisPassed: " + result.isPassed()
-                           + "\n\t\tResults url: " + result.getUrl();
+        message += "\n\t\t" + result + "\n\t\tmatched = " + result.getMatches() + "\n\t\tmismatched = " + result.getMismatches() + "\n\t\tmissing = " + result.getMissing() + "\n" +
+                   "\t\tisNew: " + result.isNew() + "\n\t\tisPassed: " + result.isPassed() + "\n\t\tResults url: " + result.getUrl();
         LOGGER.info(message);
         ReportPortal.emitLog(message, DEBUG, new Date());
         boolean hasMismatches = result.getMismatches() != 0;
         LOGGER.info("Visual testing differences found? - " + hasMismatches);
-        long threadId = Thread.currentThread().getId();
+        long threadId = Thread.currentThread()
+                              .getId();
         SoftAssertions softly = Runner.getSoftAssertion(threadId);
-        softly.assertThat(hasMismatches).as(String.format("Visual differences for user persona: '%s' on '%s' found in test: '%s'. See results here: '%s'", userPersona, onPlatform, context.getTestName(), result.getUrl())).isFalse();
+        softly.assertThat(hasMismatches)
+              .as(String.format("Visual differences for user persona: '%s' on '%s' found in test: '%s'. See results here: '%s'", userPersona, onPlatform, context.getTestName(),
+                                result.getUrl()))
+              .isFalse();
         return result.getUrl();
     }
 }

@@ -1,12 +1,15 @@
 package com.znsio.e2e.tools;
 
 import com.google.gson.*;
-import com.znsio.e2e.exceptions.*;
-import org.apache.log4j.*;
+import com.znsio.e2e.exceptions.EnvironmentSetupException;
+import com.znsio.e2e.exceptions.InvalidTestDataException;
+import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.nio.file.*;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class JsonFile {
     private static final Logger LOGGER = Logger.getLogger(JsonFile.class.getName());
@@ -17,20 +20,20 @@ public class JsonFile {
     public static void saveJsonToFile(Map<String, Map> jsonMap, String fileName) {
         LOGGER.info("\tSave the following json to file: " + fileName + "   with jsonmap:  " + jsonMap);
         File file = new File(fileName);
-        if (file.exists()) {
+        if(file.exists()) {
             LOGGER.info("File: " + file + "  exixts.  Delete it first");
             boolean isFileDeleted = file.delete();
             LOGGER.info("File deleted? " + isFileDeleted);
-            if (!isFileDeleted) {
+            if(!isFileDeleted) {
                 throw new EnvironmentSetupException("Unable to delete older, already existing capabilities file: " + fileName);
             }
         } else {
             LOGGER.info("File " + file + " does not exist. Create it%n");
         }
-        try (Writer writer = new FileWriter(fileName)) {
+        try(Writer writer = new FileWriter(fileName)) {
             Gson gson = new GsonBuilder().create();
             gson.toJson(jsonMap, writer);
-        } catch (IOException e) {
+        } catch(IOException e) {
             throw new EnvironmentSetupException(String.format("Unable to save following json to file: '%s'%n'%s'%n", jsonMap, fileName), e);
         }
     }
@@ -40,7 +43,7 @@ public class JsonFile {
         LOGGER.info("\tNode: " + node);
         Map<String, Map> envMap = map.get(node);
         LOGGER.info("\tLoaded map: " + envMap);
-        if (null == envMap) {
+        if(null == envMap) {
             throw new InvalidTestDataException(String.format("Node: '%s' not found in file: '%s'", node, fileName));
         }
         return envMap;
@@ -54,7 +57,7 @@ public class JsonFile {
             Map<String, Map> map = gson.fromJson(reader, Map.class);
             reader.close();
             return map;
-        } catch (IOException e) {
+        } catch(IOException e) {
             throw new InvalidTestDataException(String.format("Unable to load json file: '%s'", fileName), e);
         }
     }
@@ -63,11 +66,12 @@ public class JsonFile {
         Map<String, Map> map = loadJsonFile(fileName);
 
         StringBuilder nodePath = new StringBuilder();
-        for (int nodeCount = 0; nodeCount < nodeTree.length - 1; nodeCount++) {
+        for(int nodeCount = 0; nodeCount < nodeTree.length - 1; nodeCount++) {
             LOGGER.info("\tFinding node: " + nodeTree[nodeCount]);
-            nodePath.append(nodeTree[nodeCount]).append(" -> ");
+            nodePath.append(nodeTree[nodeCount])
+                    .append(" -> ");
             map = map.get(nodeTree[nodeCount]);
-            if (null == map) {
+            if(null == map) {
                 throw new InvalidTestDataException(String.format("Node: '%s' not found in file: '%s'", nodePath, fileName));
             }
         }
@@ -85,10 +89,12 @@ public class JsonFile {
     }
 
     public static JsonObject convertToMap(String jsonAsString) {
-        return JsonParser.parseString(jsonAsString).getAsJsonObject();
+        return JsonParser.parseString(jsonAsString)
+                         .getAsJsonObject();
     }
 
     public static JsonArray convertToArray(String jsonAsString) {
-        return JsonParser.parseString(jsonAsString).getAsJsonArray();
+        return JsonParser.parseString(jsonAsString)
+                         .getAsJsonArray();
     }
 }

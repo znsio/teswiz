@@ -1,6 +1,7 @@
 package com.znsio.e2e.tools;
 
-import org.apache.commons.lang3.*;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 
 public class Randomizer {
 
@@ -13,7 +14,7 @@ public class Randomizer {
         try {
             Long.parseLong(randomizeTestData);
             randomizedValue = "80" + RandomStringUtils.randomNumeric(8);
-        } catch (NumberFormatException nfe) {
+        } catch(NumberFormatException nfe) {
             randomizedValue = "e2e_" + RandomStringUtils.randomAlphanumeric(10) + "@getnada.com";
         }
         return randomizedValue;
