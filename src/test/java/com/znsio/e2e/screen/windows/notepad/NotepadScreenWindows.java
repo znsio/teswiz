@@ -1,11 +1,13 @@
-package com.znsio.e2e.screen.windows;
+package com.znsio.e2e.screen.windows.notepad;
 
-import com.znsio.e2e.screen.*;
-import com.znsio.e2e.tools.*;
-import org.apache.log4j.*;
-import org.openqa.selenium.*;
+import com.znsio.e2e.screen.notepad.NotepadScreen;
+import com.znsio.e2e.tools.Driver;
+import com.znsio.e2e.tools.Visual;
+import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
 
-public class NotepadScreenWindows extends NotepadScreen {
+public class NotepadScreenWindows
+        extends NotepadScreen {
     private static final org.apache.log4j.Logger LOGGER = Logger.getLogger(NotepadScreenWindows.class.getName());
     private final Driver driver;
     private final Visual visually;
@@ -18,15 +20,10 @@ public class NotepadScreenWindows extends NotepadScreen {
     }
 
     @Override
-    public NotepadScreen takeScreenshot() {
-        visually.takeScreenshot(SCREEN_NAME, "Notepad launched");
-        return this;
-    }
-
-    @Override
     public NotepadScreen typeMessage(String message) {
         LOGGER.info(String.format("Typing message: '%s'", message));
-        driver.findElement(byEditorName).sendKeys(message);
+        driver.findElement(byEditorName)
+              .sendKeys(message);
         visually.takeScreenshot(SCREEN_NAME, "Typed message in Notepad");
         return this;
     }

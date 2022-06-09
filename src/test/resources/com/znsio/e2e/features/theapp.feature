@@ -1,5 +1,5 @@
-@login
-Feature: Test valid and invalid login
+@theapp
+Feature: Scenarios for "The App"
 
   @android @web @invalidLogin @theapp
   Scenario: Verify error message on invalid login
@@ -38,10 +38,20 @@ Feature: Test valid and invalid login
     Then "I" login again with invalid credentials - "znsio3", "invalid password"
     Then "You" login again with invalid credentials - "znsio4", "invalid password"
 
-#  @multiuser-android @3user @theapp
-#  Scenario: Orchestrating 3 users on different platforms as part of same test
-#    Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
-#    And "you" login with invalid credentials - "znsio2", "invalid password" on "android"
-#    And "someoneelse" login with invalid credentials - "znsio3", "invalid password" on "android"
-#    When "I" login again with invalid credentials - "znsio3", "invalid password"
-#    Then "you" login again with invalid credentials - "znsio4", "invalid password"
+  @multiuser-android @3user @theapp
+  Scenario: Orchestrating 3 users on different platforms as part of same test
+    Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
+    And "you" login with invalid credentials - "znsio2", "invalid password" on "android"
+    And "someoneelse" login with invalid credentials - "znsio3", "invalid password" on "android"
+    When "I" login again with invalid credentials - "znsio3", "invalid password"
+    Then "you" login again with invalid credentials - "znsio4", "invalid password"
+
+  @android @demo
+  Scenario: Verify I can set text in the clipboard
+    Given I start the app
+    When I set "teswiz demo" in the clipboard
+    Then I can see the content saved in the clipboard
+
+  @android @demo
+  Scenario: Verify I can set text in the clipboard
+    Given I save "teswiz demo" in the clipboard

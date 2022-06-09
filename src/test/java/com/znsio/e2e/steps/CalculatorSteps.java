@@ -2,7 +2,7 @@ package com.znsio.e2e.steps;
 
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
-import com.znsio.e2e.businessLayer.CalculatorBL;
+import com.znsio.e2e.businessLayer.calculator.CalculatorBL;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.e2e.runner.Runner;
@@ -21,7 +21,8 @@ public class CalculatorSteps {
     private final Drivers allDrivers;
 
     public CalculatorSteps() {
-        context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
+        context = SessionContext.getTestExecutionContext(Thread.currentThread()
+                                                               .getId());
         LOGGER.info("context: " + context.getTestName());
         allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
         LOGGER.info("allDrivers: " + (null == allDrivers));
@@ -30,6 +31,13 @@ public class CalculatorSteps {
     @Given("I select {string}")
     public void iSelect(String number) {
         new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).selectNumber(number);
+    }
+
+    @And("{string} select {string}")
+    public void select(String userPersona, String action) {
+        Platform onPlatform = allDrivers.getPlatformForUser(userPersona);
+        new CalculatorBL(userPersona, onPlatform).startCalculator()
+                                                 .selectNumber(action);
     }
 
     @When("I press {string}")
@@ -48,17 +56,11 @@ public class CalculatorSteps {
         new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).startCalculator();
     }
 
-    @And("{string} select {string}")
-    public void select(String userPersona, String action) {
-        Platform onPlatform = allDrivers.getPlatformForUser(userPersona);
-        new CalculatorBL(userPersona, onPlatform).startCalculator().selectNumber(action);
-    }
-
     @And("{string} press {string}")
     public void press(String userPersona, String action) {
         Platform onPlatform = allDrivers.getPlatformForUser(userPersona);
         new CalculatorBL(userPersona, onPlatform).pressOperation(action);
-        if (action.equalsIgnoreCase("equals")) {
+        if(action.equalsIgnoreCase("equals")) {
             waitFor(10);
         }
     }

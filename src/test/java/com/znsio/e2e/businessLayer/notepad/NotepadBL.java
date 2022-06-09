@@ -1,11 +1,13 @@
-package com.znsio.e2e.businessLayer;
+package com.znsio.e2e.businessLayer.notepad;
 
-import com.context.*;
-import com.znsio.e2e.entities.*;
-import com.znsio.e2e.runner.*;
-import com.znsio.e2e.screen.*;
-import org.apache.log4j.*;
-import org.assertj.core.api.*;
+import com.context.TestExecutionContext;
+import com.znsio.e2e.entities.Platform;
+import com.znsio.e2e.entities.SAMPLE_TEST_CONTEXT;
+import com.znsio.e2e.runner.Runner;
+import com.znsio.e2e.screen.ScreenShotScreen;
+import com.znsio.e2e.screen.notepad.NotepadScreen;
+import org.apache.log4j.Logger;
+import org.assertj.core.api.SoftAssertions;
 
 public class NotepadBL {
     private static final Logger LOGGER = Logger.getLogger(NotepadBL.class.getName());
@@ -15,7 +17,8 @@ public class NotepadBL {
     private final Platform currentPlatform;
 
     public NotepadBL() {
-        long threadId = Thread.currentThread().getId();
+        long threadId = Thread.currentThread()
+                              .getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
@@ -24,7 +27,8 @@ public class NotepadBL {
     }
 
     public NotepadBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread().getId();
+        long threadId = Thread.currentThread()
+                              .getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -34,12 +38,14 @@ public class NotepadBL {
     }
 
     public NotepadBL verifyLaunched() {
-        NotepadScreen.get().takeScreenshot();
+        ScreenShotScreen.get()
+                        .takeScreenshot();
         return this;
     }
 
     public NotepadBL typeMessage(String message) {
-        NotepadScreen.get().typeMessage(message);
+        NotepadScreen.get()
+                     .typeMessage(message);
         return this;
     }
 }

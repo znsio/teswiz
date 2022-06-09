@@ -17,7 +17,8 @@ public class AppLaunchSteps {
     private final Drivers allDrivers;
 
     public AppLaunchSteps() {
-        context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
+        context = SessionContext.getTestExecutionContext(Thread.currentThread()
+                                                               .getId());
         LOGGER.info("context: " + context.getTestName());
         allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
         LOGGER.info("allDrivers: " + (null == allDrivers));

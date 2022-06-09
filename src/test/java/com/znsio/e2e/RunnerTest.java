@@ -1,12 +1,12 @@
 package com.znsio.e2e;
 
-import com.znsio.e2e.entities.*;
-import com.znsio.e2e.runner.*;
-import org.joda.time.*;
-import org.junit.jupiter.api.*;
+import com.znsio.e2e.entities.Platform;
+import com.znsio.e2e.runner.Runner;
+import org.joda.time.DateTime;
+import org.junit.jupiter.api.Test;
 
-import static com.znsio.e2e.runner.Setup.*;
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static com.znsio.e2e.runner.Setup.CLOUD_KEY;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class RunnerTest {
     private final String stepDefDir = "com/znsio/e2e/steps";
@@ -26,14 +26,12 @@ class RunnerTest {
         System.setProperty("TAG", "@theapp");
         Runner runner = new Runner("./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties", stepDefDir, featuresDir);
         String baseUrl = Runner.getFromEnvironmentConfiguration("BASE_URL");
-        assertThat(baseUrl)
-                .as("environment config is incorrect")
-                .isEqualTo("http://the-internet.herokuapp.com/");
+        assertThat(baseUrl).as("environment config is incorrect")
+                           .isEqualTo("http://the-internet.herokuapp.com/");
 
         String actualTestData = Runner.getTestData("GMAIL_USER_1_EMAIL");
-        assertThat(actualTestData)
-                .as("environment config is incorrect")
-                .isEqualTo("mytestemail@gmail.com");
+        assertThat(actualTestData).as("environment config is incorrect")
+                                  .isEqualTo("mytestemail@gmail.com");
     }
 
     @Test

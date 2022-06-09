@@ -1,12 +1,15 @@
-package com.znsio.e2e.screen.android;
+package com.znsio.e2e.screen.android.theapp;
 
-import com.znsio.e2e.screen.*;
-import com.znsio.e2e.tools.*;
-import org.openqa.selenium.*;
+import com.znsio.e2e.screen.theapp.LoginScreen;
+import com.znsio.e2e.tools.Driver;
+import com.znsio.e2e.tools.Visual;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
-import static com.znsio.e2e.tools.Wait.*;
+import static com.znsio.e2e.tools.Wait.waitFor;
 
-public class LoginScreenAndroid extends LoginScreen {
+public class LoginScreenAndroid
+        extends LoginScreen {
     private final Driver driver;
     private final Visual visually;
     private final String SCREEN_NAME = LoginScreenAndroid.class.getSimpleName();
@@ -25,11 +28,15 @@ public class LoginScreenAndroid extends LoginScreen {
     @Override
     public LoginScreen enterLoginDetails(String username, String password) {
         waitFor(2);
-        driver.findElementByAccessibilityId(userNameId).clear();
-        driver.findElementByAccessibilityId(userNameId).sendKeys(username);
-        driver.findElementByAccessibilityId(passwordId).clear();
-        driver.findElementByAccessibilityId(passwordId).sendKeys(password);
-//        driver.waitForVisibilityOf(passwordId).sendKeys(username);
+        driver.findElementByAccessibilityId(userNameId)
+              .clear();
+        driver.findElementByAccessibilityId(userNameId)
+              .sendKeys(username);
+        driver.findElementByAccessibilityId(passwordId)
+              .clear();
+        driver.findElementByAccessibilityId(passwordId)
+              .sendKeys(password);
+        //        driver.waitForVisibilityOf(passwordId).sendKeys(username);
         visually.takeScreenshot(SCREEN_NAME, "enterLoginDetails");
         visually.checkWindow(SCREEN_NAME, "entered login details");
         return this;
@@ -37,7 +44,8 @@ public class LoginScreenAndroid extends LoginScreen {
 
     @Override
     public LoginScreen login() {
-        driver.findElement(loginButtonXpath).click();
+        driver.findElement(loginButtonXpath)
+              .click();
         waitFor(2);
         return this;
     }
@@ -52,7 +60,8 @@ public class LoginScreenAndroid extends LoginScreen {
 
     @Override
     public LoginScreen dismissAlert() {
-        driver.waitForClickabilityOf(dismissAlertId).click();
+        driver.waitForClickabilityOf(dismissAlertId)
+              .click();
         waitFor(2);
         visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert dismissed");
         return this;

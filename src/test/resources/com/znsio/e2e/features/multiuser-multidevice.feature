@@ -1,7 +1,7 @@
 @multidevice
 Feature: Test valid and invalid login
 
-  @multiuser-android
+  @multiuser-android @calculator
   Scenario: Verify 2 different calculator apps orchestration
     Given "I" start "Calculator2-Android"
     And "you" start "Calculator-Android"
@@ -10,7 +10,7 @@ Feature: Test valid and invalid login
     And "I" select "5"
     And "you" press "plus"
 
-  @multiuser-android
+  @multiuser-android @calculator-theapp
   Scenario: Verify 2 different apps orchestration
     Given "you" start "Calculator-Android"
     And "I" start "theapp-Android"

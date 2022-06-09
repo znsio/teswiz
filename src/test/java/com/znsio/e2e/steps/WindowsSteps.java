@@ -1,12 +1,14 @@
 package com.znsio.e2e.steps;
 
-import com.context.*;
-import com.znsio.e2e.businessLayer.*;
-import com.znsio.e2e.entities.*;
-import com.znsio.e2e.runner.*;
-import com.znsio.e2e.tools.*;
-import io.cucumber.java.en.*;
-import org.apache.log4j.*;
+import com.context.SessionContext;
+import com.context.TestExecutionContext;
+import com.znsio.e2e.businessLayer.notepad.NotepadBL;
+import com.znsio.e2e.entities.SAMPLE_TEST_CONTEXT;
+import com.znsio.e2e.runner.Runner;
+import com.znsio.e2e.tools.Drivers;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import org.apache.log4j.Logger;
 
 public class WindowsSteps {
     private static final Logger LOGGER = Logger.getLogger(WindowsSteps.class.getName());
@@ -14,7 +16,8 @@ public class WindowsSteps {
     private final Drivers allDrivers;
 
     public WindowsSteps() {
-        context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
+        context = SessionContext.getTestExecutionContext(Thread.currentThread()
+                                                               .getId());
         LOGGER.info("context: " + context.getTestName());
         allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
         LOGGER.info("allDrivers: " + (null == allDrivers));
