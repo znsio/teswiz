@@ -152,8 +152,8 @@ task run(type: JavaExec) {
         println "isRunningInCI: $isRunInCI"
 
         def configFile = isRunInCI
-                ? "./src/test/resources/com/znsio/e2e/features/configs/pcloudy_config.properties"
-                : "./src/test/resources/com/znsio/e2e/features/configs/calculator_config.properties"
+                ? "./src/test/resources/configs/pcloudy_config.properties"
+                : "./src/test/resources/configs/calculator_config.properties"
         configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
 
         systemProperties = System.properties
