@@ -21,6 +21,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -419,5 +420,24 @@ public class Driver {
     public void scrollTillElementIntoView(By elementId) {
         WebElement element = driver.findElement(elementId);
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+    public void switchToNextTab() {
+        Iterator<String> iterator = driver.getWindowHandles().iterator();
+        try {
+            iterator.next();
+            driver.switchTo().window(iterator.next());
+        } catch (NoSuchElementException e) {
+            LOGGER.error("Unable to get next window handle.");
+            e.printStackTrace();
+        }
+    }
+
+    public void switchToParentTab() {
+        try {
+            driver.switchTo().window(driver.getWindowHandles().iterator().next());
+        }catch (NoSuchElementException e){
+            LOGGER.error("No previous tab found.");
+            e.printStackTrace();
+        }
     }
 }
