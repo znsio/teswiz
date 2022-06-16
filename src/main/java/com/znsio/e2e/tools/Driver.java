@@ -427,8 +427,7 @@ public class Driver {
             iterator.next();
             driver.switchTo().window(iterator.next());
         } catch (NoSuchElementException e) {
-            LOGGER.error("Unable to get next window handle.");
-            e.printStackTrace();
+            throw new NoSuchElementException("Unable to get next window handle.", e);
         }
     }
 
@@ -436,8 +435,7 @@ public class Driver {
         try {
             driver.switchTo().window(driver.getWindowHandles().iterator().next());
         }catch (NoSuchElementException e){
-            LOGGER.error("No previous tab found.");
-            e.printStackTrace();
+            throw new NoSuchElementException("No previous tab found.", e);
         }
     }
 }
