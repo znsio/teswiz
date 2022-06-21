@@ -159,8 +159,8 @@ task run(type: JavaExec) {
         systemProperties = System.properties
         def runnerArgs = [
                 "${configFile}",
-                "com/znsio/e2e/steps",
-                "./src/test/resources/com/znsio/e2e/features"
+                "com/znsio/sample/e2e/steps",
+                "./src/test/resources/com/znsio/sample/e2e/features"
         ]
         args = runnerArgs
     }
