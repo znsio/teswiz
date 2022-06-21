@@ -17,4 +17,5 @@ public class APPLITOOLS {
     public static final String USE_UFG = "useUFG";
     public static final String CONCURRENCY = "testConcurrency";
     public static final String UFG_CONFIG = "ufgConfig";
+    public static final String DISABLE_BROWSER_FETCHING = "disableBrowserFetching";
 }

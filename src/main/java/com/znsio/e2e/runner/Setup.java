@@ -145,6 +145,10 @@ public class Setup {
         return Boolean.parseBoolean(String.valueOf(applitoolsConfiguration.get(APPLITOOLS.ENABLE_BENCHMARK_PER_VALIDATION)));
     }
 
+    static boolean isDisableBrowserFetching() {
+        return Boolean.parseBoolean(String.valueOf(applitoolsConfiguration.get(APPLITOOLS.DISABLE_BROWSER_FETCHING)));
+    }
+
     static void getApplitoolsConfigFromProvidedConfigFile() {
         String applitoolsConfigurationFileName = configs.get(APPLITOOLS_CONFIGURATION);
         if(applitoolsConfigurationFileName.equals(NOT_SET)) {

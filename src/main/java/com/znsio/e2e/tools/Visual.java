@@ -124,6 +124,7 @@ public class Visual {
         configuration.setEnvironmentName(targetEnvironment);
         configuration.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
 
+        configuration.setDisableBrowserFetching(getValueFromConfig(APPLITOOLS.DISABLE_BROWSER_FETCHING, true));
         configuration.setSendDom(getValueFromConfig(APPLITOOLS.SEND_DOM, true));
         configuration.setStitchMode(StitchMode.valueOf(String.valueOf(getValueFromConfig(APPLITOOLS.STITCH_MODE, StitchMode.CSS))
                                                              .toUpperCase()));
