@@ -447,6 +447,12 @@ public class Drivers {
             includeArguments.forEach(argument -> chromeOptions.addArguments(argument.toString()));
         }
 
+        if (null != testExecutionContext.getTestState(TEST_CONTEXT.MOBILE_EMULATION_DEVICE)) {
+            Map<String, String> mobileEmulation = new HashMap<>();
+            mobileEmulation.put("deviceName", testExecutionContext.getTestStateAsString(TEST_CONTEXT.MOBILE_EMULATION_DEVICE));
+            chromeOptions.setExperimentalOption("mobileEmulation", mobileEmulation);
+        }
+
         LOGGER.info("ChromeOptions: " + chromeOptions.asMap());
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions) : new ChromeDriver(chromeOptions);
