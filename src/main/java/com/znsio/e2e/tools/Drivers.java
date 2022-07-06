@@ -520,13 +520,6 @@ public class Drivers {
         firefoxOptions.setHeadless(isRunInHeadlessMode);
         firefoxOptions.setAcceptInsecureCerts(acceptInsecureCerts);
 
-        if (null != testExecutionContext.getTestState(TEST_CONTEXT.MOBILE_EMULATION_DEVICE)) {
-            /*Map<String, String> mobileEmulation = new HashMap<>();
-            mobileEmulation.put("deviceName", testExecutionContext.getTestStateAsString(TEST_CONTEXT.MOBILE_EMULATION_DEVICE));
-            firefoxOptions.setCapability("mobileEmulation", mobileEmulation);*/
-            firefoxOptions.setCapability("deviceName", testExecutionContext.getTestStateAsString(TEST_CONTEXT.MOBILE_EMULATION_DEVICE));
-        }
-
         LOGGER.info("FirefoxOptions: " + firefoxOptions.asMap());
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(firefoxOptions) : new FirefoxDriver(firefoxOptions);
