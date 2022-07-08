@@ -145,7 +145,7 @@ The framework now supports launching web browsers in Mobile Emulation View.
 Instead of passing simple browser names in steps like 'chrome', 'firefox', etc, 
 you can pass more informative parameters like 'chrome-mobile1', 'safari-mobile2', etc
 
-These informative parameters refers Browser Config json file for actual device names
+These informative parameters refer to Browser Config json file for actual device names
 
 Example:
 
