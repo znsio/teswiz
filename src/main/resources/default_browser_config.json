@@ -31,7 +31,11 @@
       "include": [
         "disable-gpu"
       ]
-    }
+    },
+    "tab1" : "Galaxy Fold",
+    "tab2" : "Surface Pro 7",
+    "mobile1": "Pixel 5",
+    "mobile2": "iPhone XR"
   },
   "firefox": {
     "firefoxProfile": {
@@ -51,11 +55,19 @@
     "verboseLogging": true,
     "headlessOptions": {
       "headless": true
-    }
+    },
+    "tab1" : "iPad",
+    "tab2" : "Nexus 10",
+    "mobile1": "Galaxy Note 20",
+    "mobile2": "iPhone 11 Pro"
   },
   "safari": {
     "maximize": true,
     "acceptInsecureCerts": true,
     "setUseTechnologyPreview": false
-  }
+  },
+  "tab1" : "iPad mini",
+  "tab2" : "iPad Pro",
+  "mobile1": "iPhone SE",
+  "mobile2": "iPhone 8"
 }

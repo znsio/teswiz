@@ -18,4 +18,5 @@ public class TEST_CONTEXT {
     public static final String WINDOWS_DEVICE_ON = "windowsDeviceOn";
     public static final String EYES_RUNNER = "eyesRunner";
     public static final String BROWSER_CONFIG = "browserConfig";
+    public static final String MOBILE_EMULATION_DEVICE = "mobileEmulationDevice";
 }
