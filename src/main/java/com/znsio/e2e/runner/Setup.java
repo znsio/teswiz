@@ -232,7 +232,7 @@ public class Setup {
 
         setupDirectories();
         setLogPropertiesFile();
-        setBrowserConfigFile();
+        //setBrowserConfigFile();
 
         System.setProperty(LOG_DIR, configs.get(LOG_DIR));
         LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);

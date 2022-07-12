@@ -13,7 +13,10 @@ import com.znsio.e2e.tools.Visual;
 import io.cucumber.core.cli.Main;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -239,6 +242,18 @@ public class Runner {
     }
 
     public static String getBrowserConfigFileContents() {
+        InputStream inputStream;
+        String browserConfigFile = configs.get("BROWSER_CONFIG_FILE");
+        try {
+            if (browserConfigFile.contains("default")) {
+                inputStream = Runner.class.getResourceAsStream(DEFAULT_BROWSER_CONFIG_FILE);
+            } else {
+                inputStream = Files.newInputStream(Paths.get(browserConfigFile));
+            }
+        } catch(Exception e) {
+            throw new InvalidTestDataException("There was a problem while setting browser config file");
+        }
+        configs.put(BROWSER_CONFIG_FILE_CONTENTS, new JSONObject(new JSONTokener(inputStream)).toString());
         return configs.get(BROWSER_CONFIG_FILE_CONTENTS);
     }
 
