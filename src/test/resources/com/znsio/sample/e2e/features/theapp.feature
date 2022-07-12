@@ -46,12 +46,12 @@ Feature: Scenarios for "The App"
     When "I" login again with invalid credentials - "znsio3", "invalid password"
     Then "you" login again with invalid credentials - "znsio4", "invalid password"
 
-  @android @demo
-  Scenario: Verify I can set text in the clipboard
-    Given I start the app
-    When I set "teswiz demo" in the clipboard
-    Then I can see the content saved in the clipboard
-
-  @android @demo
-  Scenario: Verify I can set text in the clipboard
-    Given I save "teswiz demo" in the clipboard
+#  @android @demo
+#  Scenario: Verify I can set text in the clipboard
+#    Given I start the app
+#    When I set "teswiz demo" in the clipboard
+#    Then I can see the content saved in the clipboard
+#
+#  @android @demo
+#  Scenario: Verify I can set text in the clipboard
+#    Given I save "teswiz demo" in the clipboard
