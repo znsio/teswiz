@@ -16,7 +16,7 @@ public class LoginScreenAndroid
 
     private final String userNameId = "username";
     private final String passwordId = "password";
-    private final By loginButtonXpath = By.xpath("//android.view.ViewGroup[@content-desc=\"loginBtn\"]/android.widget.TextView");
+    private final By loginButtonXpath = By.xpath("//android.widget.Button[@content-desc=\"loginBtn\"]/android.widget.TextView");
     private final By errorMessageId = By.id("android:id/message");
     private final By dismissAlertId = By.id("android:id/button1");
 
