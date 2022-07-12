@@ -1,8 +1,8 @@
 {
   "android": {
     "automationName": "UiAutomator2",
-    "appPackage": "io.cloudgrey.the_app",
-    "appActivity": "io.cloudgrey.the_app.MainActivity",
+    "appPackage": "com.appiumpro.the_app",
+    "appActivity": "com.appiumpro.the_app.MainActivity",
     "autoGrantPermissions": true,
     "launchTimeout": 90000,
     "newCommandTimeout": 600,
@@ -18,7 +18,7 @@
     "resetKeyboard": true,
     "noReset": false,
     "app": {
-      "local": "./src/test/resources/sampleApps/TheApp-VR-v1.apk"
+      "local": "./src/test/resources/sampleApps/TheApp-release.apk"
     }
   },
   "cloud": {

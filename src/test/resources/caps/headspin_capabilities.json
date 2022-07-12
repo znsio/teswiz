@@ -1,8 +1,8 @@
 {
   "android": {
     "automationName": "UiAutomator2",
-    "appPackage": "io.cloudgrey.the_app",
-    "appActivity": "io.cloudgrey.the_app.MainActivity",
+    "appPackage": "com.appiumpro.the_app",
+    "appActivity": "com.appiumpro.the_app.MainActivity",
     "platformVersion": "10",
     "platformName": "Android",
     "autoGrantPermissions": true,
@@ -13,7 +13,7 @@
     "noReset": true,
     "autoAcceptAlerts": true,
     "app": {
-      "local": "./src/test/resources/sampleApps/TheApp-VR-v1.apk"
+      "local": "./src/test/resources/sampleApps/TheApp-release.apk"
     }
   },
   "cloud": {

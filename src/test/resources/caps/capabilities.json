@@ -4,14 +4,14 @@
     "platformVersion": "11.0",
     "automationName": "UiAutomator2",
     "autoGrantPermissions": true,
-    "appPackage": "io.cloudgrey.the_app",
+    "appPackage": "com.appiumpro.the_app",
     "uiautomator2ServerInstallTimeout": 10000,
     "adbExecTimeout": 15000,
     "eventTimings": true,
     "enablePerformanceLogging": true,
     "printPageSourceOnFindFailure": true,
     "app": {
-      "local": "./src/test/resources/sampleApps/TheApp-VR-v1.apk"
+      "local": "./src/test/resources/sampleApps/TheApp-release.apk"
     },
     "deviceName": "android",
     "noSign": true

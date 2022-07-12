@@ -172,8 +172,8 @@ class RunnerTest {
         String featuresDir = "./src/test/resources/com/znsio/e2e/features";
         System.setProperty("RUN_IN_CI", "true");
         System.setProperty("PLATFORM", Platform.android.name());
-        System.setProperty("APP_PACKAGE_NAME", "io.cloudgrey.the_app");
-        System.setProperty("atd_android_appPackage", "io.cloudgrey.the_app");
+        System.setProperty("APP_PACKAGE_NAME", "com.appiumpro.the_app");
+        System.setProperty("atd_android_appPackage", "com.appiumpro.the_app");
         System.setProperty("APP_PATH", "./src/test/resources/sampleApps/AndroidCalculator.apk");
         // System.setProperty("TAG", "@login");
         Runner runner = new Runner("./src/test/resources/configs/browserStack_config.properties", stepDefDir, featuresDir);
