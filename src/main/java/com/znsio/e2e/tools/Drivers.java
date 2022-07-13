@@ -140,8 +140,8 @@ public class Drivers {
             capabilityFileNameToUseForDriverCreation = capabilityFileDirectory + File.separator + (appName + "_capabilities.json");
         }
         File capabilityFileToUseForDriverCreation = new File(capabilityFileNameToUseForDriverCreation);
-        System.out.println("capabilityFileToUseForDriverCreation: " + capabilityFileToUseForDriverCreation.getAbsolutePath());
-        System.out.println("capabilityFileToUseForDriverCreation.exists(): " + capabilityFileToUseForDriverCreation.exists());
+        LOGGER.info("capabilityFileToUseForDriverCreation: " + capabilityFileToUseForDriverCreation.getAbsolutePath());
+        LOGGER.info("capabilityFileToUseForDriverCreation.exists(): " + capabilityFileToUseForDriverCreation.exists());
 
         if(numberOfAppiumDriversUsed == 0) {
             AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
@@ -305,12 +305,14 @@ public class Drivers {
         if(!appName.equalsIgnoreCase(DEFAULT)) {
             providedBaseUrlKey = appName.toUpperCase() + "_BASE_URL";
         }
-        System.out.println("Using BaseURL key: " + providedBaseUrlKey);
+        LOGGER.info("Using BASE_URL key: " + providedBaseUrlKey);
 
         if(null == providedBaseUrlKey) {
             throw new InvalidTestDataException("baseUrl not provided");
         }
-        return String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrlKey));
+        String retrievedBaseUrl = String.valueOf(Runner.getFromEnvironmentConfiguration(providedBaseUrlKey));
+        LOGGER.info("baseUrl: " + retrievedBaseUrl);
+        return retrievedBaseUrl;
     }
 
     private JSONObject getBrowserConfig() {
