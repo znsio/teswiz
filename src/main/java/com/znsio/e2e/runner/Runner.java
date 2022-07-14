@@ -243,7 +243,7 @@ public class Runner {
 
     public static String getBrowserConfigFileContents() {
         InputStream inputStream;
-        String browserConfigFile = configs.get("BROWSER_CONFIG_FILE");
+        String browserConfigFile = configs.get(BROWSER_CONFIG_FILE);
         try {
             if (browserConfigFile.contains("default")) {
                 inputStream = Runner.class.getResourceAsStream(DEFAULT_BROWSER_CONFIG_FILE);
