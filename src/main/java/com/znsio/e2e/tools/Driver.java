@@ -348,8 +348,8 @@ public class Driver {
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.elementToBeClickable(elementId));
     }
 
-    public List<WebElement> findElementsByAccessibilityId(String locator) {
-        return ((AppiumDriver) driver).findElementsByAccessibilityId(locator);
+    public List<WebElement> findElementsByAccessibilityId(String elementId) {
+        return ((AppiumDriver) driver).findElementsByAccessibilityId(elementId);
     }
 
     public WebElement waitTillElementIsPresent(By elementId) {
@@ -360,12 +360,20 @@ public class Driver {
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.presenceOfElementLocated(elementId));
     }
 
-    public WebElement waitTillElementIsVisible(String locator) {
-        return waitTillElementIsVisible(locator, 10);
+    public WebElement waitTillElementIsVisible(String elementId) {
+        return waitTillElementIsVisible(elementId, 10);
     }
 
-    public WebElement waitTillElementIsVisible(String locator, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.visibilityOf(findElementByAccessibilityId(locator)));
+    public WebElement waitTillElementIsVisible(String elementId, int numberOfSecondsToWait) {
+        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.visibilityOf(findElementByAccessibilityId(elementId)));
+    }
+
+    public WebElement waitTillPresenceOfAllElements(By elementId) {
+        return waitTillPresenceOfAllElements(elementId, 10);
+    }
+
+    public WebElement waitTillPresenceOfAllElements(By elementId, int numberOfSecondsToWait) {
+        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.presenceOfElementLocated(elementId));
     }
 
     public void setWindowSize(int width, int height) {
