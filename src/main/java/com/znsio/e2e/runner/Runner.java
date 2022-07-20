@@ -251,7 +251,7 @@ public class Runner {
                 inputStream = Files.newInputStream(Paths.get(browserConfigFile));
             }
         } catch(Exception e) {
-            throw new InvalidTestDataException("There was a problem while setting browser config file");
+            throw new InvalidTestDataException(String.format("There was a problem while setting browser config file '%s'", browserConfigFile));
         }
         configs.put(BROWSER_CONFIG_FILE_CONTENTS, new JSONObject(new JSONTokener(inputStream)).toString());
         return configs.get(BROWSER_CONFIG_FILE_CONTENTS);
