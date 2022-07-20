@@ -38,9 +38,10 @@ public class Driver {
     private final boolean isRunInHeadlessMode;
     private final String userPersona;
     private final String appName;
+    private final Platform driverForPlatform;
     private Visual visually;
 
-    public Driver(String testName, String deviceOn, String userPersona, String appName, AppiumDriver<WebElement> appiumDriver) {
+    public Driver(String testName, Platform forPlatform, String deviceOn, String userPersona, String appName, AppiumDriver<WebElement> appiumDriver) {
         this.driver = appiumDriver;
         this.deviceOn = deviceOn;
         this.type = APPIUM_DRIVER;
@@ -48,14 +49,15 @@ public class Driver {
         this.isRunInHeadlessMode = false;
         this.userPersona = userPersona;
         this.appName = appName;
+        this.driverForPlatform = forPlatform;
         instantiateEyes(testName, appiumDriver);
     }
 
     private void instantiateEyes(String testName, WebDriver innerDriver) {
-        this.visually = new Visual(this.type, innerDriver, testName, userPersona, appName, Runner.isVisualTestingEnabled());
+        this.visually = new Visual(this.type, this.driverForPlatform, innerDriver, testName, userPersona, appName, Runner.isVisualTestingEnabled());
     }
 
-    public Driver(String testName, String browserOn, String userPersona, String appName, WebDriver webDriver, boolean isRunInHeadlessMode, boolean shouldBrowserBeMaximized) {
+    public Driver(String testName, Platform forPlaform, String browserOn, String userPersona, String appName, WebDriver webDriver, boolean isRunInHeadlessMode, boolean shouldBrowserBeMaximized) {
         this.driver = webDriver;
         this.type = WEB_DRIVER;
         this.deviceOn = browserOn;
@@ -63,6 +65,7 @@ public class Driver {
         this.isRunInHeadlessMode = isRunInHeadlessMode;
         this.userPersona = userPersona;
         this.appName = appName;
+        this.driverForPlatform = forPlaform;
         instantiateEyes(testName, webDriver);
     }
 

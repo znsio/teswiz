@@ -24,7 +24,7 @@ public class NotepadScreenWindows
         LOGGER.info(String.format("Typing message: '%s'", message));
         driver.findElement(byEditorName)
               .sendKeys(message);
-        visually.takeScreenshot(SCREEN_NAME, "Typed message in Notepad");
+        visually.checkWindow(SCREEN_NAME, "Typed message in Notepad");
         return this;
     }
 }

@@ -152,11 +152,11 @@ public class Drivers {
             context.addTestState(TEST_CONTEXT.DEVICE_ON, deviceInfo.getDeviceOn());
             LOGGER.info("CAPABILITIES: " + appiumDriverCapabilities);
             userPersonaDriverCapabilities.put(userPersona, appiumDriverCapabilities);
-            currentDriver = new Driver(context.getTestName() + "-" + userPersona, deviceInfo.getDeviceOn(), userPersona, appName, appiumDriver);
+            currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform, deviceInfo.getDeviceOn(), userPersona, appName, appiumDriver);
         } else {
             try {
                 AppiumDriver appiumDriver = allocateNewDeviceAndStartAppiumDriver(context, capabilityFileToUseForDriverCreation.getAbsolutePath());
-                currentDriver = new Driver(context.getTestName() + "-" + userPersona, context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON), userPersona, appName, appiumDriver);
+                currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform, context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON), userPersona, appName, appiumDriver);
                 Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
                 LOGGER.info("CAPABILITIES: " + appiumDriverCapabilities);
                 appiumDriverCapabilities.getCapabilityNames()
@@ -206,7 +206,7 @@ public class Drivers {
             LOGGER.info("Webdriver instance created");
             newWebDriver.get(baseUrl);
             LOGGER.info("Navigated to baseUrl: " + baseUrl);
-            currentDriver = new Driver(updatedTestName, runningOn, userPersona, appName, newWebDriver, isRunInHeadlessMode, shouldBrowserBeMaximized);
+            currentDriver = new Driver(updatedTestName, forPlatform, runningOn, userPersona, appName, newWebDriver, isRunInHeadlessMode, shouldBrowserBeMaximized);
             LOGGER.info("New Driver with Visual instance created");
         } else {
             throw new InvalidTestDataException(
@@ -236,7 +236,7 @@ public class Drivers {
 
             String runningOn = Runner.isRunningInCI() ? "CI" : "local";
             context.addTestState(TEST_CONTEXT.WINDOWS_DEVICE_ON, runningOn);
-            currentDriver = new Driver(context.getTestName() + "-" + userPersona, userPersona, appName, runningOn, windowsDriver);
+            currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform, userPersona, appName, runningOn, windowsDriver);
             Capabilities windowsDriverCapabilities = windowsDriver.getCapabilities();
             LOGGER.info("CAPABILITIES: " + windowsDriverCapabilities);
             userPersonaDriverCapabilities.put(userPersona, windowsDriverCapabilities);

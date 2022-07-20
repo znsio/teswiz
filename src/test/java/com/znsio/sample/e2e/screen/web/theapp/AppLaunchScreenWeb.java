@@ -21,7 +21,7 @@ public class AppLaunchScreenWeb
     public AppLaunchScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
-        visually.takeScreenshot(SCREEN_NAME, "Home screen");
+        visually.checkWindow(SCREEN_NAME, "Home screen");
     }
 
     @Override
