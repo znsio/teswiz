@@ -232,7 +232,6 @@ public class Setup {
 
         setupDirectories();
         setLogPropertiesFile();
-        //setBrowserConfigFile();
         setBrowserConfigFilePath();
 
         System.setProperty(LOG_DIR, configs.get(LOG_DIR));
@@ -265,26 +264,6 @@ public class Setup {
             PropertyConfigurator.configure(inputStream);
         } catch(Exception e) {
             throw new InvalidTestDataException("There was a problem while setting log properties file");
-        }
-    }
-
-    private void setBrowserConfigFile() {
-        InputStream inputStream;
-        try {
-            if(properties.containsKey(BROWSER_CONFIG_FILE)) {
-                Path browserConfigFilePath = Paths.get(properties.get(BROWSER_CONFIG_FILE)
-                                                                 .toString());
-                configs.put(BROWSER_CONFIG_FILE, browserConfigFilePath.toString());
-                LOGGER.info(String.format("Using the provided BROWSER_CONFIG_FILE: '%s'", browserConfigFilePath));
-                inputStream = Files.newInputStream(browserConfigFilePath);
-            } else {
-                configs.put(BROWSER_CONFIG_FILE, DEFAULT_BROWSER_CONFIG_FILE);
-                LOGGER.info(String.format("Using the default BROWSER_CONFIG_FILE: '%s'", DEFAULT_BROWSER_CONFIG_FILE));
-                inputStream = getClass().getResourceAsStream(DEFAULT_BROWSER_CONFIG_FILE);
-            }
-            configs.put(BROWSER_CONFIG_FILE_CONTENTS, new JSONObject(new JSONTokener(inputStream)).toString());
-        } catch(Exception e) {
-            throw new InvalidTestDataException("There was a problem while setting browser config file");
         }
     }
 
