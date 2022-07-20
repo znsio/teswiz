@@ -22,7 +22,7 @@ public class LoginScreenWeb
     public LoginScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
-        visually.takeScreenshot(SCREEN_NAME, "Home screen");
+        visually.checkWindow(SCREEN_NAME, "Home screen");
     }
 
     @Override
@@ -32,7 +32,6 @@ public class LoginScreenWeb
               .sendKeys(username);
         driver.findElement(passwordId)
               .sendKeys(password);
-        visually.takeScreenshot(SCREEN_NAME, "enterLoginDetails");
         visually.checkWindow(SCREEN_NAME, "entered login details");
         return this;
     }
@@ -48,7 +47,6 @@ public class LoginScreenWeb
     @Override
     public String getInvalidLoginError() {
         WebElement alertText = driver.waitForClickabilityOf(errorMessageId);
-        visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert");
         visually.checkWindow(SCREEN_NAME, "Invalid Login alert");
         return alertText.getText()
                         .trim();
@@ -57,7 +55,7 @@ public class LoginScreenWeb
     @Override
     public LoginScreen dismissAlert() {
         waitFor(2);
-        visually.takeScreenshot(SCREEN_NAME, "Invalid Login alert dismissed");
+        visually.checkWindow(SCREEN_NAME, "Invalid Login alert dismissed");
         return this;
     }
 }

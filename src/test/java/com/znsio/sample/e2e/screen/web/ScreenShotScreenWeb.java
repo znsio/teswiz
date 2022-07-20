@@ -17,7 +17,7 @@ public class ScreenShotScreenWeb
 
     @Override
     public ScreenShotScreen takeScreenshot() {
-        visually.takeScreenshot(SCREEN_NAME, "Take Screenshot");
+        visually.checkWindow(SCREEN_NAME, "Take Screenshot");
         return this;
     }
 }
