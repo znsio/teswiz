@@ -266,8 +266,7 @@ public class Setup {
 
     private void setBrowserConfigFilePath() {
         if(properties.containsKey(BROWSER_CONFIG_FILE)) {
-            Path browserConfigFilePath = Paths.get(properties.get(BROWSER_CONFIG_FILE)
-                    .toString());
+            Path browserConfigFilePath = Paths.get(properties.get(BROWSER_CONFIG_FILE).toString());
             configs.put(BROWSER_CONFIG_FILE, browserConfigFilePath.toString());
             LOGGER.info(String.format("Using the provided BROWSER_CONFIG_FILE: '%s'", browserConfigFilePath));
         } else {
