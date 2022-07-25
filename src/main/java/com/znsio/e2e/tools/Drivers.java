@@ -19,6 +19,7 @@ import io.appium.java_client.appmanagement.ApplicationState;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,7 +44,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static com.znsio.e2e.runner.Runner.DEFAULT;
 import static com.znsio.e2e.runner.Runner.NOT_SET;
