@@ -11,7 +11,7 @@ buildscript {
         jadbVersion = '1.2.1'
         webDriverManagerVersion = '5.2.1'
         googleCodeJsonSimpleVersion = '1.1.1'
-        junitVersion = '5.8.2'
+        junitVersion = '5.9.0'
         slf4jVersion = '1.7.36'
         reportportalAgentCucumberVersion = '5.0.6'
         reportportalAgentTestNGVersion = '5.0.11'
