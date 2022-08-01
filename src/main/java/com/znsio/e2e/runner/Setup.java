@@ -18,8 +18,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import se.vidstige.jadb.JadbConnection;
 import se.vidstige.jadb.JadbDevice;
 import se.vidstige.jadb.JadbException;
@@ -232,7 +230,7 @@ public class Setup {
 
         setupDirectories();
         setLogPropertiesFile();
-        setBrowserConfigFile();
+        setBrowserConfigFilePath();
 
         System.setProperty(LOG_DIR, configs.get(LOG_DIR));
         LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
@@ -267,23 +265,14 @@ public class Setup {
         }
     }
 
-    private void setBrowserConfigFile() {
-        InputStream inputStream;
-        try {
-            if(properties.containsKey(BROWSER_CONFIG_FILE)) {
-                Path browserConfigFilePath = Paths.get(properties.get(BROWSER_CONFIG_FILE)
-                                                                 .toString());
-                configs.put(BROWSER_CONFIG_FILE, browserConfigFilePath.toString());
-                LOGGER.info(String.format("Using the provided BROWSER_CONFIG_FILE: '%s'", browserConfigFilePath));
-                inputStream = Files.newInputStream(browserConfigFilePath);
-            } else {
-                configs.put(BROWSER_CONFIG_FILE, DEFAULT_BROWSER_CONFIG_FILE);
-                LOGGER.info(String.format("Using the default BROWSER_CONFIG_FILE: '%s'", DEFAULT_BROWSER_CONFIG_FILE));
-                inputStream = getClass().getResourceAsStream(DEFAULT_BROWSER_CONFIG_FILE);
-            }
-            configs.put(BROWSER_CONFIG_FILE_CONTENTS, new JSONObject(new JSONTokener(inputStream)).toString());
-        } catch(Exception e) {
-            throw new InvalidTestDataException("There was a problem while setting browser config file");
+    private void setBrowserConfigFilePath() {
+        if(properties.containsKey(BROWSER_CONFIG_FILE)) {
+            Path browserConfigFilePath = Paths.get(properties.get(BROWSER_CONFIG_FILE).toString());
+            configs.put(BROWSER_CONFIG_FILE, browserConfigFilePath.toString());
+            LOGGER.info(String.format("Using the provided BROWSER_CONFIG_FILE: '%s'", browserConfigFilePath));
+        } else {
+            configs.put(BROWSER_CONFIG_FILE, DEFAULT_BROWSER_CONFIG_FILE);
+            LOGGER.info(String.format("Using the default BROWSER_CONFIG_FILE: '%s'", DEFAULT_BROWSER_CONFIG_FILE));
         }
     }
 
