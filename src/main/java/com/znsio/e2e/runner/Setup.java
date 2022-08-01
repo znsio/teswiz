@@ -230,6 +230,7 @@ public class Setup {
 
         setupDirectories();
         setLogPropertiesFile();
+        setBrowserConfigFilePath();
 
         System.setProperty(LOG_DIR, configs.get(LOG_DIR));
         LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
@@ -387,7 +388,6 @@ public class Setup {
 
     private void setupWebExecution() {
         if(platform.equals(Platform.web)) {
-            setBrowserConfigFilePath();
             configs.put(APP_PATH, configs.get(BROWSER));
             cukeArgs.add("--threads");
             cukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
