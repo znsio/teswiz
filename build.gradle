@@ -9,7 +9,7 @@ buildscript {
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.13.10'
         jadbVersion = '1.2.1'
-        webDriverManagerVersion = '5.2.2'
+        webDriverManagerVersion = '5.2.3'
         googleCodeJsonSimpleVersion = '1.1.1'
         junitVersion = '5.9.0'
         slf4jVersion = '1.7.36'
