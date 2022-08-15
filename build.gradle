@@ -18,7 +18,7 @@ buildscript {
         fasterxmlJacksonVersion = '2.13.3'
         jsonPathVersion = '2.7.0'
         everitSchemaValidatorVersion = '1.5.1'
-        jodaTimeVersion = '2.10.14'
+        jodaTimeVersion = '2.11.0'
     }
 }
 
