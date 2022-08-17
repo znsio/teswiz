@@ -78,12 +78,12 @@ public class Setup {
     private static final String LOCAL = "LOCAL";
     private static final String DEVICE_LAB_URL = "DEVICE_LAB_URL";
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
-    private static final String EXECUTED_ON = "EXECUTED_ON";
-    private static final String LOG_DIR = "LOG_DIR";
+    static final String EXECUTED_ON = "EXECUTED_ON";
+    static final String LOG_DIR = "LOG_DIR";
     private static final String PARALLEL = "PARALLEL";
     private static final String PROXY_KEY = "PROXY_KEY";
     private static final String WEBDRIVER_MANAGER_PROXY_KEY = "WEBDRIVER_MANAGER_PROXY_KEY";
-    private static final String TAG = "TAG";
+    static final String TAG = "TAG";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
     private static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
     private static final String APP_VERSION = "APP_VERSION";

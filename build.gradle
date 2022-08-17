@@ -19,6 +19,7 @@ buildscript {
         jsonPathVersion = '2.7.0'
         everitSchemaValidatorVersion = '1.5.1'
         jodaTimeVersion = '2.10.14'
+        masterThoughtVersion = '5.7.2'
     }
 }
 
@@ -93,6 +94,7 @@ dependencies {
         exclude group: 'eyes-connectivity-java3-jersey2x'
     }
     implementation "org.everit.json:org.everit.json.schema:$project.everitSchemaValidatorVersion"
+    implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
 }
 
 shadowJar {

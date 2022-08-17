@@ -11,18 +11,20 @@ import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Drivers;
 import com.znsio.e2e.tools.Visual;
 import io.cucumber.core.cli.Main;
+import net.masterthought.cucumber.Configuration;
+import net.masterthought.cucumber.ReportBuilder;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
 import static com.znsio.e2e.runner.Setup.*;
@@ -64,7 +66,49 @@ public class Runner {
         LOGGER.info("Begin running tests...");
         LOGGER.info("Args: " + args);
         String[] array = args.toArray(String[]::new);
-        System.exit(Main.run(array));
+        String logDir = Runner.USER_DIRECTORY + File.separator + configs.get(LOG_DIR);
+        LOGGER.info(logDir);
+        byte status = Main.run(array);
+        System.out.println(generateReport(logDir));
+        System.exit(status);
+    }
+
+    private String generateReport(String reportsDir) {
+        System.out.println("================================");
+        System.out.println("Generating reports");
+        System.out.println("================================");
+        Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsDir), new String[]{"json"}, true);
+        if(jsonFiles.size() == 0) {
+            return "Reports not generated";
+        }
+        List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
+        jsonFiles.forEach(file -> {
+            System.out.println("file.getAbsolutePath(): " + file.getAbsolutePath());
+            jsonPaths.add(file.getAbsolutePath());
+        });
+        System.out.println("user.dir: " + Runner.USER_DIRECTORY);
+        Configuration config = new Configuration(new File(reportsDir + File.separator + "richReports"), configs.get(APP_NAME));
+
+        String tagsToExclude = System.getProperty(TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT);
+        if(null != tagsToExclude.trim()) {
+            config.setTagsToExcludeFromChart(tagsToExclude.split(","));
+        }
+        addClassifications(config);
+
+        ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
+        reportBuilder.generateReports();
+        return "Reports available here: " + config.getReportDirectory()
+                                                  .getAbsolutePath() + "/cucumber-html-reports/overview-features.html";
+    }
+
+    private static void addClassifications(Configuration config) {
+        config.addClassifications("Environment", configs.get(TARGET_ENVIRONMENT));
+        config.addClassifications("Platform", configs.get(PLATFORM));
+        config.addClassifications("Tags", configs.get(TAG));
+        config.addClassifications("RUN_IN_CI", String.valueOf(configsBoolean.get(RUN_IN_CI)));
+        config.addClassifications("IS_VISUAL", String.valueOf(configsBoolean.get(IS_VISUAL)));
+        config.addClassifications("CLOUD_NAME", configs.get(CLOUD_NAME));
+        config.addClassifications("EXECUTED_ON", configs.get(EXECUTED_ON));
     }
 
     public static String getCloudName() {
@@ -245,7 +289,7 @@ public class Runner {
         InputStream inputStream;
         String browserConfigFile = configs.get(BROWSER_CONFIG_FILE);
         try {
-            if (browserConfigFile.contains("default")) {
+            if(browserConfigFile.contains("default")) {
                 inputStream = Runner.class.getResourceAsStream(DEFAULT_BROWSER_CONFIG_FILE);
             } else {
                 inputStream = Files.newInputStream(Paths.get(browserConfigFile));

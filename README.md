@@ -46,6 +46,7 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 * reportportal.io (https://reportportal.io)
 * Applitools (https://applitools.com)
 * Build tool: gradle 7.3.3
+* cucumber-reporting (https://github.com/damianszczepanik/cucumber-reporting)
 
 ## Getting Started, or how can you use teswiz?
 It is very easy to use teswiz in your framework.
@@ -238,6 +239,30 @@ caps/pcloudy_capabilties.json, the following additional environment variable nee
 Sample command:
 
     APP_PATH=~/Downloads/MyLatestApp.apk PLATFORM=android ./gradlew run
+
+## Rich Reports using cucumber-reporting
+teswiz creates rich reports for offline consuption using cucumber-reporting (https://github.com/damianszczepanik/cucumber-reporting)
+
+These reports will be available in the following directory: 
+  
+  `LOG_DIR/mm-dd-yyyy/hh-mm-ss/richReports/cucumber-html-reports/overview-features.html`
+
+Example:
+  
+  `~/teswiz/target/08-17-2022/17-36-02/richReports/cucumber-html-reports/overview-features.html`
+
+### Feature coverage
+cucumber-reports has the ability to show tag statistics. This is very helpful to understand feature coverage from your automated tests.
+
+Read more about this feature here: https://github.com/damianszczepanik/cucumber-reporting/blob/master/.README/tag-overview.png
+
+You can find that report here:
+
+  `~/teswiz/target/08-17-2022/17-36-02/richReports/cucumber-html-reports/overview-tags.html`
+
+To exclude any tag(s) to be added in the rich reports, add the following line in your RunTestCukes.java
+
+  `System.setProperty(TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT, "@web,@android");`
 
 ## Configuration parameters
 The config.properties file has the following properties. Highlighting the defaults, and options for each here. 

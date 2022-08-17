@@ -7,6 +7,7 @@ import com.applitools.eyes.visualgrid.model.ScreenOrientation;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.e2e.entities.APPLITOOLS;
+import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.steps.Hooks;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -25,6 +26,7 @@ public class RunTestCukes
                               .getId();
         LOGGER.info("RunTestCukes constructor: ThreadId: " + threadId);
         context = SessionContext.getTestExecutionContext(threadId);
+        System.setProperty(TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT, "@android,@web");
     }
 
     @Override
