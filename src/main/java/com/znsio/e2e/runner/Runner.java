@@ -78,20 +78,22 @@ public class Runner {
         System.out.println("Generating reports");
         System.out.println("================================");
         Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsDir), new String[]{"json"}, true);
+        System.out.println(String.format("Found '%s' result files for processing", jsonFiles.size()));
         if(jsonFiles.size() == 0) {
             return "Reports not generated";
         }
         List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
         jsonFiles.forEach(file -> {
-            System.out.println("file.getAbsolutePath(): " + file.getAbsolutePath());
+            System.out.println("Processing result file: " + file.getAbsolutePath());
             jsonPaths.add(file.getAbsolutePath());
         });
-        System.out.println("user.dir: " + Runner.USER_DIRECTORY);
-        Configuration config = new Configuration(new File(reportsDir + File.separator + "richReports"), configs.get(APP_NAME));
+        String richReportsPath = reportsDir + File.separator + "richReports";
+        System.out.println("Creating rich reports: " + richReportsPath);
+        Configuration config = new Configuration(new File(richReportsPath), configs.get(APP_NAME));
 
         String tagsToExclude = System.getProperty(TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT);
-        if(null != tagsToExclude.trim()) {
-            config.setTagsToExcludeFromChart(tagsToExclude.split(","));
+        if(null != tagsToExclude) {
+            config.setTagsToExcludeFromChart(tagsToExclude.trim().split(","));
         }
         addClassifications(config);
 
