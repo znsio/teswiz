@@ -37,7 +37,7 @@ public class JsonSchemaValidator {
     }
 
     private static InputStream loadJsonResourceFileAsStream(String fileName) {
-        String fileAsResource = "/" + fileName;
+        String fileAsResource = File.separator + fileName;
         return JsonSchemaValidator.class.getResourceAsStream(fileAsResource);
     }
 }

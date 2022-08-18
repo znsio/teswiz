@@ -102,6 +102,7 @@ public class Setup {
     private final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private final String configFilePath;
     private final String BUILD_ID = "BUILD_ID";
+    final static String REPORTS_DIR = "reports";
 
     private List<Device> devices;
 
@@ -1049,15 +1050,15 @@ public class Setup {
         cukeArgs.add("pretty");
         cukeArgs.add(PLUGIN);
         String logDir = configs.get(LOG_DIR);
-        cukeArgs.add("html:" + logDir + "/reports/cucumber-html-report.html");
+        cukeArgs.add("html:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-html-report.html");
         cukeArgs.add(PLUGIN);
-        cukeArgs.add("junit:" + logDir + "/reports/cucumber-junit-report.xml");
+        cukeArgs.add("junit:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-junit-report.xml");
         cukeArgs.add(PLUGIN);
-        cukeArgs.add("json:" + logDir + "/reports/cucumber-json-report.json");
+        cukeArgs.add("json:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-json-report.json");
         cukeArgs.add(PLUGIN);
-        cukeArgs.add("message:" + logDir + "/reports/results.ndjson");
+        cukeArgs.add("message:" + logDir + File.separator + REPORTS_DIR + File.separator + "results.ndjson");
         cukeArgs.add(PLUGIN);
-        cukeArgs.add("timeline:" + logDir + "/reports/timeline");
+        cukeArgs.add("timeline:" + logDir + File.separator + REPORTS_DIR + File.separator + "timeline");
         System.setProperty("cucumber.publish.quiet", "true");
     }
 

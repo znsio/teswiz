@@ -66,7 +66,7 @@ public class Runner {
         LOGGER.info("Begin running tests...");
         LOGGER.info("Args: " + args);
         String[] array = args.toArray(String[]::new);
-        String logDir = Runner.USER_DIRECTORY + File.separator + configs.get(LOG_DIR);
+        String logDir = Runner.USER_DIRECTORY + File.separator + configs.get(LOG_DIR) + File.separator + REPORTS_DIR;
         LOGGER.info(logDir);
         byte status = Main.run(array);
         System.out.println(generateReport(logDir));
