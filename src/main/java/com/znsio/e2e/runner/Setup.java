@@ -1034,7 +1034,7 @@ public class Setup {
             }
         }
 
-        launchName += configs.get(LAUNCH_NAME_SUFFIX);
+        launchName += " " + configs.get(LAUNCH_NAME_SUFFIX);
 
         LOGGER.info("\tRunning tests with platform: " + platform + " and the following tag criteria : " + inferredTags);
         LOGGER.info("\tReportPortal Tests Launch name: " + launchName);
