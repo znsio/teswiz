@@ -7,7 +7,7 @@ buildscript {
         atdVersion = '84fbaaa0b2'
         applitoolsVersion = '3.213.0'
         commonsLang3Version = '3.12.0'
-        unirestVersion = '3.13.10'
+        unirestVersion = '3.13.11'
         jadbVersion = '1.2.1'
         webDriverManagerVersion = '5.2.3'
         googleCodeJsonSimpleVersion = '1.1.1'
