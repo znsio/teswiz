@@ -282,6 +282,8 @@ These can be overridden by providing the same either as environment variables or
     APP_PATH=./temp/abc.apk -> path to android / windows app name
     APPLITOOLS_CONFIGURATION=./configs/applitools_config.json -> Applitools configuration 
     BASE_URL_FOR_WEB=BASE_URL -> Key name of the property in TEST_DATA_FILE for environment specific base url
+    BRANCH_NAME -> Key name of environment variable which should be used to get the current Branch name. 
+                   IF this is not specified, then teswiz will try to get the BRANCH_NAME using this command: `git rev-parse --abbrev-ref HEAD`
     BROWSER=chrome -> Which browser to use for Web execution? Supported: chrome || firefox
                       Browsers should to be installed. Corresponding WebDriver for the browser will be downloaded automatically
     BUILD_ID=BUILDID -> The key name of the environment variable that has the corresponding build id of the test execution

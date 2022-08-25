@@ -191,6 +191,8 @@ public class Setup {
         configs.put(APP_PATH, getOverriddenStringValue(APP_PATH, getStringValueFromPropertiesIfAvailable(APP_PATH, NOT_SET)));
         configs.put(APPLITOOLS_CONFIGURATION, getStringValueFromPropertiesIfAvailable(APPLITOOLS_CONFIGURATION, NOT_SET));
         configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB, getStringValueFromPropertiesIfAvailable(BASE_URL_FOR_WEB, NOT_SET)));
+        configs.put(BRANCH_NAME, getOverriddenStringValue(BRANCH_NAME, getStringValueFromPropertiesIfAvailable(BRANCH_NAME, NOT_SET)));
+        configs.put(BRANCH_NAME, getOverriddenStringValue(configs.get(BRANCH_NAME), getBranchNameUsingGitCommand()));
         configs.put(BROWSER, getOverriddenStringValue(BROWSER, getStringValueFromPropertiesIfAvailable(BROWSER, CHROME)));
         configs.put(BUILD_ID, getOverriddenStringValue(BUILD_ID, getStringValueFromPropertiesIfAvailable(BUILD_ID, NOT_SET)));
         configs.put(BUILD_ID, getOverriddenStringValue(configs.get(BUILD_ID), NOT_SET));
@@ -323,7 +325,6 @@ public class Setup {
         setupAndroidExecution();
         setupWebExecution();
         setupWindowsExecution();
-        getBranchName();
         initialiseApplitoolsConfiguration();
 
         String rpAttributes =
@@ -365,12 +366,12 @@ public class Setup {
         System.setProperty("rp.attributes", rpAttributes);
     }
 
-    private void getBranchName() {
+    private String getBranchNameUsingGitCommand() {
         String[] getBranchNameCommand = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(getBranchNameCommand);
         String branchName = response.getStdOut();
-        LOGGER.info("BRANCH_NAME: " + branchName);
-        configs.put(BRANCH_NAME, branchName);
+        LOGGER.info(String.format("\tBranch name from git command: '%s': '%s'", Arrays.toString(getBranchNameCommand), branchName));
+        return branchName;
     }
 
     private String getStringValueFromPropertiesIfAvailable(String key, String defaultValue) {

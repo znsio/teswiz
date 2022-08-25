@@ -85,6 +85,7 @@ public class Visual {
         eyes.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         eyes.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
         eyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
+        eyes.setBranchName(String.valueOf(getValueFromConfig(BRANCH_NAME)));
         eyes.setEnvName(targetEnvironment);
         eyes.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
         eyes.setIsDisabled(!isVisualTestingEnabled);
@@ -122,6 +123,7 @@ public class Visual {
         configuration.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         configuration.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
         configuration.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
+        configuration.setBranchName(String.valueOf(getValueFromConfig(BRANCH_NAME)));
         configuration.setEnvironmentName(targetEnvironment);
         configuration.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
 
