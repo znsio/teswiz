@@ -360,7 +360,7 @@ public class Driver {
     }
 
     public WebElement waitTillElementIsPresent(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.presenceOfElementLocated(elementId));
+        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.visibilityOfElementLocated(elementId));
     }
 
     public WebElement waitTillElementIsVisible(String elementId) {
