@@ -1,9 +1,7 @@
 package com.znsio.e2e.runner;
 
-import com.applitools.eyes.BatchInfo;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
-import com.znsio.e2e.entities.APPLITOOLS;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
@@ -26,7 +24,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class Runner {
@@ -93,7 +90,8 @@ public class Runner {
 
         String tagsToExclude = System.getProperty(TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT);
         if(null != tagsToExclude) {
-            config.setTagsToExcludeFromChart(tagsToExclude.trim().split(","));
+            config.setTagsToExcludeFromChart(tagsToExclude.trim()
+                                                          .split(","));
         }
         addClassifications(config);
 
@@ -103,7 +101,7 @@ public class Runner {
                                                   .getAbsolutePath() + "/cucumber-html-reports/overview-features.html";
     }
 
-    private static void addClassifications(Configuration config) {
+    private void addClassifications(Configuration config) {
         config.addClassifications("Environment", configs.get(TARGET_ENVIRONMENT));
         config.addClassifications("Platform", configs.get(PLATFORM));
         config.addClassifications("Tags", configs.get(TAG));
@@ -111,6 +109,10 @@ public class Runner {
         config.addClassifications("IS_VISUAL", String.valueOf(configsBoolean.get(IS_VISUAL)));
         config.addClassifications("CLOUD_NAME", configs.get(CLOUD_NAME));
         config.addClassifications("EXECUTED_ON", configs.get(EXECUTED_ON));
+    }
+
+    public static Map getApplitoolsConfiguration() {
+        return initialiseApplitoolsConfiguration();
     }
 
     public static String getCloudName() {
@@ -240,35 +242,6 @@ public class Runner {
 
     public static boolean isRunningInCI() {
         return configsBoolean.get(RUN_IN_CI);
-    }
-
-    public static Map initialiseApplitoolsConfiguration() {
-        if(applitoolsConfiguration.isEmpty()) {
-            getApplitoolsConfigFromProvidedConfigFile();
-            applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
-            applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(APP_NAME));
-            applitoolsConfiguration.put(APPLITOOLS.API_KEY, getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
-            applitoolsConfiguration.put(BRANCH_NAME, configs.get(BRANCH_NAME));
-            applitoolsConfiguration.put(PLATFORM, platform.name());
-            applitoolsConfiguration.put(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
-            applitoolsConfiguration.put(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
-            applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());
-            applitoolsConfiguration.put(APPLITOOLS.RECTANGLE_SIZE, getViewportSize());
-            applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED, isBenchmarkingEnabled());
-            applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING, isDisableBrowserFetching());
-            BatchInfo batchInfo = new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
-            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, batchInfo);
-            batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
-            batchInfo.addProperty(PLATFORM, platform.name());
-            batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
-            batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
-        }
-        LOGGER.info("applitoolsConfiguration: " + applitoolsConfiguration);
-        return applitoolsConfiguration;
-    }
-
-    private static String getServerUrl() {
-        return String.valueOf(applitoolsConfiguration.get(APPLITOOLS.SERVER_URL));
     }
 
     public static String getBrowser() {

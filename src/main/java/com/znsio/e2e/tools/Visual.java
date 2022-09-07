@@ -61,7 +61,7 @@ public class Visual {
         this.context = SessionContext.getTestExecutionContext(Thread.currentThread()
                                                                     .getId());
         this.screenShotManager = (ScreenShotManager) context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
-        this.applitoolsConfig = Runner.initialiseApplitoolsConfiguration();
+        this.applitoolsConfig = Runner.getApplitoolsConfiguration();
         this.isEnableBenchmarkPerValidation = Boolean.parseBoolean(String.valueOf(this.applitoolsConfig.get(APPLITOOLS.ENABLE_BENCHMARK_PER_VALIDATION)));
         this.innerDriver = innerDriver;
         this.isVerboseLoggingEnabled = getValueFromConfig(APPLITOOLS.SHOW_LOGS, true);
