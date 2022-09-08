@@ -28,14 +28,7 @@ public class BrowserStackSetup {
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        String appIdFromBrowserStack;
-        if(configsBoolean.get(CLOUD_UPLOAD_APP)) {
-            appIdFromBrowserStack = uploadAPKToBrowserStack(authenticationUser + ":" + authenticationKey, appPath);
-        } else {
-            LOGGER.info("Skip uploading the apk to Device Farm");
-            appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser + ":" + authenticationKey, appPath);
-        }
-        LOGGER.info("Using appId: " + appIdFromBrowserStack);
+        String appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser, authenticationKey, appPath);
 
         ArrayList hostMachinesList = (ArrayList) loadedCapabilityFile.get("hostMachines");
         Map hostMachines = (Map) hostMachinesList.get(0);
@@ -52,6 +45,19 @@ public class BrowserStackSetup {
         loadedPlatformCapability.put("build", configs.get(LAUNCH_NAME) + "-" + subsetOfLogDir);
         loadedPlatformCapability.put("project", configs.get(APP_NAME));
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey, loadedCapabilityFile);
+    }
+
+    private static String getAppIdFromBrowserStack(String authenticationUser, String authenticationKey, String appPath) {
+        LOGGER.info("getAppIdFromBrowserStack: for " + appPath);
+        String appIdFromBrowserStack;
+        if(configsBoolean.get(CLOUD_UPLOAD_APP)) {
+            appIdFromBrowserStack = uploadAPKToBrowserStack(authenticationUser + ":" + authenticationKey, appPath);
+        } else {
+            LOGGER.info("Skip uploading the apk to Device Farm");
+            appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser + ":" + authenticationKey, appPath);
+        }
+        LOGGER.info("Using appId: " + appIdFromBrowserStack);
+        return appIdFromBrowserStack;
     }
 
     private static String uploadAPKToBrowserStack(String authenticationKey, String appPath) {

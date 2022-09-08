@@ -49,12 +49,12 @@ public class DeviceSetup {
         ArrayList<String> androidCukeArgs = new ArrayList<>();
         if(platform.equals(Platform.android)) {
             verifyAppExistsAtMentionedPath();
+            fetchAndroidAppVersion();
             if(configsBoolean.get(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
                 LocalDevicesSetup.setupLocalExecution();
             }
-            fetchAndroidAppVersion();
             androidCukeArgs.add("--threads");
             androidCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
             androidCukeArgs.add(PLUGIN);
@@ -148,6 +148,7 @@ public class DeviceSetup {
             Matcher matcher = pattern.matcher(commandOutput);
             if(matcher.find()) {
                 configs.put(APP_VERSION, matcher.group(1));
+                LOGGER.info("APP_VERSION: " + matcher.group(1));
             }
         } else {
             LOGGER.info("fetchAppVersion: " + commandResponse.getErrOut());
