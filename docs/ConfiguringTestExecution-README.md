@@ -1,5 +1,7 @@
 # Configuring the test execution
 
+See additional [Configuration parameters here](ConfigurationParameters-README.md)
+
 ### Run on Android
 
 To run all the tests against the Android platform, run the following command:
