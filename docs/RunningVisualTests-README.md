@@ -1,16 +1,21 @@
 ### Running the tests with Applitools Visual AI
 
-**To enable Applitools Visual Testing in your test execution, the following additional environment variables need to be
-provided:**
+To enable Visual test automation using Applitools Visual AI, follow the steps below:
+* In build.gradle, provide your APPLITOOLS_API_KEY:
 
-* `IS_VISUAL=true` - to enable Visual Testing using Applitools
-* `APPLITOOLS_API_KEY=<API_KEY>` - Sets the API key as provided by Applitools
-* To run Visual Tests against dedicated Applitools instance, add a property serverUrl in applitools_config.json.
+  > environment "APPLITOOLS_API_KEY", System.getenv("teswiz_APPLITOOLS_API_KEY")
+
+* Enable visual validation by setting `IS_VISUAL=true` in either of:
+  * the config file, or
+  * from the command line - ex: `CONFIG=./configs/jiomeet_config.properties IS_VISUAL=true ./gradlew run`, or
+  * as an environment variable
+
+#### Applitools configuration
+To run Visual Tests against dedicated Applitools instance, add a property serverUrl in applitools_config.json.
   Ex: "serverUrl": "https://eyesapi.applitools.com"
-    * By Default, the free public Applitools cloud will be used
+    * By default, the free public Applitools cloud will be used
 
 **To enable Applitools Ultrafast Grid, follow these steps:**
-
 * In applitools_config.json, set`useUFG": true`
 * In applitools_config.json, set `testConcurrency": 5` to the appropriate concurrency level as per your Applitools
   license
