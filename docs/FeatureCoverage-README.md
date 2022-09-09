@@ -21,3 +21,7 @@ You can find that report here:
 To exclude any tag(s) to be added in the rich reports, add the following line in your RunTestCukes.java
 
 `System.setProperty(TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT, "@web,@android");`
+
+## Sample Feature Coverage Report
+
+![Feture Coverage](FeatureCoverage.png)
