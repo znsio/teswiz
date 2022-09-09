@@ -24,4 +24,4 @@ To exclude any tag(s) to be added in the rich reports, add the following line in
 
 ## Sample Feature Coverage Report
 
-![Feture Coverage](FeatureCoverage.png)
+![Feature Coverage](FeatureCoverage.png)
