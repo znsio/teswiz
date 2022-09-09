@@ -28,7 +28,7 @@ public class JsonFile {
                 throw new EnvironmentSetupException("Unable to delete older, already existing capabilities file: " + fileName);
             }
         } else {
-            LOGGER.info("File " + file + " does not exist. Create it%n");
+            LOGGER.info("File " + file + " does not exist. Create it\n");
         }
         try(Writer writer = new FileWriter(fileName)) {
             Gson gson = new GsonBuilder().create();

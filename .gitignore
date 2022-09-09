@@ -31,3 +31,4 @@ node_modules/
 local.properties
 upload
 libs
+*.plantuml
