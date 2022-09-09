@@ -69,7 +69,7 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 
 ### [Running Visual Tests using Applitools Visual AI](docs/RunningVisualTests-README.md)
 
-### [Rich Reports using cucumber-reporting](docs/FeatureCoverage-README.md)
+### [Functional/Feature Coverage](docs/FeatureCoverage-README.md)
 
 ### [Configuration parameters](docs/ConfigurationParameters-README.md)
 
