@@ -1,6 +1,8 @@
 # Configuring the test execution
 
-See additional [Configuration parameters here](ConfigurationParameters-README.md)
+Test execution using teswiz is highly configurable. This enables you to control what type of tests you want to execute, and where (environment, local/cloud), etc.
+
+See all the [Configuration parameters here](ConfigurationParameters-README.md)
 
 ### Run on Android
 
