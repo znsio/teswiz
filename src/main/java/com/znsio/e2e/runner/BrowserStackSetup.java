@@ -118,7 +118,9 @@ public class BrowserStackSetup {
 
         List<BrowserStackDevice> availableDevices = BrowserStackDeviceFilter.getFilteredDevices(authenticationUser, authenticationKey, filters, configs.get(LOG_DIR));
 
-        for(int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS); numDevices++) {
+        int deviceCount = Math.min(availableDevices.size(), configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS));
+        LOGGER.info(String.format("Adding '%d' available devices for executing on BrowserStack", deviceCount));
+        for(int numDevices = 0; numDevices < deviceCount; numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", availableDevices.get(numDevices)
                                                         .getOs_version());
