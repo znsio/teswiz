@@ -47,7 +47,7 @@ The framework now supports running multiuser scenarios. This means 1 cucumber sc
 
 Example:
 
-![multi-user-example-annotated.png](../multi-user-example-annotated.png)
+![multi-user-example-annotated.png](multi-user-example-annotated.png)
 
 In the above example
 You can run these tests as below:
@@ -74,7 +74,7 @@ These informative parameters refer to Browser Config json file for actual device
 
 Example:
 
-![mobile-emulation-on-web-browser.png](../mobile-emulation-on-web-browser.png)
+![mobile-emulation-on-web-browser.png](mobile-emulation-on-web-browser.png)
 
 ### Using a different apk for execution (Android):
 
