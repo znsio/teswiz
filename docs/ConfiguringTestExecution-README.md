@@ -47,7 +47,7 @@ The framework now supports running multiuser scenarios. This means 1 cucumber sc
 
 Example:
 
-![multi-user-example-annotated.png](multi-user-example-annotated.png)
+![multi-user-example-annotated.png](Multiuser-example-annotated.png)
 
 In the above example
 You can run these tests as below:
