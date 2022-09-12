@@ -4,8 +4,8 @@ Follow these steps:
 1. Setup the prerequisites mentioned below [https://github.com/znsio/teswiz#prerequisites]
 1. Using your favorite IDE (I use IntelliJ Idea Community Edition), create a new Java-Gradle project
 1. Copy build.gradle.sample file to your newly created project's root folder and rename it to build.gradle
-1. Create capabilities.json in some folder - ex: ./capabilities - refer to src/test/resources/com/znsio/e2e/features/android/caps/capabilities.json
-1. Create config.properties in some folder - ex: ./configurations and provide default values - refer to src/test/resources/com/znsio/e2e/features/android/configs/config.properties
+1. Create capabilities.json in some folder - ex: ./caps - refer to src/test/resources/com/znsio/e2e/features/android/caps/theapp_local_capabilities.json
+1. Create config.properties in some folder - ex: ./configs and provide default values - refer to src/test/resources/com/znsio/e2e/features/android/configs/theapp_local_config.properties
 1. Update the **run** task in build.gradle with appropriate values for config.properties, pathToStepDef, pathToFeaturesDir, pathToLogProperties
 1. Refer to the **Running the tests** section
 

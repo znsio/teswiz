@@ -1,6 +1,7 @@
 @calculator
 Feature: Calculator test
 
+#  CONFIG=./configs/calculator_local_config.properties PLATFORM=android TAG=calculator ./gradlew run
   @android
   Scenario: Calculations
     Given I start the calculator

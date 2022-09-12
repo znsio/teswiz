@@ -8,6 +8,5 @@
   "viewportSize": "1280x900",
   "useUFG": true,
   "testConcurrency": 10,
-  "showLogs": true,
-  "disableBrowserFetching": false
+  "showLogs": true
 }

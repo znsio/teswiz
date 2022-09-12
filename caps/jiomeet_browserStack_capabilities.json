@@ -1,8 +1,12 @@
 {
   "android": {
+    "adbExecTimeout": 45000,
+    "app": {
+      "local": "./src/test/resources/sampleApps/com.jio.rilconferences_v4.21.6.7-421607_Android-5.0.apk"
+    },
+    "appActivity": "org.jio.meet.introduction.views.SplashActivity",
+    "appPackage": "com.jio.rilconferences",
     "automationName": "UiAutomator2",
-    "appPackage": "com.appiumpro.the_app",
-    "appActivity": "com.appiumpro.the_app.MainActivity",
     "platformVersion": "10",
     "platformName": "Android",
     "device": "Samsung",
@@ -11,19 +15,16 @@
     "launchTimeout": 90000,
     "unicodeKeyboard": true,
     "resetKeyboard": true,
-    "noReset": true,
+    "noReset": false,
     "autoAcceptAlerts": true,
     "browserstack.enableCameraImageInjection": true,
     "browserstack.geoLocation": "IN",
     "browserstack.timezone": "Kolkata",
     "browserstack.debug": "false",
     "browserstack.networkLogs": "true",
-    "browserstack.gpsLocation": "22,75",
+    "browserstack.acceptInsecureCerts": "true",
     "browserstack.locale": "IN",
-    "project": "teswiz",
-    "app": {
-      "local": "./src/test/resources/sampleApps/TheApp-release.apk"
-    }
+    "project": "teswiz"
   },
   "cloud": {
     "android": [

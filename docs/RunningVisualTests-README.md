@@ -7,7 +7,7 @@ To enable Visual test automation using Applitools Visual AI, follow the steps be
 
 * Enable visual validation by setting `IS_VISUAL=true` in either of:
   * the config file, or
-  * from the command line - ex: `CONFIG=./configs/jiomeet_config.properties IS_VISUAL=true ./gradlew run`, or
+  * from the command line - ex: `CONFIG=./configs/jiomeet_local_config.properties IS_VISUAL=true ./gradlew run`, or
   * as an environment variable
 
 #### Applitools configuration
