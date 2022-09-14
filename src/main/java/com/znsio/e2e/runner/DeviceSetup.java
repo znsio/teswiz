@@ -95,7 +95,7 @@ public class DeviceSetup {
             default:
                 throw new InvalidTestDataException(String.format("Provided cloudName: '%s' is not supported", cloudName));
         }
-        configs.put(EXECUTED_ON, "Cloud Devices");
+        configs.put(EXECUTED_ON, cloudName);
     }
 
     private static void fetchAndroidAppVersion() {
