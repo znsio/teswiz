@@ -58,7 +58,7 @@ public class HeadSpinSetup {
         LOGGER.info(String.format("uploadAPKToHeadspin for: '%s'%n", authenticationKey));
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
-        String[] curlCommand = new String[]{"curl --insecure -X POST ",
+        String[] curlCommand = new String[]{"curl --insecure " + getCurlProxyCommand() + " -X POST ",
                                             "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apk/upload --data-binary '@" + appPath + "'"};
         CommandLineResponse uploadAPKToHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
 
@@ -111,7 +111,7 @@ public class HeadSpinSetup {
 
     private static JsonObject getListOfAppPackagesFromHeadSpin(String authenticationKey) {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
-        String[] curlCommand = new String[]{"curl --insecure", "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apks"};
+        String[] curlCommand = new String[]{"curl --insecure", getCurlProxyCommand(), "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apks"};
         CommandLineResponse listOfUploadedFilesInHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
 
         JsonObject listOfAppPackages = JsonFile.convertToMap(listOfUploadedFilesInHeadspinResponse.getStdOut())

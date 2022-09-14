@@ -83,7 +83,7 @@ public class PCloudySetup {
 
     private static String getpCloudyAuthToken(String emailID, String authenticationKey, String appPath, String deviceLabURL) {
         LOGGER.info("Get pCloudy Auth Token");
-        String[] getAppToken = new String[]{"curl --insecure", "-u", "\"" + emailID + ":" + authenticationKey + "\"", deviceLabURL + "/api/access"};
+        String[] getAppToken = new String[]{"curl --insecure", getCurlProxyCommand(), "-u", "\"" + emailID + ":" + authenticationKey + "\"", deviceLabURL + "/api/access"};
         CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken);
         LOGGER.info("\tauthTokenResponse: " + authTokenResponse.getStdOut());
         if(authTokenResponse.getStdOut()
@@ -122,7 +122,7 @@ public class PCloudySetup {
 
     private static String uploadAPKToPCloudy(String appPath, String deviceLabURL, String authToken) {
         LOGGER.info("uploadAPKTopCloudy: " + appPath);
-        String[] listOfDevices = new String[]{"curl --insecure", "-X", "POST", "-F", "file=@\"" + appPath + "\"", "-F", "\"source_type=raw\"", "-F", "\"token=" + authToken + "\"",
+        String[] listOfDevices = new String[]{"curl --insecure", getCurlProxyCommand(), "-X", "POST", "-F", "file=@\"" + appPath + "\"", "-F", "\"source_type=raw\"", "-F", "\"token=" + authToken + "\"",
                                               "-F", "\"filter=apk\"", deviceLabURL + "/api/upload_file"};
 
         CommandLineResponse uploadApkResponse = CommandLineExecutor.execCommand(listOfDevices);
@@ -152,7 +152,7 @@ public class PCloudySetup {
                                        .replaceAll("=", ":");
 
         String[] listOfUploadedFiles;
-        listOfUploadedFiles = new String[]{"curl --insecure", "-H", "Content-Type:application/json", "-d", "\"" + updatedPayload + "\"", deviceLabURL + "/api/drive"};
+        listOfUploadedFiles = new String[]{"curl --insecure", getCurlProxyCommand(), "-H", "Content-Type:application/json", "-d", "\"" + updatedPayload + "\"", deviceLabURL + "/api/drive"};
 
         CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(listOfUploadedFiles);
         LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());

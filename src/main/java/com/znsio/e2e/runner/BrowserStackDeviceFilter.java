@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.znsio.e2e.runner.Setup.getCurlProxyCommand;
+
 public class BrowserStackDeviceFilter {
     public static final Map<String, String> env = System.getenv();
     public static final String USERNAME = "anand_kTb8F3";
@@ -29,7 +31,7 @@ public class BrowserStackDeviceFilter {
         String allAvailableBrowsersAndDevicesFileName = new File(logDir + File.separator + "allAvailableBrowsersAndDevices.json").getAbsolutePath();
         try {
 
-            String[] curlCommand = new String[]{"curl --insecure -u \"" + authenticationUser + ":" + authenticationKey + "\"",
+            String[] curlCommand = new String[]{"curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationUser + ":" + authenticationKey + "\"",
                                                 "\"https://api.browserstack.com/automate/browsers.json\"", "> " + allAvailableBrowsersAndDevicesFileName};
             CommandLineResponse listOfBrowsersAndDevicesAvailableInBrowserStack = CommandLineExecutor.execCommand(curlCommand);
 

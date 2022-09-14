@@ -8,6 +8,7 @@ import com.znsio.e2e.tools.JsonFile;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.*;
@@ -63,7 +64,7 @@ public class BrowserStackSetup {
     private static String uploadAPKToBrowserStack(String authenticationKey, String appPath) {
         LOGGER.info(String.format("uploadAPKToBrowserStack for: '%s'%n", authenticationKey));
 
-        String[] curlCommand = new String[]{"curl --insecure -u \"" + authenticationKey + "\"", "-X POST \"https://api-cloud.browserstack.com/app-automate/upload\"",
+        String[] curlCommand = new String[]{"curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationKey + "\"", "-X POST \"https://api-cloud.browserstack.com/app-automate/upload\"",
                                             "-F \"file=@" + appPath + "\"", "-F \"custom_id=" + getAppName(appPath) + "\""};
         CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(curlCommand);
 
@@ -79,7 +80,7 @@ public class BrowserStackSetup {
     private static String getAppIdFromBrowserStack(String authenticationKey, String appPath) {
         String appName = getAppName(appPath);
         LOGGER.info(String.format("getAppIdFromBrowserStack for: '%s' and appName: '%s'%n", authenticationKey, appName));
-        String[] curlCommand = new String[]{"curl --insecure -u \"" + authenticationKey + "\"",
+        String[] curlCommand = new String[]{"curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationKey + "\"",
                                             "-X GET \"https://api-cloud.browserstack.com/app-automate/recent_apps/" + appName + "\""};
         String uploadedAppIdFromBrowserStack;
         try {
