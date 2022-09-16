@@ -48,6 +48,7 @@ import java.util.logging.Level;
 import static com.znsio.e2e.runner.Runner.DEFAULT;
 import static com.znsio.e2e.runner.Runner.NOT_SET;
 import static com.znsio.e2e.runner.Setup.CAPS;
+import static com.znsio.e2e.tools.Wait.waitFor;
 import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
 
 public class Drivers {
@@ -755,10 +756,17 @@ public class Drivers {
             ReportPortal.emitLog(logMessage, DEBUG, new Date());
 
             appiumDriver.closeApp();
-            appiumDriver.terminateApp(appPackageName);
-            applicationState = appiumDriver.queryAppState(appPackageName);
-            logMessage = String.format("App: '%s' Application state after closing app: '%s'%n", appPackageName, applicationState);
-            LOGGER.info(logMessage);
+            LOGGER.info("Wait for 2 sec for app to close");
+            waitFor(2);
+            if (Runner.getCloudName().toLowerCase().equals("browserstack")) {
+                LOGGER.info("Do not terminate the app when running on BrowserStack");
+            } else {
+                LOGGER.info("Terminate the app on device in: " + Runner.getCloudName());
+                appiumDriver.terminateApp(appPackageName);
+                applicationState = appiumDriver.queryAppState(appPackageName);
+                logMessage = String.format("App: '%s' Application state after closing app: '%s'%n", appPackageName, applicationState);
+                LOGGER.info(logMessage);
+            }
             TestExecutionContext context = SessionContext.getTestExecutionContext(Thread.currentThread()
                                                                                         .getId());
             AppiumDriver<WebElement> atdAppiumDriver = (AppiumDriver<WebElement>) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
