@@ -238,7 +238,9 @@ public class Setup {
         System.setProperty("CAPS", configs.get(CAPS));
         System.setProperty("Platform", platform.name());
         System.setProperty("atd_" + platform.name() + "_app_local", configs.get(APP_PATH));
-        System.setProperty("PROXY_URL", configs.get(PROXY_URL));
+        if (null != configs.get(PROXY_URL)) {
+            System.setProperty("PROXY_URL", configs.get(PROXY_URL));
+        }
 
         // properties needed for ReportPortal.io
         System.setProperty("rp.description", configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
