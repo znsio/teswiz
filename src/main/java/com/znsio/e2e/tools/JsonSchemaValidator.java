@@ -11,6 +11,7 @@ import org.json.JSONTokener;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.FileSystems;
 import java.util.Date;
 
 public class JsonSchemaValidator {
@@ -38,7 +39,7 @@ public class JsonSchemaValidator {
     }
 
     private static InputStream loadJsonResourceFileAsStream(String fileName) {
-        String fileAsResource = File.separator + fileName;
+        String fileAsResource = FileSystems.getDefault().getSeparator() + fileName;
         return JsonSchemaValidator.class.getResourceAsStream(fileAsResource);
     }
 }
