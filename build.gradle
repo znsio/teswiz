@@ -20,6 +20,7 @@ buildscript {
         everitSchemaValidatorVersion = '1.5.1'
         jodaTimeVersion = '2.11.1'
         masterThoughtVersion = '5.7.2'
+        browserStackLocalVersion = '1.0.6'
     }
 }
 
@@ -79,6 +80,7 @@ dependencies {
     implementation "com.epam.reportportal:agent-java-cucumber6:$project.reportportalAgentCucumberVersion"
     implementation "org.slf4j:slf4j-api:$project.slf4jVersion"
     implementation "joda-time:joda-time:$project.jodaTimeVersion"
+    implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
     implementation("com.epam.reportportal:agent-java-testng:$project.reportportalAgentTestNGVersion") {
         exclude group: 'com.fasterxml.jackson.core'
     }

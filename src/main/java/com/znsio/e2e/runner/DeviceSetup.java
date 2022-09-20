@@ -181,4 +181,19 @@ public class DeviceSetup {
             LOGGER.info("fetchWindowsAppVersion: Exception: " + e.getLocalizedMessage());
         }
     }
+
+    public static void cleanupCloudExecution() {
+        String cloudName = getCloudNameFromCapabilities();
+        switch(cloudName.toLowerCase()) {
+            case "browserstack":
+                BrowserStackSetup.cleanUp();
+                break;
+            case "headspin":
+            case "pcloudy":
+            case "saucelabs":
+                LOGGER.info(String.format("No cleanup required for cloud: '%s'", cloudName));
+            default:
+                throw new InvalidTestDataException(String.format("Provided cloudName: '%s' is not supported", cloudName));
+        }
+    }
 }

@@ -42,6 +42,7 @@ public class Runner {
     static final Map<String, Integer> configsInteger = new HashMap<>();
     private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
     public static Platform platform = Platform.android;
+    private Setup setup;
 
     public Runner() {
         throw new InvalidTestDataException("Required args not provided to Runner");
@@ -52,7 +53,8 @@ public class Runner {
         if(!Files.exists(path)) {
             throw new InvalidTestDataException(String.format("Invalid path ('%s') provided for config", configFilePath));
         }
-        List<String> cukeArgs = new Setup(configFilePath).getExecutionArguments();
+        setup = new Setup(configFilePath);
+        List<String> cukeArgs = setup.getExecutionArguments();
         run(cukeArgs, stepDefDirName, featuresDirName);
     }
 
@@ -66,6 +68,7 @@ public class Runner {
         String logDir = Runner.USER_DIRECTORY + File.separator + configs.get(LOG_DIR) + File.separator + REPORTS_DIR;
         LOGGER.info(logDir);
         byte status = Main.run(array);
+        setup.cleanUpExecutionEnvironment();
         System.out.println(generateReport(logDir));
         System.exit(status);
     }
