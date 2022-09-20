@@ -155,7 +155,7 @@ public class BrowserStackSetup {
         bsLocalArgs.put("v", "true");
         bsLocalArgs.put("localIdentifier", id);
         if (configsBoolean.get(CLOUD_USE_PROXY)) {
-            bsLocalArgs.put("localProxyHost", configs.get(PROXY_URL));
+            bsLocalArgs.put("proxyHost", configs.get(PROXY_URL));
         }
 
         try {
