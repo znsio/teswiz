@@ -154,9 +154,9 @@ public class BrowserStackSetup {
         bsLocalArgs.put("key", authenticationKey);
         bsLocalArgs.put("v", "true");
         bsLocalArgs.put("localIdentifier", id);
-//        if (configsBoolean.get(CLOUD_USE_PROXY)) {
-//            bsLocalArgs.put("localProxyHost", configs.get(PROXY_URL));
-//        }
+        if (configsBoolean.get(CLOUD_USE_PROXY)) {
+            bsLocalArgs.put("localProxyHost", configs.get(PROXY_URL));
+        }
 
         try {
             LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
