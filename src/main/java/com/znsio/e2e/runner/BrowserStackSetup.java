@@ -12,6 +12,7 @@ import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.net.URL;
 import java.util.*;
 
 import static com.znsio.e2e.runner.DeviceSetup.saveNewCapabilitiesFile;
@@ -154,12 +155,20 @@ public class BrowserStackSetup {
         bsLocalArgs.put("key", authenticationKey);
         bsLocalArgs.put("v", "true");
         bsLocalArgs.put("localIdentifier", id);
-        if (configsBoolean.get(CLOUD_USE_PROXY)) {
-            bsLocalArgs.put("proxyHost", configs.get(PROXY_URL));
-        }
-
         try {
             LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
+            if(configsBoolean.get(CLOUD_USE_PROXY)) {
+                String proxyUrl = configs.get(PROXY_URL);
+                URL url = new URL(proxyUrl);
+                String host = url.getHost();
+                int port = url.getPort() == -1 ? url.getDefaultPort() : url.getPort();
+                LOGGER.info("Using proxyHost: " + host);
+                LOGGER.info("Using proxyPort: " + port);
+                bsLocalArgs.put("proxyHost", host);
+                bsLocalArgs.put("proxyPort", String.valueOf(port));
+            }
+
+            LOGGER.info("Start BrowserStackLocal using: " + bsLocalArgs);
             bsLocal.start(bsLocalArgs);
             LOGGER.info("Is BrowserStackLocal started? - " + bsLocal.isRunning());
         } catch(Exception e) {
