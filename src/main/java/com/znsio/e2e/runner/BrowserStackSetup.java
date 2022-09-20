@@ -159,9 +159,9 @@ public class BrowserStackSetup {
 //        }
 
         try {
-            LOGGER.info("Start BrowserStackLocal - " + bsLocal.isRunning());
+            LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
             bsLocal.start(bsLocalArgs);
-            LOGGER.info("BrowserStackLocal started? - " + bsLocal.isRunning());
+            LOGGER.info("Is BrowserStackLocal started? - " + bsLocal.isRunning());
         } catch(Exception e) {
             throw new RuntimeException("Error starting BrowserStackLocal", e);
         }
