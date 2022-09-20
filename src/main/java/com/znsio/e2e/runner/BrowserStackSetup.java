@@ -161,7 +161,7 @@ public class BrowserStackSetup {
                 String proxyUrl = configs.get(PROXY_URL);
                 URL url = new URL(proxyUrl);
                 String host = url.getHost();
-                int port = url.getPort() == -1 ? url.getPort() : url.getDefaultPort();
+                int port = url.getPort() == -1 ? url.getDefaultPort() : url.getPort();
                 LOGGER.info("Using proxyHost: " + host);
                 LOGGER.info("Using proxyPort: " + port);
                 bsLocalArgs.put("proxyHost", host);
