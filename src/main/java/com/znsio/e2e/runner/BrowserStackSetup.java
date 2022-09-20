@@ -74,8 +74,9 @@ public class BrowserStackSetup {
     private static String uploadAPKToBrowserStack(String authenticationKey, String appPath) {
         LOGGER.info(String.format("uploadAPKToBrowserStack for: '%s'%n", authenticationKey));
 
-        String[] curlCommand = new String[]{"curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationKey + "\"", "-X POST \"https://api-cloud.browserstack.com/app-automate/upload\"",
-                                            "-F \"file=@" + appPath + "\"", "-F \"custom_id=" + getAppName(appPath) + "\""};
+        String[] curlCommand = new String[]{"curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationKey + "\"",
+                                            "-X POST \"https://api-cloud.browserstack.com/app-automate/upload\"", "-F \"file=@" + appPath + "\"", "-F \"custom_id=" + getAppName(
+                appPath) + "\""};
         CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(curlCommand);
 
         JsonObject uploadResponse = JsonFile.convertToMap(uploadAPKToBrowserStackResponse.getStdOut())
@@ -182,7 +183,7 @@ public class BrowserStackSetup {
 
     private static void stopBrowserStackLocal() {
         try {
-            if (bsLocal.isRunning()) {
+            if(bsLocal.isRunning()) {
                 bsLocal.stop();
             }
         } catch(Exception e) {
