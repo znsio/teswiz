@@ -187,7 +187,7 @@ public class BrowserStackSetup {
             if(bsLocal.isRunning()) {
                 LOGGER.info("Stopping BrowserStackLocal");
                 bsLocal.stop();
-                LOGGER.info("Is BrowserStackLocal stopped? - " + bsLocal.isRunning());
+                LOGGER.info("Is BrowserStackLocal stopped? - " + !bsLocal.isRunning());
             }
         } catch(Exception e) {
             throw new RuntimeException("Exception in stopping BrowserStackLocal", e);
