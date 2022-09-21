@@ -84,12 +84,6 @@ dependencies {
     implementation("com.epam.reportportal:agent-java-testng:$project.reportportalAgentTestNGVersion") {
         exclude group: 'com.fasterxml.jackson.core'
     }
-//    implementation "com.applitools:eyes-connectivity-java3-jersey1x:$project.applitoolsVersion"
-    implementation("com.applitools:eyes-selenium-java5:$project.applitoolsVersion") {
-        exclude group: 'java-client'
-        exclude group: 'selenium-java'
-//        exclude group: 'eyes-connectivity-java5-jersey2x'
-    }
     implementation("com.applitools:eyes-appium-java5:$project.applitoolsVersion") {
         exclude group: 'java-client'
         exclude group: 'selenium-java'
