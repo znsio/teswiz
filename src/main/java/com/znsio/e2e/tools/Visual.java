@@ -440,6 +440,7 @@ public class Visual {
                     LOGGER.error("ERROR parsing Applitools results as a map\n" + e.getMessage());
                 }
                 String message = String.format("'%s' Visual Testing Results for user persona: '%s' :: Test: '%s'\n'%s'", onPlatform, userPersona, context.getTestName(), json);
+                LOGGER.info(message);
                 ReportPortal.emitLog(message, INFO, new Date());
 
                 boolean areVisualDifferenceFound = result.getStatus().equals(TestResultsStatus.Unresolved) || result.getStatus().equals(TestResultsStatus.Failed);
