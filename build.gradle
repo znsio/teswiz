@@ -5,14 +5,14 @@ buildscript {
         gradleVersion = '7.3.3'
         assertJVersion = '3.23.1'
         atdVersion = 'dbef9bed7d'
-        applitoolsVersion = '3.213.0'
+        applitoolsVersion = '5.23.0'
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.13.11'
         jadbVersion = '1.2.1'
         webDriverManagerVersion = '5.3.0'
         googleCodeJsonSimpleVersion = '1.1.1'
         junitVersion = '5.9.0'
-        slf4jVersion = '2.0.0'
+        slf4jVersion = '2.0.1'
         reportportalAgentCucumberVersion = '5.0.6'
         reportportalAgentTestNGVersion = '5.0.11'
         fasterxmlJacksonVersion = '2.13.4'
@@ -20,6 +20,7 @@ buildscript {
         everitSchemaValidatorVersion = '1.5.1'
         jodaTimeVersion = '2.11.1'
         masterThoughtVersion = '5.7.2'
+        browserStackLocalVersion = '1.0.6'
     }
 }
 
@@ -79,19 +80,14 @@ dependencies {
     implementation "com.epam.reportportal:agent-java-cucumber6:$project.reportportalAgentCucumberVersion"
     implementation "org.slf4j:slf4j-api:$project.slf4jVersion"
     implementation "joda-time:joda-time:$project.jodaTimeVersion"
+    implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
     implementation("com.epam.reportportal:agent-java-testng:$project.reportportalAgentTestNGVersion") {
         exclude group: 'com.fasterxml.jackson.core'
     }
-    implementation "com.applitools:eyes-connectivity-java3-jersey1x:$project.applitoolsVersion"
-    implementation("com.applitools:eyes-selenium-java3:$project.applitoolsVersion") {
+    implementation("com.applitools:eyes-appium-java5:$project.applitoolsVersion") {
         exclude group: 'java-client'
         exclude group: 'selenium-java'
-        exclude group: 'eyes-connectivity-java3-jersey2x'
-    }
-    implementation("com.applitools:eyes-appium-java3:$project.applitoolsVersion") {
-        exclude group: 'java-client'
-        exclude group: 'selenium-java'
-        exclude group: 'eyes-connectivity-java3-jersey2x'
+//        exclude group: 'eyes-connectivity-java5-jersey2x'
     }
     implementation "org.everit.json:org.everit.json.schema:$project.everitSchemaValidatorVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"

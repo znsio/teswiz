@@ -16,7 +16,6 @@ public class TEST_CONTEXT {
     public static final String SOFT_ASSERTIONS = "softAssertions";
     public static final String WEB_BROWSER_ON = "webBrowserOn";
     public static final String WINDOWS_DEVICE_ON = "windowsDeviceOn";
-    public static final String EYES_RUNNER = "eyesRunner";
     public static final String BROWSER_CONFIG = "browserConfig";
     public static final String MOBILE_EMULATION_DEVICE = "mobileEmulationDevice";
     public static final String TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT = "tagsToExcludeFromCucumberReport";

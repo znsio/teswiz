@@ -55,6 +55,8 @@ public class Visual {
     private final String userPersona;
     private String applitoolsLogFileNameForWeb = NOT_SET;
     private String applitoolsLogFileNameForApp = NOT_SET;
+    private EyesRunner seleniumEyesRunner;
+    private ClassicRunner appiumEyesRunner;
 
     public Visual(String driverType, Platform platform, WebDriver innerDriver, String testName, String userPersona, String appName, boolean isVisualTestingEnabled) {
         LOGGER.info("Visual constructor: Driver type: " + driverType + ", platform: " + platform.name() + ", testName: " + testName + ", isVisualTestingEnabled:  " + isVisualTestingEnabled);
@@ -80,7 +82,8 @@ public class Visual {
             isVisualTestingEnabled = false;
         }
         LOGGER.info("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
-        com.applitools.eyes.appium.Eyes eyes = new com.applitools.eyes.appium.Eyes();
+        appiumEyesRunner = new ClassicRunner();
+        com.applitools.eyes.appium.Eyes eyes = new com.applitools.eyes.appium.Eyes(appiumEyesRunner);
 
         eyes.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         eyes.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
@@ -115,10 +118,9 @@ public class Visual {
         boolean isUFG = getValueFromConfig(APPLITOOLS.USE_UFG, false);
 
         int ufgConcurrency = getValueFromConfig(APPLITOOLS.CONCURRENCY, DEFAULT_UFG_CONCURRENCY);
-        EyesRunner runner = isUFG ? new VisualGridRunner(ufgConcurrency) : new ClassicRunner();
-        context.addTestState(TEST_CONTEXT.EYES_RUNNER, runner);
+        seleniumEyesRunner = isUFG ? new VisualGridRunner(ufgConcurrency) : new ClassicRunner();
 
-        com.applitools.eyes.selenium.Eyes eyes = new com.applitools.eyes.selenium.Eyes(runner);
+        com.applitools.eyes.selenium.Eyes eyes = new com.applitools.eyes.selenium.Eyes(seleniumEyesRunner);
         Configuration configuration = eyes.getConfiguration();
         configuration.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         configuration.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
@@ -385,10 +387,10 @@ public class Visual {
             return;
         }
         LOGGER.info("getVisualResultsFromWeb: user: " + userPersona);
-        TestResults visualResults = eyesOnWeb.close(false);
-        if(null != visualResults) {
-            String reportUrl = handleTestResults(userPersona, "web", visualResults);
-            String message = String.format("Web Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
+        eyesOnWeb.closeAsync();
+        TestResultsSummary allTestResults = seleniumEyesRunner.getAllTestResults(false);
+        if(null != allTestResults) {
+            String message = String.format("Web Visual Testing Results for user persona: '%s'\n%s", userPersona, allTestResults);
             LOGGER.info(message);
             LOGGER.info("Applitools logs available here: " + applitoolsLogFileNameForWeb);
             ReportPortal.emitLog(message, DEBUG, new Date(), new File(applitoolsLogFileNameForWeb));
@@ -400,29 +402,13 @@ public class Visual {
             return;
         }
         LOGGER.info("getVisualResultsFromApp: user: " + userPersona);
-        TestResults visualResults = eyesOnApp.close(false);
-        String reportUrl = handleTestResults(userPersona, "app", visualResults);
-        String message = String.format("App Visual Testing Results for user persona: '%s' :: '%s'", userPersona, reportUrl);
-        LOGGER.info(message);
-        LOGGER.info("Applitools logs available here: " + applitoolsLogFileNameForApp);
-        ReportPortal.emitLog(message, DEBUG, new Date(), new File(applitoolsLogFileNameForApp));
-    }
-
-    private String handleTestResults(String userPersona, String onPlatform, TestResults result) {
-        String message = String.format("Visual Testing Results for user persona: '%s' onPlatform '%s'\n", userPersona, onPlatform);
-        message += "\n\t\t" + result + "\n\t\tmatched = " + result.getMatches() + "\n\t\tmismatched = " + result.getMismatches() + "\n\t\tmissing = " + result.getMissing() + "\n" +
-                   "\t\tisNew: " + result.isNew() + "\n\t\tisPassed: " + result.isPassed() + "\n\t\tResults url: " + result.getUrl();
-        LOGGER.info(message);
-        ReportPortal.emitLog(message, DEBUG, new Date());
-        boolean hasMismatches = result.getMismatches() != 0;
-        LOGGER.info("Visual testing differences found? - " + hasMismatches);
-        long threadId = Thread.currentThread()
-                              .getId();
-        SoftAssertions softly = Runner.getSoftAssertion(threadId);
-        softly.assertThat(hasMismatches)
-              .as(String.format("Visual differences for user persona: '%s' on '%s' found in test: '%s'. See results here: '%s'", userPersona, onPlatform, context.getTestName(),
-                                result.getUrl()))
-              .isFalse();
-        return result.getUrl();
+        eyesOnApp.closeAsync();
+        TestResultsSummary allTestResults = appiumEyesRunner.getAllTestResults(false);
+        if(null != allTestResults) {
+            String message = String.format("App Visual Testing Results for user persona: '%s'\n%s", userPersona, allTestResults);
+            LOGGER.info(message);
+            LOGGER.info("Applitools logs available here: " + applitoolsLogFileNameForApp);
+            ReportPortal.emitLog(message, DEBUG, new Date(), new File(applitoolsLogFileNameForApp));
+        }
     }
 }

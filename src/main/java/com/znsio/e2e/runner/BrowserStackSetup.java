@@ -1,16 +1,18 @@
 package com.znsio.e2e.runner;
 
+import com.browserstack.local.Local;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.tools.JsonFile;
+import com.znsio.e2e.tools.Randomizer;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.net.URL;
 import java.util.*;
 
 import static com.znsio.e2e.runner.DeviceSetup.saveNewCapabilitiesFile;
@@ -19,6 +21,7 @@ import static com.znsio.e2e.runner.Setup.*;
 
 public class BrowserStackSetup {
     private static final Logger LOGGER = Logger.getLogger(BrowserStackSetup.class.getName());
+    private static Local bsLocal;
 
     public static void updateBrowserStackCapabilities() {
         String authenticationUser = configs.get(CLOUD_USER);
@@ -40,6 +43,13 @@ public class BrowserStackSetup {
         app.put("cloud", appIdFromBrowserStack);
         loadedPlatformCapability.put("browserstack.user", authenticationUser);
         loadedPlatformCapability.put("browserstack.key", authenticationKey);
+        String browserStackLocalIdentifier = Randomizer.randomize(10);
+        if(configsBoolean.get(CLOUD_USE_LOCAL_TESTING)) {
+            LOGGER.info(String.format("CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using identified: '%s'", browserStackLocalIdentifier));
+            BrowserStackSetup.startBrowserStackLocal(authenticationKey, browserStackLocalIdentifier);
+            loadedPlatformCapability.put("browserstack.local", "true");
+            loadedPlatformCapability.put("browserstack.localIdentifier", browserStackLocalIdentifier);
+        }
         String subsetOfLogDir = configs.get(LOG_DIR)
                                        .replace("/", "")
                                        .replace("\\", "");
@@ -64,8 +74,9 @@ public class BrowserStackSetup {
     private static String uploadAPKToBrowserStack(String authenticationKey, String appPath) {
         LOGGER.info(String.format("uploadAPKToBrowserStack for: '%s'%n", authenticationKey));
 
-        String[] curlCommand = new String[]{"curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationKey + "\"", "-X POST \"https://api-cloud.browserstack.com/app-automate/upload\"",
-                                            "-F \"file=@" + appPath + "\"", "-F \"custom_id=" + getAppName(appPath) + "\""};
+        String[] curlCommand = new String[]{"curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationKey + "\"",
+                                            "-X POST \"https://api-cloud.browserstack.com/app-automate/upload\"", "-F \"file=@" + appPath + "\"", "-F \"custom_id=" + getAppName(
+                appPath) + "\""};
         CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(curlCommand);
 
         JsonObject uploadResponse = JsonFile.convertToMap(uploadAPKToBrowserStackResponse.getStdOut())
@@ -138,4 +149,48 @@ public class BrowserStackSetup {
         return new File(appPath).getName();
     }
 
+    public static void startBrowserStackLocal(String authenticationKey, String id) {
+        bsLocal = new Local();
+
+        HashMap<String, String> bsLocalArgs = new HashMap<String, String>();
+        bsLocalArgs.put("key", authenticationKey);
+        bsLocalArgs.put("v", "true");
+        bsLocalArgs.put("localIdentifier", id);
+        try {
+            LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
+            if(configsBoolean.get(CLOUD_USE_PROXY)) {
+                String proxyUrl = configs.get(PROXY_URL);
+                URL url = new URL(proxyUrl);
+                String host = url.getHost();
+                int port = url.getPort() == -1 ? url.getDefaultPort() : url.getPort();
+                LOGGER.info("Using proxyHost: " + host);
+                LOGGER.info("Using proxyPort: " + port);
+                bsLocalArgs.put("proxyHost", host);
+                bsLocalArgs.put("proxyPort", String.valueOf(port));
+            }
+
+            LOGGER.info("Start BrowserStackLocal using: " + bsLocalArgs);
+            bsLocal.start(bsLocalArgs);
+            LOGGER.info("Is BrowserStackLocal started? - " + bsLocal.isRunning());
+        } catch(Exception e) {
+            throw new RuntimeException("Error starting BrowserStackLocal", e);
+        }
+    }
+
+    public static void cleanUp() {
+        stopBrowserStackLocal();
+    }
+
+    private static void stopBrowserStackLocal() {
+        try {
+            LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
+            if(bsLocal.isRunning()) {
+                LOGGER.info("Stopping BrowserStackLocal");
+                bsLocal.stop();
+                LOGGER.info("Is BrowserStackLocal stopped? - " + !bsLocal.isRunning());
+            }
+        } catch(Exception e) {
+            throw new RuntimeException("Exception in stopping BrowserStackLocal", e);
+        }
+    }
 }

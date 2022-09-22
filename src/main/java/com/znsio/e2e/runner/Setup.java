@@ -81,6 +81,7 @@ public class Setup {
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
     static final String CLOUD_USE_PROXY = "CLOUD_USE_PROXY";
+    static final String CLOUD_USE_LOCAL_TESTING = "CLOUD_USE_LOCAL_TESTING";
     static Map<String, Map> environmentConfiguration;
     static Map<String, Map> testDataForEnvironment;
     static Map applitoolsConfiguration = new HashMap<>();
@@ -127,6 +128,19 @@ public class Setup {
         LOGGER.info(printIntegerMap("Using integer values", configsInteger));
 
         return cukeArgs;
+    }
+
+    public void cleanUpExecutionEnvironment() {
+        LOGGER.info("cleanUpExecutionEnvironment");
+        if(platform.equals(Platform.android)) {
+            if(configsBoolean.get(RUN_IN_CI)) {
+                DeviceSetup.cleanupCloudExecution();
+            } else {
+                LOGGER.info("Not running in CI. Nothing to cleanup in Execution environment");
+            }
+        } else {
+            LOGGER.info("Not running on android. Nothing to cleanup in Execution environment");
+        }
     }
 
     void loadAndUpdateConfigParameters(String configFilePath) {
@@ -238,7 +252,9 @@ public class Setup {
         System.setProperty("CAPS", configs.get(CAPS));
         System.setProperty("Platform", platform.name());
         System.setProperty("atd_" + platform.name() + "_app_local", configs.get(APP_PATH));
-        System.setProperty("PROXY_URL", configs.get(PROXY_URL));
+        if (null != configs.get(PROXY_URL)) {
+            System.setProperty("PROXY_URL", configs.get(PROXY_URL));
+        }
 
         // properties needed for ReportPortal.io
         System.setProperty("rp.description", configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
@@ -305,6 +321,7 @@ public class Setup {
         configs.put(CLOUD_NAME, getOverriddenStringValue(CLOUD_NAME, getStringValueFromPropertiesIfAvailable(CLOUD_NAME, LOCAL)));
         configsBoolean.put(CLOUD_UPLOAD_APP, getOverriddenBooleanValue(CLOUD_UPLOAD_APP, getBooleanValueFromPropertiesIfAvailable(CLOUD_UPLOAD_APP, false)));
         configsBoolean.put(CLOUD_USE_PROXY, getOverriddenBooleanValue(CLOUD_USE_PROXY, getBooleanValueFromPropertiesIfAvailable(CLOUD_USE_PROXY, false)));
+        configsBoolean.put(CLOUD_USE_LOCAL_TESTING, getOverriddenBooleanValue(CLOUD_USE_LOCAL_TESTING, getBooleanValueFromPropertiesIfAvailable(CLOUD_USE_LOCAL_TESTING, false)));
         configs.put(DEVICE_LAB_URL, getOverriddenStringValue(DEVICE_LAB_URL, getStringValueFromPropertiesIfAvailable(DEVICE_LAB_URL, NOT_SET)));
         configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE, getStringValueFromPropertiesIfAvailable(ENVIRONMENT_CONFIG_FILE, NOT_SET)));
         configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL, getBooleanValueFromPropertiesIfAvailable(IS_VISUAL, false)));
