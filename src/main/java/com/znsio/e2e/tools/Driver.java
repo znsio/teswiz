@@ -360,6 +360,10 @@ public class Driver {
     }
 
     public WebElement waitTillElementIsPresent(By elementId, int numberOfSecondsToWait) {
+        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.presenceOfElementLocated(elementId));
+    }
+
+    public WebElement waitTillElementIsVisible(By elementId, int numberOfSecondsToWait) {
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.visibilityOfElementLocated(elementId));
     }
 
