@@ -427,7 +427,10 @@ public class Visual {
                 resultMap.put("Is aborted?", result.isAborted());
                 resultMap.put("Is new?", result.isNew());
                 resultMap.put("Is difference?", result.isDifferent());
-                resultMap.put("Browser/Device info", allTestResult.getBrowserInfo().toString());
+                RenderBrowserInfo browserInfo = allTestResult.getBrowserInfo();
+                if (null != browserInfo) {
+                    resultMap.put("Browser/Device info", browserInfo.toString());
+                }
 
                 ObjectMapper mapper = new ObjectMapper();
                 String json = null;
