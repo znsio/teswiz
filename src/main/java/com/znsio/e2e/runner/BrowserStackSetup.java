@@ -182,15 +182,18 @@ public class BrowserStackSetup {
     }
 
     private static void stopBrowserStackLocal() {
-        try {
-            LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
-            if(bsLocal.isRunning()) {
-                LOGGER.info("Stopping BrowserStackLocal");
-                bsLocal.stop();
-                LOGGER.info("Is BrowserStackLocal stopped? - " + !bsLocal.isRunning());
+        LOGGER.info("stopBrowserStackLocal: CLOUD_USE_LOCAL_TESTING=" + configsBoolean.get(CLOUD_USE_LOCAL_TESTING));
+        if(configsBoolean.get(CLOUD_USE_LOCAL_TESTING)) {
+            try {
+                LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
+                if(bsLocal.isRunning()) {
+                    LOGGER.info("Stopping BrowserStackLocal");
+                    bsLocal.stop();
+                    LOGGER.info("Is BrowserStackLocal stopped? - " + !bsLocal.isRunning());
+                }
+            } catch(Exception e) {
+                throw new RuntimeException("Exception in stopping BrowserStackLocal", e);
             }
-        } catch(Exception e) {
-            throw new RuntimeException("Exception in stopping BrowserStackLocal", e);
         }
     }
 }
