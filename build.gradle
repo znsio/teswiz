@@ -5,7 +5,7 @@ buildscript {
         gradleVersion = '7.3.3'
         assertJVersion = '3.23.1'
         atdVersion = 'dbef9bed7d'
-        applitoolsVersion = '5.23.0'
+        applitoolsVersion = '5.26.0'
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.13.11'
         jadbVersion = '1.2.1'
