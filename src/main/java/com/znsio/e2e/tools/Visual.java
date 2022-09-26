@@ -15,6 +15,12 @@ import com.applitools.eyes.visualgrid.services.VisualGridRunner;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.znsio.e2e.entities.APPLITOOLS;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
@@ -31,6 +37,7 @@ import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +48,7 @@ public class Visual {
     private static final Logger LOGGER = Logger.getLogger(Visual.class.getName());
     private static final String DEFAULT_APPLITOOLS_SERVER_URL = "https://eyesapi.applitools.com";
     private static final String DEBUG = "DEBUG";
+    private static final String INFO = "INFO";
     private final String visualTestNotEnabledMessage = "Visual Test is not enabled";
     private final com.applitools.eyes.selenium.Eyes eyesOnWeb;
     private final com.applitools.eyes.appium.Eyes eyesOnApp;
@@ -59,7 +67,8 @@ public class Visual {
     private ClassicRunner appiumEyesRunner;
 
     public Visual(String driverType, Platform platform, WebDriver innerDriver, String testName, String userPersona, String appName, boolean isVisualTestingEnabled) {
-        LOGGER.info("Visual constructor: Driver type: " + driverType + ", platform: " + platform.name() + ", testName: " + testName + ", isVisualTestingEnabled:  " + isVisualTestingEnabled);
+        LOGGER.info(
+                "Visual constructor: Driver type: " + driverType + ", platform: " + platform.name() + ", testName: " + testName + ", isVisualTestingEnabled:  " + isVisualTestingEnabled);
         this.context = SessionContext.getTestExecutionContext(Thread.currentThread()
                                                                     .getId());
         this.screenShotManager = (ScreenShotManager) context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER);
@@ -77,40 +86,43 @@ public class Visual {
         return (null == applitoolsConfig.get(key)) ? defaultValue : Boolean.parseBoolean(String.valueOf(applitoolsConfig.get(key)));
     }
 
-    private com.applitools.eyes.appium.Eyes instantiateAppiumEyes(String driverType, Platform platform, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
+    private com.applitools.eyes.appium.Eyes instantiateAppiumEyes(String driverType, Platform platform, WebDriver innerDriver, String appName, String testName,
+                                                                  boolean isVisualTestingEnabled) {
         if(driverType.equals(Driver.WEB_DRIVER)) {
             isVisualTestingEnabled = false;
         }
         LOGGER.info("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
         appiumEyesRunner = new ClassicRunner();
-        com.applitools.eyes.appium.Eyes eyes = new com.applitools.eyes.appium.Eyes(appiumEyesRunner);
+        appiumEyesRunner.setDontCloseBatches(true);
+        com.applitools.eyes.appium.Eyes appEyes = new com.applitools.eyes.appium.Eyes(appiumEyesRunner);
 
-        eyes.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
-        eyes.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
-        eyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
-        eyes.setBranchName(String.valueOf(getValueFromConfig(BRANCH_NAME)));
-        eyes.setEnvName(targetEnvironment);
-        eyes.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
-        eyes.setIsDisabled(!isVisualTestingEnabled);
+        appEyes.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
+        appEyes.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
+        appEyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
+        appEyes.setBranchName(String.valueOf(getValueFromConfig(BRANCH_NAME)));
+        appEyes.setEnvName(targetEnvironment);
+        appEyes.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
+        appEyes.setIsDisabled(!isVisualTestingEnabled);
 
         applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
-        eyes.setLogHandler(new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
+        appEyes.setLogHandler(new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
 
-        eyes.addProperty(APP_NAME, appName);
-        eyes.addProperty("USER_PERSONA", userPersona);
-        eyes.addProperty(BRANCH_NAME, String.valueOf(getValueFromConfig(BRANCH_NAME)));
-        eyes.addProperty(PLATFORM, platform.name());
-        eyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
-        eyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
+        appEyes.addProperty(APP_NAME, appName);
+        appEyes.addProperty("USER_PERSONA", userPersona);
+        appEyes.addProperty(BRANCH_NAME, String.valueOf(getValueFromConfig(BRANCH_NAME)));
+        appEyes.addProperty(PLATFORM, platform.name());
+        appEyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
+        appEyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
 
         if(isVisualTestingEnabled) {
-            eyes.open(innerDriver, appName + "-" + platform, testName);
+            appEyes.open(innerDriver, appName + "-" + platform, testName);
         }
-        LOGGER.info("instantiateAppiumEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
-        return eyes;
+        LOGGER.info("instantiateAppiumEyes: eyes.getIsDisabled(): " + appEyes.getIsDisabled());
+        return appEyes;
     }
 
-    private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType, Platform platform, WebDriver innerDriver, String appName, String testName, boolean isVisualTestingEnabled) {
+    private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType, Platform platform, WebDriver innerDriver, String appName, String testName,
+                                                                 boolean isVisualTestingEnabled) {
         if(driverType.equals(Driver.APPIUM_DRIVER)) {
             isVisualTestingEnabled = false;
         }
@@ -119,12 +131,14 @@ public class Visual {
 
         int ufgConcurrency = getValueFromConfig(APPLITOOLS.CONCURRENCY, DEFAULT_UFG_CONCURRENCY);
         seleniumEyesRunner = isUFG ? new VisualGridRunner(ufgConcurrency) : new ClassicRunner();
+        seleniumEyesRunner.setDontCloseBatches(true);
 
-        com.applitools.eyes.selenium.Eyes eyes = new com.applitools.eyes.selenium.Eyes(seleniumEyesRunner);
-        Configuration configuration = eyes.getConfiguration();
+        com.applitools.eyes.selenium.Eyes webEyes = new com.applitools.eyes.selenium.Eyes(seleniumEyesRunner);
+        Configuration configuration = webEyes.getConfiguration();
         configuration.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         configuration.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
         configuration.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
+
         configuration.setBranchName(String.valueOf(getValueFromConfig(BRANCH_NAME)));
         configuration.setEnvironmentName(targetEnvironment);
         configuration.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
@@ -137,26 +151,26 @@ public class Visual {
 
         addBrowserAndDeviceConfigForUFG(isUFG, configuration);
 
-        eyes.setConfiguration(configuration);
+        webEyes.setConfiguration(configuration);
 
         applitoolsLogFileNameForWeb = getApplitoolsLogFileNameFor("web");
-        eyes.setIsDisabled(!isVisualTestingEnabled);
-        eyes.setLogHandler(new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
+        webEyes.setIsDisabled(!isVisualTestingEnabled);
+        webEyes.setLogHandler(new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
 
-        eyes.addProperty(APP_NAME, appName);
-        eyes.addProperty("USER_PERSONA", userPersona);
-        eyes.addProperty(BRANCH_NAME, String.valueOf(getValueFromConfig(BRANCH_NAME)));
-        eyes.addProperty(PLATFORM, platform.name());
-        eyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
-        eyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
-        eyes.addProperty("USER_NAME", USER_NAME);
+        webEyes.addProperty(APP_NAME, appName);
+        webEyes.addProperty("USER_PERSONA", userPersona);
+        webEyes.addProperty(BRANCH_NAME, String.valueOf(getValueFromConfig(BRANCH_NAME)));
+        webEyes.addProperty(PLATFORM, platform.name());
+        webEyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
+        webEyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
+        webEyes.addProperty("USER_NAME", USER_NAME);
 
         RectangleSize setBrowserViewPortSize = getBrowserViewPortSize(driverType, innerDriver);
         LOGGER.info("Using browser dimensions for Applitools: " + setBrowserViewPortSize);
 
-        eyes.open(innerDriver, appName + "-" + platform, testName, setBrowserViewPortSize);
-        LOGGER.info("instantiateWebEyes: eyes.getIsDisabled(): " + eyes.getIsDisabled());
-        return eyes;
+        webEyes.open(innerDriver, appName + "-" + platform, testName, setBrowserViewPortSize);
+        LOGGER.info("instantiateWebEyes: eyes.getIsDisabled(): " + webEyes.getIsDisabled());
+        return webEyes;
     }
 
     private String getValueFromConfig(String key, String defaultValue) {
@@ -389,11 +403,57 @@ public class Visual {
         LOGGER.info("getVisualResultsFromWeb: user: " + userPersona);
         eyesOnWeb.closeAsync();
         TestResultsSummary allTestResults = seleniumEyesRunner.getAllTestResults(false);
+        checkVisualTestResults(allTestResults, userPersona, "web", applitoolsLogFileNameForWeb);
+    }
+
+    private void checkVisualTestResults(TestResultsSummary allTestResults, String userPersona, String onPlatform, String applitoolsLogFileName) {
         if(null != allTestResults) {
-            String message = String.format("Web Visual Testing Results for user persona: '%s'\n%s", userPersona, allTestResults);
-            LOGGER.info(message);
-            LOGGER.info("Applitools logs available here: " + applitoolsLogFileNameForWeb);
-            ReportPortal.emitLog(message, DEBUG, new Date(), new File(applitoolsLogFileNameForWeb));
+            for(TestResultContainer allTestResult : allTestResults) {
+                TestResults result = allTestResult.getTestResults();
+                HashMap resultMap = new HashMap();
+                resultMap.put("Number of steps", result.getSteps());
+                resultMap.put("Number of matches", result.getMatches());
+                resultMap.put("Number of mismatches", result.getMismatches());
+                resultMap.put("Number of missing", result.getMissing());
+                resultMap.put("Number of strict matches", result.getStrictMatches());
+                resultMap.put("Number of content matches", result.getContentMatches());
+                resultMap.put("Number of layout matches", result.getLayoutMatches());
+                resultMap.put("Number of no matches", result.getNoneMatches());
+                resultMap.put("Result url", result.getUrl());
+                resultMap.put("Status", result.getStatus());
+                resultMap.put("Duration", result.getDuration());
+                resultMap.put("Accessibility status", result.getAccessibilityStatus());
+                resultMap.put("Is passed?", result.isPassed());
+                resultMap.put("Is aborted?", result.isAborted());
+                resultMap.put("Is new?", result.isNew());
+                resultMap.put("Is difference?", result.isDifferent());
+                RenderBrowserInfo browserInfo = allTestResult.getBrowserInfo();
+                if (null != browserInfo) {
+                    resultMap.put("Browser/Device info", browserInfo.toString());
+                }
+
+                ObjectMapper mapper = new ObjectMapper();
+                String json = null;
+                try {
+                    json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(resultMap);
+                } catch(JsonProcessingException e) {
+                    LOGGER.error("ERROR parsing Applitools results as a map\n" + e.getMessage());
+                }
+                String message = String.format("'%s' Visual Testing Results for user persona: '%s' :: Test: '%s'\n'%s'", onPlatform, userPersona, context.getTestName(), json);
+                LOGGER.info(message);
+                ReportPortal.emitLog(message, INFO, new Date());
+
+                boolean areVisualDifferenceFound = result.getStatus().equals(TestResultsStatus.Unresolved) || result.getStatus().equals(TestResultsStatus.Failed);
+                LOGGER.info("Visual testing differences found? - " + areVisualDifferenceFound);
+                long threadId = Thread.currentThread()
+                                      .getId();
+                SoftAssertions softly = Runner.getSoftAssertion(threadId);
+                softly.assertThat(areVisualDifferenceFound)
+                      .as(String.format("Visual differences for user persona: '%s' on '%s' found in test: '%s'. See results here: ", userPersona, onPlatform,
+                                        context.getTestName()) + result.getUrl())
+                      .isFalse();
+            }
+            LOGGER.info("Applitools logs available here: " + applitoolsLogFileName);
         }
     }
 
@@ -404,11 +464,6 @@ public class Visual {
         LOGGER.info("getVisualResultsFromApp: user: " + userPersona);
         eyesOnApp.closeAsync();
         TestResultsSummary allTestResults = appiumEyesRunner.getAllTestResults(false);
-        if(null != allTestResults) {
-            String message = String.format("App Visual Testing Results for user persona: '%s'\n%s", userPersona, allTestResults);
-            LOGGER.info(message);
-            LOGGER.info("Applitools logs available here: " + applitoolsLogFileNameForApp);
-            ReportPortal.emitLog(message, DEBUG, new Date(), new File(applitoolsLogFileNameForApp));
-        }
+        checkVisualTestResults(allTestResults, userPersona, "app", applitoolsLogFileNameForApp);
     }
 }
