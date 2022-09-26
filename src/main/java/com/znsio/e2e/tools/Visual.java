@@ -117,7 +117,7 @@ public class Visual {
         if(isVisualTestingEnabled) {
             appEyes.open(innerDriver, appName + "-" + platform, testName);
         }
-        LOGGER.info("instantiateAppiumEyes: eyes.getIsDisabled(): " + appEyes.getIsDisabled());
+        LOGGER.info("instantiateAppiumEyes: Is Applitools Visual Testing enabled? - " + !appEyes.getIsDisabled());
         return appEyes;
     }
 
@@ -169,7 +169,7 @@ public class Visual {
         LOGGER.info("Using browser dimensions for Applitools: " + setBrowserViewPortSize);
 
         webEyes.open(innerDriver, appName + "-" + platform, testName, setBrowserViewPortSize);
-        LOGGER.info("instantiateWebEyes: eyes.getIsDisabled(): " + webEyes.getIsDisabled());
+        LOGGER.info("instantiateWebEyes:  Is Applitools Visual Testing enabled? - " + !webEyes.getIsDisabled());
         return webEyes;
     }
 
