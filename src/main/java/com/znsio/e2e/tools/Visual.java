@@ -17,10 +17,6 @@ import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.znsio.e2e.entities.APPLITOOLS;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
@@ -64,7 +60,7 @@ public class Visual {
     private String applitoolsLogFileNameForWeb = NOT_SET;
     private String applitoolsLogFileNameForApp = NOT_SET;
     private EyesRunner seleniumEyesRunner;
-    private ClassicRunner appiumEyesRunner;
+    // private ClassicRunner appiumEyesRunner;
 
     public Visual(String driverType, Platform platform, WebDriver innerDriver, String testName, String userPersona, String appName, boolean isVisualTestingEnabled) {
         LOGGER.info(
@@ -92,9 +88,9 @@ public class Visual {
             isVisualTestingEnabled = false;
         }
         LOGGER.info("instantiateAppiumEyes: isVisualTestingEnabled: " + isVisualTestingEnabled);
-        appiumEyesRunner = new ClassicRunner();
-        appiumEyesRunner.setDontCloseBatches(true);
-        com.applitools.eyes.appium.Eyes appEyes = new com.applitools.eyes.appium.Eyes(appiumEyesRunner);
+        // appiumEyesRunner = new ClassicRunner();
+        // appiumEyesRunner.setDontCloseBatches(true);
+        com.applitools.eyes.appium.Eyes appEyes = new com.applitools.eyes.appium.Eyes();
 
         appEyes.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         appEyes.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
@@ -410,51 +406,57 @@ public class Visual {
         if(null != allTestResults) {
             for(TestResultContainer allTestResult : allTestResults) {
                 TestResults result = allTestResult.getTestResults();
-                HashMap resultMap = new HashMap();
-                resultMap.put("Number of steps", result.getSteps());
-                resultMap.put("Number of matches", result.getMatches());
-                resultMap.put("Number of mismatches", result.getMismatches());
-                resultMap.put("Number of missing", result.getMissing());
-                resultMap.put("Number of strict matches", result.getStrictMatches());
-                resultMap.put("Number of content matches", result.getContentMatches());
-                resultMap.put("Number of layout matches", result.getLayoutMatches());
-                resultMap.put("Number of no matches", result.getNoneMatches());
-                resultMap.put("Result url", result.getUrl());
-                resultMap.put("Status", result.getStatus());
-                resultMap.put("Duration", result.getDuration());
-                resultMap.put("Accessibility status", result.getAccessibilityStatus());
-                resultMap.put("Is passed?", result.isPassed());
-                resultMap.put("Is aborted?", result.isAborted());
-                resultMap.put("Is new?", result.isNew());
-                resultMap.put("Is difference?", result.isDifferent());
-                RenderBrowserInfo browserInfo = allTestResult.getBrowserInfo();
-                if (null != browserInfo) {
-                    resultMap.put("Browser/Device info", browserInfo.toString());
-                }
-
-                ObjectMapper mapper = new ObjectMapper();
-                String json = null;
-                try {
-                    json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(resultMap);
-                } catch(JsonProcessingException e) {
-                    LOGGER.error("ERROR parsing Applitools results as a map\n" + e.getMessage());
-                }
-                String message = String.format("'%s' Visual Testing Results for user persona: '%s' :: Test: '%s'\n'%s'", onPlatform, userPersona, context.getTestName(), json);
-                LOGGER.info(message);
-                ReportPortal.emitLog(message, INFO, new Date());
-
-                boolean areVisualDifferenceFound = result.getStatus().equals(TestResultsStatus.Unresolved) || result.getStatus().equals(TestResultsStatus.Failed);
-                LOGGER.info("Visual testing differences found? - " + areVisualDifferenceFound);
-                long threadId = Thread.currentThread()
-                                      .getId();
-                SoftAssertions softly = Runner.getSoftAssertion(threadId);
-                softly.assertThat(areVisualDifferenceFound)
-                      .as(String.format("Visual differences for user persona: '%s' on '%s' found in test: '%s'. See results here: ", userPersona, onPlatform,
-                                        context.getTestName()) + result.getUrl())
-                      .isFalse();
+                checkEachTestVisualResults(userPersona, onPlatform, allTestResult.getBrowserInfo(), result);
             }
             LOGGER.info("Applitools logs available here: " + applitoolsLogFileName);
         }
+    }
+
+    private void checkEachTestVisualResults(String userPersona, String onPlatform, RenderBrowserInfo browserInfo, TestResults result) {
+        HashMap resultMap = new HashMap();
+        resultMap.put("Number of steps", result.getSteps());
+        resultMap.put("Number of matches", result.getMatches());
+        resultMap.put("Number of mismatches", result.getMismatches());
+        resultMap.put("Number of missing", result.getMissing());
+        resultMap.put("Number of strict matches", result.getStrictMatches());
+        resultMap.put("Number of content matches", result.getContentMatches());
+        resultMap.put("Number of layout matches", result.getLayoutMatches());
+        resultMap.put("Number of no matches", result.getNoneMatches());
+        resultMap.put("Result url", result.getUrl());
+        resultMap.put("Status", result.getStatus());
+        resultMap.put("Duration", result.getDuration());
+        resultMap.put("Accessibility status", result.getAccessibilityStatus());
+        resultMap.put("Is passed?", result.isPassed());
+        resultMap.put("Is aborted?", result.isAborted());
+        resultMap.put("Is new?", result.isNew());
+        resultMap.put("Is difference?", result.isDifferent());
+        if(null != browserInfo) {
+            resultMap.put("Browser/Device info", browserInfo.toString());
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = null;
+        try {
+            json = mapper.writerWithDefaultPrettyPrinter()
+                         .writeValueAsString(resultMap);
+        } catch(JsonProcessingException e) {
+            LOGGER.error("ERROR parsing Applitools results as a map\n" + e.getMessage());
+        }
+        String message = String.format("'%s' Visual Testing Results for user persona: '%s' :: Test: '%s'\n'%s'", onPlatform, userPersona, context.getTestName(), json);
+        LOGGER.info(message);
+        ReportPortal.emitLog(message, INFO, new Date());
+
+        boolean areVisualDifferenceFound = result.getStatus()
+                                                 .equals(TestResultsStatus.Unresolved) || result.getStatus()
+                                                                                                .equals(TestResultsStatus.Failed);
+        LOGGER.info("Visual testing differences found? - " + areVisualDifferenceFound);
+        long threadId = Thread.currentThread()
+                              .getId();
+        SoftAssertions softly = Runner.getSoftAssertion(threadId);
+        softly.assertThat(areVisualDifferenceFound)
+              .as(String.format("Visual differences for user persona: '%s' on '%s' found in test: '%s'. See results here: ", userPersona, onPlatform,
+                                context.getTestName()) + result.getUrl())
+              .isFalse();
     }
 
     private void getVisualResultsFromApp(String userPersona) {
@@ -462,8 +464,9 @@ public class Visual {
             return;
         }
         LOGGER.info("getVisualResultsFromApp: user: " + userPersona);
-        eyesOnApp.closeAsync();
-        TestResultsSummary allTestResults = appiumEyesRunner.getAllTestResults(false);
-        checkVisualTestResults(allTestResults, userPersona, "app", applitoolsLogFileNameForApp);
+        TestResults allTestResults = eyesOnApp.close(false);
+        checkEachTestVisualResults(userPersona, "app", null, allTestResults);
+        // TestResultsSummary allTestResults = appiumEyesRunner.getAllTestResults(false);
+        // checkVisualTestResults(allTestResults, userPersona, "app", applitoolsLogFileNameForApp);
     }
 }

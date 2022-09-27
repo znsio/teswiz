@@ -5,7 +5,8 @@ buildscript {
         gradleVersion = '7.3.3'
         assertJVersion = '3.23.1'
         atdVersion = 'dbef9bed7d'
-        applitoolsVersion = '5.23.0'
+        applitoolsSeleniumVersion = '3.213.0'
+        applitoolsAppiumVersion = '3.213.0'
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.13.11'
         jadbVersion = '1.2.1'
@@ -84,11 +85,17 @@ dependencies {
     implementation("com.epam.reportportal:agent-java-testng:$project.reportportalAgentTestNGVersion") {
         exclude group: 'com.fasterxml.jackson.core'
     }
-    implementation("com.applitools:eyes-appium-java5:$project.applitoolsVersion") {
+    implementation("com.applitools:eyes-appium-java3:$project.applitoolsAppiumVersion") {
         exclude group: 'java-client'
         exclude group: 'selenium-java'
-//        exclude group: 'eyes-connectivity-java5-jersey2x'
+        exclude group: 'eyes-connectivity-java5-jersey2x'
     }
+    implementation("com.applitools:eyes-selenium-java3:$project.applitoolsSeleniumVersion") {
+        exclude group: 'java-client'
+        exclude group: 'selenium-java'
+        exclude group: 'eyes-connectivity-java5-jersey2x'
+    }
+    implementation "com.applitools:eyes-connectivity-java3-jersey1x:$project.applitoolsSeleniumVersion"
     implementation "org.everit.json:org.everit.json.schema:$project.everitSchemaValidatorVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
 }
