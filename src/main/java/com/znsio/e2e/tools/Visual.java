@@ -109,6 +109,7 @@ public class Visual {
         appEyes.addProperty(PLATFORM, platform.name());
         appEyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
         appEyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
+        appEyes.addProperty("USER_NAME", USER_NAME);
 
         if(isVisualTestingEnabled) {
             appEyes.open(innerDriver, appName + "-" + platform, testName);
