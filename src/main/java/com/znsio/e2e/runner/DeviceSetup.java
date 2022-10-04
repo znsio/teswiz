@@ -192,6 +192,7 @@ public class DeviceSetup {
             case "pcloudy":
             case "saucelabs":
                 LOGGER.info(String.format("No cleanup required for cloud: '%s'", cloudName));
+                break;
             default:
                 throw new InvalidTestDataException(String.format("Provided cloudName: '%s' is not supported", cloudName));
         }
