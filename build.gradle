@@ -20,7 +20,7 @@ buildscript {
         jsonPathVersion = '2.7.0'
         everitSchemaValidatorVersion = '1.5.1'
         jodaTimeVersion = '2.11.2'
-        masterThoughtVersion = '5.7.2'
+        masterThoughtVersion = '5.7.3'
         browserStackLocalVersion = '1.0.6'
     }
 }
