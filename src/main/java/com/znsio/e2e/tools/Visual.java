@@ -171,7 +171,7 @@ public class Visual {
     }
 
     private String getValueFromConfig(String key, String defaultValue) {
-        return (null == applitoolsConfig.get(key)) ? defaultValue : String.valueOf(applitoolsConfig.get(key));
+        return (null == applitoolsConfig.get(key) || applitoolsConfig.get(key).equals("null")) ? defaultValue : String.valueOf(applitoolsConfig.get(key));
     }
 
     private Object getValueFromConfig(String key) {
