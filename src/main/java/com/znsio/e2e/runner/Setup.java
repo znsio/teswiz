@@ -492,7 +492,10 @@ public class Setup {
     static void getApplitoolsConfigFromProvidedConfigFile() {
         String applitoolsConfigurationFileName = configs.get(APPLITOOLS_CONFIGURATION);
         if(applitoolsConfigurationFileName.equals(NOT_SET)) {
-            LOGGER.info("Applitools configuration not provided. Will use defaults%n");
+            LOGGER.info("-------------------------------------------------------------");
+            LOGGER.info("Applitools configuration not provided. Disable Visual Testing");
+            LOGGER.info("-------------------------------------------------------------");
+            configsBoolean.put(IS_VISUAL, false);
         } else {
             LOGGER.info("Loading Applitools configuration from: " + applitoolsConfigurationFileName);
             applitoolsConfiguration = JsonFile.loadJsonFile(applitoolsConfigurationFileName);
