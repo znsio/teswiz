@@ -45,6 +45,7 @@ public class Visual {
     private static final String DEFAULT_APPLITOOLS_SERVER_URL = "https://eyesapi.applitools.com";
     private static final String DEBUG = "DEBUG";
     private static final String INFO = "INFO";
+    private static final String WARN = "WARN";
     private final String visualTestNotEnabledMessage = "Visual Test is not enabled";
     private final com.applitools.eyes.selenium.Eyes eyesOnWeb;
     private final com.applitools.eyes.appium.Eyes eyesOnApp;
@@ -451,6 +452,11 @@ public class Visual {
                                                  .equals(TestResultsStatus.Unresolved) || result.getStatus()
                                                                                                 .equals(TestResultsStatus.Failed);
         LOGGER.info("Visual testing differences found? - " + areVisualDifferenceFound);
+        if (areVisualDifferenceFound) {
+            ReportPortal.emitLog("Visual testing differences found? - " + areVisualDifferenceFound, WARN, new Date());
+        } else {
+            ReportPortal.emitLog("Visual testing differences found? - " + areVisualDifferenceFound, INFO, new Date());
+        }
         long threadId = Thread.currentThread()
                               .getId();
         SoftAssertions softly = Runner.getSoftAssertion(threadId);
