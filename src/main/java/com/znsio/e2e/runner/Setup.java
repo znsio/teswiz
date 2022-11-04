@@ -492,9 +492,9 @@ public class Setup {
     static void getApplitoolsConfigFromProvidedConfigFile() {
         String applitoolsConfigurationFileName = configs.get(APPLITOOLS_CONFIGURATION);
         if(applitoolsConfigurationFileName.equals(NOT_SET)) {
-            LOGGER.info("-------------------------------------------------------------");
-            LOGGER.info("Applitools configuration not provided. Disable Visual Testing");
-            LOGGER.info("-------------------------------------------------------------");
+            LOGGER.warn("-------------------------------------------------------------");
+            LOGGER.warn("Applitools configuration not provided. DISABLE Visual Testing");
+            LOGGER.warn("-------------------------------------------------------------");
             configsBoolean.put(IS_VISUAL, false);
         } else {
             LOGGER.info("Loading Applitools configuration from: " + applitoolsConfigurationFileName);
