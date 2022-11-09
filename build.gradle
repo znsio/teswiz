@@ -153,21 +153,12 @@ task run(type: JavaExec) {
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
 
-        def configFile = System.getenv("CONFIG")
-        if(null == configFile || !file(configFile).exists()) {
-            println("CONFIG file not provided, or does not exist")
-            println("Run the test by providing the CONFIG file not provided, or does not exist")
-            assert file(configFile).exists()
-        }
+//   You can also specify which config file to use based on the value of RUN_IN_CI as shown below
 
-//      You can also specify which config file to use based on the value of RUN_IN_CI as shown below
-//
-//        def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
-//        println "isRunningInCI: $isRunInCI"
-//        def configFile = isRunInCI
-//                ? "./configs/theapp_pcloudy_config.properties"
-//                : "./configs/theapp_local_config.properties"
-//        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
+        def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
+        println "isRunningInCI: $isRunInCI"
+        def configFile = System.getenv("RUN_IN_CI") ? "./configs/pcloudy_config.properties" : "./configs/amazon_config.properties"
+        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
 
         systemProperties = System.properties
         def runnerArgs = [
