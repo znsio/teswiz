@@ -4,7 +4,7 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;
-import com.znsio.sample.e2e.screen.web.Amazon.AmazonHomeScreenWeb;
+import com.znsio.sample.e2e.screen.web.Amazon.HomeScreenWeb;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.logging.Logger;
@@ -12,11 +12,11 @@ import java.util.logging.Logger;
 import static com.znsio.e2e.runner.Runner.fetchDriver;
 import static com.znsio.e2e.runner.Runner.fetchEyes;
 
-public abstract class AmazonHomeScreen {
-    private static final String SCREEN_NAME = AmazonHomeScreen.class.getSimpleName();
+public abstract class HomeScreen {
+    private static final String SCREEN_NAME = HomeScreen.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
 
-    public static AmazonHomeScreen get() {
+    public static HomeScreen get() {
         Driver driver = fetchDriver(Thread.currentThread()
                 .getId());
         Platform platform = Runner.fetchPlatform(Thread.currentThread()
@@ -27,10 +27,10 @@ public abstract class AmazonHomeScreen {
 
         switch(platform) {
             case web:
-                return new AmazonHomeScreenWeb(driver, visually);
+                return new HomeScreenWeb(driver, visually);
         }
         throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.platform);
     }
 
-    public abstract AmazonSearchScreen searchItem(String itemName);
+    public abstract SearchScreen searchItem(String itemName);
 }

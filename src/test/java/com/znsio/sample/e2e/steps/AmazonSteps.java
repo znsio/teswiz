@@ -31,27 +31,24 @@ public class AmazonSteps {
         allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
 
         LOGGER.info("Login to Amazon with Valid credentials");
-        new AmazonLoginBL().loginToAmazon();
+        new LoginBL().loginToAmazon();
     }
 
     @When("I searched for {string} and select first result")
     public void iSearchedForAndSelectFirstResult(String itemName) {
-//        LOGGER.info("Searching the Item from Home page");
-//        new AmazonHomeBL().search(itemName).isItemVisible(itemName);
-//        LOGGER.info("First item in product list is selected");
-//        new AmazonSearchBL().navigateToProductDetail(itemName);
-        new AmazonHomeBL().searchAndNavigateToProductDetail(itemName);
+        LOGGER.info("Searching and selecting item");
+        new HomeBL().searchAndNavigateToProductDetail(itemName);
     }
 
     @And("I add {string} to the cart")
     public void iAddToTheCart(String itemName) {
         LOGGER.info("Adding product to the cart");
-        new AmazonProductBL().addAndNavigateToCart(itemName);
+        new ProductBL().addAndNavigateToCart(itemName);
     }
 
     @Then("Cart should have added item {string} in it")
     public void cartShouldHaveAddedItemInIt(String itemName) {
         LOGGER.info("Verifying Item present in Cart");
-        new AmazonCartBL().verifyItemInCart(itemName);
+        new CartBL().isProductExistInCart(itemName);
     }
 }

@@ -4,7 +4,7 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;
-import com.znsio.sample.e2e.screen.web.Amazon.AmazonLoginScreenWeb;
+import com.znsio.sample.e2e.screen.web.Amazon.ProductScreenWeb;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.logging.Logger;
@@ -12,11 +12,11 @@ import java.util.logging.Logger;
 import static com.znsio.e2e.runner.Runner.fetchDriver;
 import static com.znsio.e2e.runner.Runner.fetchEyes;
 
-public abstract class AmazonLoginScreen {
-    private static final String SCREEN_NAME = AmazonLoginScreen.class.getSimpleName();
+public abstract class ProductScreen {
+    private static final String SCREEN_NAME = ProductScreen.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
 
-    public static AmazonLoginScreen get() {
+    public static ProductScreen get() {
         Driver driver = fetchDriver(Thread.currentThread()
                 .getId());
         Platform platform = Runner.fetchPlatform(Thread.currentThread()
@@ -27,11 +27,10 @@ public abstract class AmazonLoginScreen {
 
         switch(platform) {
             case web:
-                return new AmazonLoginScreenWeb(driver, visually);
+                return new ProductScreenWeb(driver, visually);
         }
         throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.platform);
     }
 
-
-    public abstract AmazonHomeScreen loginWithCredentials(String userName, String password);
+    public abstract CartScreen addAndNavigateToCart(String itemName);
 }

@@ -4,7 +4,7 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;
-import com.znsio.sample.e2e.screen.web.Amazon.AmazonProductScreenWeb;
+import com.znsio.sample.e2e.screen.web.Amazon.SearchScreenWeb;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.logging.Logger;
@@ -12,11 +12,11 @@ import java.util.logging.Logger;
 import static com.znsio.e2e.runner.Runner.fetchDriver;
 import static com.znsio.e2e.runner.Runner.fetchEyes;
 
-public abstract class AmazonProductScreen {
-    private static final String SCREEN_NAME = AmazonProductScreen.class.getSimpleName();
+public abstract class SearchScreen {
+    private static final String SCREEN_NAME = SearchScreen.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
 
-    public static AmazonProductScreen get() {
+    public static SearchScreen get() {
         Driver driver = fetchDriver(Thread.currentThread()
                 .getId());
         Platform platform = Runner.fetchPlatform(Thread.currentThread()
@@ -27,10 +27,12 @@ public abstract class AmazonProductScreen {
 
         switch(platform) {
             case web:
-                return new AmazonProductScreenWeb(driver, visually);
+                return new SearchScreenWeb(driver, visually);
         }
         throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.platform);
     }
 
-    public abstract AmazonCartScreen addAndNavigateToCart(String itemName);
+    public abstract boolean isVisibleItem(String itemName);
+
+    public abstract ProductScreen navigateToProductDetail(String itemName);
 }
