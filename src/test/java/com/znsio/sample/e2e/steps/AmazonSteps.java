@@ -36,10 +36,11 @@ public class AmazonSteps {
 
     @When("I searched for {string} and select first result")
     public void iSearchedForAndSelectFirstResult(String itemName) {
-        LOGGER.info("Searching the Item from Home page");
-        new AmazonHomeBL().search(itemName).isItemVisible(itemName);
-        LOGGER.info("First item in product list is selected");
-        new AmazonSearchBL().navigateToProductDetail(itemName);
+//        LOGGER.info("Searching the Item from Home page");
+//        new AmazonHomeBL().search(itemName).isItemVisible(itemName);
+//        LOGGER.info("First item in product list is selected");
+//        new AmazonSearchBL().navigateToProductDetail(itemName);
+        new AmazonHomeBL().searchAndNavigateToProductDetail(itemName);
     }
 
     @And("I add {string} to the cart")
@@ -48,9 +49,8 @@ public class AmazonSteps {
         new AmazonProductBL().addAndNavigateToCart(itemName);
     }
 
-
-    @Then("Cart should have searched item {string}")
-    public void cartShouldHaveSearchedItem(String itemName) {
+    @Then("Cart should have added item {string} in it")
+    public void cartShouldHaveAddedItemInIt(String itemName) {
         LOGGER.info("Verifying Item present in Cart");
         new AmazonCartBL().verifyItemInCart(itemName);
     }

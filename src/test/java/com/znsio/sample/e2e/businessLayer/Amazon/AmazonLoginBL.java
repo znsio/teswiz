@@ -16,7 +16,6 @@ import java.io.FileReader;
 public class AmazonLoginBL {
     private static final Logger LOGGER = Logger.getLogger(AmazonLoginBL.class.getName());
     private final TestExecutionContext context;
-    private final SoftAssertions softly;
     private final String currentUserPersona;
     private final Platform currentPlatform;
     public String userName;
@@ -26,7 +25,6 @@ public class AmazonLoginBL {
         long threadId = Thread.currentThread()
                 .getId();
         this.context = Runner.getTestExecutionContext(threadId);
-        softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
         this.currentPlatform = forPlatform;
         Runner.setCurrentDriverForUser(userPersona, forPlatform, context);
@@ -36,7 +34,6 @@ public class AmazonLoginBL {
         long threadId = Thread.currentThread()
                 .getId();
         this.context = Runner.getTestExecutionContext(threadId);
-        softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
         this.currentPlatform = Runner.platform;
     }
@@ -58,7 +55,7 @@ public class AmazonLoginBL {
     }
 
     /**
-     * Utiltiy to parse json file and extract username and password
+     * Utility to parse json file and extract username and password
      * @throws Exception
      */
     private void retrieveJson() throws Exception {
