@@ -1,5 +1,6 @@
 package com.znsio.sample.e2e.screen.web.Amazon;
 
+import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;
 import com.znsio.sample.e2e.screen.Amazon.CartScreen;
@@ -22,13 +23,13 @@ public class ProductScreenWeb extends ProductScreen {
     }
 
     /**
-     * Utility adding the product to cart and navigating to cart page
+     * Method adding the product to cart and navigating to cart page
      * @param itemName
      * @return
      */
     @Override
     public CartScreen addAndNavigateToCart(String itemName) {
-        LOGGER.info("Adding product to the cart");
+        LOGGER.info(String.format("addAndNavigateToCart - Platform %s : Adding product to the cart", Runner.platform));
         driver.findElement(addToCart).click();
         LOGGER.info("Navigating to Cart");
         driver.waitForClickabilityOf(moveToCart).click();

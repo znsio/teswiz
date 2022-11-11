@@ -1,5 +1,6 @@
 package com.znsio.sample.e2e.screen.web.Amazon;
 
+import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;
 import com.znsio.sample.e2e.screen.Amazon.HomeScreen;
@@ -23,13 +24,13 @@ public class HomeScreenWeb extends HomeScreen {
     }
 
     /**
-     * Utility for searching the item in searchbox
+     * Method for searching the item in searchbox
      * @param itemName
      * @return
      */
     @Override
     public SearchScreen searchItem(String itemName) {
-        LOGGER.info("Searching for product");
+        LOGGER.info(String.format("searchItem - Platform %s : Searching for product", Runner.platform));
         driver.waitForClickabilityOf(searchBox).click();
         driver.findElement(searchBox).sendKeys(itemName);
         driver.findElement(searchIcon).click();

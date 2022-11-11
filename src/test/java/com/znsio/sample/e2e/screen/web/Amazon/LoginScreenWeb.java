@@ -1,5 +1,6 @@
 package com.znsio.sample.e2e.screen.web.Amazon;
 
+import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;
 import com.znsio.sample.e2e.screen.Amazon.HomeScreen;
@@ -26,13 +27,12 @@ public class LoginScreenWeb extends LoginScreen {
     }
 
     /**
-     * Utility to login with given parameters
+     * Method to login with given parameters
      * @return {@link HomeScreen}
      */
     @Override
     public HomeScreen loginWithCredentials(String userName, String password) {
-
-        LOGGER.info("Logging with the credentials");
+        LOGGER.info(String.format("loginWithCredentials - Platform %s : Logging with the credentials", Runner.platform));
         driver.findElement(signInAccount).click();
 
         LOGGER.info("Clicking on Username Field");

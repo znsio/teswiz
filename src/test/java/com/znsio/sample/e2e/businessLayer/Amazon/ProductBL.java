@@ -32,7 +32,8 @@ public class ProductBL {
 
 
     public CartBL addAndNavigateToCart(String itemName) {
-       ProductScreen.get().addAndNavigateToCart(itemName);
+        LOGGER.info(String.format("addAndNavigateToCart-Platform %s : Navigating to cart", Runner.platform));
+        ProductScreen.get().addAndNavigateToCart(itemName);
         return new CartBL();
     }
 }

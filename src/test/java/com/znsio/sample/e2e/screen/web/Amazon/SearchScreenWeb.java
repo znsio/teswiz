@@ -1,5 +1,6 @@
 package com.znsio.sample.e2e.screen.web.Amazon;
 
+import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;
 import com.znsio.sample.e2e.screen.Amazon.ProductScreen;
@@ -23,7 +24,7 @@ public class SearchScreenWeb extends SearchScreen {
 
     @Override
     public boolean isVisibleItem(String itemName) {
-        LOGGER.info("Product list is present");
+        LOGGER.info(String.format("isVisibleItem - Platform %s : Product list is present", Runner.platform));
         if (driver.findElements(By.xpath("//span[contains(text(),\'" + itemName + "\')]")).size() > 0)
             return true;
         else
@@ -32,7 +33,7 @@ public class SearchScreenWeb extends SearchScreen {
 
     @Override
     public ProductScreen navigateToProductDetail(String itemName) {
-        LOGGER.info("Clicking on first product in list");
+        LOGGER.info(String.format("navigateToProductDetail - Platform %s : Clicking on first product in list", Runner.platform));
         driver.findElements(By.xpath("//span[contains(text(),\'" + itemName + "\')]")).get(1).click();
         visually.checkWindow(SCREEN_NAME, "Product detail screen");
         driver.switchToNextTab();

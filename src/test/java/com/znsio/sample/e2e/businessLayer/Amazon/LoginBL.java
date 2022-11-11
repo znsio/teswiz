@@ -32,11 +32,11 @@ public class LoginBL {
     }
 
     /**
-     * Utility to login to amazon account
+     * Method to login to amazon account
      * @return {@link HomeBL}
      */
     public HomeBL loginToAmazon() {
-        LOGGER.info("Logging to Amazon with Credentials");
+        LOGGER.info(String.format("loginToAmazon-Platform %s : Logging to Amazon with credentials", Runner.platform));
         LoginScreen.get()
                 .loginWithCredentials(Runner.getTestData("userName"), Runner.getTestData("password"));
         LOGGER.info("Login is done");

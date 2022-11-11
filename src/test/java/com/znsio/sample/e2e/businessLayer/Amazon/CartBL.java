@@ -33,11 +33,11 @@ public class CartBL {
     }
 
     /**
-     * Utility to verify the Cart is holding the searched item in it
+     * Method to verify the Cart is holding the searched item in it
      * @param itemName searched product
      */
     public CartBL isProductExistInCart(String itemName) {
-        LOGGER.info("isProductExistInCart - Verifying product is present in cart");
+        LOGGER.info(String.format("isProductExistInCart-Platform %s : Verify added product is in cart", Runner.platform));
         boolean isPresent = CartScreen.get().verifyItemInCart(itemName);
         assertThat(isPresent).isTrue();
         return this;

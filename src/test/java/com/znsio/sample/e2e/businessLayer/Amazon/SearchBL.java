@@ -38,7 +38,7 @@ public class SearchBL {
      * @return {@link SearchBL}
      */
     public SearchBL isItemVisible(String itemName) {
-        LOGGER.info("Verifying product list has item in it");
+        LOGGER.info(String.format("isItemVisible-Platform %s : Verifying item is visible", Runner.platform));
         boolean isVisible = SearchScreen.get().isVisibleItem(itemName);
         assertThat(isVisible).isTrue();
         return this;
@@ -50,6 +50,7 @@ public class SearchBL {
      * @return {@link ProductBL}
      */
     public ProductBL navigateToProductDetail(String itemName) {
+        LOGGER.info(String.format("navigateToProductDetail-Platform %s : Navigating to product detail", Runner.platform));
         LOGGER.info("Navigating to product detail page");
         SearchScreen.get().navigateToProductDetail(itemName);
         return new ProductBL();

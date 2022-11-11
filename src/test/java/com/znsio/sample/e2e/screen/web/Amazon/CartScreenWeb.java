@@ -1,5 +1,6 @@
 package com.znsio.sample.e2e.screen.web.Amazon;
 
+import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;
 import com.znsio.sample.e2e.screen.Amazon.CartScreen;
@@ -21,13 +22,13 @@ public class CartScreenWeb extends CartScreen {
     }
 
     /**
-     * Utility verifying product present inside cart
+     * Method verifying product present inside cart
      * @param itemName
      * @return
      */
     @Override
     public boolean verifyItemInCart(String itemName) {
-        LOGGER.info("Verification by cart heading and product name present in cart");
+        LOGGER.info(String.format("verifyItemInCart-Platform %s : Verification by cart heading and product name present in cart", Runner.platform));
         return driver.isElementPresent(cartHeading)
                 && driver.findElement(productName).getText().contains(itemName);
     }

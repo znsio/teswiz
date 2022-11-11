@@ -32,11 +32,12 @@ public class HomeBL {
     }
 
     /**
-     * Utility to search for product, check is the itemVisible and navigate to PD
+     * Method to search for product, check is the itemVisible and navigate to PD
      * @param itemName parameter of searched product
      * @return {@link ProductBL}
      */
     public ProductBL searchAndNavigateToProductDetail(String itemName) {
+        LOGGER.info(String.format("searchAndNavigateToProductDetail-Platform %s : searching and Navigating to ProductDetail", Runner.platform));
         HomeScreen.get().searchItem(itemName);
         return new SearchBL()
                 .isItemVisible(itemName)
