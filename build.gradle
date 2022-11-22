@@ -16,7 +16,7 @@ buildscript {
         slf4jVersion = '2.0.3'
         reportportalAgentCucumberVersion = '5.0.6'
         reportportalAgentTestNGVersion = '5.0.11'
-        fasterxmlJacksonVersion = '2.13.4'
+        fasterxmlJacksonVersion = '2.14.1'
         jsonPathVersion = '2.7.0'
         everitSchemaValidatorVersion = '1.5.1'
         jodaTimeVersion = '2.12.1'
