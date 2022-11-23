@@ -94,7 +94,7 @@ public class Visual {
         com.applitools.eyes.appium.Eyes appEyes = new com.applitools.eyes.appium.Eyes();
 
         appEyes.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
-        appEyes.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
+        appEyes.setApiKey(getApplitoolsAPIKey(isVisualTestingEnabled));
         appEyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
         appEyes.setBranchName(String.valueOf(getValueFromConfig(BRANCH_NAME)));
         appEyes.setEnvName(targetEnvironment);
@@ -112,11 +112,18 @@ public class Visual {
         appEyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
         appEyes.addProperty("USER_NAME", USER_NAME);
 
-        if(isVisualTestingEnabled) {
+        try {
             appEyes.open(innerDriver, appName + "-" + platform, testName);
+            LOGGER.info("instantiateAppiumEyes: Is Applitools Visual Testing enabled? - " + !appEyes.getIsDisabled());
+        } catch(IllegalArgumentException e) {
+            throw new InvalidTestDataException(String.format("Exception in instantiating Applitools for Apps: '%s;", e.getMessage(), e));
         }
-        LOGGER.info("instantiateAppiumEyes: Is Applitools Visual Testing enabled? - " + !appEyes.getIsDisabled());
+
         return appEyes;
+    }
+
+    private String getApplitoolsAPIKey(boolean isVisualTestingEnabled) {
+        return isVisualTestingEnabled? getValueFromConfig(APPLITOOLS.API_KEY, null) : getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET);
     }
 
     private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType, Platform platform, WebDriver innerDriver, String appName, String testName,
@@ -135,6 +142,7 @@ public class Visual {
         Configuration configuration = webEyes.getConfiguration();
         configuration.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         configuration.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
+        configuration.setApiKey(getApplitoolsAPIKey(isVisualTestingEnabled));
         configuration.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
 
         configuration.setBranchName(String.valueOf(getValueFromConfig(BRANCH_NAME)));
@@ -166,8 +174,12 @@ public class Visual {
         RectangleSize setBrowserViewPortSize = getBrowserViewPortSize(driverType, innerDriver);
         LOGGER.info("Using browser dimensions for Applitools: " + setBrowserViewPortSize);
 
-        webEyes.open(innerDriver, appName + "-" + platform, testName, setBrowserViewPortSize);
-        LOGGER.info("instantiateWebEyes:  Is Applitools Visual Testing enabled? - " + !webEyes.getIsDisabled());
+        try {
+            webEyes.open(innerDriver, appName + "-" + platform, testName, setBrowserViewPortSize);
+            LOGGER.info("instantiateWebEyes:  Is Applitools Visual Testing enabled? - " + !webEyes.getIsDisabled());
+        } catch(IllegalArgumentException e) {
+            throw new InvalidTestDataException(String.format("Exception in instantiating Applitools for Web: '%s;", e.getMessage(), e));
+        }
         return webEyes;
     }
 
