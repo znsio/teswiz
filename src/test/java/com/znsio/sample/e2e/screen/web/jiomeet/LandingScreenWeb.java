@@ -15,12 +15,12 @@ public class LandingScreenWeb
     private final Visual visually;
     private static final String SCREEN_NAME = LandingScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
-    private final By byHeadingXpath = By.xpath("//h3[contains(@class,'heading')]");
-    private final By byWelcomeTextDescriptionXpath = By.xpath("//p[@class='desc']");
+    private static final By byHeadingXpath = By.xpath("//h3[contains(@class,'heading')]");
+    private static final By byWelcomeTextDescriptionXpath = By.xpath("//p[@class='desc']");
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
-    private final By byStartAMeetingOptionXpath = By.xpath("//div[text()='Start a Meeting']");
-    private final By byPMIButtonXpath = By.xpath("//span[contains(text(), 'Personal Meeting ID')]");
-    private final By byStartMeetingButtonXpath = By.xpath("//button[contains(text(), 'Start')]");
+    private static final By byStartAMeetingOptionXpath = By.xpath("//div[text()='Start a Meeting']");
+    private static final By byPMIButtonXpath = By.xpath("//span[contains(text(), 'Personal Meeting ID')]");
+    private static final By byStartMeetingButtonXpath = By.xpath("//button[contains(text(), 'Start')]");
 
     public LandingScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;

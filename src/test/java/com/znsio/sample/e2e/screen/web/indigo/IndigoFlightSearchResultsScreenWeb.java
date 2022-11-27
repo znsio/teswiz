@@ -9,8 +9,6 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-import static com.znsio.e2e.tools.Wait.waitFor;
-
 public class IndigoFlightSearchResultsScreenWeb
         extends IndigoFlightSearchResultsScreen {
     private final Driver driver;

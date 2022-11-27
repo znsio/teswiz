@@ -7,7 +7,6 @@ import com.znsio.e2e.tools.Visual;
 import com.znsio.sample.e2e.screen.indigo.IndigoFlightSearchResultsScreen;
 import com.znsio.sample.e2e.screen.indigo.IndigoGiftVouchersScreen;
 import com.znsio.sample.e2e.screen.indigo.IndigoHomeScreen;
-import com.znsio.sample.e2e.screen.web.jiomeet.InAMeetingScreenWeb;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -21,21 +20,29 @@ public class IndigoHomeScreenWeb
     private final Driver driver;
     private final Visual visually;
     private final WebDriver innerDriver;
+    private final TestExecutionContext context;
     private static final String SCREEN_NAME = IndigoHomeScreenWeb.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
-    private final TestExecutionContext context;
     private static final By byFromXpath = By.xpath("//input[@placeholder='From']");
     private static final By byToXpath = By.xpath("//input[@placeholder='To']");
     private static final String byFromDropdown = "..//div[@data-name='%s']";
     private static final String byToDropDown = "..//div[@data-name='%s']";
     private static final By byPopularDestinationsDropdownXpath = By.xpath("..//div[text()=\"Popular Destinations\"]");
     private static final By bySelectedNumberOfPassengersXpath = By.xpath("//input[@name='passenger']");
-    private static final By byJourneyTypeXpath = By.xpath("//div[@class='filter-option-inner-inner']");;
-    private static final By byNumberOfPassengersSelectionDoneXpath = By.xpath("//button[text()='Done']");;
-    private final By byCloseExtraSeatTooltipXpath = By.xpath("//i[@class='icon-close close-extraseat-tooltip']");
-    private final By byCloseAcceptCookiesXpath = By.xpath("//a[@class='close-cookie']");
-    private final By bySearchFlightOptionsXpath = By.xpath("//span[text()='Search Flight']");
+    private static final By byJourneyTypeXpath = By.xpath("//div[@class='filter-option-inner-inner']");
+    ;
+    private static final By byNumberOfPassengersSelectionDoneXpath = By.xpath("//button[text()='Done']");
+    ;
+    private static final By byCloseExtraSeatTooltipXpath = By.xpath("//i[@class='icon-close close-extraseat-tooltip']");
+    private static final By byCloseAcceptCookiesXpath = By.xpath("//a[@class='close-cookie']");
+    private static final By bySearchFlightOptionsXpath = By.xpath("//span[text()='Search Flight']");
+    private static final By byDecreaseAdultPassengerCountXpath = By.xpath("//button[@title='Decrease Adult Passenger Count']");
+    private static final By byIncreaseAdultPassengerCountXpath = By.xpath("//button[@title='Increase Adult Passenger Count']");
+    private static final By byGetSelectedAdultPassengerCountXpath = By.xpath("//input[@class='counter adult-pax']");
+    private static final By bySelectBookingXpath = By.xpath("//a[@title='Book']");
+    private static final By bySelectGiftVouchersXpath = By.xpath("//div[@class='menu-wrapper-child']//div[text()='Gift Voucher']");
+    private static final By bySelectJourneyTypeXpath = By.xpath("//a[contains(@class,'one-way-tab')]");
 
     public IndigoHomeScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
@@ -46,7 +53,8 @@ public class IndigoHomeScreenWeb
         context = Runner.getTestExecutionContext(threadId);
         waitFor(2);
         if(driver.isElementPresent(byCloseAcceptCookiesXpath)) {
-            driver.findElement(byCloseAcceptCookiesXpath).click();
+            driver.findElement(byCloseAcceptCookiesXpath)
+                  .click();
         }
     }
 
@@ -55,7 +63,8 @@ public class IndigoHomeScreenWeb
         WebElement fromElement = driver.findElement(byFromXpath);
         fromElement.click();
         fromElement.sendKeys(from);
-        fromElement.findElement(By.xpath(String.format(byFromDropdown, from))).click();
+        fromElement.findElement(By.xpath(String.format(byFromDropdown, from)))
+                   .click();
         visually.checkWindow(SCREEN_NAME, "selected from");
         return this;
     }
@@ -68,49 +77,55 @@ public class IndigoHomeScreenWeb
         toElement.findElement(byPopularDestinationsDropdownXpath);
         String dest = String.format(byToDropDown, destination);
         LOGGER.info("dest: " + dest);
-        toElement.findElement(By.xpath(dest)).click();
+        toElement.findElement(By.xpath(dest))
+                 .click();
         visually.checkWindow(SCREEN_NAME, "selected destination");
         return this;
     }
 
     @Override
     public IndigoHomeScreen selectNumberOfAdultPassengers(int numberOfAdultsToSelect) {
-        driver.waitForClickabilityOf(bySelectedNumberOfPassengersXpath).click();
+        driver.waitForClickabilityOf(bySelectedNumberOfPassengersXpath)
+              .click();
         visually.checkWindow(SCREEN_NAME, "Pre-selected number of passengers");
-        if (driver.isElementPresent(byCloseExtraSeatTooltipXpath)) {
-            driver.findElement(byCloseExtraSeatTooltipXpath).click();
+        if(driver.isElementPresent(byCloseExtraSeatTooltipXpath)) {
+            driver.findElement(byCloseExtraSeatTooltipXpath)
+                  .click();
         }
         int numberOfAdultsSelected = getNumberOfAdultsSelected();
         LOGGER.info("numberOfAdultsSelected: " + numberOfAdultsSelected);
-        if(numberOfAdultsToSelect==numberOfAdultsSelected) {
+        if(numberOfAdultsToSelect == numberOfAdultsSelected) {
             LOGGER.info("Number of adults selected is already as expected: " + numberOfAdultsToSelect);
-        } else if (numberOfAdultsToSelect < numberOfAdultsSelected) {
+        } else if(numberOfAdultsToSelect < numberOfAdultsSelected) {
             decrementAdultPassengerSelection(numberOfAdultsToSelect, numberOfAdultsSelected);
         } else {
             incrementAdultPassengerSelection(numberOfAdultsToSelect, numberOfAdultsSelected);
         }
-        driver.findElement(byNumberOfPassengersSelectionDoneXpath).click();
+        driver.findElement(byNumberOfPassengersSelectionDoneXpath)
+              .click();
         return this;
     }
 
     private IndigoHomeScreenWeb decrementAdultPassengerSelection(int numberOfAdultsToSelect, int numberOfAdultsSelected) {
-        while(numberOfAdultsToSelect < numberOfAdultsSelected && numberOfAdultsSelected!=1) {
+        while(numberOfAdultsToSelect < numberOfAdultsSelected && numberOfAdultsSelected != 1) {
             LOGGER.info("Decreasing adult passenger selected count");
-            driver.findElement(By.xpath("//button[@title='Decrease Adult Passenger Count']")).click();
+            driver.findElement(byDecreaseAdultPassengerCountXpath)
+                  .click();
             numberOfAdultsSelected--;
         }
         return this;
     }
 
     private int getNumberOfAdultsSelected() {
-        return Integer.parseInt(driver.findElement(By.xpath("//input[@class='counter adult-pax']"))
+        return Integer.parseInt(driver.findElement(byGetSelectedAdultPassengerCountXpath)
                                       .getAttribute("value"));
     }
 
     private IndigoHomeScreenWeb incrementAdultPassengerSelection(int numberOfAdultsToSelect, int numberOfAdultsSelected) {
         while(numberOfAdultsToSelect > numberOfAdultsSelected) {
             LOGGER.info("Increasing adult passenger selected count");
-            driver.findElement(By.xpath("//button[@title='Increase Adult Passenger Count']")).click();
+            driver.findElement(byIncreaseAdultPassengerCountXpath)
+                  .click();
             numberOfAdultsSelected++;
         }
         return this;
@@ -118,26 +133,31 @@ public class IndigoHomeScreenWeb
 
     @Override
     public IndigoHomeScreen selectJourneyType(String journeyType) {
-        driver.findElement(byJourneyTypeXpath).click();
+        driver.findElement(byJourneyTypeXpath)
+              .click();
         visually.checkWindow(SCREEN_NAME, "Journey type options displayed");
-        driver.findElement(By.xpath("//a[contains(@class,'one-way-tab')]")).click();
+        driver.findElement(bySelectJourneyTypeXpath)
+              .click();
         return this;
     }
 
     @Override
     public IndigoFlightSearchResultsScreen searchFlightOptions() {
-        driver.findElement(bySearchFlightOptionsXpath).click();
+        driver.findElement(bySearchFlightOptionsXpath)
+              .click();
         return IndigoFlightSearchResultsScreen.get();
     }
 
     @Override
     public IndigoGiftVouchersScreen selectGiftVouchers() {
-        WebElement bookElement = driver.findElement(By.xpath("//a[@title='Book']"));
+        WebElement bookElement = driver.findElement(bySelectBookingXpath);
         Actions action = new Actions(driver.getInnerDriver());
         action.moveToElement(bookElement);
-        WebElement giftVouchersElement = driver.findElement(By.xpath("//div[@class='menu-wrapper-child']//div[text()='Gift Voucher']"));
+        WebElement giftVouchersElement = driver.findElement(bySelectGiftVouchersXpath);
         action.moveToElement(giftVouchersElement);
-        action.click().build().perform();
+        action.click()
+              .build()
+              .perform();
         visually.checkWindow(SCREEN_NAME, "Clicked on Gift Voucher");
         return IndigoGiftVouchersScreen.get();
     }

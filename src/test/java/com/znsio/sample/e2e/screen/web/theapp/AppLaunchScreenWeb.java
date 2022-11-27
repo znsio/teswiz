@@ -16,7 +16,7 @@ public class AppLaunchScreenWeb
     private final Driver driver;
     private final Visual visually;
     private final String SCREEN_NAME = AppLaunchScreenWeb.class.getSimpleName();
-    private final By loginFormLinkText = By.linkText("Form Authentication");
+    private static final By loginFormLinkText = By.linkText("Form Authentication");
 
     public AppLaunchScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;

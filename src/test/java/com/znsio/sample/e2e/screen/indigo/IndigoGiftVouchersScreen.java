@@ -4,10 +4,10 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Visual;
+import com.znsio.sample.e2e.screen.android.indigo.IndigoGiftVouchersScreenAndroid;
 import com.znsio.sample.e2e.screen.web.indigo.IndigoGiftVouchersScreenWeb;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
-import org.im4java.core.GMOps;
 
 import static com.znsio.e2e.runner.Runner.fetchDriver;
 import static com.znsio.e2e.runner.Runner.fetchEyes;
@@ -26,8 +26,8 @@ public abstract class IndigoGiftVouchersScreen {
                                           .getId());
 
         switch(platform) {
-            //            case android:
-            //                return new IndigoGiftVouchersScreenAndroid(driver, visually);
+            case android:
+                return new IndigoGiftVouchersScreenAndroid(driver, visually);
             case web:
                 return new IndigoGiftVouchersScreenWeb(driver, visually);
         }

@@ -12,7 +12,7 @@ public class NotepadScreenWindows
     private final Driver driver;
     private final Visual visually;
     private final String SCREEN_NAME = NotepadScreenWindows.class.getSimpleName();
-    private final By byEditorName = By.name("Text Editor");
+    private static final By byEditorName = By.name("Text Editor");
 
     public NotepadScreenWindows(Driver driver, Visual visually) {
         this.driver = driver;

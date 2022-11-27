@@ -18,10 +18,17 @@ public class IndigoGiftVouchersScreenWeb
     private final Driver driver;
     private final Visual visually;
     private final WebDriver innerDriver;
+    private final TestExecutionContext context;
     private static final String SCREEN_NAME = IndigoGiftVouchersScreenWeb.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
-    private final TestExecutionContext context;
+    private static final By bySelectedVoucherValueDropdownId = By.id("SelectedVoucherValue");
+    private static final By bySelectedVoucherQuantityDropdownId = By.id("SelectedVoucherQuantity");
+    private static final By byTotalAmountId = By.id("lblTotal");
+    private static final By byForNameId = By.id("Per_Fname");
+    private static final By byCustomMessageId = By.id("Message");
+    private static final By byPreviewButtonXpath = By.xpath("//input[@class='preview-btn']");
+    private static final By byPreviewVoucherHeadingXpath = By.xpath("//div[@class='heading']/h2[contains(text(),'Preview Your Voucher')]");
 
     public IndigoGiftVouchersScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
@@ -35,9 +42,9 @@ public class IndigoGiftVouchersScreenWeb
 
     @Override
     public IndigoGiftVouchersScreen select(String numberOfGiftVouchersToPurchase, String denomination) {
-        Select selectDenomination = new Select(driver.findElement(By.id("SelectedVoucherValue")));
+        Select selectDenomination = new Select(driver.findElement(bySelectedVoucherValueDropdownId));
         selectDenomination.selectByValue(denomination);
-        Select selectQuantity = new Select(driver.findElement(By.id("SelectedVoucherQuantity")));
+        Select selectQuantity = new Select(driver.findElement(bySelectedVoucherQuantityDropdownId));
         selectQuantity.selectByValue(numberOfGiftVouchersToPurchase);
         visually.checkWindow(SCREEN_NAME, "Selected denomination and quality");
         return this;
@@ -45,7 +52,7 @@ public class IndigoGiftVouchersScreenWeb
 
     @Override
     public int getTotalPrice() {
-        String total = driver.findElement(By.id("lblTotal"))
+        String total = driver.findElement(byTotalAmountId)
                              .getText();
         int totalAmount = Integer.parseInt(total.split(" ")[1]);
         return totalAmount;
@@ -56,11 +63,11 @@ public class IndigoGiftVouchersScreenWeb
         select(numberOfGiftVouchersToPurchase, denomination);
         driver.findElement(By.id("chkPersonal"))
               .click();
-        WebElement forWhomElement = driver.findElement(By.id("Per_Fname"));
+        WebElement forWhomElement = driver.findElement(byForNameId);
         forWhomElement.clear();
         forWhomElement.sendKeys(forWhom);
 
-        WebElement customMessageElement = driver.findElement(By.id("Message"));
+        WebElement customMessageElement = driver.findElement(byCustomMessageId);
         customMessageElement.clear();
         customMessageElement.sendKeys(customMessage);
         visually.checkWindow(SCREEN_NAME, "Personalised Gift Voucher");
@@ -69,8 +76,9 @@ public class IndigoGiftVouchersScreenWeb
 
     @Override
     public IndigoGiftVouchersScreen preview() {
-        driver.waitForClickabilityOf(By.xpath("//input[@class='preview-btn']")).click();
-        driver.waitTillElementIsVisible(By.xpath("//div[@class='heading']/h2[contains(text(),'Preview Your Voucher')]"));
+        driver.waitForClickabilityOf(byPreviewButtonXpath)
+              .click();
+        driver.waitTillElementIsVisible(byPreviewVoucherHeadingXpath);
         visually.checkWindow(SCREEN_NAME, "Preview Gift Voucher");
         return this;
     }
