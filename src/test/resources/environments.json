@@ -7,5 +7,8 @@
     "JIOMEET_BASE_URL": "https://jiomeetpro.jio.com/home",
     "INDIGO_BASE_URL": "https://www.goindigo.in/",
     "DINEOUT_BASE_URL": "https://www.dineout.co.in/"
+  },
+  "dev": {
+    "CONFENGINE_BASE_URL": "https://www.dev.confengine.com/"
   }
 }
