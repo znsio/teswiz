@@ -11,7 +11,7 @@
     "enablePerformanceLogging": true,
     "printPageSourceOnFindFailure": true,
     "app": {
-      "local": "./src/test/resources/sampleApps/TheApp-release.apk"
+      "local": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk"
     },
     "deviceName": "android",
     "noSign": true

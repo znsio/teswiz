@@ -2,7 +2,7 @@
   "android": {
     "adbExecTimeout": 45000,
     "app": {
-      "local": "./src/test/resources/sampleApps/IndiGoFlight-App_5.0.85.apk"
+      "local": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/dineout.book_2022-10-18.apk"
     },
     "appActivity": "com.dineout.book.splash.presentation.view.NewSplashActivity",
     "appPackage": "com.dineout.book",
