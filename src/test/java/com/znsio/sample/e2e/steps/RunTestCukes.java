@@ -8,13 +8,19 @@ import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.e2e.entities.APPLITOOLS;
 import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.steps.Hooks;
+import com.znsio.sample.e2e.entities.SAMPLE_TEST_CONTEXT;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
 import org.apache.log4j.Logger;
 import org.testng.annotations.DataProvider;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class RunTestCukes
         extends AbstractTestNGCucumberTests {
@@ -43,6 +49,7 @@ public class RunTestCukes
     public void beforeTestScenario(Scenario scenario) {
         LOGGER.info(String.format("ThreadID: %d: in overridden beforeTestScenario%n", Thread.currentThread()
                                                                                             .getId()));
+        LOGGER.info("testing purpose - -----------------------------------------");
         new Hooks().beforeScenario(scenario);
         Configuration ufgConfig = new Configuration();
         ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
@@ -50,6 +57,7 @@ public class RunTestCukes
         ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
         ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
         context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
+        initialDataSetup();
     }
 
     @After
@@ -57,5 +65,10 @@ public class RunTestCukes
         LOGGER.info(String.format("ThreadID: %d: in overridden afterTestScenario%n", Thread.currentThread()
                                                                                            .getId()));
         new Hooks().afterScenario(scenario);
+    }
+
+    private void initialDataSetup() {
+        Map<String,String> testData = Runner.getTestDataAsMap(System.getProperty("user.name"));
+        context.addTestState(SAMPLE_TEST_CONTEXT.USER_DETAILS, testData);
     }
 }
