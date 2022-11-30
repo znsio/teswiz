@@ -126,11 +126,17 @@ public class DeviceSetup {
     }
 
     private static void checkIfAppExistsAtTheMentionedPath(String appPath, String capabilitiesFileName) {
-        if(Files.exists(Paths.get(appPath))) {
-            LOGGER.info("\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName + ":: " + platform);
+        if(appPath.toLowerCase()
+                  .startsWith("http://") || (appPath.toLowerCase()
+                                                    .startsWith("https://"))) {
+            LOGGER.info("\tAppPath refers to a url: " + appPath);
         } else {
-            LOGGER.info("\tAppPath: " + appPath + " not found!");
-            throw new InvalidTestDataException("App file not found at the mentioned path: " + appPath);
+            if(Files.exists(Paths.get(appPath))) {
+                LOGGER.info("\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName + ":: " + platform);
+            } else {
+                LOGGER.info("\tAppPath: " + appPath + " not found!");
+                throw new InvalidTestDataException("App file not found at the mentioned path: " + appPath);
+            }
         }
     }
 
