@@ -1,0 +1,46 @@
+# Setting Up Browser-Stack with Teswiz:
+
+### Use the Teswiz version: 2665b0d517 or latest testwiz version from https://jitpack.io/#znsio/teswiz
+
+#### Put these capabilities and config files in capabilities and config folder as per the project requirements.
+
+* browserstack_capabilities.json(https://github.com/znsio/teswiz/blob/main/caps/theapp_browserStack_capabilities.json) 
+
+* browserstack_config.properties(https://github.com/znsio/teswiz/blob/main/configs/theapp_browserstack_config.properties)
+
+* [setupBrowserStackLocalTestingArtifact.sh](setupBrowserStackLocalTestingArtifact.sh)
+
+Update the data (app package, app activity, project, app Name) according to your project in capabilities file.
+
+Update the data (App Name, app package name, cloud user, cloud key) according to your project in properties file.
+
+### Test execution
+
+####  Running the tests in browser-Stack from local:
+
+Change the config file path in build.gradle file to get the configuration properties of browserstack
+![BuildGradleFileChanges.png](BuildGradleFileChanges.png)
+
+* Run the command from local:
+Sample command
+
+    ```PLATFORM=android RUN_IN_CI=true CLOUD_USER=<browserstackUsername> CLOUD_KEY=<browserstackaccessKey> ./gradlew run```  
+
+    ```PLATFORM=android RUN_IN_CI=true  ./gradlew run```
+
+* Running from pipeline:
+
+    Set the variable in azure-pipelines.yml
+  ![azurePipelineChanges.png](azurePipelineChanges.png)
+
+    variables:
+      * `CLOUD_KEY`: $(CLOUD_USER_KEY)
+      * `CLOUD_USER`: $(CLOUD_USER_NAME)
+
+      Set Variable in pipeline:
+
+      * `CLOUD_NAME`: browserstack
+
+      * `CLOUD_USER_NAME`: browserStackUserName
+
+      * `CLOUD_USER_KEY`: BrowserStack Key 
