@@ -65,7 +65,7 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 
 ## [Running the sample tests](docs/SampleTests-README.md)
 
-## [Writing the first tests](docs/WritingFirstTest-README.md)
+## [Writing the first test](docs/WritingFirstTest-README.md)
 
 ## Additional configurations
 
