@@ -1,6 +1,6 @@
 # Setting Up Browser-Stack with Teswiz:
 
-With below BrowserStack Local configurations, we can test the mobile apps those hosted on localhost,behind proxies and firewalls efficiently.
+With below BrowserStack Local configurations, we can test the mobile apps those hosted on localhost, behind proxies and firewalls efficiently.
 
 ### Use the Teswiz version: 2665b0d517 or latest testwiz version from https://jitpack.io/#znsio/teswiz
 
@@ -30,7 +30,7 @@ Sample command
 
     ```PLATFORM=android RUN_IN_CI=true  ./gradlew run```
 
-#### Running from pipeline (this is specifically for Azure),But similar changes can be done for any other CI tool as well.
+#### Running from the pipeline (this is specifically for Azure), but similar changes can be done for any other CI tool as well.
   * Set the variable in azure-pipelines.yml
     ![azurePipelineChanges.png](azurePipelineChanges.png)
 
