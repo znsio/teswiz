@@ -1,5 +1,7 @@
 # Setting Up Browser-Stack with Teswiz:
 
+With below BrowserStack Local configurations, we can test the mobile apps those hosted on localhost,behind proxies and firewalls efficiently.
+
 ### Use the Teswiz version: 2665b0d517 or latest testwiz version from https://jitpack.io/#znsio/teswiz
 
 #### Put these capabilities and config files in capabilities and config folder as per the project requirements.
@@ -24,23 +26,22 @@ Change the config file path in build.gradle file to get the configuration proper
 * Run the command from local:
 Sample command
 
-    ```PLATFORM=android RUN_IN_CI=true CLOUD_USER=<browserstackUsername> CLOUD_KEY=<browserstackaccessKey> ./gradlew run```  
+    ```PLATFORM=android RUN_IN_CI=true CLOUD_USE_PROXY=false CLOUD_USER=<browserstackUsername> CLOUD_KEY=<browserstackaccessKey> ./gradlew run```  
 
     ```PLATFORM=android RUN_IN_CI=true  ./gradlew run```
 
-* Running from pipeline:
-
-    Set the variable in azure-pipelines.yml
-  ![azurePipelineChanges.png](azurePipelineChanges.png)
+#### Running from pipeline (this is specifically for Azure),But similar changes can be done for any other CI tool as well.
+  * Set the variable in azure-pipelines.yml
+    ![azurePipelineChanges.png](azurePipelineChanges.png)
 
     variables:
-      * `CLOUD_KEY`: $(CLOUD_USER_KEY)
-      * `CLOUD_USER`: $(CLOUD_USER_NAME)
+        * `CLOUD_KEY`: $(CLOUD_USER_KEY)
+        * `CLOUD_USER`: $(CLOUD_USER_NAME)
 
-      Set Variable in pipeline:
+   * Set Variable in pipeline(Azure pipeline variables):
 
-      * `CLOUD_NAME`: browserstack
-
-      * `CLOUD_USER_NAME`: browserStackUserName
-
-      * `CLOUD_USER_KEY`: BrowserStack Key 
+     * `CLOUD_NAME`: browserstack
+     * `CLOUD_USER_NAME`: browserStackUserName
+     * `CLOUD_USER_KEY`: BrowserStack Key
+     * `CLOUD_USE_PROXY` = true
+  #### * Note: Check the necessary proxy settings if required 
