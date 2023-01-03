@@ -21,6 +21,7 @@ import com.znsio.e2e.entities.APPLITOOLS;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
+import com.znsio.e2e.exceptions.VisualTestSetupException;
 import com.znsio.e2e.runner.Runner;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
@@ -116,7 +117,9 @@ public class Visual {
             appEyes.open(innerDriver, appName + "-" + platform, testName);
             LOGGER.info("instantiateAppiumEyes: Is Applitools Visual Testing enabled? - " + !appEyes.getIsDisabled());
         } catch(IllegalArgumentException e) {
-            throw new InvalidTestDataException(String.format("Exception in instantiating Applitools for Apps: '%s;", e.getMessage(), e));
+            LOGGER.error("Issue found while instantiating Applitools Eyes, closing Appium driver instance");
+            innerDriver.quit();
+            throw new VisualTestSetupException(String.format("Exception in instantiating Applitools for Apps: '%s;", e.getMessage(), e));
         }
 
         return appEyes;
@@ -178,7 +181,9 @@ public class Visual {
             webEyes.open(innerDriver, appName + "-" + platform, testName, setBrowserViewPortSize);
             LOGGER.info("instantiateWebEyes:  Is Applitools Visual Testing enabled? - " + !webEyes.getIsDisabled());
         } catch(IllegalArgumentException e) {
-            throw new InvalidTestDataException(String.format("Exception in instantiating Applitools for Web: '%s;", e.getMessage(), e));
+            LOGGER.error("Issue found while instantiating Applitools Eyes, closing Webdriver instance");
+            innerDriver.quit();
+            throw new VisualTestSetupException(String.format("Exception in instantiating Applitools for Web: '%s;", e.getMessage(), e));
         }
         return webEyes;
     }
