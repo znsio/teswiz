@@ -5,32 +5,34 @@
         1. Intellij (install cucumber JVM plugin)
         2. Java JDK 11 (JAVA_HOME Path Set)
         3. Appium version (minimum 1.20.0)
-        4. Android studio (Android_Home Path Set)
-        5. GIT
-        6. Docker
+        4. Android studio (ANDROID_HOME Path Set)
 
 ## Flow understanding
 
-    # Feature Files:    
-            These are the files that contains the tests in BDD format with the tags related to 
-            platform on which the tests will be running. Tags such as @android or @web etc. 
-            Also, there can be more tags related to features can be added in feature level.
+    # Feature Files:
+            Tests are written in the declarative style, depicting the business functionality. There should be no
+            "UI actions" in the scenarios. 
+            Depending on the platform your scenario is implemented for, you would need to add
+            @android / @iOS / @web @windows tags. You can add custom tags on the scenarios to help run tests 
+            independently, and also group them appropriately in the reports.
     
     # Steps File:
-            These are files that have the definition of the steps that is used in feature files. 
-            LOGGER can be added in each method. From steps file, there would be a call made to BL.
+            These are the classes where the steps are defined for the features files. These classes will call the methods
+            from BL to perform the particular step. The driver for the particular context is also created in BL. Context is
+            a user persona for which tests are written. Loggers can be added for every step method.
     
     # Business Layer:
-            These files have assertions and business logics. BL contains the functionality.
-            From the BL, there will be call made to screens or the APIs. This will be the logical 
-            layer for the suite.
-    
-    # Screens: 
-             Screen represents one particular screen of application or a snippet of the application.The screen
-             files contains the locator and screen navigations.
+            These classes are the logic layer of the suite where the business logic is returned to perfrom certain operation.
+            BL contains the call for screens and services required to perform the operation. Also, assertions can be added for
+            screens.
+
+    # Screens:
+            Screens are the classes that represents one particular screen or snippet of application. These are abstract 
+            classes which is extended according to the platform in which tests going to execute in a sub-directory.
+            Screen classs also have visual checks to implement visual testing with navigation and the locators on the page.
 
     # Services: 
-            These are the files that contain the API service calls required for pre-requisite data. 
+            These are the files that contain the API service calls required for pre-requisite test data. 
     
     # Caps: 
             This directory contains the capabilities file contains details required to create a Appium 
@@ -68,7 +70,7 @@
 4. Add required test data in ./src/test/resources/testData.json such as user details.
 5. Create a feature file in ./src/test/resources/com/znsio/sample/e2e/features directory.
    Ex: myFirstTest.feature
-6. Add Feature and scenario in it.\
+6. Add feature and scenario in it.\
    Note: Scenario should be in declarative\
    For example:\
    ````
@@ -77,15 +79,17 @@
             And I start an instant meeting
             When I Unmute myself
             Then I should be able to Mute myself
-7. Add A test step for the same in ./src/test/java/com/znsio/sample/e2e/steps.
+7. Add a test step for the same in ./src/test/java/com/znsio/sample/e2e/steps.
 8. Add the required BL methods in ./src/test/java/com/znsio/sample/e2e/businessLayer.
 9. Add the required Screens for BL in ./src/test/java/com/znsio/sample/e2e/screen.
-10. Terminal Run commands \
+10. Terminal run commands \
     (i). Running in local from terminal
    ````    
      PLATFORM=android TAG=@firstTest ./gradlew clean run 
    ````
+
 (ii). Running in local to the cloud devices (Mobile)
+
    ````
      PLATFORM=android TAG=@firstTest RUN_IN_CI = true ./gradlew clean run 
    ````
