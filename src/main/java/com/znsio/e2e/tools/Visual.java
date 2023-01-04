@@ -93,7 +93,7 @@ public class Visual {
         // appiumEyesRunner = new ClassicRunner();
         // appiumEyesRunner.setDontCloseBatches(true);
         com.applitools.eyes.appium.Eyes appEyes = new com.applitools.eyes.appium.Eyes();
-
+        LOGGER.info("Check Point 1");
         appEyes.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         appEyes.setApiKey(getApplitoolsAPIKey(isVisualTestingEnabled));
         appEyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
@@ -104,7 +104,7 @@ public class Visual {
 
         applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
         appEyes.setLogHandler(new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
-
+        LOGGER.info("Check Point 2");
         appEyes.addProperty(APP_NAME, appName);
         appEyes.addProperty("USER_PERSONA", userPersona);
         appEyes.addProperty(BRANCH_NAME, String.valueOf(getValueFromConfig(BRANCH_NAME)));
@@ -112,13 +112,13 @@ public class Visual {
         appEyes.addProperty(RUN_IN_CI, String.valueOf(getValueFromConfig(RUN_IN_CI)));
         appEyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
         appEyes.addProperty("USER_NAME", USER_NAME);
+        LOGGER.info("Check Point 3");
+
 
         try {
             appEyes.open(innerDriver, appName + "-" + platform, testName);
             LOGGER.info("instantiateAppiumEyes: Is Applitools Visual Testing enabled? - " + !appEyes.getIsDisabled());
-        } catch(IllegalArgumentException | EyesException e) {
-            LOGGER.error("Issue found while instantiating Applitools eye, closing Appium driver instance");
-            innerDriver.quit();
+        } catch(IllegalArgumentException e) {
             throw new VisualTestSetupException(String.format("Exception in instantiating Applitools for Apps: '%s;", e.getMessage(), e));
         }
         return appEyes;
