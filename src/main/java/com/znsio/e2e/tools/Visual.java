@@ -118,7 +118,10 @@ public class Visual {
             appEyes.open(innerDriver, appName + "-" + platform, testName);
             LOGGER.info("instantiateAppiumEyes: Is Applitools Visual Testing enabled? - " + !appEyes.getIsDisabled());
         } catch(IllegalArgumentException e) {
-            throw new VisualTestSetupException(String.format("Exception in instantiating Applitools for Apps: '%s;", e.getMessage(), e));
+            String message = String.format("Exception in instantiating Applitools for Web: '%s', Closing Web-driver instance", e.getMessage());
+            LOGGER.error(message);
+            innerDriver.quit();
+            throw new VisualTestSetupException(message, e);
         }
         return appEyes;
     }
@@ -179,9 +182,11 @@ public class Visual {
             webEyes.open(innerDriver, appName + "-" + platform, testName, setBrowserViewPortSize);
             LOGGER.info("instantiateWebEyes:  Is Applitools Visual Testing enabled? - " + !webEyes.getIsDisabled());
         } catch(IllegalArgumentException | EyesException e) {
-            LOGGER.error("Issue found while instantiating Applitools eye, closing web-driver instance");
+            String message = String.format("Exception in instantiating Applitools for Web: '%s', Closing Web-driver instance", e.getMessage());
+            LOGGER.error(message);
             innerDriver.quit();
-            throw new VisualTestSetupException(String.format("Exception in instantiating Applitools for Web: '%s;", e.getMessage(), e));
+            throw new VisualTestSetupException(message, e);
+
         }
         return webEyes;
     }
