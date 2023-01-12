@@ -22,9 +22,9 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.exceptions.VisualTestSetupException;
-import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
+import com.znsio.e2e.runner.Runner;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +35,10 @@ import org.openqa.selenium.WebDriver;
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.znsio.e2e.runner.Runner.*;
 import static com.znsio.e2e.runner.Setup.*;
@@ -112,7 +115,7 @@ public class Visual {
         appEyes.addProperty(TARGET_ENVIRONMENT, String.valueOf(getValueFromConfig(TARGET_ENVIRONMENT)));
         appEyes.addProperty("USER_NAME", USER_NAME);
         String serverUrl = "curl -I --location --request GET '" + getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL)
-                    + "api/sessions/renderinfo?apiKey=" + getApplitoolsAPIKey(isVisualTestingEnabled) + "'";
+                + "api/sessions/renderinfo?apiKey=" + getApplitoolsAPIKey(isVisualTestingEnabled) + "'";
         try {
             CheckApplitoolConnectivity(serverUrl);
             appEyes.open(innerDriver, appName + "-" + platform, testName);
@@ -123,8 +126,14 @@ public class Visual {
             innerDriver.quit();
             throw new VisualTestSetupException(message, e);
         }
+
         return appEyes;
     }
+
+    private String getApplitoolsAPIKey(boolean isVisualTestingEnabled) {
+        return isVisualTestingEnabled? getValueFromConfig(APPLITOOLS.API_KEY, null) : getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET);
+    }
+
     private void CheckApplitoolConnectivity(String url){
         String[] commandList = new String[1];
         commandList[0] = url;
@@ -135,9 +144,6 @@ public class Visual {
         else {
             throw new IllegalArgumentException("Applitool URL connectivity check is Failed!");
         }
-    }
-    private String getApplitoolsAPIKey(boolean isVisualTestingEnabled) {
-        return isVisualTestingEnabled? getValueFromConfig(APPLITOOLS.API_KEY, null) : getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET);
     }
 
     private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType, Platform platform, WebDriver innerDriver, String appName, String testName,
