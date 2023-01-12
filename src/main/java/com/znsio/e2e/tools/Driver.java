@@ -371,6 +371,14 @@ public class Driver {
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.visibilityOfElementLocated(elementId));
     }
 
+    public List<WebElement> waitTillVisibilityOfAllElements(By elementId){
+        return waitTillVisibilityOfAllElements(elementId, 10);
+    }
+
+    public List<WebElement> waitTillVisibilityOfAllElements(By elementId, int numberOfSecondsToWait){
+        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(elementId));
+    }
+
     public WebElement waitTillElementIsVisible(String elementId) {
         return waitTillElementIsVisible(elementId, 10);
     }
@@ -379,12 +387,12 @@ public class Driver {
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.visibilityOf(findElementByAccessibilityId(elementId)));
     }
 
-    public WebElement waitTillPresenceOfAllElements(By elementId) {
+    public List<WebElement> waitTillPresenceOfAllElements(By elementId) {
         return waitTillPresenceOfAllElements(elementId, 10);
     }
 
-    public WebElement waitTillPresenceOfAllElements(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.presenceOfElementLocated(elementId));
+    public List<WebElement> waitTillPresenceOfAllElements(By elementId, int numberOfSecondsToWait) {
+        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(elementId));
     }
 
     public void setWindowSize(int width, int height) {
