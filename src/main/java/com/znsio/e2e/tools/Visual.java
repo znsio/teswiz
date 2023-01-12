@@ -83,7 +83,7 @@ public class Visual {
         return (null == applitoolsConfig.get(key)) ? defaultValue : Boolean.parseBoolean(String.valueOf(applitoolsConfig.get(key)));
     }
 
-    public com.applitools.eyes.appium.Eyes instantiateAppiumEyes(String driverType, Platform platform, WebDriver innerDriver, String appName, String testName,
+    private com.applitools.eyes.appium.Eyes instantiateAppiumEyes(String driverType, Platform platform, WebDriver innerDriver, String appName, String testName,
                                                                   boolean isVisualTestingEnabled) {
         if(driverType.equals(Driver.WEB_DRIVER)) {
             isVisualTestingEnabled = false;
