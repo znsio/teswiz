@@ -116,7 +116,7 @@ public class Visual {
         appEyes.addProperty("USER_NAME", USER_NAME);
 
         try {
-            checkApplitoolsConnectivity(isVisualTestingEnabled);
+            checkApplitoolsConnectivity(isVisualTestingEnabled,platform.name());
             appEyes.open(innerDriver, appName + "-" + platform, testName);
             LOGGER.info("" + "instantiateAppiumEyes: Is Applitools Visual Testing enabled? - " + !appEyes.getIsDisabled());
         } catch(IllegalArgumentException e) {
@@ -133,17 +133,22 @@ public class Visual {
         return isVisualTestingEnabled? getValueFromConfig(APPLITOOLS.API_KEY, null) : getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET);
     }
 
-    private void checkApplitoolsConnectivity(boolean isVisualTestingEnabled){
+    private void checkApplitoolsConnectivity(boolean isVisualTestingEnabled,String platformName ){
+        if(isVisualTestingEnabled){
         String serverUrl = "curl -I --location --request GET '" + getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL)
                 + "api/sessions/renderinfo?apiKey=" + getApplitoolsAPIKey(isVisualTestingEnabled) + "'";
         String[] commandList = new String[1];
         commandList[0] = serverUrl;
         CommandLineResponse response = CommandLineExecutor.execCommand(commandList);
         if(response.getExitCode() == 0 && response.getStdOut().contains("200 OK")){
-            LOGGER.info("Applitool URL connectivity check is successfully done!");
+            LOGGER.info("Applitool URL connectivity check was successful");
         }
         else {
-            throw new IllegalArgumentException("Applitool URL connectivity check is Failed!");
+            throw new IllegalArgumentException("Applitool URL connectivity check was failed for :"+platformName);
+        }
+        }
+        else{
+            LOGGER.info("Skipping URL connectivity check for "+platformName);
         }
     }
 
@@ -196,7 +201,7 @@ public class Visual {
         LOGGER.info("Using browser dimensions for Applitools: " + setBrowserViewPortSize);
 
         try {
-            checkApplitoolsConnectivity(isVisualTestingEnabled);
+            checkApplitoolsConnectivity(isVisualTestingEnabled,platform.name());
             webEyes.open(innerDriver, appName + "-" + platform, testName, setBrowserViewPortSize);
             LOGGER.info("instantiateWebEyes:  Is Applitools Visual Testing enabled? - " + !webEyes.getIsDisabled());
         } catch(IllegalArgumentException | EyesException e) {
@@ -322,6 +327,7 @@ public class Visual {
 
         screenShotManager.takeScreenShot(innerDriver, formattedTagName);
         return this;
+
     }
 
     @NotNull
