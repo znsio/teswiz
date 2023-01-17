@@ -132,23 +132,28 @@ public class Visual {
     private String getApplitoolsAPIKey(boolean isVisualTestingEnabled) {
         return isVisualTestingEnabled? getValueFromConfig(APPLITOOLS.API_KEY, null) : getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET);
     }
-
-    private void checkApplitoolsConnectivity(boolean isVisualTestingEnabled,String platformName ){
-        if(isVisualTestingEnabled){
-        String serverUrl = "curl -I --location --request GET '" + getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL)
+    private String getApplitoolURL(boolean isVisualTestingEnabled){
+        return "curl -I --location --request GET '" + getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL)
                 + "api/sessions/renderinfo?apiKey=" + getApplitoolsAPIKey(isVisualTestingEnabled) + "'";
-        String[] commandList = new String[1];
-        commandList[0] = serverUrl;
-        CommandLineResponse response = CommandLineExecutor.execCommand(commandList);
+    }
+    private void testConnectionforUrl(String url){
+        String[] urlList = new String[1];
+        urlList[0] = url;
+        CommandLineResponse response = CommandLineExecutor.execCommand(urlList);
+        LOGGER.info("Connection response :"+response.getStdOut());
         if(response.getExitCode() == 0 && response.getStdOut().contains("200 OK")){
-            LOGGER.info("Applitool URL connectivity check was successful");
+            LOGGER.info("Applitools connectivity check was successful");
         }
         else {
-            throw new IllegalArgumentException("Applitool URL connectivity check was failed for :"+platformName);
+            throw new IllegalArgumentException("Applitools connectivity check was failed");
         }
+    }
+    private void checkApplitoolsConnectivity(boolean isVisualTestingEnabled,String platformName ){
+        if(isVisualTestingEnabled){
+            testConnectionforUrl(getApplitoolURL(isVisualTestingEnabled));
         }
         else{
-            LOGGER.info("Skipping URL connectivity check for "+platformName);
+            LOGGER.info("isVisualTestingEnabled: "+isVisualTestingEnabled+"Hence, skipping Applitools connectivity check for "+platformName);
         }
     }
 
