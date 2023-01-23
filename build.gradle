@@ -180,3 +180,7 @@ task run(type: JavaExec) {
     mainClass = "com.znsio.e2e.runner.Runner"
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
 }
+
+test {
+    useJUnitPlatform()
+}
