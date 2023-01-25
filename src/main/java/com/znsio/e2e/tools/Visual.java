@@ -136,11 +136,9 @@ public class Visual {
         return "curl -I --location --request GET '" + getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL)
                 + "api/sessions/renderinfo?apiKey=" + getApplitoolsAPIKey(isVisualTestingEnabled) + "'";
     }
-    private void testConnectionforUrl(String url){
-        String[] urlList = new String[1];
-        urlList[0] = url;
+    private void testUrl(String url){
+        String[] urlList = new String[]{url};
         CommandLineResponse response = CommandLineExecutor.execCommand(urlList);
-        LOGGER.info("Connection response :"+response.getStdOut());
         if(response.getExitCode() == 0 && response.getStdOut().contains("200 OK")){
             LOGGER.info("Applitools connectivity check was successful");
         }
@@ -150,7 +148,7 @@ public class Visual {
     }
     private void checkApplitoolsConnectivity(boolean isVisualTestingEnabled,String platformName ){
         if(isVisualTestingEnabled){
-            testConnectionforUrl(getApplitoolURL(isVisualTestingEnabled));
+            testUrl(getApplitoolURL(isVisualTestingEnabled));
         }
         else{
             LOGGER.info("isVisualTestingEnabled: "+isVisualTestingEnabled+"Hence, skipping Applitools connectivity check for "+platformName);
