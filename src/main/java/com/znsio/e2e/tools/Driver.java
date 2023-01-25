@@ -88,7 +88,7 @@ public class Driver {
     public void waitForAlert(int numberOfSecondsToWait) {
         (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.alertIsPresent());
         driver.switchTo()
-                .alert();
+              .alert();
     }
 
     public WebElement findElement(By elementId) {
@@ -114,10 +114,10 @@ public class Driver {
     public void scroll(Point fromPoint, Point toPoint) {
         TouchAction touchAction = new TouchAction(((AppiumDriver) driver));
         touchAction.press(PointOption.point(fromPoint))
-                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)))
-                .moveTo(PointOption.point(toPoint))
-                .release()
-                .perform();
+                   .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)))
+                   .moveTo(PointOption.point(toPoint))
+                   .release()
+                   .perform();
     }
 
     public WebElement scrollToAnElementByText(String text) {
@@ -126,24 +126,24 @@ public class Driver {
 
     public boolean isElementPresent(By locator) {
         return driver.findElements(locator)
-                .size() > 0;
+                     .size() > 0;
     }
 
     public boolean isElementPresentByAccessibilityId(String locator) {
         return ((AppiumDriver) driver).findElementsByAccessibilityId(locator)
-                .size() > 0;
+                                      .size() > 0;
     }
 
     public boolean isElementPresentWithin(WebElement parentElement, By locator) {
         return parentElement.findElements(locator)
-                .size() > 0;
+                            .size() > 0;
     }
 
     public void scrollDownByScreenSize() {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage()
-                .window()
-                .getSize();
+                                           .window()
+                                           .getSize();
         LOGGER.info("dimension: " + windowSize.toString());
         int width = windowSize.width / 2;
         int fromHeight = (int) (windowSize.height * 0.9);
@@ -152,17 +152,17 @@ public class Driver {
 
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.press(PointOption.point(new Point(width, fromHeight)))
-                .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-                .moveTo(PointOption.point(new Point(width, toHeight)))
-                .release()
-                .perform();
+                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
+                   .moveTo(PointOption.point(new Point(width, toHeight)))
+                   .release()
+                   .perform();
     }
 
     public void scrollVertically(int fromPercentScreenHeight, int toPercentScreenHeight, int percentScreenWidth) {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage()
-                .window()
-                .getSize();
+                                           .window()
+                                           .getSize();
         LOGGER.info("dimension: " + windowSize.toString());
         int width = (windowSize.width * percentScreenWidth) / 100;
         int fromHeight = (windowSize.height * fromPercentScreenHeight) / 100;
@@ -172,14 +172,14 @@ public class Driver {
 
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.press(PointOption.point(new Point(width, fromHeight)))
-                .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-                .moveTo(PointOption.point(new Point(width, toHeight)))
-                .release()
-                .perform();
+                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
+                   .moveTo(PointOption.point(new Point(width, toHeight)))
+                   .release()
+                   .perform();
     }
 
     public void tapOnMiddleOfScreen() {
-        if (this.type.equals(Driver.APPIUM_DRIVER)) {
+        if(this.type.equals(Driver.APPIUM_DRIVER)) {
             tapOnMiddleOfScreenOnDevice();
         } else {
             simulateMouseMovementOnBrowser();
@@ -189,25 +189,25 @@ public class Driver {
     private void tapOnMiddleOfScreenOnDevice() {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension screenSize = appiumDriver.manage()
-                .window()
-                .getSize();
+                                           .window()
+                                           .getSize();
         int midHeight = screenSize.height / 2;
         int midWidth = screenSize.width / 2;
         LOGGER.info(String.format("tapOnMiddleOfScreen: Screen dimensions: '%s'. Tapping on coordinates: %d:%d%n", screenSize, midWidth, midHeight));
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.tap(PointOption.point(midWidth, midHeight))
-                .perform();
+                   .perform();
         waitFor(1);
     }
 
     private void simulateMouseMovementOnBrowser() {
         Actions actions = new Actions(this.driver);
         Dimension screenSize = driver.manage()
-                .window()
-                .getSize();
+                                     .window()
+                                     .getSize();
         Point currentPosition = driver.manage()
-                .window()
-                .getPosition();
+                                      .window()
+                                      .getPosition();
 
         int midHeight = screenSize.height / 2;
         int midWidth = screenSize.width / 2;
@@ -221,7 +221,7 @@ public class Driver {
         LOGGER.info(String.format("Using offset: '%d':'%d'", offsetX, offsetY));
 
         actions.moveByOffset(offsetX, offsetY)
-                .perform();
+               .perform();
         waitFor(1);
     }
 
@@ -236,8 +236,8 @@ public class Driver {
     private int getWindowHeight() {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage()
-                .window()
-                .getSize();
+                                           .window()
+                                           .getSize();
         LOGGER.info("dimension: " + windowSize.toString());
         return windowSize.height;
     }
@@ -245,18 +245,18 @@ public class Driver {
     private int getWindowWidth() {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         return appiumDriver.manage()
-                .window()
-                .getSize().width;
+                           .window()
+                           .getSize().width;
     }
 
     private void swipe(int height, int fromWidth, int toWidth) {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.press(PointOption.point(new Point(fromWidth, height)))
-                .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-                .moveTo(PointOption.point(new Point(toWidth, height)))
-                .release()
-                .perform();
+                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
+                   .moveTo(PointOption.point(new Point(toWidth, height)))
+                   .release()
+                   .perform();
     }
 
     public void swipeLeft() {
@@ -282,7 +282,7 @@ public class Driver {
 
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.tap(PointOption.point(notificationCoordinates))
-                .perform();
+                   .perform();
         LOGGER.info("Tapped on notification. Go back to meeting");
         waitFor(3);
     }
@@ -317,29 +317,29 @@ public class Driver {
 
         TouchAction action = new TouchAction((PerformsTouchActions) driver);
         action.longPress(LongPressOptions.longPressOptions()
-                        .withElement(ElementOption.element(elementToBeLongTapped)))
-                .release()
-                .perform();
+                                         .withElement(ElementOption.element(elementToBeLongTapped)))
+              .release()
+              .perform();
     }
 
     public void pushFileToDevice(String filePathToPush, String devicePath) {
         LOGGER.info("Pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath + "'");
         try {
-            if (Runner.platform.equals(Platform.android)) {
+            if(Runner.platform.equals(Platform.android)) {
                 ((AndroidDriver) driver).pushFile(devicePath, new File(filePathToPush));
-            } else if (Runner.platform.equals(Platform.iOS)) {
+            } else if(Runner.platform.equals(Platform.iOS)) {
                 ((IOSDriver) driver).pushFile(devicePath, new File(filePathToPush));
             }
-        } catch (IOException e) {
+        } catch(IOException e) {
             throw new InvalidTestDataException("Error in pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath + "'", e);
         }
     }
 
     public void allowPermission(By element) {
         waitForClickabilityOf(element);
-        if (Runner.platform.equals(Platform.android)) {
+        if(Runner.platform.equals(Platform.android)) {
             driver.findElement(element)
-                    .click();
+                  .click();
         }
     }
 
@@ -371,11 +371,11 @@ public class Driver {
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.visibilityOfElementLocated(elementId));
     }
 
-    public List<WebElement> waitTillVisibilityOfAllElements(By elementId) {
+    public List<WebElement> waitTillVisibilityOfAllElements(By elementId){
         return waitTillVisibilityOfAllElements(elementId, 10);
     }
 
-    public List<WebElement> waitTillVisibilityOfAllElements(By elementId, int numberOfSecondsToWait) {
+    public List<WebElement> waitTillVisibilityOfAllElements(By elementId, int numberOfSecondsToWait){
         return (new WebDriverWait(driver, numberOfSecondsToWait)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(elementId));
     }
 
@@ -396,18 +396,18 @@ public class Driver {
     }
 
     public void setWindowSize(int width, int height) {
-        if (this.type.equals(Driver.WEB_DRIVER)) {
+        if(this.type.equals(Driver.WEB_DRIVER)) {
             driver.manage()
-                    .window()
-                    .setSize(new Dimension(width, height));
+                  .window()
+                  .setSize(new Dimension(width, height));
         }
     }
 
     public void moveToElement(By moveToElementLocator) {
         Actions actions = new Actions(driver);
         actions.moveToElement(driver.findElement(moveToElementLocator))
-                .build()
-                .perform();
+               .build()
+               .perform();
         waitFor(1);
     }
 
@@ -432,12 +432,12 @@ public class Driver {
 
     public WebDriver switchFrameToDefault() {
         return driver.switchTo()
-                .defaultContent();
+                     .defaultContent();
     }
 
     public WebDriver switchToFrame(String id) {
         return driver.switchTo()
-                .frame(id);
+                     .frame(id);
     }
 
     public void scrollToBottom() {
@@ -448,7 +448,6 @@ public class Driver {
         WebElement element = driver.findElement(elementId);
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
     }
-
     public void switchToNextTab() {
         Iterator<String> iterator = driver.getWindowHandles().iterator();
         try {
@@ -462,11 +461,10 @@ public class Driver {
     public void switchToParentTab() {
         try {
             driver.switchTo().window(driver.getWindowHandles().iterator().next());
-        } catch (NoSuchElementException e) {
+        }catch (NoSuchElementException e){
             throw new NoSuchElementException("No previous tab found.", e);
         }
     }
-
     public void attachFile(String filePathToAttach, WebElement inputFileWebElement) {
         inputFileWebElement.sendKeys(filePathToAttach);
     }
