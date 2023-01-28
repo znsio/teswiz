@@ -17,17 +17,17 @@ public class SignInScreenAndroid
     private final Visual visually;
     private static final String SCREEN_NAME = SignInScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
-    private final By bySignInId = By.id("com.jio.rilconferences:id/signIn");
-    private final By byUserNameId = By.id("com.jio.rilconferences:id/edit_mobile_number");
-    private final By byProceedButtonId = By.id("com.jio.rilconferences:id/btn_otp_next");
-    private final By byPasswordId = By.id("com.jio.rilconferences:id/edt_otp_number");
-    private final By byWelcomeMessageId = By.id("com.jio.rilconferences:id/textUserName");
-    private final By byJoinMeetingId = By.id("com.jio.rilconferences:id/joinMeetingBtn");
-    private final By byEnterMeetingId = By.id("com.jio.rilconferences:id/inputMeetingLink");
-    private final By byEnterMeetingPasswordId = By.id("com.jio.rilconferences:id/inputMeetingPassword");
-    private final By byEnterDisplayNameId = By.id("com.jio.rilconferences:id/inputUserName");
-    private final By byEnterMeeting = By.id("com.jio.rilconferences:id/buttonNext");
-    private final By byJoinMeeting = By.id("com.jio.rilconferences:id/buttonJoinMeeting");
+    private static final By bySignInId = By.id("com.jio.rilconferences:id/signIn");
+    private static final By byUserNameId = By.id("com.jio.rilconferences:id/edit_mobile_number");
+    private static final By byProceedButtonId = By.id("com.jio.rilconferences:id/btn_otp_next");
+    private static final By byPasswordId = By.id("com.jio.rilconferences:id/edt_otp_number");
+    private static final By byWelcomeMessageId = By.id("com.jio.rilconferences:id/textUserName");
+    private static final By byJoinMeetingId = By.id("com.jio.rilconferences:id/joinMeetingBtn");
+    private static final By byEnterMeetingId = By.id("com.jio.rilconferences:id/inputMeetingLink");
+    private static final By byEnterMeetingPasswordId = By.id("com.jio.rilconferences:id/inputMeetingPassword");
+    private static final By byEnterDisplayNameId = By.id("com.jio.rilconferences:id/inputUserName");
+    private static final By byEnterMeeting = By.id("com.jio.rilconferences:id/buttonNext");
+    private static final By byJoinMeeting = By.id("com.jio.rilconferences:id/buttonJoinMeeting");
 
     public SignInScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;

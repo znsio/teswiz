@@ -13,11 +13,11 @@ public class LoginScreenWeb
     private final Driver driver;
     private final Visual visually;
     private final String SCREEN_NAME = LoginScreenWeb.class.getSimpleName();
-    private final By userNameId = By.id("username");
-    private final By passwordId = By.id("password");
-    private final By loginButtonXpath = By.xpath("//button/i[contains(text(),\"Login\")]");
-    private final By errorMessageId = By.id("flash");
-    private final By dismissAlertXpath = By.xpath("//a[@href=\"#\"]");
+    private static final By userNameId = By.id("username");
+    private static final By passwordId = By.id("password");
+    private static final By loginButtonXpath = By.xpath("//button/i[contains(text(),\"Login\")]");
+    private static final By errorMessageId = By.id("flash");
+    private static final By dismissAlertXpath = By.xpath("//a[@href=\"#\"]");
 
     public LoginScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;

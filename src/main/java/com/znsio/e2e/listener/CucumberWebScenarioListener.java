@@ -20,7 +20,7 @@ public class CucumberWebScenarioListener
     private final Map<String, Integer> scenarioRunCounts = new HashMap<>();
 
     public CucumberWebScenarioListener() {
-        LOGGER.info(String.format("ThreadID: %d: CucumberWebScenarioListener\n", Thread.currentThread()
+        LOGGER.info(String.format("ThreadId: %d: CucumberWebScenarioListener\n", Thread.currentThread()
                                                                                        .getId()));
     }
 
@@ -34,7 +34,7 @@ public class CucumberWebScenarioListener
 
     private void webRunStartedHandler(TestRunStarted event) {
         LOGGER.info("webRunStartedHandler");
-        LOGGER.info(String.format("ThreadID: %d: beforeSuite: \n", Thread.currentThread()
+        LOGGER.info(String.format("ThreadId: %d: beforeSuite: \n", Thread.currentThread()
                                                                          .getId()));
     }
 
@@ -49,7 +49,7 @@ public class CucumberWebScenarioListener
         Integer scenarioRunCount = getScenarioRunCount(scenarioName);
         String normalisedScenarioName = normaliseScenarioName(scenarioName);
 
-        LOGGER.info(String.format("ThreadID: %d: beforeScenario: for scenario: %s\n", Thread.currentThread()
+        LOGGER.info(String.format("ThreadId: %d: beforeScenario: for scenario: %s\n", Thread.currentThread()
                                                                                             .getId(), scenarioName));
         testExecutionContext.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, FileLocations.REPORTS_DIRECTORY + normalisedScenarioName);
         testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_DIRECTORY,
@@ -75,7 +75,7 @@ public class CucumberWebScenarioListener
         LOGGER.info("webRunFinishedHandler: " + event.getResult()
                                                      .toString());
         SessionContext.setReportPortalLaunchURL();
-        LOGGER.info(String.format("ThreadID: %d: afterSuite: \n", Thread.currentThread()
+        LOGGER.info(String.format("ThreadId: %d: afterSuite: \n", Thread.currentThread()
                                                                         .getId()));
     }
 
