@@ -435,7 +435,7 @@ public class Setup {
         return webCukeArgs;
     }
 
-    static Map initialiseApplitoolsConfiguration() {
+    static Map<String, Object> initialiseApplitoolsConfiguration() {
         if(applitoolsConfiguration.isEmpty()) {
             getApplitoolsConfigFromProvidedConfigFile();
             applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
