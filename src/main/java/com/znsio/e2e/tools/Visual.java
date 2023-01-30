@@ -105,6 +105,8 @@ public class Visual {
         applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
         appEyes.setLogHandler(new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
 
+        // todo - enhancements - https://applitools.com/docs/topics/general-concepts/visual-test-best-practices.html?Highlight=setMatchTimeout
+        // add setIgnoreCaret, setHideScrollbars, setIgnoreDisplacements
         appEyes.addProperty(APP_NAME, appName);
         appEyes.addProperty("USER_PERSONA", userPersona);
         appEyes.addProperty(BRANCH_NAME, String.valueOf(getValueFromConfig(BRANCH_NAME)));

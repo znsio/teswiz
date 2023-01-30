@@ -15,8 +15,8 @@ public class LandingScreenAndroid
     private final Visual visually;
     private static final String SCREEN_NAME = LandingScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
-    private final By byWelcomeMessageId = By.id("com.jio.rilconferences:id/textUserName");
-    private final By byStartInstantMeetingId = By.id("com.jio.rilconferences:id/buttonStartMeeting");
+    private static final By byWelcomeMessageId = By.id("com.jio.rilconferences:id/textUserName");
+    private static final By byStartInstantMeetingId = By.id("com.jio.rilconferences:id/buttonStartMeeting");
 
     public LandingScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;

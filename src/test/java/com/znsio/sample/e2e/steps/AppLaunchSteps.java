@@ -49,12 +49,13 @@ public class AppLaunchSteps {
     /**
      * method to evaluate whether the scenario is to be executed in normal web browser view or mobile emulation specific view
      * if mobile emulation is detected, it adds the targeted device name in context that will be utilized while creating WebDriver
+     *
      * @param browserName (like 'firefox-mobile2', 'chrome-tab1', etc)
      * @return actual browser name (like 'firefox', 'chrome', etc)
      */
     private String evaluateBrowserType(String browserName) {
         String[] details = browserName.split("-");
-        if (details.length == 1) {
+        if(details.length == 1) {
             //when user passes values like 'chrome', 'firefox', etc
             return browserName;
         }
