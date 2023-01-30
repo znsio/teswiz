@@ -17,8 +17,8 @@ public class AppLaunchScreenAndroid
     private final Visual visually;
     private final String byClipboardDemoAccessibilityId = "Clipboard Demo";
     private final String loginScreenAccessibilityId = "Login Screen";
-    private final By byGoBackToHomeScreenButtonXpath = By.xpath("//android.widget.ImageButton[@content-desc=\"Navigate Up\"]");
-    private final By byEchoMessageXpath = By.xpath("//android.view.ViewGroup[@content-desc=\"Echo Box\"]/android.view.ViewGroup");
+    private static final By byGoBackToHomeScreenButtonXpath = By.xpath("//android.widget.ImageButton[@content-desc=\"Navigate Up\"]");
+    private static final By byEchoMessageXpath = By.xpath("//android.view.ViewGroup[@content-desc=\"Echo Box\"]/android.view.ViewGroup");
 
     public AppLaunchScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;

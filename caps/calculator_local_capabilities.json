@@ -2,7 +2,7 @@
   "android": {
     "adbExecTimeout": 45000,
     "app": {
-      "local": "./src/test/resources/sampleApps/AndroidCalculator.apk"
+      "local": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk"
     },
     "appPackage": "com.android2.calculator3",
     "appActivity": "com.android2.calculator3.Calculator",

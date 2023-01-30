@@ -24,11 +24,11 @@ public class InAMeetingScreenWeb
     private static final String SCREEN_NAME = InAMeetingScreenWeb.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
-    private final By byMeetingInfoIconXpath = By.xpath("//div[@class='icon pointer']");
-    private final By byMicLabelXpath = By.xpath("//div[contains(@class,'mic-section')]");
-    private final By byCurrentMeetingNumberXpath = By.xpath("//div[text()='Meeting ID']/following-sibling::div");
-    private final By byCurrentMeetingPinXpath = By.xpath("//div[text()='Password']/following-sibling::div");
-    private final By byCurrentMeetingInvitationLinkXpath = By.xpath("//div[text()='Invitation Link']/following-sibling::div");
+    private static final By byMeetingInfoIconXpath = By.xpath("//div[@class='icon pointer']");
+    private static final By byMicLabelXpath = By.xpath("//div[contains(@class,'mic-section')]");
+    private static final By byCurrentMeetingNumberXpath = By.xpath("//div[text()='Meeting ID']/following-sibling::div");
+    private static final By byCurrentMeetingPinXpath = By.xpath("//div[text()='Password']/following-sibling::div");
+    private static final By byCurrentMeetingInvitationLinkXpath = By.xpath("//div[text()='Invitation Link']/following-sibling::div");
     private final TestExecutionContext context;
 
     public InAMeetingScreenWeb(Driver driver, Visual visually) {

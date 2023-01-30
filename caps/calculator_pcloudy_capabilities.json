@@ -18,7 +18,7 @@
     "resetKeyboard": true,
     "noReset": false,
     "app": {
-      "local": "./src/test/resources/sampleApps/AndroidCalculator.apk"
+      "local": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk"
     }
   },
   "cloud": {

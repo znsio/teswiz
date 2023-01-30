@@ -32,7 +32,7 @@ public class RunTestCukes
     @Override
     @DataProvider(parallel = true)
     public Object[][] scenarios() {
-        LOGGER.info(String.format("ThreadID: %d: in overridden scenarios%n", Thread.currentThread()
+        LOGGER.info(String.format("ThreadId: %d: in overridden scenarios%n", Thread.currentThread()
                                                                                    .getId()));
         Object[][] scenarios = super.scenarios();
         LOGGER.info(scenarios);
@@ -41,7 +41,7 @@ public class RunTestCukes
 
     @Before
     public void beforeTestScenario(Scenario scenario) {
-        LOGGER.info(String.format("ThreadID: %d: in overridden beforeTestScenario%n", Thread.currentThread()
+        LOGGER.info(String.format("ThreadId: %d: in overridden beforeTestScenario%n", Thread.currentThread()
                                                                                             .getId()));
         new Hooks().beforeScenario(scenario);
         Configuration ufgConfig = new Configuration();
@@ -54,7 +54,7 @@ public class RunTestCukes
 
     @After
     public void afterTestScenario(Scenario scenario) {
-        LOGGER.info(String.format("ThreadID: %d: in overridden afterTestScenario%n", Thread.currentThread()
+        LOGGER.info(String.format("ThreadId: %d: in overridden afterTestScenario%n", Thread.currentThread()
                                                                                            .getId()));
         new Hooks().afterScenario(scenario);
     }
