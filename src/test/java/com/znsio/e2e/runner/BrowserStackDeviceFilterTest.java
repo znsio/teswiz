@@ -35,8 +35,6 @@ class BrowserStackDeviceFilterTest {
         applyFilters = BrowserStackDeviceFilter.class.getDeclaredMethod("applyFilters", List.class, Map.class);
         applyFilters.setAccessible(true);
     }
-
-
     @Test
     void userCanGetDevicesAfterApplyingOSBasedFilter() throws InvocationTargetException, IllegalAccessException {
         Map<String, String> osBasedFilter = new HashMap<>();
@@ -49,7 +47,6 @@ class BrowserStackDeviceFilterTest {
         osBasedDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, osBasedFilter);
         assertEquals(118, osBasedDevices.size());
     }
-
     @Test
     void userCanGetDevicesAfterApplyingOSVersionFilter() throws InvocationTargetException, IllegalAccessException {
         Map<String, String> osVersionFilter = new HashMap<>();
@@ -66,7 +63,6 @@ class BrowserStackDeviceFilterTest {
         osVersionBasedDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, osVersionFilter);
         assertEquals(199, osVersionBasedDevices.size());
     }
-
     @Test
     void userCanGetDevicesAfterApplyingBrowserFilter() throws InvocationTargetException, IllegalAccessException {
         Map<String, String> browserFilter = new HashMap<>();
@@ -80,7 +76,6 @@ class BrowserStackDeviceFilterTest {
         filteredDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, browserFilter);
         assertEquals(1540, filteredDevices.size());
     }
-
     @Test
     void userCanGetDeviceAfterApplyingDeviceNameFilter() throws InvocationTargetException, IllegalAccessException, IOException {
         Map<String, String> deviceNameFilter = new LinkedHashMap<>();

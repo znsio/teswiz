@@ -100,8 +100,8 @@ public class BrowserStackDeviceFilter {
             if (filter.getKey()
                     .equals("Browser_version")) {
                 all_devices = all_devices.stream()
-                        .filter(browserStackDevice -> Double.parseDouble(browserStackDevice.getBrowserVersion()
-                                .split(" ")[0]) >= Double.parseDouble(filter.getValue()))
+                        .filter(browserStackDevice -> (browserStackDevice.getBrowserVersion() != null &&
+                                                        browserStackDevice.getBrowserVersion().split(" ")[0].equals(filter.getValue())))
                         .collect(Collectors.toList());
             }
         }
