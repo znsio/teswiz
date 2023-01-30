@@ -18,16 +18,16 @@ public class SignInScreenWeb
     private static final String SCREEN_NAME = SignInScreenWeb.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
-    private final By byEnterMeetingId = By.id("meetingId");
-    private final By byJoinMeetingButtonId = By.id("headerJoinMeetingButton");
-    private final By byEnterPasswordId = By.id("pin");
-    private final By byNameId = By.id("name");
-    private final By byJoinMeetingButtonXpath = By.xpath("//button[contains(text(), 'Join')]");
-    private final By bySignInXpath = By.xpath("//a[text()='Sign In']");
-    private final By byUsernameId = By.id("username");
-    private final By byProceedButtonId = By.id("proceedButton");
-    private final By byPasswordId = By.id("password");
-    private final By bySigninButtonId = By.id("signinButton");
+    private static final By byEnterMeetingId = By.id("meetingId");
+    private static final By byJoinMeetingButtonId = By.id("headerJoinMeetingButton");
+    private static final By byEnterPasswordId = By.id("pin");
+    private static final By byNameId = By.id("name");
+    private static final By byJoinMeetingButtonXpath = By.xpath("//button[contains(text(), 'Join')]");
+    private static final By bySignInXpath = By.xpath("//a[text()='Sign In']");
+    private static final By byUsernameId = By.id("username");
+    private static final By byProceedButtonId = By.id("proceedButton");
+    private static final By byPasswordId = By.id("password");
+    private static final By bySigninButtonId = By.id("signinButton");
 
     public SignInScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;

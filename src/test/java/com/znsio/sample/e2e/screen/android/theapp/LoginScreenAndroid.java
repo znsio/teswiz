@@ -18,8 +18,8 @@ public class LoginScreenAndroid
     private final String userNameId = "username";
     private final String passwordId = "password";
     private final String loginButtonId = "loginBtn";
-    private final By errorMessageId = By.id("android:id/message");
-    private final By dismissAlertId = By.id("android:id/button1");
+    private static final By errorMessageId = By.id("android:id/message");
+    private static final By dismissAlertId = By.id("android:id/button1");
 
     public LoginScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;

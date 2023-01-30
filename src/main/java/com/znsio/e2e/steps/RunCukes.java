@@ -17,14 +17,14 @@ public class RunCukes
     public RunCukes() {
         long threadId = Thread.currentThread()
                               .getId();
-        LOGGER.info("RunCukes constructor: ThreadId: " + threadId);
+        LOGGER.info(String.format("ThreadId: '%s': RunCukes constructor", threadId));
         context = SessionContext.getTestExecutionContext(threadId);
     }
 
     @Override
     @DataProvider(parallel = true)
     public Object[][] scenarios() {
-        LOGGER.info(String.format("ThreadID: %d: in overridden scenarios%n", Thread.currentThread()
+        LOGGER.info(String.format("ThreadId: %d: in overridden scenarios%n", Thread.currentThread()
                                                                                    .getId()));
         Object[][] scenarios = super.scenarios();
         LOGGER.info(scenarios);

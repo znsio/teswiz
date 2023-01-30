@@ -51,7 +51,8 @@ public class Runner {
     public Runner(String configFilePath, String stepDefDirName, String featuresDirName) {
         Path path = Paths.get(configFilePath);
         if(!Files.exists(path)) {
-            throw new InvalidTestDataException(String.format("Invalid path ('%s') provided for config", configFilePath));
+            throw new InvalidTestDataException(
+                    String.format("Invalid path ('%s') provided for config", configFilePath));
         }
         setup = new Setup(configFilePath);
         List<String> cukeArgs = setup.getExecutionArguments();
@@ -183,7 +184,9 @@ public class Runner {
             LOGGER.info("\t" + arg);
         }
         if(args.length != 3) {
-            throw new InvalidTestDataException("Expected following parameters: 'String configFilePath, String stepDefDirName, String featuresDirName");
+            throw new InvalidTestDataException(
+                    "Expected following parameters: 'String configFilePath, String stepDefDirName, String " +
+                    "featuresDirName");
         }
         new Runner(args[0], args[1], args[2]);
     }
@@ -273,7 +276,8 @@ public class Runner {
                 inputStream = Files.newInputStream(Paths.get(browserConfigFile));
             }
         } catch(Exception e) {
-            throw new InvalidTestDataException(String.format("There was a problem while setting browser config file '%s'", browserConfigFile));
+            throw new InvalidTestDataException(
+                    String.format("There was a problem while setting browser config file '%s'", browserConfigFile));
         }
         configs.put(BROWSER_CONFIG_FILE_CONTENTS, new JSONObject(new JSONTokener(inputStream)).toString());
         return configs.get(BROWSER_CONFIG_FILE_CONTENTS);
