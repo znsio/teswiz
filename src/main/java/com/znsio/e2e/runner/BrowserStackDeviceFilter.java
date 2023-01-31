@@ -7,7 +7,6 @@ import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,11 +19,6 @@ import java.util.stream.Collectors;
 import static com.znsio.e2e.runner.Setup.getCurlProxyCommand;
 
 public class BrowserStackDeviceFilter {
-    public static final Map<String, String> env = System.getenv();
-    public static final String USERNAME = "anand_kTb8F3";
-    public static final String PASSWORD = "s8obLFbJxE2FgznTSvxA";
-    private static final Logger LOGGER = Logger.getLogger(BrowserStackDeviceFilter.class.getName());
-
     public static List<BrowserStackDevice> getFilteredDevices(String authenticationUser, String authenticationKey, Map<String, String> filters, String logDir) {
         // fetch the browser list from browserstack
         List<BrowserStackDevice> filteredDevices = null;
@@ -34,14 +28,14 @@ public class BrowserStackDeviceFilter {
 
             String[] curlCommand = new String[]{"curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationUser + ":" + authenticationKey + "\"",
                     "\"https://api.browserstack.com/automate/browsers.json\"", "> " + allAvailableBrowsersAndDevicesFileName};
+
             CommandLineResponse listOfBrowsersAndDevicesAvailableInBrowserStack = CommandLineExecutor.execCommand(curlCommand);
 
             String documentContext = JsonPath.parse(new File(allAvailableBrowsersAndDevicesFileName))
                     .jsonString();
             final ObjectMapper objectMapper = new ObjectMapper();
             BrowserStackDevice[] langs = objectMapper.readValue(documentContext,
-                    BrowserStackDevice[].class);//            BrowserStackDevice[] langs = objectMapper.readValue(documentContext,
-            // BrowserStackDevice[].class);
+                    BrowserStackDevice[].class);
             List<BrowserStackDevice> langList = new ArrayList(Arrays.asList(langs));
 
             filteredDevices = applyFilters(langList, filters);
@@ -101,7 +95,7 @@ public class BrowserStackDeviceFilter {
                     .equals("Browser_version")) {
                 all_devices = all_devices.stream()
                         .filter(browserStackDevice -> (browserStackDevice.getBrowserVersion() != null &&
-                                                        browserStackDevice.getBrowserVersion().split(" ")[0].equals(filter.getValue())))
+                                browserStackDevice.getBrowserVersion().split(" ")[0].equals(filter.getValue())))
                         .collect(Collectors.toList());
             }
         }
