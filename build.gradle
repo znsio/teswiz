@@ -189,7 +189,7 @@ test {
     testLogging {
         events "started", "passed", "skipped", "failed"
         // show standard out and standard error of the test JVM(s) on the console
-        showStandardStreams = true
+        showStandardStreams = false
         // show full exception trace
         exceptionFormat = 'full'
         showStackTraces = true
