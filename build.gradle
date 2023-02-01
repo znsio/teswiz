@@ -154,7 +154,7 @@ task run(type: JavaExec) {
         System.setProperty "LOG_DIR", "$logDirectory"
 
         def configFile = System.getenv("CONFIG")
-        if(null == configFile || !file(configFile).exists()) {
+        if (null == configFile || !file(configFile).exists()) {
             println("CONFIG file not provided, or does not exist")
             println("Run the test by providing the CONFIG file not provided, or does not exist")
             assert file(configFile).exists()
@@ -189,7 +189,7 @@ test {
     testLogging {
         events "started", "passed", "skipped", "failed"
         // show standard out and standard error of the test JVM(s) on the console
-        showStandardStreams = false
+        showStandardStreams = true
         // show full exception trace
         exceptionFormat = 'full'
         showStackTraces = true
@@ -200,5 +200,11 @@ test {
     // attach debugger
     if (System.getProperty('debug', 'false') == 'true') {
         jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009'
+    }
+    reports {
+        html.enabled = true
+        junitXml.enabled = true
+        html.destination = file("$buildDir/unit-test-results")
+        junitXml.destination = file("$buildDir/unit-test-results")
     }
 }
