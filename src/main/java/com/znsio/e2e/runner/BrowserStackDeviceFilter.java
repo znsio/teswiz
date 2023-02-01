@@ -6,7 +6,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,11 +19,6 @@ import java.util.stream.Collectors;
 import static com.znsio.e2e.runner.Setup.getCurlProxyCommand;
 
 public class BrowserStackDeviceFilter {
-    public static final Map<String, String> env = System.getenv();
-    public static final String USERNAME = "anand_kTb8F3";
-    public static final String PASSWORD = "s8obLFbJxE2FgznTSvxA";
-    private static final Logger LOGGER = Logger.getLogger(BrowserStackDeviceFilter.class.getName());
-
     public static List<BrowserStackDevice> getFilteredDevices(String authenticationUser, String authenticationKey, Map<String, String> filters, String logDir) {
         // fetch the browser list from browserstack
         List<BrowserStackDevice> filteredDevices = null;
@@ -32,21 +27,21 @@ public class BrowserStackDeviceFilter {
         try {
 
             String[] curlCommand = new String[]{"curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationUser + ":" + authenticationKey + "\"",
-                                                "\"https://api.browserstack.com/automate/browsers.json\"", "> " + allAvailableBrowsersAndDevicesFileName};
+                    "\"https://api.browserstack.com/automate/browsers.json\"", "> " + allAvailableBrowsersAndDevicesFileName};
+
             CommandLineResponse listOfBrowsersAndDevicesAvailableInBrowserStack = CommandLineExecutor.execCommand(curlCommand);
 
             String documentContext = JsonPath.parse(new File(allAvailableBrowsersAndDevicesFileName))
-                                             .jsonString();
+                    .jsonString();
             final ObjectMapper objectMapper = new ObjectMapper();
             BrowserStackDevice[] langs = objectMapper.readValue(documentContext,
-                                                                BrowserStackDevice[].class);//            BrowserStackDevice[] langs = objectMapper.readValue(documentContext,
-            // BrowserStackDevice[].class);
+                    BrowserStackDevice[].class);
             List<BrowserStackDevice> langList = new ArrayList(Arrays.asList(langs));
 
             filteredDevices = applyFilters(langList, filters);
             ObjectMapper om = new ObjectMapper(new YAMLFactory());
             om.writeValue(new File(filteredDeviceFileName), filteredDevices);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new InvalidTestDataException(
                     String.format("Unable to fetch / save list of available devices with %n\tfilter: '%s' %n\tto temp file: '%s'", filters, filteredDeviceFileName));
         }
@@ -54,54 +49,54 @@ public class BrowserStackDeviceFilter {
     }
 
     private static List<BrowserStackDevice> applyFilters(List<BrowserStackDevice> all_devices, Map<String, String> filters) {
-        for(Map.Entry<String, String> filter : filters.entrySet()) {
-            if(filter.getKey()
-                     .equals("Platform")) {
-                if(filter.getValue()
-                         .equals("mobile")) {
+        for (Map.Entry<String, String> filter : filters.entrySet()) {
+            if (filter.getKey()
+                    .equals("Platform")) {
+                if (filter.getValue()
+                        .equals("mobile")) {
                     all_devices = all_devices.stream()
-                                             .filter(browserStackDevice -> browserStackDevice.isRealMobile())
-                                             .collect(Collectors.toList());
+                            .filter(browserStackDevice -> browserStackDevice.isRealMobile())
+                            .collect(Collectors.toList());
                 } else {
                     all_devices = all_devices.stream()
-                                             .filter(browserStackDevice -> !browserStackDevice.isRealMobile())
-                                             .collect(Collectors.toList());
+                            .filter(browserStackDevice -> !browserStackDevice.isRealMobile())
+                            .collect(Collectors.toList());
                 }
             }
-            if(filter.getKey()
-                     .equals("Device")) {
+            if (filter.getKey()
+                    .equals("Device")) {
                 all_devices = all_devices.stream()
-                                         .filter(browserStackDevice -> browserStackDevice.getDevice()
-                                                                                         .contains(filter.getValue()))
-                                         .collect(Collectors.toList());
+                        .filter(browserStackDevice -> StringUtils.containsIgnoreCase(browserStackDevice.getDevice()
+                                , filter.getValue()))
+                        .collect(Collectors.toList());
             }
-            if(filter.getKey()
-                     .equals("Os")) {
+            if (filter.getKey()
+                    .equals("Os")) {
                 all_devices = all_devices.stream()
-                                         .filter(browserStackDevice -> browserStackDevice.getOs()
-                                                                                         .equals(filter.getValue()))
-                                         .collect(Collectors.toList());
+                        .filter(browserStackDevice -> StringUtils.equalsIgnoreCase(browserStackDevice.getOs()
+                                , (filter.getValue())))
+                        .collect(Collectors.toList());
             }
-            if(filter.getKey()
-                     .equals("Os_version")) {
+            if (filter.getKey()
+                    .equals("Os_version")) {
                 all_devices = all_devices.stream()
-                                         .filter(browserStackDevice -> browserStackDevice.getOs_version()
-                                                                                         .contains(filter.getValue()))
-                                         .collect(Collectors.toList());
+                        .filter(browserStackDevice -> StringUtils.containsIgnoreCase(browserStackDevice.getOs_version()
+                                , (filter.getValue())))
+                        .collect(Collectors.toList());
             }
-            if(filter.getKey()
-                     .equals("Browser")) {
+            if (filter.getKey()
+                    .equals("Browser")) {
                 all_devices = all_devices.stream()
-                                         .filter(browserStackDevice -> browserStackDevice.getBrowser()
-                                                                                         .equals(filter.getValue()))
-                                         .collect(Collectors.toList());
+                        .filter(browserStackDevice -> StringUtils.equalsIgnoreCase(browserStackDevice.getBrowser()
+                                , (filter.getValue())))
+                        .collect(Collectors.toList());
             }
-            if(filter.getKey()
-                     .equals("Browser_version")) {
+            if (filter.getKey()
+                    .equals("Browser_version")) {
                 all_devices = all_devices.stream()
-                                         .filter(browserStackDevice -> Double.parseDouble(browserStackDevice.getBrowserVersion()
-                                                                                                            .split(" ")[0]) >= Double.parseDouble(filter.getValue()))
-                                         .collect(Collectors.toList());
+                        .filter(browserStackDevice -> (browserStackDevice.getBrowserVersion() != null &&
+                                browserStackDevice.getBrowserVersion().split(" ")[0].equals(filter.getValue())))
+                        .collect(Collectors.toList());
             }
         }
         return all_devices;
