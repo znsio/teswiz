@@ -3,7 +3,6 @@ package com.znsio.e2e.tools;
 import com.google.common.collect.ImmutableMap;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.exceptions.FileNotUploadedException;
-import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.*;
 import io.appium.java_client.android.AndroidDriver;
@@ -332,7 +331,7 @@ public class Driver {
                 ((IOSDriver) driver).pushFile(devicePath, new File(filePathToPush));
             }
         } catch(IOException e) {
-            throw new InvalidTestDataException("Error in pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath + "'", e);
+            throw new FileNotUploadedException("Error in pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath + "'", e);
         }
     }
 
@@ -467,23 +466,11 @@ public class Driver {
         }
     }
 
-    public void uploadFile(String filePath, By locator) {
+    public void uploadFileInBrowser(String filePath, By locator) {
         try {
             driver.findElement(locator).sendKeys(filePath);
         } catch (Exception e) {
             throw new FileNotUploadedException("Error in uploading the file: '" + filePath + "' to '" + Runner.platform.name(), e);
-        }
-    }
-
-    public void uploadFile(String filePath, String devicePath) {
-        try {
-            if(Runner.platform.equals(Platform.android)) {
-                ((AndroidDriver) driver).pushFile(devicePath, new File(filePath));
-            } else if(Runner.platform.equals(Platform.iOS)) {
-                ((IOSDriver) driver).pushFile(devicePath, new File(filePath));
-            }
-        } catch(IOException e) {
-            throw new FileNotUploadedException("Error in uploading the file: '" + filePath + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath + "'", e);
         }
     }
 }
