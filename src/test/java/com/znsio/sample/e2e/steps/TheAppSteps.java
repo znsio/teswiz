@@ -8,6 +8,7 @@ import com.znsio.e2e.tools.Drivers;
 import com.znsio.sample.e2e.businessLayer.theapp.AppBL;
 import com.znsio.sample.e2e.businessLayer.theapp.ClipboardBL;
 import com.znsio.sample.e2e.businessLayer.theapp.EchoBL;
+import com.znsio.sample.e2e.businessLayer.theapp.FileUploadBL;
 import com.znsio.sample.e2e.entities.SAMPLE_TEST_CONTEXT;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -99,5 +100,22 @@ public class TheAppSteps {
         LOGGER.info(System.out.printf("iStartTheApp - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
         allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         new ClipboardBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).saveContentInClipboard(content);
+    }
+
+    @Given("I am on file upload page")
+    public void iAmOnFileUploadPage() {
+        LOGGER.info(System.out.printf("iStartTheApp - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
+        allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        new FileUploadBL(SAMPLE_TEST_CONTEXT.ME,Runner.platform).navigationToUploadScreen();
+    }
+
+    @When("I upload the file")
+    public void iUploadTheFile() {
+        new FileUploadBL().uploadFile();
+    }
+
+    @Then("File must be uploaded successfully")
+    public void fileMustBeUploadedSuccessfully() {
+        new FileUploadBL().verifyFileUpload();
     }
 }
