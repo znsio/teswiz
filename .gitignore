@@ -10,7 +10,6 @@ out/
 *.zip
 *.png
 *.jpeg
-*.jpg
 temp/
 test-output/
 target/
