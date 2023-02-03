@@ -8,10 +8,12 @@ import com.znsio.sample.e2e.screen.theapp.FileUploadScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FileUploadBL {
-    private static final Logger LOGGER = Logger.getLogger(AppBL.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(FileUploadBL.class.getName());
     private final TestExecutionContext context;
     private final SoftAssertions softly;
     private final String currentUserPersona;
@@ -39,8 +41,8 @@ public class FileUploadBL {
         FileUploadScreen.get().navigateToFileUplaodPage();
         return this;
     }
-    public FileUploadBL uploadFile(){
-        FileUploadScreen.get().uploadTextFile();
+    public FileUploadBL uploadFile(Map file){
+        FileUploadScreen.get().uploadFile(file);
         return this;
     }
     public FileUploadBL verifyFileUpload(){

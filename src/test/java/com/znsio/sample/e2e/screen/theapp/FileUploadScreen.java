@@ -8,6 +8,8 @@ import com.znsio.sample.e2e.screen.web.theapp.FileUploadScreenWeb;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 
+import java.util.Map;
+
 import static com.znsio.e2e.runner.Runner.fetchDriver;
 import static com.znsio.e2e.runner.Runner.fetchEyes;
 
@@ -25,14 +27,12 @@ public abstract class FileUploadScreen {
                 .getId());
 
         switch(platform) {
-            case android:
-              //  return new FileUploadScreenAndroid(driver, visually);
             case web:
                 return new FileUploadScreenWeb(driver, visually);
         }
         throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.platform);
     }
     public abstract FileUploadScreen navigateToFileUplaodPage();
-    public abstract FileUploadScreen uploadTextFile();
+    public abstract FileUploadScreen uploadFile(Map file);
     public abstract String getFileUploadText();
 }

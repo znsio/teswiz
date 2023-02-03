@@ -109,9 +109,9 @@ public class TheAppSteps {
         new FileUploadBL(SAMPLE_TEST_CONTEXT.ME,Runner.platform).navigationToUploadScreen();
     }
 
-    @When("I upload the file")
-    public void iUploadTheFile() {
-        new FileUploadBL().uploadFile();
+    @When("I upload the {string} file")
+    public void iUploadTheFile(String file) {
+        new FileUploadBL().uploadFile(Runner.getTestDataAsMap(file));
     }
 
     @Then("File must be uploaded successfully")

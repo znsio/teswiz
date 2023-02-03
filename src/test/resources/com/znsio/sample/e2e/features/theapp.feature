@@ -59,5 +59,5 @@ Feature: Scenarios for "The App"
   @android @web @fileupload
   Scenario: Verify file upload
     Given I am on file upload page
-    When I upload the file
+    When I upload the "image" file
     Then File must be uploaded successfully

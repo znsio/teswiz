@@ -6,6 +6,8 @@ import com.znsio.sample.e2e.screen.theapp.FileUploadScreen;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 
+import java.util.Map;
+
 public class FileUploadScreenWeb extends FileUploadScreen {
     private static final Logger LOGGER = Logger.getLogger(FileUploadScreenWeb.class.getName());
     private final Driver driver;
@@ -30,8 +32,9 @@ public class FileUploadScreenWeb extends FileUploadScreen {
     }
 
     @Override
-    public FileUploadScreen uploadTextFile() {
-        driver.uploadFileInBrowser(System.getProperty("user.dir")+"/temp/dummy.txt",byChosseFileXpath);
+    public FileUploadScreen uploadFile(Map file) {
+        String filePath = System.getProperty("user.dir") + file.get("IMAGE_FILE_LOCATION");
+        driver.uploadFileInBrowser(filePath,byChosseFileXpath);
         driver.findElement(byUplaodButtonId).submit();
         return this;
     }
