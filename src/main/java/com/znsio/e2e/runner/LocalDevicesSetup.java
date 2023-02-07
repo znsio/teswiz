@@ -1,6 +1,6 @@
 package com.znsio.e2e.runner;
 
-import com.github.device.Device;
+import com.appium.device.Device;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import org.apache.log4j.Logger;
@@ -52,8 +52,6 @@ public class LocalDevicesSetup {
                 throw new EnvironmentSetupException("Unable to get devices information", e);
             }
 
-            extractInfoFromEachLocalDevice(deviceList);
-
             LOGGER.info("Number of Devices connected: " + devices.size());
         }
         return devices;
@@ -64,26 +62,6 @@ public class LocalDevicesSetup {
         String[] listOfDevices = new String[]{"adb", "devices"};
         CommandLineExecutor.execCommand(listOfDevices);
     }
-
-    private static void extractInfoFromEachLocalDevice(List<JadbDevice> deviceList) {
-        deviceList.forEach(jadbDevice -> {
-            try {
-                Device device = new Device();
-                device.setName(jadbDevice.getSerial());
-                device.setUdid(jadbDevice.getSerial());
-                // device.setUdid(getAdbCommandOutput(jadbDevice, "getprop", "ro.serialno"));
-                device.setApiLevel(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop", "ro.build.version.sdk"));
-                device.setDeviceManufacturer(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop", "ro.product.brand"));
-                device.setDeviceModel(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop", "ro.product.model"));
-                device.setOsVersion(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop", "ro.build.version.release"));
-                devices.add(device);
-                uninstallAppFromLocalDevice(device, configs.get(APP_PACKAGE_NAME));
-            } catch(IOException | JadbException e) {
-                throw new EnvironmentSetupException("Unable to get devices information", e);
-            }
-        });
-    }
-
     @NotNull
     private static String getAdbCommandOutputFromLocalDevice(JadbDevice device, String command, String args) throws
                                                                                                              IOException,

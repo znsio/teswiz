@@ -41,7 +41,7 @@ public class Driver {
     private final Platform driverForPlatform;
     private Visual visually;
 
-    public Driver(String testName, Platform forPlatform, String deviceOn, String userPersona, String appName, AppiumDriver<WebElement> appiumDriver) {
+    public Driver(String testName, Platform forPlatform, String deviceOn, String userPersona, String appName, AppiumDriver appiumDriver) {
         this.driver = appiumDriver;
         this.deviceOn = deviceOn;
         this.type = APPIUM_DRIVER;
@@ -78,7 +78,7 @@ public class Driver {
     }
 
     public WebElement findElementByAccessibilityId(String locator) {
-        return ((AppiumDriver) driver).findElementByAccessibilityId(locator);
+        return driver.findElement(AppiumBy.accessibilityId(locator));
     }
 
     public void waitForAlert() {
@@ -270,7 +270,7 @@ public class Driver {
     public void openNotifications() {
         LOGGER.info("Fetching the NOTIFICATIONS on the device: ");
         waitFor(3);
-        ((AndroidDriver<WebElement>) driver).openNotifications();
+        ((AndroidDriver) driver).openNotifications();
         waitFor(2);
     }
 
