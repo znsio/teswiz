@@ -468,6 +468,7 @@ public class Driver {
 
     public void uploadFileInBrowser(String filePath, By locator) {
         try {
+            LOGGER.info("Uploading file: "+filePath+" to the browser");
             driver.findElement(locator).sendKeys(filePath);
         } catch (Exception e) {
             throw new FileNotUploadedException("Error in uploading the file: '" + filePath + "' to '" + Runner.platform.name(), e);
