@@ -32,4 +32,5 @@ public abstract class SearchScreen {
     }
 
     public abstract int numberOfProductFound();
+    public abstract void selectProduct();
 }

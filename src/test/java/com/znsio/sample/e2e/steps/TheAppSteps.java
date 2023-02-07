@@ -114,8 +114,8 @@ public class TheAppSteps {
         new FileUploadBL().uploadFile(Runner.getTestDataAsMap(file));
     }
 
-    @Then("File must be uploaded successfully")
-    public void fileMustBeUploadedSuccessfully() {
+    @Then("File is uploaded successfully")
+    public void fileIsUploadedSuccessfully() {
         new FileUploadBL().verifyFileUpload();
     }
 }

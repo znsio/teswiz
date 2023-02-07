@@ -16,9 +16,7 @@ public class FileUploadScreenWeb extends FileUploadScreen {
     private final By byFileUploadXpath= By.xpath("//a[@href=\"/upload\"]");
     private final By byChosseFileXpath= By.xpath("//input[@name=\"file\"]");
     private final By byUplaodButtonId= By.id("file-submit");
-    private final By byFileUploadMessageXpath= By.xpath("//div[@class=\"example\"]/h3");
-
-
+    private final By byFileUploadMessageXpath= By.xpath("//h3[contains(text(),'File Uploaded!')]");
 
     public FileUploadScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;

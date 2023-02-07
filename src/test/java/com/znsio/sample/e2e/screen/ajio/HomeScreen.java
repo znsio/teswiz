@@ -33,5 +33,6 @@ public abstract class HomeScreen {
         throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.platform);
     }
 
-    public abstract SearchScreen searchByImage(Map imageData);
+    public abstract SearchScreen searchByImage();
+    public abstract HomeScreen attachFileToDevice(Map imageData);
 }

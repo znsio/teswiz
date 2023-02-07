@@ -8,19 +8,15 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import java.util.List;
-
 public class ProductScreenAndroid extends ProductScreen {
     private final Driver driver;
     private final Visual visually;
     private static final String SCREEN_NAME = ProductScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
-    private static final By byProductId = By.id("com.ril.ajio:id/plp_row_product_iv");
     private static final By byProductNameId = By.id("com.ril.ajio:id/product_name");
     private static final By byAddToCartButtonId = By.id("com.ril.ajio:id/add_to_cart_tv");
     private static final By byViewBagButtonXpath = By.xpath("//android.widget.TextView[@text='View Bag']");
     private static final By byBrandNameId = By.id("com.ril.ajio:id/product_name");
-
 
     public ProductScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -40,10 +36,6 @@ public class ProductScreenAndroid extends ProductScreen {
     @Override
     public String getProductName() {
         LOGGER.info("getProductName");
-        driver.waitTillElementIsPresent(By.id("com.ril.ajio:id/layout_category_container")).click();
-        List<WebElement> list= driver.waitTillPresenceOfAllElements(byProductId);
-        list.get(0).click();
-
         driver.waitTillElementIsPresent(byBrandNameId).click();
         WebElement product = driver.waitTillElementIsPresent(byProductNameId);
         product.click();
@@ -52,4 +44,5 @@ public class ProductScreenAndroid extends ProductScreen {
         LOGGER.info("Product Name: " + productName);
         return productName;
     }
+
 }

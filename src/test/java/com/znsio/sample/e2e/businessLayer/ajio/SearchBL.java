@@ -7,6 +7,7 @@ import com.znsio.sample.e2e.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.sample.e2e.screen.ajio.CartScreen;
 import com.znsio.sample.e2e.screen.ajio.HomeScreen;
 import com.znsio.sample.e2e.screen.ajio.ProductScreen;
+import com.znsio.sample.e2e.screen.ajio.SearchScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 import java.util.Map;
@@ -41,7 +42,9 @@ public class SearchBL {
 
     public SearchBL searchProduct(Map searchData) {
         LOGGER.info("searchProduct" + searchData);
-        assertThat(HomeScreen.get().searchByImage(searchData).numberOfProductFound()).as("Number of results found for product").isGreaterThan(0);
+        SearchScreen searchScreen = HomeScreen.get().attachFileToDevice(searchData).searchByImage();
+        assertThat(searchScreen.numberOfProductFound()).as("Number of results found for product").isGreaterThan(0);
+        searchScreen.selectProduct();
         return this;
     }
 
