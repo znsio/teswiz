@@ -7,6 +7,10 @@
       "password": "eotTesting@0",
       "firstName": "Eot",
       "lastName": "Testing"
+    },
+    "image": {
+      "IMAGE_FILE_LOCATION": "/src/test/resources/images/handbag.jpg",
+      "UPLOAD_IMAGE_LOCATION": "/sdcard/Images/handbag.jpg"
     }
   },
   "dev": {}

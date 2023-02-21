@@ -54,3 +54,10 @@ Feature: Scenarios for "The App"
     And "someoneelse" login with invalid credentials - "znsio3", "invalid password" on "android"
     When "I" login again with invalid credentials - "znsio3", "invalid password"
     Then "you" login again with invalid credentials - "znsio4", "invalid password"
+
+  #CONFIG=./configs/theapp_local_config.properties TAG="fileupload and @theapp" PLATFORM=web ./gradlew run
+  @web @fileupload
+  Scenario: Verify file upload
+    Given I am on file upload page
+    When I upload the "image" file
+    Then File is uploaded successfully
