@@ -199,9 +199,7 @@ public class Runner {
     public static Driver fetchDriver(long threadId) {
         String userPersona = getTestExecutionContext(threadId).getTestStateAsString(
                 TEST_CONTEXT.CURRENT_USER_PERSONA);
-        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(
-                TEST_CONTEXT.ALL_DRIVERS);
-        return allDrivers.getDriverForUser(userPersona);
+        return Drivers.getDriverForUser(userPersona);
     }
 
     public static TestExecutionContext getTestExecutionContext(long threadId) {
@@ -209,17 +207,13 @@ public class Runner {
     }
 
     public static String fetchDeviceName(long threadId, String forUserPersona) {
-        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(
-                TEST_CONTEXT.ALL_DRIVERS);
-        return allDrivers.getDeviceNameForUser(forUserPersona);
+        return Drivers.getDeviceNameForUser(forUserPersona);
     }
 
     public static Visual fetchEyes(long threadId) {
         String userPersona = getTestExecutionContext(threadId).getTestStateAsString(
                 TEST_CONTEXT.CURRENT_USER_PERSONA);
-        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(
-                TEST_CONTEXT.ALL_DRIVERS);
-        return allDrivers.getDriverForUser(userPersona).getVisual();
+        return Drivers.getDriverForUser(userPersona).getVisual();
     }
 
     public static SoftAssertions getSoftAssertion(long threadId) {
@@ -229,22 +223,18 @@ public class Runner {
 
     public static Driver setCurrentDriverForUser(String userPersona, Platform forPlatform,
                                                  TestExecutionContext context) {
-        Drivers allDrivers = (Drivers) context.getTestState(TEST_CONTEXT.ALL_DRIVERS);
-        return allDrivers.setDriverFor(userPersona, forPlatform, context);
+        return Drivers.setDriverFor(userPersona, forPlatform, context);
     }
 
     public static Platform fetchPlatform(long threadId) {
         String userPersona = getTestExecutionContext(threadId).getTestStateAsString(
                 TEST_CONTEXT.CURRENT_USER_PERSONA);
-        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(
-                TEST_CONTEXT.ALL_DRIVERS);
-        return allDrivers.getPlatformForUser(userPersona);
+        return Drivers.getPlatformForUser(userPersona);
     }
 
     public static void closeAllDrivers(long threadId) {
         TestExecutionContext context = getTestExecutionContext(threadId);
-        Drivers allDrivers = (Drivers) context.getTestState(TEST_CONTEXT.ALL_DRIVERS);
-        allDrivers.attachLogsAndCloseAllWebDrivers();
+        Drivers.attachLogsAndCloseAllWebDrivers();
     }
 
     public static String getTargetEnvironment() {

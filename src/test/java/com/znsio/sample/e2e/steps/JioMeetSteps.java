@@ -23,13 +23,10 @@ import java.util.Map;
 public class JioMeetSteps {
     private static final Logger LOGGER = Logger.getLogger(JioMeetSteps.class.getName());
     private final TestExecutionContext context;
-    private final Drivers allDrivers;
 
     public JioMeetSteps() {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         LOGGER.info("context: " + context.getTestName());
-        allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
-        LOGGER.info("allDrivers: " + (null == allDrivers));
     }
 
     @Given("I sign in as a registered {string}")
@@ -38,7 +35,7 @@ public class JioMeetSteps {
         LOGGER.info(System.out.printf(
                 "iSignInAsARegistered - Persona:'%s', User details: '%s', Platform: '%s'",
                 SAMPLE_TEST_CONTEXT.ME, userDetails, Runner.platform));
-        allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         context.addTestState(SAMPLE_TEST_CONTEXT.ME, String.valueOf(userDetails.get("username")));
         new AuthBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).signIn(userDetails);
     }
@@ -61,7 +58,7 @@ public class JioMeetSteps {
     @Given("{string} logs-in and starts an instant meeting on {string}")
     public void logsInAndStartsAnInstantMeetingOn(String userPersona, String fromPlatform) {
         Platform currentPlatform = Platform.valueOf(fromPlatform);
-        allDrivers.createDriverFor(userPersona, currentPlatform, context);
+        Drivers.createDriverFor(userPersona, currentPlatform, context);
         new AuthBL(userPersona, currentPlatform).signInAndStartMeeting(
                 Runner.getTestDataAsMap(userPersona));
     }
@@ -69,7 +66,7 @@ public class JioMeetSteps {
     @And("{string} joins the meeting from {string}")
     public void joinsTheMeetingFrom(String userPersona, String fromPlatform) {
         Platform currentPlatform = Platform.valueOf(fromPlatform);
-        allDrivers.createDriverFor(userPersona, currentPlatform, context);
+        Drivers.createDriverFor(userPersona, currentPlatform, context);
         String meetingId = context.getTestStateAsString(SAMPLE_TEST_CONTEXT.MEETING_ID);
         String meetingPassword = context.getTestStateAsString(SAMPLE_TEST_CONTEXT.MEETING_PASSWORD);
         new JoinAMeetingBL(userPersona, currentPlatform).joinMeeting(meetingId, meetingPassword);
@@ -83,7 +80,7 @@ public class JioMeetSteps {
         LOGGER.info(System.out.printf("startOn - Persona:'%s', AppName: '%s', Platform: '%s'",
                                       userPersona, appName, onPlatform.name()));
         context.addTestState(userPersona, userPersona);
-        allDrivers.createDriverFor(userPersona, appName, onPlatform, context);
+        Drivers.createDriverFor(userPersona, appName, onPlatform, context);
         new AuthBL(userPersona, onPlatform).signInAndStartMeeting(
                 Runner.getTestDataAsMap(userPersona));
     }
@@ -99,13 +96,13 @@ public class JioMeetSteps {
             case android:
             case iOS:
             case windows:
-                allDrivers.createDriverFor(userPersona, appName, onPlatform, context);
+                Drivers.createDriverFor(userPersona, appName, onPlatform, context);
                 break;
             case web:
                 String[] parts = appName.toLowerCase(Locale.ROOT).split("-");
                 String app = parts[0];
                 String browserName = parts[1];
-                allDrivers.createDriverFor(userPersona, app, browserName, onPlatform, context);
+                Drivers.createDriverFor(userPersona, app, browserName, onPlatform, context);
                 break;
             default:
                 throw new InvalidTestDataException("Unexpected value for platform: " + onPlatform);

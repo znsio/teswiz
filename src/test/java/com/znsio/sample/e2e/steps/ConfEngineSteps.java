@@ -12,20 +12,17 @@ import org.apache.log4j.Logger;
 public class ConfEngineSteps {
     private static final Logger LOGGER = Logger.getLogger(ConfEngineSteps.class.getName());
     private final TestExecutionContext context;
-    private final Drivers allDrivers;
 
     public ConfEngineSteps() {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         LOGGER.info("context: " + context.getTestName());
-        allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
-        LOGGER.info("allDrivers: " + (null == allDrivers));
     }
 
     @Given("I see the list of conferences")
     public void iSeeTheListOfConferences() {
         LOGGER.info(System.out.printf("iSeeTheListOfConferences - Persona:'%s'",
                                       SAMPLE_TEST_CONTEXT.ME));
-        allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         new ConfEngineBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).seeListOfConferences();
     }
 }

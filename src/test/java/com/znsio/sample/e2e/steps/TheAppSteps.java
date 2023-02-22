@@ -18,13 +18,10 @@ import org.apache.log4j.Logger;
 public class TheAppSteps {
     private static final Logger LOGGER = Logger.getLogger(TheAppSteps.class.getName());
     private final TestExecutionContext context;
-    private final Drivers allDrivers;
 
     public TheAppSteps() {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         LOGGER.info("context: " + context.getTestName());
-        allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
-        LOGGER.info("allDrivers: " + (null == allDrivers));
     }
 
     @When("I login with invalid credentials - {string}, {string}")
@@ -33,7 +30,7 @@ public class TheAppSteps {
                 "iLoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', " +
                 "Platform: '%s'",
                 SAMPLE_TEST_CONTEXT.ME, username, password, Runner.platform));
-        allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         context.addTestState(SAMPLE_TEST_CONTEXT.ME, username);
         new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).provideInvalidDetailsForSignup(username,
                                                                                           password);
@@ -52,7 +49,7 @@ public class TheAppSteps {
                 "Platform: '%s'",
                 userPersona, username, password, onPlatform));
         context.addTestState(userPersona, username);
-        allDrivers.createDriverFor(userPersona, Platform.valueOf(onPlatform), context);
+        Drivers.createDriverFor(userPersona, Platform.valueOf(onPlatform), context);
         new AppBL(userPersona, Platform.valueOf(onPlatform)).provideInvalidDetailsForSignup(
                 username, password);
     }
@@ -67,7 +64,7 @@ public class TheAppSteps {
 
     @When("{string} login with invalid credentials - {string}, {string}")
     public void loginWithInvalidCredentials(String userPersona, String username, String password) {
-        Platform onPlatform = allDrivers.getPlatformForUser(userPersona);
+        Platform onPlatform = Drivers.getPlatformForUser(userPersona);
         LOGGER.info(System.out.printf(
                 "LoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', " +
                 "Platform: '%s'",
@@ -78,7 +75,7 @@ public class TheAppSteps {
     @When("{string} login again with invalid credentials - {string}, {string}")
     public void loginAgainWithInvalidCredentials(String userPersona, String username,
                                                  String password) {
-        Platform onPlatform = allDrivers.getPlatformForUser(userPersona);
+        Platform onPlatform = Drivers.getPlatformForUser(userPersona);
         LOGGER.info(System.out.printf(
                 "LoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', " +
                 "Platform: '%s'",
@@ -94,7 +91,7 @@ public class TheAppSteps {
     @Given("I start the app")
     public void iStartTheApp() {
         LOGGER.info(System.out.printf("iStartTheApp - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
-        allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform);
     }
 
@@ -112,14 +109,14 @@ public class TheAppSteps {
     @Given("I save {string} in the clipboard")
     public void iSaveInTheClipboard(String content) {
         LOGGER.info(System.out.printf("iStartTheApp - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
-        allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         new ClipboardBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).saveContentInClipboard(content);
     }
 
     @Given("I am on file upload page")
     public void iAmOnFileUploadPage() {
         LOGGER.info(System.out.printf("iStartTheApp - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
-        allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         new FileUploadBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).navigationToUploadScreen();
     }
 

@@ -13,13 +13,10 @@ import org.apache.log4j.Logger;
 public class IndigoSteps {
     private static final Logger LOGGER = Logger.getLogger(IndigoSteps.class.getName());
     private final TestExecutionContext context;
-    private final Drivers allDrivers;
 
     public IndigoSteps() {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         LOGGER.info("context: " + context.getTestName());
-        allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
-        LOGGER.info("allDrivers: " + (null == allDrivers));
     }
 
     @Given("I search for a {string} ticket from {string} to {string} for {string} adult passenger")
@@ -27,7 +24,7 @@ public class IndigoSteps {
                                                     String destination, String numberOfAdults) {
         LOGGER.info(System.out.printf("iSearchForATicketFromToForPassenger - Persona:'%s'",
                                       SAMPLE_TEST_CONTEXT.ME));
-        allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         new IndigoBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).searchForTicket(journeyType, from,
                                                                               destination,
                                                                               numberOfAdults);
@@ -38,7 +35,7 @@ public class IndigoSteps {
                                                 String denomination) {
         LOGGER.info(System.out.printf("iWantToPurchaseGiftVoucherOfINR - Persona:'%s'",
                                       SAMPLE_TEST_CONTEXT.ME));
-        allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         new GiftVoucherBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).selectGiftVoucher(
                 numberOfGiftVouchersToPurchase, denomination);
     }
@@ -50,7 +47,7 @@ public class IndigoSteps {
             String customMessage) {
         LOGGER.info(System.out.printf("iWantToPurchaseGiftVoucherOfINR - Persona:'%s'",
                                       SAMPLE_TEST_CONTEXT.ME));
-        allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         new GiftVoucherBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).selectGiftVoucherAndPersonalise(
                 numberOfGiftVouchersToPurchase, denomination, forWhom, customMessage);
     }

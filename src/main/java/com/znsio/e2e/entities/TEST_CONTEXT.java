@@ -1,7 +1,6 @@
 package com.znsio.e2e.entities;
 
 public class TEST_CONTEXT {
-    public static final String ALL_DRIVERS = "allDrivers";
     public static final String APPIUM_DRIVER = "appiumDriver";
     public static final String CURRENT_DRIVER = "currentDriver";
     public static final String CURRENT_PLATFORM = "currentPlatform";

@@ -27,7 +27,6 @@ public class Hooks {
         LOGGER.info(String.format("Running test %s on %s", testExecutionContext.getTestName(),
                                   Runner.platform.name()));
         testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
-        testExecutionContext.addTestState(TEST_CONTEXT.ALL_DRIVERS, new Drivers());
         SoftAssertions softly = new SoftAssertions();
         testExecutionContext.addTestState(TEST_CONTEXT.SOFT_ASSERTIONS, softly);
         addEnvironmentVariablesToReportPortal();

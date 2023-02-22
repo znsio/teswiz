@@ -13,19 +13,16 @@ import org.apache.log4j.Logger;
 public class DineoutSteps {
     private static final Logger LOGGER = Logger.getLogger(IndigoSteps.class.getName());
     private final TestExecutionContext context;
-    private final Drivers allDrivers;
 
     public DineoutSteps() {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         LOGGER.info("context: " + context.getTestName());
-        allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
-        LOGGER.info("allDrivers: " + (null == allDrivers));
     }
 
     @Given("I am in {string}")
     public void iAmIn(String city) {
         LOGGER.info(System.out.printf("iAmIn - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
-        allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         new DineoutSearchBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).selectCity(city);
     }
 

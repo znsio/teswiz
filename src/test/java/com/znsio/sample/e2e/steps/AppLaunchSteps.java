@@ -15,13 +15,10 @@ import java.util.Locale;
 public class AppLaunchSteps {
     private static final Logger LOGGER = Logger.getLogger(AppLaunchSteps.class.getName());
     private final TestExecutionContext context;
-    private final Drivers allDrivers;
 
     public AppLaunchSteps() {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         LOGGER.info("context: " + context.getTestName());
-        allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
-        LOGGER.info("allDrivers: " + (null == allDrivers));
     }
 
     @Given("{string} start {string}")
@@ -32,7 +29,7 @@ public class AppLaunchSteps {
         LOGGER.info(System.out.printf("startOn - Persona:'%s', AppName: '%s', Platform: '%s'",
                                       userPersona, appName, onPlatform));
         context.addTestState(userPersona, userPersona);
-        allDrivers.createDriverFor(userPersona, appName, Platform.valueOf(onPlatform), context);
+        Drivers.createDriverFor(userPersona, appName, Platform.valueOf(onPlatform), context);
     }
 
     @And("{string} starts {string} on {string}")
@@ -45,7 +42,7 @@ public class AppLaunchSteps {
                 "startOn - Persona:'%s', AppName: '%s', Browser: '%s', Platform: '%s'", userPersona,
                 appName, evaluatedBrowser, onPlatform));
         context.addTestState(userPersona, userPersona);
-        allDrivers.createDriverFor(userPersona, appName, evaluatedBrowser,
+        Drivers.createDriverFor(userPersona, appName, evaluatedBrowser,
                                    Platform.valueOf(onPlatform), context);
     }
 
