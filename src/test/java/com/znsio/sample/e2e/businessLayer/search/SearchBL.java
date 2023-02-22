@@ -16,8 +16,7 @@ public class SearchBL {
     private final Platform currentPlatform;
 
     public SearchBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -26,8 +25,7 @@ public class SearchBL {
     }
 
     public SearchBL() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
@@ -35,8 +33,7 @@ public class SearchBL {
     }
 
     public SearchBL searchFor(String searchFor) {
-        ScreenShotScreen.get()
-                        .takeScreenshot();
+        ScreenShotScreen.get().takeScreenshot();
         return this;
     }
 }

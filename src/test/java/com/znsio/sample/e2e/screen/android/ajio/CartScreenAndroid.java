@@ -7,13 +7,13 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-public class CartScreenAndroid extends CartScreen {
-    private final Driver driver;
-    private final Visual visually;
+public class CartScreenAndroid
+        extends CartScreen {
     private static final String SCREEN_NAME = CartScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
-
     private static final By byProductTitleId = By.id("com.ril.ajio:id/productTitle");
+    private final Driver driver;
+    private final Visual visually;
 
 
     public CartScreenAndroid(Driver driver, Visual visually) {

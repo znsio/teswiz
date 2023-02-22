@@ -17,8 +17,7 @@ public class AppBL {
     private final Platform currentPlatform;
 
     public AppBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -27,8 +26,7 @@ public class AppBL {
     }
 
     public AppBL() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
@@ -36,8 +34,7 @@ public class AppBL {
     }
 
     public LoginBL provideInvalidDetailsForSignup(String username, String password) {
-        AppLaunchScreen.get()
-                       .selectLogin();
+        AppLaunchScreen.get().selectLogin();
         return loginAgain(username, password);
     }
 
@@ -45,25 +42,21 @@ public class AppBL {
         String errorMessage = "Invalid login credentials error message is incorrect";
         String androidErrorMessage = "Invalid login credentials, please try again";
         String webErrorMessage = "Your username is invalid!";
-        String expectedErrorMessage = currentPlatform.equals(Platform.android) ? androidErrorMessage : webErrorMessage;
+        String expectedErrorMessage =
+                currentPlatform.equals(Platform.android) ? androidErrorMessage : webErrorMessage;
 
-        LoginScreen loginScreen = LoginScreen.get()
-                                             .enterLoginDetails(username, password)
-                                             .login();
+        LoginScreen loginScreen = LoginScreen.get().enterLoginDetails(username, password).login();
         String actualErrorMessage = loginScreen.getInvalidLoginError();
         LOGGER.info("actualErrorMessage: " + actualErrorMessage);
 
         loginScreen.dismissAlert();
 
-        softly.assertThat(actualErrorMessage)
-              .as(errorMessage)
-              .contains(expectedErrorMessage);
+        softly.assertThat(actualErrorMessage).as(errorMessage).contains(expectedErrorMessage);
         return new LoginBL(currentUserPersona, currentPlatform);
     }
 
     public AppBL goBack() {
-        AppLaunchScreen.get()
-                       .goBack();
+        AppLaunchScreen.get().goBack();
         return this;
     }
 }

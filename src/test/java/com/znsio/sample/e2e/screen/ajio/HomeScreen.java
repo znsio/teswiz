@@ -18,21 +18,20 @@ public abstract class HomeScreen {
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
 
     public static HomeScreen get() {
-        Driver driver = fetchDriver(Thread.currentThread()
-                .getId());
-        Platform platform = Runner.fetchPlatform(Thread.currentThread()
-                .getId());
+        Driver driver = fetchDriver(Thread.currentThread().getId());
+        Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
-        Visual visually = fetchEyes(Thread.currentThread()
-                .getId());
+        Visual visually = fetchEyes(Thread.currentThread().getId());
 
-        switch (platform) {
+        switch(platform) {
             case android:
                 return new HomeScreenAndroid(driver, visually);
         }
-        throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.platform);
+        throw new NotImplementedException(
+                SCREEN_NAME + " is not implemented in " + Runner.platform);
     }
 
     public abstract SearchScreen searchByImage();
+
     public abstract HomeScreen attachFileToDevice(Map imageData);
 }

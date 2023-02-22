@@ -24,8 +24,7 @@ public class ClipboardDemoScreenAndroid
     public ClipboardDemoScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
     }
 
@@ -38,23 +37,24 @@ public class ClipboardDemoScreenAndroid
     public boolean doesAddedContentExistInClipboard() {
         String contentExpectedInClipboard = context.getTestStateAsString("contentInClipboard");
 
-        driver.findElementByAccessibilityId(byRefreshClipboardTextAccessibilityId)
-              .click();
+        driver.findElementByAccessibilityId(byRefreshClipboardTextAccessibilityId).click();
         visually.checkWindow(SCREEN_NAME, "Clipboard refreshed");
-        boolean isElementPresentByAccessibilityId = driver.isElementPresentByAccessibilityId(contentExpectedInClipboard);
-        LOGGER.info(String.format("Is content present in clipboad: '%s':: '%s'", contentExpectedInClipboard, isElementPresentByAccessibilityId));
+        boolean isElementPresentByAccessibilityId = driver.isElementPresentByAccessibilityId(
+                contentExpectedInClipboard);
+        LOGGER.info(String.format("Is content present in clipboad: '%s':: '%s'",
+                                  contentExpectedInClipboard, isElementPresentByAccessibilityId));
         return isElementPresentByAccessibilityId;
     }
 
     private ClipboardDemoScreenAndroid saveEnteredTextToClipBoard() {
-        driver.findElementByAccessibilityId(bySetClipboardTextByAccessibilityId)
-              .click();
+        driver.findElementByAccessibilityId(bySetClipboardTextByAccessibilityId).click();
         return this;
     }
 
     private ClipboardDemoScreenAndroid enterTextToAddInClipboard(String content) {
         waitFor(2);
-        MobileElement contentElement = (MobileElement) driver.findElementByAccessibilityId(byMessageInputAccessibilityId);
+        MobileElement contentElement = (MobileElement) driver.findElementByAccessibilityId(
+                byMessageInputAccessibilityId);
         contentElement.click();
         contentElement.clear();
         contentElement.sendKeys(content);

@@ -21,11 +21,12 @@ public abstract class CartScreen {
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = fetchEyes(Thread.currentThread().getId());
 
-        switch (platform) {
+        switch(platform) {
             case android:
                 return new CartScreenAndroid(driver, visually);
         }
-        throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.platform);
+        throw new NotImplementedException(
+                SCREEN_NAME + " is not implemented in " + Runner.platform);
     }
 
     public abstract String getActualProductName();

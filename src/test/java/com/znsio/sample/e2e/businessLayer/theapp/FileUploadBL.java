@@ -20,8 +20,7 @@ public class FileUploadBL {
     private final Platform currentPlatform;
 
     public FileUploadBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -30,23 +29,26 @@ public class FileUploadBL {
     }
 
     public FileUploadBL() {
-        long threadId = Thread.currentThread()
-                .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
         this.currentPlatform = Runner.platform;
     }
-    public FileUploadBL navigationToUploadScreen(){
+
+    public FileUploadBL navigationToUploadScreen() {
         FileUploadScreen.get().navigateToFileUplaodPage();
         return this;
     }
-    public FileUploadBL uploadFile(Map file){
+
+    public FileUploadBL uploadFile(Map file) {
         FileUploadScreen.get().uploadFile(file);
         return this;
     }
-    public FileUploadBL verifyFileUpload(){
-        assertThat(FileUploadScreen.get().getFileUploadText()).as("File upload validation").contains("File Uploaded!");
+
+    public FileUploadBL verifyFileUpload() {
+        assertThat(FileUploadScreen.get().getFileUploadText()).as("File upload validation")
+                                                              .contains("File Uploaded!");
         return this;
     }
 

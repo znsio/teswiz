@@ -22,16 +22,16 @@ public class CalculatorScreenAndroid
     public CalculatorScreen handlePopupIfPresent() {
         waitFor(1);
         visually.checkWindow(SCREEN_NAME, "Calculator launched");
-        boolean isUpgradeAppNotificationElement = driver.isElementPresent(By.id("android:id/button1"));
+        boolean isUpgradeAppNotificationElement = driver.isElementPresent(
+                By.id("android:id/button1"));
         if(isUpgradeAppNotificationElement) {
-            driver.findElement(By.id("android:id/button1"))
-                  .click();
+            driver.findElement(By.id("android:id/button1")).click();
             waitFor(1);
         }
-        boolean isClingElementPresent = driver.isElementPresent(By.id("com.android2.calculator3:id/cling_dismiss"));
+        boolean isClingElementPresent = driver.isElementPresent(
+                By.id("com.android2.calculator3:id/cling_dismiss"));
         if(isClingElementPresent) {
-            driver.findElementById("com.android2.calculator3:id/cling_dismiss")
-                  .click();
+            driver.findElementById("com.android2.calculator3:id/cling_dismiss").click();
             waitFor(1);
         }
         visually.checkWindow(SCREEN_NAME, "Calculator popup handled");
@@ -40,8 +40,7 @@ public class CalculatorScreenAndroid
 
     @Override
     public CalculatorScreen selectNumber(String number) {
-        driver.findElement(By.id("digit" + number))
-              .click();
+        driver.findElement(By.id("digit" + number)).click();
         visually.checkWindow(SCREEN_NAME, "Entered number " + number);
         return this;
     }
@@ -68,8 +67,7 @@ public class CalculatorScreenAndroid
             default:
                 throw new RuntimeException("Operation " + operation + " is not supported");
         }
-        driver.findElement(By.id(mappedOperation))
-              .click();
+        driver.findElement(By.id(mappedOperation)).click();
         return this;
     }
 }

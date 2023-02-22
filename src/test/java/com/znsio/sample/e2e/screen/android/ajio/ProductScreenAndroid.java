@@ -8,15 +8,17 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-public class ProductScreenAndroid extends ProductScreen {
-    private final Driver driver;
-    private final Visual visually;
+public class ProductScreenAndroid
+        extends ProductScreen {
     private static final String SCREEN_NAME = ProductScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final By byProductNameId = By.id("com.ril.ajio:id/product_name");
     private static final By byAddToCartButtonId = By.id("com.ril.ajio:id/add_to_cart_tv");
-    private static final By byViewBagButtonXpath = By.xpath("//android.widget.TextView[@text='View Bag']");
+    private static final By byViewBagButtonXpath = By.xpath(
+            "//android.widget.TextView[@text='View Bag']");
     private static final By byBrandNameId = By.id("com.ril.ajio:id/product_name");
+    private final Driver driver;
+    private final Visual visually;
 
     public ProductScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;

@@ -16,8 +16,7 @@ public class EchoBL {
     private final Platform currentPlatform;
 
     public EchoBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -26,8 +25,7 @@ public class EchoBL {
     }
 
     public EchoBL() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
@@ -35,9 +33,7 @@ public class EchoBL {
     }
 
     public EchoBL echoMessage(String message) {
-        AppLaunchScreen.get()
-                       .selectEcho()
-                       .echoMessage(message);
+        AppLaunchScreen.get().selectEcho().echoMessage(message);
         return this;
     }
 }

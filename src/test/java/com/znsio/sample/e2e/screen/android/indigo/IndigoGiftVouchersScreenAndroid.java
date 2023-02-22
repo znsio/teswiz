@@ -12,18 +12,22 @@ import java.util.Set;
 
 public class IndigoGiftVouchersScreenAndroid
         extends IndigoGiftVouchersScreen {
-    private final Driver driver;
-    private final Visual visually;
     private static final String SCREEN_NAME = IndigoGiftVouchersScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
-    private static final By bySelectDenominationDropdownXpath = By.xpath("//android.widget.TextView[@text='Select Denomination']");
-    private static final String bySelectValueFromDropdown = "//android.widget.CheckedTextView[@text='%s']";
-    private static final By bySelectQuantityDropdownXpath = By.xpath("//android.widget.TextView[@text='Select']");
-    private static final By byPreviewButtonXpath = By.xpath("//android.widget.Button[@text='Preview']");
+    private static final By bySelectDenominationDropdownXpath = By.xpath(
+            "//android.widget.TextView[@text='Select Denomination']");
+    private static final String bySelectValueFromDropdown = "//android.widget" +
+                                                            ".CheckedTextView[@text='%s']";
+    private static final By bySelectQuantityDropdownXpath = By.xpath(
+            "//android.widget.TextView[@text='Select']");
+    private static final By byPreviewButtonXpath = By.xpath(
+            "//android.widget.Button[@text='Preview']");
     private static final By byTotalAmountId = By.id("in.goindigo.android:id/lblTotal");
-
-    private static final String byGiftValueTitleXpath = "//android.widget.TextView[@text='Gift Voucher Denomination']";
+    private static final String byGiftValueTitleXpath = "//android.widget.TextView[@text='Gift " +
+                                                        "Voucher Denomination']";
+    private final Driver driver;
+    private final Visual visually;
 
     public IndigoGiftVouchersScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -33,37 +37,37 @@ public class IndigoGiftVouchersScreenAndroid
     }
 
     @Override
-    public IndigoGiftVouchersScreen select(String numberOfGiftVouchersToPurchase, String denomination) {
-        throw new NotImplementedException(SCREEN_NAME + ":" + new Throwable().getStackTrace()[0].getMethodName() + NOT_YET_IMPLEMENTED);
+    public IndigoGiftVouchersScreen select(String numberOfGiftVouchersToPurchase,
+                                           String denomination) {
+        throw new NotImplementedException(
+                SCREEN_NAME + ":" + new Throwable().getStackTrace()[0].getMethodName() + NOT_YET_IMPLEMENTED);
     }
 
     @Override
     public int getTotalPrice() {
-        throw new NotImplementedException(SCREEN_NAME + ":" + new Throwable().getStackTrace()[0].getMethodName() + NOT_YET_IMPLEMENTED);
+        throw new NotImplementedException(
+                SCREEN_NAME + ":" + new Throwable().getStackTrace()[0].getMethodName() + NOT_YET_IMPLEMENTED);
     }
 
     @Override
-    public IndigoGiftVouchersScreen select(String numberOfGiftVouchersToPurchase, String denomination, String forWhom, String customMessage) {
-        driver.findElement(bySelectDenominationDropdownXpath)
-              .click();
+    public IndigoGiftVouchersScreen select(String numberOfGiftVouchersToPurchase,
+                                           String denomination, String forWhom,
+                                           String customMessage) {
+        driver.findElement(bySelectDenominationDropdownXpath).click();
         String denominationToSelectXpath = String.format(bySelectValueFromDropdown, denomination);
-        driver.waitTillElementIsVisible(By.xpath(denominationToSelectXpath))
-              .click();
+        driver.waitTillElementIsVisible(By.xpath(denominationToSelectXpath)).click();
         visually.checkWindow(SCREEN_NAME, "Selected voucher denomination");
-        driver.waitTillElementIsVisible(bySelectQuantityDropdownXpath)
-              .click();
-        String quantitytoSelectXpath = String.format(bySelectValueFromDropdown, numberOfGiftVouchersToPurchase);
-        driver.waitTillElementIsVisible(By.xpath(quantitytoSelectXpath))
-              .click();
+        driver.waitTillElementIsVisible(bySelectQuantityDropdownXpath).click();
+        String quantitytoSelectXpath = String.format(bySelectValueFromDropdown,
+                                                     numberOfGiftVouchersToPurchase);
+        driver.waitTillElementIsVisible(By.xpath(quantitytoSelectXpath)).click();
         visually.checkWindow(SCREEN_NAME, "Selected voucher quantity");
         Set<String> contextNames = ((AppiumDriver) driver.getInnerDriver()).getContextHandles();
         driver.scrollDownByScreenSize();
 
-        String lblTotal = driver.findElement(byTotalAmountId)
-                                .getText();
+        String lblTotal = driver.findElement(byTotalAmountId).getText();
         LOGGER.info("Total amount: " + lblTotal);
-        driver.findElement(By.id("chkPersonal"))
-              .click();
+        driver.findElement(By.id("chkPersonal")).click();
         visually.checkWindow(SCREEN_NAME, "Personalise gift voucher selected");
 
         return this;
@@ -71,6 +75,7 @@ public class IndigoGiftVouchersScreenAndroid
 
     @Override
     public IndigoGiftVouchersScreen preview() {
-        throw new NotImplementedException(SCREEN_NAME + ":" + new Throwable().getStackTrace()[0].getMethodName() + NOT_YET_IMPLEMENTED);
+        throw new NotImplementedException(
+                SCREEN_NAME + ":" + new Throwable().getStackTrace()[0].getMethodName() + NOT_YET_IMPLEMENTED);
     }
 }

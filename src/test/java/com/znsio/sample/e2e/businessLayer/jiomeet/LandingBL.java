@@ -19,8 +19,7 @@ public class LandingBL {
     private final Platform currentPlatform;
 
     public LandingBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -29,8 +28,7 @@ public class LandingBL {
     }
 
     public LandingBL() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
@@ -38,11 +36,9 @@ public class LandingBL {
     }
 
     public InAMeetingBL startInstantMeeting() {
-        InAMeetingScreen inAMeetingScreen = LandingScreen.get()
-                                                         .startInstantMeeting();
+        InAMeetingScreen inAMeetingScreen = LandingScreen.get().startInstantMeeting();
         boolean hasMeetingStarted = inAMeetingScreen.isMeetingStarted();
-        assertThat(hasMeetingStarted).as("Meeting should have been started")
-                                     .isTrue();
+        assertThat(hasMeetingStarted).as("Meeting should have been started").isTrue();
         String meetingId = inAMeetingScreen.getMeetingId();
         String meetingPassword = inAMeetingScreen.getMeetingPassword();
         LOGGER.info(String.format("Meeting id: '%s', password: '%s'", meetingId, meetingPassword));

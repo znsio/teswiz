@@ -9,13 +9,14 @@ import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
-public class SearchScreenAndroid extends SearchScreen {
-    private final Driver driver;
-    private final Visual visually;
+public class SearchScreenAndroid
+        extends SearchScreen {
     private static final String SCREEN_NAME = SearchScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final By byResultsId = By.id("com.ril.ajio:id/tv_count_plp_header_is");
     private static final By byProductId = By.id("com.ril.ajio:id/plp_row_product_iv");
+    private final Driver driver;
+    private final Visual visually;
 
     public SearchScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -24,17 +25,18 @@ public class SearchScreenAndroid extends SearchScreen {
 
     @Override
     public int numberOfProductFound() {
-        int numberOfProductFound = Integer.parseInt(driver.waitTillElementIsPresent(byResultsId).getText().split(" ")[0]);
-        visually.checkWindow(SCREEN_NAME,"Result for Image search");
-        LOGGER.info("numberOfProductFound: "+numberOfProductFound);
+        int numberOfProductFound = Integer.parseInt(
+                driver.waitTillElementIsPresent(byResultsId).getText().split(" ")[0]);
+        visually.checkWindow(SCREEN_NAME, "Result for Image search");
+        LOGGER.info("numberOfProductFound: " + numberOfProductFound);
         return numberOfProductFound;
     }
 
     @Override
-    public void selectProduct(){
+    public void selectProduct() {
         LOGGER.info("selection of Product in the result page");
         driver.waitTillElementIsPresent(By.id("com.ril.ajio:id/layout_category_container")).click();
-        List<WebElement> list= driver.waitTillPresenceOfAllElements(byProductId);
+        List<WebElement> list = driver.waitTillPresenceOfAllElements(byProductId);
         list.get(0).click();
     }
 }

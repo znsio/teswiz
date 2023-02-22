@@ -16,8 +16,7 @@ public class InAMeetingBL {
     private final Platform currentPlatform;
 
     public InAMeetingBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -26,8 +25,7 @@ public class InAMeetingBL {
     }
 
     public InAMeetingBL() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
@@ -35,15 +33,13 @@ public class InAMeetingBL {
     }
 
     public InAMeetingBL unmuteMyself() {
-        InAMeetingScreen.get()
-                        .unmute();
+        InAMeetingScreen.get().unmute();
         return this;
     }
 
 
     public InAMeetingBL muteMyself() {
-        InAMeetingScreen.get()
-                        .mute();
+        InAMeetingScreen.get().mute();
         return this;
     }
 }

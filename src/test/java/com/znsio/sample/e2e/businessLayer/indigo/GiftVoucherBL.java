@@ -19,8 +19,7 @@ public class GiftVoucherBL {
     private final Platform currentPlatform;
 
     public GiftVoucherBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -29,42 +28,50 @@ public class GiftVoucherBL {
     }
 
     public GiftVoucherBL() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
         this.currentPlatform = Runner.platform;
     }
 
-    private GiftVoucherBL selectWithoutPersonalise(String numberOfGiftVouchersToPurchase, String denomination) {
+    private GiftVoucherBL selectWithoutPersonalise(String numberOfGiftVouchersToPurchase,
+                                                   String denomination) {
         IndigoGiftVouchersScreen indigoGiftVouchersScreen = IndigoGiftVouchersScreen.get()
-                                                                                    .select(numberOfGiftVouchersToPurchase, denomination)
+                                                                                    .select(numberOfGiftVouchersToPurchase,
+                                                                                            denomination)
                                                                                     .preview();
         int totalPrice = indigoGiftVouchersScreen.getTotalPrice();
-        assertThat(totalPrice).as("Computed amount is incorrect")
-                              .isEqualTo(Integer.parseInt(denomination) * Integer.parseInt(numberOfGiftVouchersToPurchase));
+        assertThat(totalPrice).as("Computed amount is incorrect").isEqualTo(
+                Integer.parseInt(denomination) * Integer.parseInt(numberOfGiftVouchersToPurchase));
         return this;
     }
 
-    public GiftVoucherBL selectGiftVoucher(String numberOfGiftVouchersToPurchase, String denomination) {
+    public GiftVoucherBL selectGiftVoucher(String numberOfGiftVouchersToPurchase,
+                                           String denomination) {
         IndigoGiftVouchersScreen indigoGiftVouchersScreen = IndigoHomeScreen.get()
                                                                             .selectGiftVouchers()
-                                                                            .select(numberOfGiftVouchersToPurchase, denomination);
+                                                                            .select(numberOfGiftVouchersToPurchase,
+                                                                                    denomination);
         int totalPrice = indigoGiftVouchersScreen.getTotalPrice();
-        assertThat(totalPrice).as("Computed amount is incorrect")
-                              .isEqualTo(Integer.parseInt(denomination) * Integer.parseInt(numberOfGiftVouchersToPurchase));
+        assertThat(totalPrice).as("Computed amount is incorrect").isEqualTo(
+                Integer.parseInt(denomination) * Integer.parseInt(numberOfGiftVouchersToPurchase));
         indigoGiftVouchersScreen.preview();
         return this;
     }
 
-    public GiftVoucherBL selectGiftVoucherAndPersonalise(String numberOfGiftVouchersToPurchase, String denomination, String forWhom, String customMessage) {
+    public GiftVoucherBL selectGiftVoucherAndPersonalise(String numberOfGiftVouchersToPurchase,
+                                                         String denomination, String forWhom,
+                                                         String customMessage) {
         IndigoGiftVouchersScreen indigoGiftVouchersScreen = IndigoHomeScreen.get()
                                                                             .selectGiftVouchers()
-                                                                            .select(numberOfGiftVouchersToPurchase, denomination, forWhom, customMessage);
+                                                                            .select(numberOfGiftVouchersToPurchase,
+                                                                                    denomination,
+                                                                                    forWhom,
+                                                                                    customMessage);
         int totalPrice = indigoGiftVouchersScreen.getTotalPrice();
-        assertThat(totalPrice).as("Computed amount is incorrect")
-                              .isEqualTo(Integer.parseInt(denomination) * Integer.parseInt(numberOfGiftVouchersToPurchase));
+        assertThat(totalPrice).as("Computed amount is incorrect").isEqualTo(
+                Integer.parseInt(denomination) * Integer.parseInt(numberOfGiftVouchersToPurchase));
         indigoGiftVouchersScreen.preview();
         return this;
     }

@@ -16,8 +16,7 @@ public class DineoutSearchBL {
     private final Platform currentPlatform;
 
     public DineoutSearchBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -26,8 +25,7 @@ public class DineoutSearchBL {
     }
 
     public DineoutSearchBL() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
@@ -35,15 +33,12 @@ public class DineoutSearchBL {
     }
 
     public DineoutSearchBL selectCity(String city) {
-        DineoutLandingScreen.get()
-                            .selectDefaultCity()
-                            .selectCity(city);
+        DineoutLandingScreen.get().selectDefaultCity().selectCity(city);
         return this;
     }
 
     public DineoutSearchBL searchForCusine(String cusine) {
-        DineoutLandingScreen.get()
-                            .searchCuisine(cusine);
+        DineoutLandingScreen.get().searchCuisine(cusine);
         return this;
     }
 }

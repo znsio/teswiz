@@ -10,14 +10,14 @@ import static com.znsio.e2e.tools.Wait.waitFor;
 
 public class LoginScreenWeb
         extends LoginScreen {
-    private final Driver driver;
-    private final Visual visually;
-    private final String SCREEN_NAME = LoginScreenWeb.class.getSimpleName();
     private static final By userNameId = By.id("username");
     private static final By passwordId = By.id("password");
     private static final By loginButtonXpath = By.xpath("//button/i[contains(text(),\"Login\")]");
     private static final By errorMessageId = By.id("flash");
     private static final By dismissAlertXpath = By.xpath("//a[@href=\"#\"]");
+    private final Driver driver;
+    private final Visual visually;
+    private final String SCREEN_NAME = LoginScreenWeb.class.getSimpleName();
 
     public LoginScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
@@ -28,18 +28,15 @@ public class LoginScreenWeb
     @Override
     public LoginScreen enterLoginDetails(String username, String password) {
         waitFor(2);
-        driver.findElement(userNameId)
-              .sendKeys(username);
-        driver.findElement(passwordId)
-              .sendKeys(password);
+        driver.findElement(userNameId).sendKeys(username);
+        driver.findElement(passwordId).sendKeys(password);
         visually.checkWindow(SCREEN_NAME, "entered login details");
         return this;
     }
 
     @Override
     public LoginScreen login() {
-        driver.findElement(loginButtonXpath)
-              .click();
+        driver.findElement(loginButtonXpath).click();
         waitFor(2);
         return this;
     }
@@ -48,8 +45,7 @@ public class LoginScreenWeb
     public String getInvalidLoginError() {
         WebElement alertText = driver.waitForClickabilityOf(errorMessageId);
         visually.checkWindow(SCREEN_NAME, "Invalid Login alert");
-        return alertText.getText()
-                        .trim();
+        return alertText.getText().trim();
     }
 
     @Override

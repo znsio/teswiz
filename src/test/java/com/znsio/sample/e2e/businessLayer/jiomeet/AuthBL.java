@@ -20,8 +20,7 @@ public class AuthBL {
     private final Platform currentPlatform;
 
     public AuthBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -30,12 +29,15 @@ public class AuthBL {
     }
 
     public AuthBL() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
         this.currentPlatform = Runner.platform;
+    }
+
+    public InAMeetingBL signInAndStartMeeting(Map userPersona) {
+        return signIn(userPersona).startInstantMeeting();
     }
 
     public LandingBL signIn(Map userDetails) {
@@ -43,12 +45,15 @@ public class AuthBL {
         String password = String.valueOf(userDetails.get("password"));
         String firstName = String.valueOf(userDetails.get("firstName"));
         String lastName = String.valueOf(userDetails.get("lastName"));
-        String expectedWelcomeMessageAndroid = "Hello " + firstName + " \n" + "what would you like to do?";
-        String expectedWelcomeMessageWeb = "Hello " + firstName + " " + lastName + ", what would you like to do?";
-        String expectedWelcomeMessage = currentPlatform.equals(Platform.web) ? expectedWelcomeMessageWeb : expectedWelcomeMessageAndroid;
+        String expectedWelcomeMessageAndroid = "Hello " + firstName + " \n" + "what would you " +
+                                               "like to do?";
+        String expectedWelcomeMessageWeb = "Hello " + firstName + " " + lastName + ", what would " +
+                                           "you like to do?";
+        String expectedWelcomeMessage =
+                currentPlatform.equals(Platform.web) ? expectedWelcomeMessageWeb
+                                                     : expectedWelcomeMessageAndroid;
 
-        String signedInWelcomeMessage = SignInScreen.get()
-                                                    .signIn(username, password)
+        String signedInWelcomeMessage = SignInScreen.get().signIn(username, password)
                                                     .getSignedInWelcomeMessage();
 
         LOGGER.info(String.format("signedInWelcomeMessage: '%s'", signedInWelcomeMessage));
@@ -56,9 +61,5 @@ public class AuthBL {
         assertThat(signedInWelcomeMessage).as("Welcome message is incorrect")
                                           .isEqualTo(expectedWelcomeMessage);
         return new LandingBL(currentUserPersona, currentPlatform);
-    }
-
-    public InAMeetingBL signInAndStartMeeting(Map userPersona) {
-        return signIn(userPersona).startInstantMeeting();
     }
 }

@@ -16,8 +16,7 @@ public class IndigoBL {
     private final Platform currentPlatform;
 
     public IndigoBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -26,21 +25,18 @@ public class IndigoBL {
     }
 
     public IndigoBL() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
         this.currentPlatform = Runner.platform;
     }
 
-    public FlightResultsBL searchForTicket(String journeyType, String from, String destination, String numberOfAdults) {
-        IndigoHomeScreen.get()
-                        .selectJourneyType(journeyType)
+    public FlightResultsBL searchForTicket(String journeyType, String from, String destination,
+                                           String numberOfAdults) {
+        IndigoHomeScreen.get().selectJourneyType(journeyType)
                         .selectNumberOfAdultPassengers(Integer.parseInt(numberOfAdults))
-                        .selectFrom(from)
-                        .selectTo(destination)
-                        .searchFlightOptions();
+                        .selectFrom(from).selectTo(destination).searchFlightOptions();
         return new FlightResultsBL();
     }
 }

@@ -19,8 +19,7 @@ public class ClipboardBL {
     private final Platform currentPlatform;
 
     public ClipboardBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -29,8 +28,7 @@ public class ClipboardBL {
     }
 
     public ClipboardBL() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
@@ -44,16 +42,15 @@ public class ClipboardBL {
     public ClipboardBL verifyContentIsSaved(String contentExpectedInClipboard) {
         boolean isAddedContentExistingInClipboard = ClipboardDemoScreen.get()
                                                                        .doesAddedContentExistInClipboard();
-        assertThat(isAddedContentExistingInClipboard).as(String.format("Content: '%s' is not added in the clipboard", contentExpectedInClipboard))
-                                                     .isTrue();
+        assertThat(isAddedContentExistingInClipboard).as(
+                String.format("Content: '%s' is not added in the clipboard",
+                              contentExpectedInClipboard)).isTrue();
         return this;
     }
 
     public ClipboardBL setContentInClipboard(String content) {
         context.addTestState("contentInClipboard", content);
-        AppLaunchScreen.get()
-                       .goToClipboardDemo()
-                       .setInClipboard(content);
+        AppLaunchScreen.get().goToClipboardDemo().setInClipboard(content);
         return this;
     }
 }

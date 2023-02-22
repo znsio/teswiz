@@ -16,31 +16,42 @@ public class IndigoSteps {
     private final Drivers allDrivers;
 
     public IndigoSteps() {
-        context = SessionContext.getTestExecutionContext(Thread.currentThread()
-                                                               .getId());
+        context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         LOGGER.info("context: " + context.getTestName());
         allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
         LOGGER.info("allDrivers: " + (null == allDrivers));
     }
 
     @Given("I search for a {string} ticket from {string} to {string} for {string} adult passenger")
-    public void iSearchForATicketFromToForPassenger(String journeyType, String from, String destination, String numberOfAdults) {
-        LOGGER.info(System.out.printf("iSearchForATicketFromToForPassenger - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
+    public void iSearchForATicketFromToForPassenger(String journeyType, String from,
+                                                    String destination, String numberOfAdults) {
+        LOGGER.info(System.out.printf("iSearchForATicketFromToForPassenger - Persona:'%s'",
+                                      SAMPLE_TEST_CONTEXT.ME));
         allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
-        new IndigoBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).searchForTicket(journeyType, from, destination, numberOfAdults);
+        new IndigoBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).searchForTicket(journeyType, from,
+                                                                              destination,
+                                                                              numberOfAdults);
     }
 
     @Given("I want to purchase {string} gift voucher of INR {string}")
-    public void iWantToPurchaseGiftVoucherOfINR(String numberOfGiftVouchersToPurchase, String denomination) {
-        LOGGER.info(System.out.printf("iWantToPurchaseGiftVoucherOfINR - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
+    public void iWantToPurchaseGiftVoucherOfINR(String numberOfGiftVouchersToPurchase,
+                                                String denomination) {
+        LOGGER.info(System.out.printf("iWantToPurchaseGiftVoucherOfINR - Persona:'%s'",
+                                      SAMPLE_TEST_CONTEXT.ME));
         allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
-        new GiftVoucherBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).selectGiftVoucher(numberOfGiftVouchersToPurchase, denomination);
+        new GiftVoucherBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).selectGiftVoucher(
+                numberOfGiftVouchersToPurchase, denomination);
     }
 
-    @Given("I want to personalize {string} gift voucher of INR {string} for {string} with message {string}")
-    public void iWantToPersonalizeGiftVoucherOfINRForWithMessage(String numberOfGiftVouchersToPurchase, String denomination, String forWhom, String customMessage) {
-        LOGGER.info(System.out.printf("iWantToPurchaseGiftVoucherOfINR - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
+    @Given("I want to personalize {string} gift voucher of INR {string} for {string} with message" +
+           " {string}")
+    public void iWantToPersonalizeGiftVoucherOfINRForWithMessage(
+            String numberOfGiftVouchersToPurchase, String denomination, String forWhom,
+            String customMessage) {
+        LOGGER.info(System.out.printf("iWantToPurchaseGiftVoucherOfINR - Persona:'%s'",
+                                      SAMPLE_TEST_CONTEXT.ME));
         allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
-        new GiftVoucherBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).selectGiftVoucherAndPersonalise(numberOfGiftVouchersToPurchase, denomination, forWhom, customMessage);
+        new GiftVoucherBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).selectGiftVoucherAndPersonalise(
+                numberOfGiftVouchersToPurchase, denomination, forWhom, customMessage);
     }
 }

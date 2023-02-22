@@ -13,10 +13,10 @@ public class AppLaunchScreenWeb
         extends AppLaunchScreen {
     private static final String NOT_YET_IMPLEMENTED = "NOT_YET_IMPLEMENTED";
     private static final Logger LOGGER = Logger.getLogger(AppLaunchScreenWeb.class.getName());
+    private static final By loginFormLinkText = By.linkText("Form Authentication");
     private final Driver driver;
     private final Visual visually;
     private final String SCREEN_NAME = AppLaunchScreenWeb.class.getSimpleName();
-    private static final By loginFormLinkText = By.linkText("Form Authentication");
 
     public AppLaunchScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
@@ -26,8 +26,7 @@ public class AppLaunchScreenWeb
 
     @Override
     public LoginScreen selectLogin() {
-        driver.findElement(loginFormLinkText)
-              .click();
+        driver.findElement(loginFormLinkText).click();
         return LoginScreen.get();
     }
 

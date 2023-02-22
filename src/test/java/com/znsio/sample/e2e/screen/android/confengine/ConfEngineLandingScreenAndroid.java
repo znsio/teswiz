@@ -11,11 +11,11 @@ import java.util.Set;
 
 public class ConfEngineLandingScreenAndroid
         extends ConfEngineLandingScreen {
-    private final Driver driver;
-    private final Visual visually;
     private static final String SCREEN_NAME = ConfEngineLandingScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
+    private final Driver driver;
+    private final Visual visually;
 
     public ConfEngineLandingScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -31,7 +31,8 @@ public class ConfEngineLandingScreenAndroid
             System.out.println(contextName); //prints out something like NATIVE_APP \n WEBVIEW_1
         }
         ((AppiumDriver) driver.getInnerDriver()).context(String.valueOf(contextNames.toArray()[1]));
-        driver.waitTillElementIsPresent(By.xpath("//li[@conference-id='selenium-conf-2022']")).click();
+        driver.waitTillElementIsPresent(By.xpath("//li[@conference-id='selenium-conf-2022']"))
+              .click();
         visually.checkWindow(SCREEN_NAME, "Selected Selenium Conf 2022");
         return this;
     }

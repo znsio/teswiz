@@ -17,13 +17,10 @@ public abstract class InAMeetingScreen {
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
 
     public static InAMeetingScreen get() {
-        Driver driver = fetchDriver(Thread.currentThread()
-                                          .getId());
-        Platform platform = Runner.fetchPlatform(Thread.currentThread()
-                                                       .getId());
+        Driver driver = fetchDriver(Thread.currentThread().getId());
+        Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
-        Visual visually = fetchEyes(Thread.currentThread()
-                                          .getId());
+        Visual visually = fetchEyes(Thread.currentThread().getId());
 
         switch(platform) {
             case android:
@@ -31,7 +28,8 @@ public abstract class InAMeetingScreen {
             case web:
                 return new InAMeetingScreenWeb(driver, visually);
         }
-        throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.platform);
+        throw new NotImplementedException(
+                SCREEN_NAME + " is not implemented in " + Runner.platform);
     }
 
     public abstract boolean isMeetingStarted();

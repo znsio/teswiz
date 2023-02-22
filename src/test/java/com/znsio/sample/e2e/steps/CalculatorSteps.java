@@ -21,8 +21,7 @@ public class CalculatorSteps {
     private final Drivers allDrivers;
 
     public CalculatorSteps() {
-        context = SessionContext.getTestExecutionContext(Thread.currentThread()
-                                                               .getId());
+        context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         LOGGER.info("context: " + context.getTestName());
         allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
         LOGGER.info("allDrivers: " + (null == allDrivers));
@@ -36,8 +35,7 @@ public class CalculatorSteps {
     @And("{string} select {string}")
     public void select(String userPersona, String action) {
         Platform onPlatform = allDrivers.getPlatformForUser(userPersona);
-        new CalculatorBL(userPersona, onPlatform).startCalculator()
-                                                 .selectNumber(action);
+        new CalculatorBL(userPersona, onPlatform).startCalculator().selectNumber(action);
     }
 
     @When("I press {string}")
@@ -51,7 +49,8 @@ public class CalculatorSteps {
 
     @Given("I start the calculator")
     public void iStartTheCalculator() {
-        LOGGER.info(System.out.printf("iStartTheCalculator - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
+        LOGGER.info(
+                System.out.printf("iStartTheCalculator - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
         allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
         new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).startCalculator();
     }

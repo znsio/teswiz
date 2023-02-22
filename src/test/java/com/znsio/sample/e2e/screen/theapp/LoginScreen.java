@@ -17,13 +17,10 @@ public abstract class LoginScreen {
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
 
     public static LoginScreen get() {
-        Driver driver = fetchDriver(Thread.currentThread()
-                                          .getId());
-        Platform platform = Runner.fetchPlatform(Thread.currentThread()
-                                                       .getId());
+        Driver driver = fetchDriver(Thread.currentThread().getId());
+        Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
-        Visual visually = fetchEyes(Thread.currentThread()
-                                          .getId());
+        Visual visually = fetchEyes(Thread.currentThread().getId());
 
         switch(platform) {
             case android:
@@ -31,7 +28,8 @@ public abstract class LoginScreen {
             case web:
                 return new LoginScreenWeb(driver, visually);
         }
-        throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.platform);
+        throw new NotImplementedException(
+                SCREEN_NAME + " is not implemented in " + Runner.platform);
     }
 
     public abstract LoginScreen enterLoginDetails(String username, String password);

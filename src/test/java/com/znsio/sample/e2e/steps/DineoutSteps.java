@@ -16,8 +16,7 @@ public class DineoutSteps {
     private final Drivers allDrivers;
 
     public DineoutSteps() {
-        context = SessionContext.getTestExecutionContext(Thread.currentThread()
-                                                               .getId());
+        context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         LOGGER.info("context: " + context.getTestName());
         allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
         LOGGER.info("allDrivers: " + (null == allDrivers));
@@ -32,7 +31,8 @@ public class DineoutSteps {
 
     @When("I search for {string} cuisine restaurants")
     public void iSearchForCuisineRestaurants(String cusine) {
-        LOGGER.info(System.out.printf("iSearchForCuisineRestaurants - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
+        LOGGER.info(System.out.printf("iSearchForCuisineRestaurants - Persona:'%s'",
+                                      SAMPLE_TEST_CONTEXT.ME));
         new DineoutSearchBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).searchForCusine(cusine);
     }
 }

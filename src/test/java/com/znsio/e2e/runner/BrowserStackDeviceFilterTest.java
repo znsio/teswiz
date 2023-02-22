@@ -27,77 +27,102 @@ class BrowserStackDeviceFilterTest {
 
     @BeforeEach
     public void Setup() throws FileNotFoundException, NoSuchMethodException {
-        String file = new File("").getAbsoluteFile().getAbsolutePath() + "/src/test/resources/devicesList.json";
+        String file = new File("").getAbsoluteFile()
+                                  .getAbsolutePath() + "/src/test/resources/devicesList.json";
         JsonReader reader = new JsonReader(new FileReader(file));
-        browserStackDevices = new Gson().fromJson(reader, new TypeToken<List<BrowserStackDevice>>() {
-        }.getType());
+        browserStackDevices = new Gson().fromJson(reader,
+                                                  new TypeToken<List<BrowserStackDevice>>() {}.getType());
 
-        applyFilters = BrowserStackDeviceFilter.class.getDeclaredMethod("applyFilters", List.class, Map.class);
+        applyFilters = BrowserStackDeviceFilter.class.getDeclaredMethod("applyFilters", List.class,
+                                                                        Map.class);
         applyFilters.setAccessible(true);
     }
+
     @Test
-    void userCanGetDevicesAfterApplyingOSBasedFilter() throws InvocationTargetException, IllegalAccessException {
+    void userCanGetDevicesAfterApplyingOSBasedFilter() throws InvocationTargetException,
+                                                              IllegalAccessException {
         Map<String, String> osBasedFilter = new HashMap<>();
         osBasedFilter.put("Os", "android");
 
-        List<BrowserStackDevice> osBasedDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, osBasedFilter);
+        List<BrowserStackDevice> osBasedDevices = (List<BrowserStackDevice>) applyFilters.invoke(
+                null, browserStackDevices, osBasedFilter);
         assertEquals(118, osBasedDevices.size());
 
         osBasedFilter.replace("Os", "Android");
-        osBasedDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, osBasedFilter);
+        osBasedDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices,
+                                                                        osBasedFilter);
         assertEquals(118, osBasedDevices.size());
     }
+
     @Test
-    void userCanGetDevicesAfterApplyingOSVersionFilter() throws InvocationTargetException, IllegalAccessException {
+    void userCanGetDevicesAfterApplyingOSVersionFilter() throws InvocationTargetException,
+                                                                IllegalAccessException {
         Map<String, String> osVersionFilter = new HashMap<>();
         osVersionFilter.put("Os_version", "11.0");
-        List<BrowserStackDevice> osVersionBasedDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, osVersionFilter);
+        List<BrowserStackDevice> osVersionBasedDevices =
+                (List<BrowserStackDevice>) applyFilters.invoke(
+                null, browserStackDevices, osVersionFilter);
 
         assertEquals(23, osVersionBasedDevices.size());
 
         osVersionFilter.replace("Os_version", "Big Sur");
-        osVersionBasedDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, osVersionFilter);
+        osVersionBasedDevices = (List<BrowserStackDevice>) applyFilters.invoke(null,
+                                                                               browserStackDevices,
+                                                                               osVersionFilter);
         assertEquals(199, osVersionBasedDevices.size());
 
         osVersionFilter.replace("Os_version", "big Sur");
-        osVersionBasedDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, osVersionFilter);
+        osVersionBasedDevices = (List<BrowserStackDevice>) applyFilters.invoke(null,
+                                                                               browserStackDevices,
+                                                                               osVersionFilter);
         assertEquals(199, osVersionBasedDevices.size());
     }
+
     @Test
-    void userCanGetDevicesAfterApplyingBrowserFilter() throws InvocationTargetException, IllegalAccessException {
+    void userCanGetDevicesAfterApplyingBrowserFilter() throws InvocationTargetException,
+                                                              IllegalAccessException {
         Map<String, String> browserFilter = new HashMap<>();
         browserFilter.put("Browser", "firefox");
 
-        List<BrowserStackDevice> filteredDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, browserFilter);
+        List<BrowserStackDevice> filteredDevices = (List<BrowserStackDevice>) applyFilters.invoke(
+                null, browserStackDevices, browserFilter);
 
         assertEquals(1540, filteredDevices.size());
 
         browserFilter.replace("Browser", "Firefox");
-        filteredDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, browserFilter);
+        filteredDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices,
+                                                                         browserFilter);
         assertEquals(1540, filteredDevices.size());
     }
+
     @Test
-    void userCanGetDeviceAfterApplyingDeviceNameFilter() throws InvocationTargetException, IllegalAccessException, IOException {
+    void userCanGetDeviceAfterApplyingDeviceNameFilter() throws InvocationTargetException,
+                                                                IllegalAccessException,
+                                                                IOException {
         Map<String, String> deviceNameFilter = new LinkedHashMap<>();
         deviceNameFilter.put("Device", "samsung");
 
-        List<BrowserStackDevice> filteredDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, deviceNameFilter);
+        List<BrowserStackDevice> filteredDevices = (List<BrowserStackDevice>) applyFilters.invoke(
+                null, browserStackDevices, deviceNameFilter);
 
         assertEquals(77, filteredDevices.size());
 
         deviceNameFilter.replace("Device", "Samsung");
 
-        filteredDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, deviceNameFilter);
+        filteredDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices,
+                                                                         deviceNameFilter);
 
         assertEquals(77, filteredDevices.size());
     }
 
     @Test
-    void userCanGetDevicesAfterApplyingBrowserVersionFilter() throws InvocationTargetException, IllegalAccessException {
+    void userCanGetDevicesAfterApplyingBrowserVersionFilter() throws InvocationTargetException,
+                                                                     IllegalAccessException {
         Map<String, String> browserVersionFilter = new HashMap<>();
         browserVersionFilter.put("Browser_version", "95.0");
 
-        List<BrowserStackDevice> browserVersionFilteredDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, browserVersionFilter);
+        List<BrowserStackDevice> browserVersionFilteredDevices = (List<BrowserStackDevice>) applyFilters.invoke(
+                null, browserStackDevices, browserVersionFilter);
 
         assertEquals(37, browserVersionFilteredDevices.size());
     }
@@ -107,7 +132,8 @@ class BrowserStackDeviceFilterTest {
         Map<String, String> mobileDeviceFilter = new HashMap<>();
         mobileDeviceFilter.put("Platform", "mobile");
 
-        List<BrowserStackDevice> mobileDevices = (List<BrowserStackDevice>) applyFilters.invoke(null, browserStackDevices, mobileDeviceFilter);
-        assertEquals(193,mobileDevices.size());
+        List<BrowserStackDevice> mobileDevices = (List<BrowserStackDevice>) applyFilters.invoke(
+                null, browserStackDevices, mobileDeviceFilter);
+        assertEquals(193, mobileDevices.size());
     }
 }

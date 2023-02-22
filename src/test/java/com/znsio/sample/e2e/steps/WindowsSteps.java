@@ -16,8 +16,7 @@ public class WindowsSteps {
     private final Drivers allDrivers;
 
     public WindowsSteps() {
-        context = SessionContext.getTestExecutionContext(Thread.currentThread()
-                                                               .getId());
+        context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         LOGGER.info("context: " + context.getTestName());
         allDrivers = (Drivers) context.getTestState(SAMPLE_TEST_CONTEXT.ALL_DRIVERS);
         LOGGER.info("allDrivers: " + (null == allDrivers));
@@ -26,7 +25,9 @@ public class WindowsSteps {
     @Given("I have launched Notepad application")
     public void iHaveLaunchedNotepadApplication() {
         allDrivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
-        LOGGER.info(System.out.printf("iHaveLaunchedNotepadApplication - Persona:'%s', Platform: '%s'", SAMPLE_TEST_CONTEXT.ME, Runner.platform));
+        LOGGER.info(
+                System.out.printf("iHaveLaunchedNotepadApplication - Persona:'%s', Platform: '%s'",
+                                  SAMPLE_TEST_CONTEXT.ME, Runner.platform));
         new NotepadBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).verifyLaunched();
     }
 

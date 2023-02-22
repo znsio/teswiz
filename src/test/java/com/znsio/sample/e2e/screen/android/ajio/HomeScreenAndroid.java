@@ -9,19 +9,23 @@ import org.openqa.selenium.By;
 
 import java.util.Map;
 
-public class HomeScreenAndroid extends HomeScreen {
-    private final Driver driver;
-    private final Visual visually;
+public class HomeScreenAndroid
+        extends HomeScreen {
     private static final String SCREEN_NAME = HomeScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
-
     private static final By byStartSearchBoxId = By.id("com.ril.ajio:id/llpsTvSearch");
     private static final By byUploadPhotoButtonId = By.id("com.ril.ajio:id/layout_select_photo");
-    private static final By byImageDirectoryXpath = By.xpath("//android.widget.TextView[contains(@text, 'Images')]");
-    private static final By byImageXpath = By.xpath("//android.view.ViewGroup[contains(@content-desc,'Photo taken')][1]");
+    private static final By byImageDirectoryXpath = By.xpath(
+            "//android.widget.TextView[contains(@text, 'Images')]");
+    private static final By byImageXpath = By.xpath(
+            "//android.view.ViewGroup[contains(@content-desc,'Photo taken')][1]");
     private static final By byDismissButtonId = By.id("com.ril.ajio:id/footer_button_2");
-    private static final By bySystemPermissionMessageId = By.id("com.android.permissioncontroller:id/permission_message");
-    private static final By byAllowButtonId = By.id("com.android.permissioncontroller:id/permission_allow_button");
+    private static final By bySystemPermissionMessageId = By.id(
+            "com.android.permissioncontroller:id/permission_message");
+    private static final By byAllowButtonId = By.id(
+            "com.android.permissioncontroller:id/permission_allow_button");
+    private final Driver driver;
+    private final Visual visually;
 
     public HomeScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -36,21 +40,22 @@ public class HomeScreenAndroid extends HomeScreen {
     }
 
     @Override
-    public HomeScreen attachFileToDevice(Map imageData){
-        String sourceFileLocation = System.getProperty("user.dir") + imageData.get("IMAGE_FILE_LOCATION");
+    public HomeScreen attachFileToDevice(Map imageData) {
+        String sourceFileLocation = System.getProperty("user.dir") + imageData.get(
+                "IMAGE_FILE_LOCATION");
         String destinationFileLocation = (String) imageData.get("UPLOAD_IMAGE_LOCATION");
         LOGGER.info("searchByImage");
 
-        if(driver.isElementPresent(byDismissButtonId))
+        if(driver.isElementPresent(byDismissButtonId)) {
             driver.findElement(byDismissButtonId).click();
+        }
 
-        driver.waitTillElementIsPresent(byStartSearchBoxId)
-                .click();
+        driver.waitTillElementIsPresent(byStartSearchBoxId).click();
         visually.checkWindow(SCREEN_NAME, "Upload a Photo");
-        driver.waitTillElementIsPresent(byUploadPhotoButtonId)
-                .click();
-        if(driver.isElementPresent(bySystemPermissionMessageId))
+        driver.waitTillElementIsPresent(byUploadPhotoButtonId).click();
+        if(driver.isElementPresent(bySystemPermissionMessageId)) {
             driver.waitTillElementIsPresent(byAllowButtonId).click();
+        }
 
         driver.pushFileToDevice(sourceFileLocation, destinationFileLocation);
         LOGGER.info("Image Pushed to Device path" + destinationFileLocation);

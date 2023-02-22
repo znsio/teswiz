@@ -17,8 +17,7 @@ public class NotepadBL {
     private final Platform currentPlatform;
 
     public NotepadBL() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
@@ -27,8 +26,7 @@ public class NotepadBL {
     }
 
     public NotepadBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -38,14 +36,12 @@ public class NotepadBL {
     }
 
     public NotepadBL verifyLaunched() {
-        ScreenShotScreen.get()
-                        .takeScreenshot();
+        ScreenShotScreen.get().takeScreenshot();
         return this;
     }
 
     public NotepadBL typeMessage(String message) {
-        NotepadScreen.get()
-                     .typeMessage(message);
+        NotepadScreen.get().typeMessage(message);
         return this;
     }
 }

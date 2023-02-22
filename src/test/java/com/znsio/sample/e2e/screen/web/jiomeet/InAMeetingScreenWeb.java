@@ -18,25 +18,27 @@ import java.util.Date;
 
 public class InAMeetingScreenWeb
         extends InAMeetingScreen {
-    private final Driver driver;
-    private final Visual visually;
-    private final WebDriver innerDriver;
     private static final String SCREEN_NAME = InAMeetingScreenWeb.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
     private static final By byMeetingInfoIconXpath = By.xpath("//div[@class='icon pointer']");
     private static final By byMicLabelXpath = By.xpath("//div[contains(@class,'mic-section')]");
-    private static final By byCurrentMeetingNumberXpath = By.xpath("//div[text()='Meeting ID']/following-sibling::div");
-    private static final By byCurrentMeetingPinXpath = By.xpath("//div[text()='Password']/following-sibling::div");
-    private static final By byCurrentMeetingInvitationLinkXpath = By.xpath("//div[text()='Invitation Link']/following-sibling::div");
+    private static final By byCurrentMeetingNumberXpath = By.xpath(
+            "//div[text()='Meeting ID']/following-sibling::div");
+    private static final By byCurrentMeetingPinXpath = By.xpath(
+            "//div[text()='Password']/following-sibling::div");
+    private static final By byCurrentMeetingInvitationLinkXpath = By.xpath(
+            "//div[text()='Invitation Link']/following-sibling::div");
+    private final Driver driver;
+    private final Visual visually;
+    private final WebDriver innerDriver;
     private final TestExecutionContext context;
 
     public InAMeetingScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
         this.innerDriver = this.driver.getInnerDriver();
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         context = Runner.getTestExecutionContext(threadId);
     }
 
@@ -52,11 +54,9 @@ public class InAMeetingScreenWeb
         JavascriptExecutor js = (JavascriptExecutor) innerDriver;
         js.executeScript("arguments[0].click()", infoIcon);
         visually.takeScreenshot(SCREEN_NAME, "getCurrentMeetingDetails");
-        String meetingId = driver.waitForClickabilityOf(byCurrentMeetingNumberXpath)
-                                 .getText();
+        String meetingId = driver.waitForClickabilityOf(byCurrentMeetingNumberXpath).getText();
         meetingId = meetingId.replaceAll("\\s", "");
-        String pin = driver.waitForClickabilityOf(byCurrentMeetingPinXpath)
-                           .getText();
+        String pin = driver.waitForClickabilityOf(byCurrentMeetingPinXpath).getText();
         String invitationLink = driver.waitForClickabilityOf(byCurrentMeetingInvitationLinkXpath)
                                       .getText();
         js.executeScript("arguments[0].click()", infoIcon);//to close the meeting info frame
@@ -78,8 +78,7 @@ public class InAMeetingScreenWeb
     @Override
     public InAMeetingScreen unmute() {
         enableInMeetingControls("unmute");
-        driver.waitTillElementIsPresent(By.xpath("//div[contains(text(),'Unmute')]"))
-              .click();
+        driver.waitTillElementIsPresent(By.xpath("//div[contains(text(),'Unmute')]")).click();
         visually.checkWindow(SCREEN_NAME, "Mic is unmuted");
         return this;
     }
@@ -87,8 +86,7 @@ public class InAMeetingScreenWeb
     @Override
     public InAMeetingScreen mute() {
         enableInMeetingControls("mute");
-        driver.waitTillElementIsPresent(By.xpath("//div[contains(text(),'Mute')]"))
-              .click();
+        driver.waitTillElementIsPresent(By.xpath("//div[contains(text(),'Mute')]")).click();
         visually.checkWindow(SCREEN_NAME, "Mic is muted");
         return this;
     }
@@ -97,9 +95,7 @@ public class InAMeetingScreenWeb
     public String getMicLabelText() {
         LOGGER.info("getMicLabelText");
         enableInMeetingControls("getMicLabelText");
-        String micLabelText = driver.waitTillElementIsPresent(byMicLabelXpath)
-                                    .getText()
-                                    .trim();
+        String micLabelText = driver.waitTillElementIsPresent(byMicLabelXpath).getText().trim();
         visually.takeScreenshot(SCREEN_NAME, "in a meeting after micLabel text");
         LOGGER.info("getMicLabelText: mic label text : " + micLabelText);
         return micLabelText;
@@ -110,10 +106,11 @@ public class InAMeetingScreenWeb
             LOGGER.info(String.format("enableInMeetingControls: Called from: '%s'%n", calledFrom));
             Actions actions = new Actions(innerDriver);
             actions.moveToElement(driver.waitForClickabilityOf(byMeetingInfoIconXpath))
-                   .moveByOffset(25, 25)
-                   .perform();
+                   .moveByOffset(25, 25).perform();
         } catch(Exception e) {
-            String logMessage = String.format("Exception occurred : enableInMeetingControls%nException: %s", e.getLocalizedMessage());
+            String logMessage = String.format(
+                    "Exception occurred : enableInMeetingControls%nException: %s",
+                    e.getLocalizedMessage());
             LOGGER.info(logMessage);
             ReportPortal.emitLog(logMessage, "DEBUG", new Date());
         }

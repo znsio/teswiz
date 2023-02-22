@@ -11,16 +11,19 @@ import org.openqa.selenium.WebElement;
 
 public class LandingScreenWeb
         extends LandingScreen {
-    private final Driver driver;
-    private final Visual visually;
     private static final String SCREEN_NAME = LandingScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final By byHeadingXpath = By.xpath("//h3[contains(@class,'heading')]");
     private static final By byWelcomeTextDescriptionXpath = By.xpath("//p[@class='desc']");
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
-    private static final By byStartAMeetingOptionXpath = By.xpath("//div[text()='Start a Meeting']");
-    private static final By byPMIButtonXpath = By.xpath("//span[contains(text(), 'Personal Meeting ID')]");
-    private static final By byStartMeetingButtonXpath = By.xpath("//button[contains(text(), 'Start')]");
+    private static final By byStartAMeetingOptionXpath = By.xpath(
+            "//div[text()='Start a Meeting']");
+    private static final By byPMIButtonXpath = By.xpath(
+            "//span[contains(text(), 'Personal Meeting ID')]");
+    private static final By byStartMeetingButtonXpath = By.xpath(
+            "//button[contains(text(), 'Start')]");
+    private final Driver driver;
+    private final Visual visually;
 
     public LandingScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
@@ -30,8 +33,7 @@ public class LandingScreenWeb
     @Override
     public String getSignedInWelcomeMessage() {
         visually.checkWindow(SCREEN_NAME, "get signedin welcome message");
-        String welcomeText = driver.waitTillElementIsPresent(byHeadingXpath)
-                                   .getText();
+        String welcomeText = driver.waitTillElementIsPresent(byHeadingXpath).getText();
         welcomeText += " " + driver.waitTillElementIsPresent(byWelcomeTextDescriptionXpath)
                                    .getText();
         return welcomeText;
@@ -39,8 +41,7 @@ public class LandingScreenWeb
 
     @Override
     public InAMeetingScreen startInstantMeeting() {
-        driver.waitForClickabilityOf(byStartAMeetingOptionXpath)
-              .click();
+        driver.waitForClickabilityOf(byStartAMeetingOptionXpath).click();
         return startsTheMeeting();
     }
 

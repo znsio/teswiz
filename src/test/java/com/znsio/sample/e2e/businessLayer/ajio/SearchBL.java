@@ -10,6 +10,7 @@ import com.znsio.sample.e2e.screen.ajio.ProductScreen;
 import com.znsio.sample.e2e.screen.ajio.SearchScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
+
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,8 +23,7 @@ public class SearchBL {
     private final Platform currentPlatform;
 
     public SearchBL(String userPersona, Platform forPlatform) {
-        long threadId = Thread.currentThread()
-                .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = userPersona;
@@ -32,8 +32,7 @@ public class SearchBL {
     }
 
     public SearchBL() {
-        long threadId = Thread.currentThread()
-                .getId();
+        long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
@@ -43,7 +42,8 @@ public class SearchBL {
     public SearchBL searchProduct(Map searchData) {
         LOGGER.info("searchProduct" + searchData);
         SearchScreen searchScreen = HomeScreen.get().attachFileToDevice(searchData).searchByImage();
-        assertThat(searchScreen.numberOfProductFound()).as("Number of results found for product").isGreaterThan(0);
+        assertThat(searchScreen.numberOfProductFound()).as("Number of results found for product")
+                                                       .isGreaterThan(0);
         searchScreen.selectProduct();
         return this;
     }
@@ -58,8 +58,9 @@ public class SearchBL {
 
     public SearchBL verifyCart() {
         String actualProductName = CartScreen.get().getActualProductName();
-        LOGGER.info("Actual product name in the cart"+actualProductName);
-        assertThat(actualProductName).as("Product in the Cart").isEqualTo(context.getTestState("productName"));
+        LOGGER.info("Actual product name in the cart" + actualProductName);
+        assertThat(actualProductName).as("Product in the Cart")
+                                     .isEqualTo(context.getTestState("productName"));
         return this;
     }
 
