@@ -32,9 +32,10 @@ public class LocalDevicesSetup {
         }
         Integer providedParallelCount = configsInteger.get(PARALLEL);
         if(numberOfDevicesForParallelExecution < providedParallelCount) {
-            throw new EnvironmentSetupException(
-                    String.format("Fewer devices (%d) available to run the tests in parallel (Expected more than: %d)", numberOfDevicesForParallelExecution,
-                                  providedParallelCount));
+            throw new EnvironmentSetupException(String.format(
+                    "Fewer devices (%d) available to run the tests in parallel (Expected more " +
+                    "than: %d)",
+                    numberOfDevicesForParallelExecution, providedParallelCount));
         }
         configsInteger.put(PARALLEL, providedParallelCount);
         configs.put(EXECUTED_ON, "Local Devices");
@@ -72,10 +73,15 @@ public class LocalDevicesSetup {
                 device.setName(jadbDevice.getSerial());
                 device.setUdid(jadbDevice.getSerial());
                 // device.setUdid(getAdbCommandOutput(jadbDevice, "getprop", "ro.serialno"));
-                device.setApiLevel(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop", "ro.build.version.sdk"));
-                device.setDeviceManufacturer(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop", "ro.product.brand"));
-                device.setDeviceModel(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop", "ro.product.model"));
-                device.setOsVersion(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop", "ro.build.version.release"));
+                device.setApiLevel(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop",
+                                                                      "ro.build.version.sdk"));
+                device.setDeviceManufacturer(
+                        getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop",
+                                                           "ro.product.brand"));
+                device.setDeviceModel(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop",
+                                                                         "ro.product.model"));
+                device.setOsVersion(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop",
+                                                                       "ro.build.version.release"));
                 devices.add(device);
                 uninstallAppFromLocalDevice(device, configs.get(APP_PACKAGE_NAME));
             } catch(IOException | JadbException e) {
@@ -85,9 +91,9 @@ public class LocalDevicesSetup {
     }
 
     @NotNull
-    private static String getAdbCommandOutputFromLocalDevice(JadbDevice device, String command, String args) throws
-                                                                                                             IOException,
-                                                                                                             JadbException {
+    private static String getAdbCommandOutputFromLocalDevice(JadbDevice device, String command,
+                                                             String args) throws IOException,
+                                                                                 JadbException {
         InputStream inputStream = device.executeShell(command, args);
         LOGGER.info("\tadb command: '" + command + "', args: '" + args + "', ");
         String adbCommandOutput = Stream.readAll(inputStream, StandardCharsets.UTF_8)
@@ -97,16 +103,21 @@ public class LocalDevicesSetup {
     }
 
     private static void uninstallAppFromLocalDevice(Device device, String appPackageName) {
-        String[] uninstallAppiumAutomator2Server = new String[]{"adb", "-s", device.getUdid(), "uninstall", APPIUM_UI_AUTOMATOR2_SERVER};
+        String[] uninstallAppiumAutomator2Server = new String[]{"adb", "-s", device.getUdid(),
+                                                                "uninstall",
+                                                                APPIUM_UI_AUTOMATOR2_SERVER};
         CommandLineExecutor.execCommand(uninstallAppiumAutomator2Server);
-        String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall", APPIUM_SETTINGS};
+        String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall",
+                                                        APPIUM_SETTINGS};
         CommandLineExecutor.execCommand(uninstallAppiumSettings);
 
         if(configsBoolean.get(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
-            String[] uninstallApp = new String[]{"adb", "-s", device.getUdid(), "uninstall", appPackageName};
+            String[] uninstallApp = new String[]{"adb", "-s", device.getUdid(), "uninstall",
+                                                 appPackageName};
             CommandLineExecutor.execCommand(uninstallApp);
         } else {
-            LOGGER.info("skipping uninstalling of apk as the flag CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = false");
+            LOGGER.info(
+                    "skipping uninstalling of apk as the flag CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = false");
         }
     }
 

@@ -15,8 +15,7 @@ public class RunCukes
     private final TestExecutionContext context;
 
     public RunCukes() {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         LOGGER.info(String.format("ThreadId: '%s': RunCukes constructor", threadId));
         context = SessionContext.getTestExecutionContext(threadId);
     }
@@ -24,8 +23,8 @@ public class RunCukes
     @Override
     @DataProvider(parallel = true)
     public Object[][] scenarios() {
-        LOGGER.info(String.format("ThreadId: %d: in overridden scenarios%n", Thread.currentThread()
-                                                                                   .getId()));
+        LOGGER.info(String.format("ThreadId: %d: in overridden scenarios%n",
+                                  Thread.currentThread().getId()));
         Object[][] scenarios = super.scenarios();
         LOGGER.info(scenarios);
         return scenarios;

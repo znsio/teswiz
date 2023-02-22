@@ -35,7 +35,8 @@ public class HeadSpinSetup {
             appIdFromHeadspin = uploadAPKToHeadspin(authenticationKey, appPath);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
-            appIdFromHeadspin = getAppIdFromHeadspin(authenticationKey, configs.get(APP_PACKAGE_NAME));
+            appIdFromHeadspin = getAppIdFromHeadspin(authenticationKey,
+                                                     configs.get(APP_PACKAGE_NAME));
         }
         LOGGER.info("Using appId: " + appIdFromHeadspin);
         loadedPlatformCapability.put("headspin:appId", appIdFromHeadspin);
@@ -43,7 +44,8 @@ public class HeadSpinSetup {
         ArrayList hostMachinesList = (ArrayList) loadedCapabilityFile.get("hostMachines");
         Map hostMachines = (Map) hostMachinesList.get(0);
         String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
-        remoteServerURL = remoteServerURL.endsWith("/") ? remoteServerURL + authenticationKey : remoteServerURL + "/" + authenticationKey;
+        remoteServerURL = remoteServerURL.endsWith("/") ? remoteServerURL + authenticationKey
+                                                        : remoteServerURL + "/" + authenticationKey;
         hostMachines.put("machineIP", remoteServerURL);
         loadedPlatformCapability.remove("app");
         loadedPlatformCapability.remove("platformVersion");
@@ -58,20 +60,22 @@ public class HeadSpinSetup {
         LOGGER.info(String.format("uploadAPKToHeadspin for: '%s'%n", authenticationKey));
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
 
-        String[] curlCommand = new String[]{"curl --insecure " + getCurlProxyCommand() + " -X POST ",
-                                            "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apk/upload --data-binary '@" + appPath + "'"};
-        CommandLineResponse uploadAPKToHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
+        String[] curlCommand = new String[]{
+                "curl --insecure " + getCurlProxyCommand() + " -X POST ",
+                "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apk/upload " +
+                "--data-binary '@" + appPath + "'"};
+        CommandLineResponse uploadAPKToHeadspinResponse = CommandLineExecutor.execCommand(
+                curlCommand);
 
         JsonObject uploadResponse = JsonFile.convertToMap(uploadAPKToHeadspinResponse.getStdOut())
                                             .getAsJsonObject();
-        String uploadedApkId = uploadResponse.get("apk_id")
-                                             .getAsString();
-        LOGGER.info(String.format("App: '%s' uploaded to Headspin. Response: '%s'", appPath, uploadResponse));
+        String uploadedApkId = uploadResponse.get("apk_id").getAsString();
+        LOGGER.info(String.format("App: '%s' uploaded to Headspin. Response: '%s'", appPath,
+                                  uploadResponse));
 
         JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey);
         JsonObject uploadedAppDetails = listOfAppPackages.getAsJsonObject(uploadedApkId);
-        String uploadedAppName = uploadedAppDetails.get("app_name")
-                                                   .getAsString();
+        String uploadedAppName = uploadedAppDetails.get("app_name").getAsString();
         configs.put(APP_PATH, uploadedAppName);
         return uploadedApkId;
     }
@@ -81,14 +85,14 @@ public class HeadSpinSetup {
 
         AtomicReference<String> uploadedAppId = new AtomicReference<>(NOT_SET);
         JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey);
-        if(listOfAppPackages.keySet()
-                            .size() > 0) {
+        if(listOfAppPackages.keySet().size() > 0) {
             getAppIdFromAvailableAppsFromHeadspin(appPackageName, listOfAppPackages, uploadedAppId);
         }
 
-        if(uploadedAppId.get()
-                        .equalsIgnoreCase(NOT_SET)) {
-            throw new InvalidTestDataException(String.format("App with package: '%s' not available in Headspin", appPackageName));
+        if(uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
+            throw new InvalidTestDataException(
+                    String.format("App with package: '%s' not available in Headspin",
+                                  appPackageName));
         }
 
         return uploadedAppId.get();
@@ -98,48 +102,51 @@ public class HeadSpinSetup {
         String capabilityFile = configs.get(CAPS);
         String platformName = platform.name();
         ArrayList listOfAndroidDevices = new ArrayList();
-        for(int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS); numDevices++) {
+        for(int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS);
+            numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
-            deviceInfo.put("osVersion", String.valueOf(loadedCapabilityFile.get(platformName)
-                                                                           .get("platformVersion")));
-            deviceInfo.put("deviceName", String.valueOf(loadedCapabilityFile.get(platformName)
-                                                                            .get("platformName")));
+            deviceInfo.put("osVersion", String.valueOf(
+                    loadedCapabilityFile.get(platformName).get("platformVersion")));
+            deviceInfo.put("deviceName", String.valueOf(
+                    loadedCapabilityFile.get(platformName).get("platformName")));
             listOfAndroidDevices.add(deviceInfo);
         }
-        saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile, listOfAndroidDevices);
+        saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
+                                listOfAndroidDevices);
     }
 
     private static JsonObject getListOfAppPackagesFromHeadSpin(String authenticationKey) {
         String deviceLabURL = configs.get(DEVICE_LAB_URL);
-        String[] curlCommand = new String[]{"curl --insecure", getCurlProxyCommand(), "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apks"};
-        CommandLineResponse listOfUploadedFilesInHeadspinResponse = CommandLineExecutor.execCommand(curlCommand);
+        String[] curlCommand = new String[]{"curl --insecure", getCurlProxyCommand(),
+                                            "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apks"};
+        CommandLineResponse listOfUploadedFilesInHeadspinResponse = CommandLineExecutor.execCommand(
+                curlCommand);
 
-        JsonObject listOfAppPackages = JsonFile.convertToMap(listOfUploadedFilesInHeadspinResponse.getStdOut())
-                                               .getAsJsonObject();
+        JsonObject listOfAppPackages = JsonFile.convertToMap(
+                listOfUploadedFilesInHeadspinResponse.getStdOut()).getAsJsonObject();
         JsonElement statusCode = listOfAppPackages.get("status_code");
         if(null != statusCode && statusCode.getAsInt() != 200) {
-            throw new InvalidTestDataException("There was a problem getting the list of apps in Headspin");
+            throw new InvalidTestDataException(
+                    "There was a problem getting the list of apps in Headspin");
         }
         return listOfAppPackages;
     }
 
-    private static void getAppIdFromAvailableAppsFromHeadspin(String appPackageName, JsonObject listOfAppPackages, AtomicReference<String> uploadedAppId) {
-        listOfAppPackages.keySet()
-                         .forEach(appId -> {
-                             if(uploadedAppId.get()
-                                             .equalsIgnoreCase(NOT_SET)) {
-                                 JsonObject appInfoAsJson = listOfAppPackages.getAsJsonObject(appId);
-                                 String retrievedAppPackage = appInfoAsJson.get("app_package")
-                                                                           .getAsString();
-                                 LOGGER.info("retrievedAppPackage: " + retrievedAppPackage);
-                                 if(retrievedAppPackage.equals(appPackageName)) {
-                                     LOGGER.info("\tThis file is available in Device Farm: " + appId);
-                                     uploadedAppId.set(appId);
-                                     configs.put(APP_PATH, appInfoAsJson.get("app_name")
-                                                                        .getAsString());
-                                 }
-                             }
-                         });
+    private static void getAppIdFromAvailableAppsFromHeadspin(String appPackageName,
+                                                              JsonObject listOfAppPackages,
+                                                              AtomicReference<String> uploadedAppId) {
+        listOfAppPackages.keySet().forEach(appId -> {
+            if(uploadedAppId.get().equalsIgnoreCase(NOT_SET)) {
+                JsonObject appInfoAsJson = listOfAppPackages.getAsJsonObject(appId);
+                String retrievedAppPackage = appInfoAsJson.get("app_package").getAsString();
+                LOGGER.info("retrievedAppPackage: " + retrievedAppPackage);
+                if(retrievedAppPackage.equals(appPackageName)) {
+                    LOGGER.info("\tThis file is available in Device Farm: " + appId);
+                    uploadedAppId.set(appId);
+                    configs.put(APP_PATH, appInfoAsJson.get("app_name").getAsString());
+                }
+            }
+        });
     }
 
 }

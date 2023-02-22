@@ -18,5 +18,6 @@ public class TEST_CONTEXT {
     public static final String WINDOWS_DEVICE_ON = "windowsDeviceOn";
     public static final String BROWSER_CONFIG = "browserConfig";
     public static final String MOBILE_EMULATION_DEVICE = "mobileEmulationDevice";
-    public static final String TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT = "tagsToExcludeFromCucumberReport";
+    public static final String TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT =
+            "tagsToExcludeFromCucumberReport";
 }

@@ -29,10 +29,10 @@ public class CommandLineExecutor {
             }
             Process process = builder.start();
             process.waitFor(timeoutInSeconds, TimeUnit.SECONDS);
-            response.setStdOut(IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8)
-                                      .trim());
-            response.setErrOut(IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8)
-                                      .trim());
+            response.setStdOut(
+                    IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8).trim());
+            response.setErrOut(
+                    IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8).trim());
             LOGGER.info("\t:Exit Code: " + process.exitValue());
             response.setExitCode(process.exitValue());
             LOGGER.info("\t" + response);

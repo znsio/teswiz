@@ -20,11 +20,12 @@ public class Hooks {
     private static final String INFO = "info";
 
     public void beforeScenario(Scenario scenario) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         TestExecutionContext testExecutionContext = Runner.getTestExecutionContext(threadId);
-        LOGGER.info(String.format("ThreadId : %s In RunCukes - Before: %s", threadId, scenario.getName()));
-        LOGGER.info(String.format("Running test %s on %s", testExecutionContext.getTestName(), Runner.platform.name()));
+        LOGGER.info(String.format("ThreadId : %s In RunCukes - Before: %s", threadId,
+                                  scenario.getName()));
+        LOGGER.info(String.format("Running test %s on %s", testExecutionContext.getTestName(),
+                                  Runner.platform.name()));
         testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
         testExecutionContext.addTestState(TEST_CONTEXT.ALL_DRIVERS, new Drivers());
         SoftAssertions softly = new SoftAssertions();
@@ -48,8 +49,7 @@ public class Hooks {
     }
 
     public void afterScenario(Scenario scenario) {
-        long threadId = Thread.currentThread()
-                              .getId();
+        long threadId = Thread.currentThread().getId();
         LOGGER.info("ThreadId: " + threadId + " In RunCukes - After: " + scenario.getName());
         Runner.closeAllDrivers(threadId);
         SoftAssertions softly = Runner.getSoftAssertion(threadId);

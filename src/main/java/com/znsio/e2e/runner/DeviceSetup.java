@@ -24,7 +24,9 @@ import static com.znsio.e2e.runner.Setup.*;
 public class DeviceSetup {
     private static final Logger LOGGER = Logger.getLogger(DeviceSetup.class.getName());
 
-    static void saveNewCapabilitiesFile(String platformName, String capabilityFile, Map<String, Map> loadedCapabilityFile, ArrayList listOfAndroidDevices) {
+    static void saveNewCapabilitiesFile(String platformName, String capabilityFile,
+                                        Map<String, Map> loadedCapabilityFile,
+                                        ArrayList listOfAndroidDevices) {
         Map loadedCloudCapability = loadedCapabilityFile.get("cloud");
         loadedCloudCapability.put(platformName, listOfAndroidDevices);
 
@@ -38,9 +40,9 @@ public class DeviceSetup {
     static String getPathForFileInLogDir(String fullFilePath) {
         LOGGER.info("\tgetPathForFileInLogDir: fullFilePath: " + fullFilePath);
         Path path = Paths.get(fullFilePath);
-        String fileName = path.getFileName()
-                              .toString();
-        String newFileName = new File(configs.get(LOG_DIR) + File.separator + fileName).getAbsolutePath();
+        String fileName = path.getFileName().toString();
+        String newFileName = new File(
+                configs.get(LOG_DIR) + File.separator + fileName).getAbsolutePath();
         LOGGER.info("\tNew file available here: " + newFileName);
         return newFileName;
     }
@@ -78,6 +80,31 @@ public class DeviceSetup {
         }
     }
 
+    private static void fetchAndroidAppVersion() {
+        Pattern VERSION_NAME_PATTERN = Pattern.compile("versionName='([0-9]+(\\.[0-9]+)+)'",
+                                                       Pattern.MULTILINE);
+        String searchPattern = "grep";
+        if(Runner.IS_WINDOWS) {
+            searchPattern = "findstr";
+        }
+
+        try {
+            File appFile = new File(String.valueOf(configs.get(APP_PATH)));
+            String appFilePath = appFile.getCanonicalPath();
+            String androidHomePath = System.getenv("ANDROID_HOME");
+            File buildToolsFolder = new File(androidHomePath, "build-tools");
+            File buildVersionFolder = Objects.requireNonNull(buildToolsFolder.listFiles())[0];
+            File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
+
+            String[] commandToGetAppVersion = new String[]{aaptExecutable.toString(), "dump",
+                                                           "badging", appFilePath, "|",
+                                                           searchPattern, "versionName"};
+            fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
+        } catch(Exception e) {
+            LOGGER.info("fetchAndroidAppVersion: Exception: " + e.getLocalizedMessage());
+        }
+    }
+
     static void setupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
         switch(cloudName.toLowerCase()) {
@@ -93,62 +120,40 @@ public class DeviceSetup {
             case "saucelabs":
                 break;
             default:
-                throw new InvalidTestDataException(String.format("Provided cloudName: '%s' is not supported", cloudName));
+                throw new InvalidTestDataException(
+                        String.format("Provided cloudName: '%s' is not supported", cloudName));
         }
         configs.put(EXECUTED_ON, cloudName);
     }
 
-    private static void fetchAndroidAppVersion() {
-        Pattern VERSION_NAME_PATTERN = Pattern.compile("versionName='([0-9]+(\\.[0-9]+)+)'", Pattern.MULTILINE);
-        String searchPattern = "grep";
-        if(Runner.IS_WINDOWS) {
-            searchPattern = "findstr";
-        }
-
-        try {
-            File appFile = new File(String.valueOf(configs.get(APP_PATH)));
-            String appFilePath = appFile.getCanonicalPath();
-            String androidHomePath = System.getenv("ANDROID_HOME");
-            File buildToolsFolder = new File(androidHomePath, "build-tools");
-            File buildVersionFolder = Objects.requireNonNull(buildToolsFolder.listFiles())[0];
-            File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
-
-            String[] commandToGetAppVersion = new String[]{aaptExecutable.toString(), "dump", "badging", appFilePath, "|", searchPattern, "versionName"};
-            fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
-        } catch(Exception e) {
-            LOGGER.info("fetchAndroidAppVersion: Exception: " + e.getLocalizedMessage());
-        }
-    }
-
     private static String getAppPathFromCapabilities() {
         String capabilityFile = configs.get(CAPS);
-        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile, new String[]{platform.name(), "app", "local"});
+        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
+                                                         new String[]{platform.name(), "app",
+                                                                      "local"});
     }
 
-    private static void checkIfAppExistsAtTheMentionedPath(String appPath, String capabilitiesFileName) {
-        if(appPath.toLowerCase()
-                  .startsWith("http://") || (appPath.toLowerCase()
-                                                    .startsWith("https://"))) {
+    private static void checkIfAppExistsAtTheMentionedPath(String appPath,
+                                                           String capabilitiesFileName) {
+        if(appPath.toLowerCase().startsWith("http://") || (appPath.toLowerCase()
+                                                                  .startsWith("https://"))) {
             LOGGER.info("\tAppPath refers to a url: " + appPath);
         } else {
             if(Files.exists(Paths.get(appPath))) {
-                LOGGER.info("\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName + ":: " + platform);
+                LOGGER.info(
+                        "\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName + "::" +
+                        " " + platform);
             } else {
                 LOGGER.info("\tAppPath: " + appPath + " not found!");
-                throw new InvalidTestDataException("App file not found at the mentioned path: " + appPath);
+                throw new InvalidTestDataException(
+                        "App file not found at the mentioned path: " + appPath);
             }
         }
     }
 
-    private static String getCloudNameFromCapabilities() {
-        String capabilityFile = configs.get(CAPS);
-        ArrayList<Map> hostMachines = JsonFile.getNodeValueAsArrayListFromJsonFile(capabilityFile, "hostMachines");
-        return String.valueOf(hostMachines.get(0)
-                                          .get("cloudName"));
-    }
-
     private static void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {
-        CommandLineResponse commandResponse = CommandLineExecutor.execCommand(commandToGetAppVersion);
+        CommandLineResponse commandResponse = CommandLineExecutor.execCommand(
+                commandToGetAppVersion);
         String commandOutput = commandResponse.getStdOut();
         if(!(null == commandOutput || commandOutput.isEmpty())) {
             Matcher matcher = pattern.matcher(commandOutput);
@@ -159,6 +164,13 @@ public class DeviceSetup {
         } else {
             LOGGER.info("fetchAppVersion: " + commandResponse.getErrOut());
         }
+    }
+
+    private static String getCloudNameFromCapabilities() {
+        String capabilityFile = configs.get(CAPS);
+        ArrayList<Map> hostMachines = JsonFile.getNodeValueAsArrayListFromJsonFile(capabilityFile,
+                                                                                   "hostMachines");
+        return String.valueOf(hostMachines.get(0).get("cloudName"));
     }
 
     static ArrayList<String> setupWindowsExecution() {
@@ -176,12 +188,15 @@ public class DeviceSetup {
     }
 
     private static void fetchWindowsAppVersion() {
-        Pattern VERSION_NAME_PATTERN = Pattern.compile("Version=([0-9]+(\\.[0-9]+)+)", Pattern.MULTILINE);
+        Pattern VERSION_NAME_PATTERN = Pattern.compile("Version=([0-9]+(\\.[0-9]+)+)",
+                                                       Pattern.MULTILINE);
         try {
             File appFile = new File(String.valueOf(configs.get(APP_PATH)));
             String nameVariable = "name=\"" + appFile.getCanonicalPath()
                                                      .replace("\\", "\\\\") + "\"";
-            String[] commandToGetAppVersion = new String[]{"wmic", "datafile", "where", nameVariable, "get", "Version", "/value"};
+            String[] commandToGetAppVersion = new String[]{"wmic", "datafile", "where",
+                                                           nameVariable, "get", "Version",
+                                                           "/value"};
             fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
         } catch(IOException e) {
             LOGGER.info("fetchWindowsAppVersion: Exception: " + e.getLocalizedMessage());
@@ -200,7 +215,8 @@ public class DeviceSetup {
                 LOGGER.info(String.format("No cleanup required for cloud: '%s'", cloudName));
                 break;
             default:
-                throw new InvalidTestDataException(String.format("Provided cloudName: '%s' is not supported", cloudName));
+                throw new InvalidTestDataException(
+                        String.format("Provided cloudName: '%s' is not supported", cloudName));
         }
     }
 }

@@ -28,10 +28,8 @@ import static com.znsio.e2e.runner.Setup.*;
 
 public class Runner {
     public static final String OS_NAME = System.getProperty("os.name");
-    public static final boolean IS_WINDOWS = OS_NAME.toLowerCase()
-                                                    .startsWith("windows");
-    public static final boolean IS_MAC = OS_NAME.toLowerCase()
-                                                .startsWith("mac");
+    public static final boolean IS_WINDOWS = OS_NAME.toLowerCase().startsWith("windows");
+    public static final boolean IS_MAC = OS_NAME.toLowerCase().startsWith("mac");
     public static final String USER_DIRECTORY = System.getProperty("user.dir");
     public static final String USER_NAME = System.getProperty("user.name");
     public static final String NOT_SET = "not-set";
@@ -66,7 +64,8 @@ public class Runner {
         LOGGER.info("Begin running tests...");
         LOGGER.info("Args: " + args);
         String[] array = args.toArray(String[]::new);
-        String logDir = Runner.USER_DIRECTORY + File.separator + configs.get(LOG_DIR) + File.separator + REPORTS_DIR;
+        String logDir = Runner.USER_DIRECTORY + File.separator + configs.get(
+                LOG_DIR) + File.separator + REPORTS_DIR;
         LOGGER.info(logDir);
         byte status = Main.run(array);
         setup.cleanUpExecutionEnvironment();
@@ -78,8 +77,10 @@ public class Runner {
         System.out.println("================================");
         System.out.println("Generating reports");
         System.out.println("================================");
-        Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsDir), new String[]{"json"}, true);
-        System.out.println(String.format("\tFound '%s' result files for processing", jsonFiles.size()));
+        Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsDir), new String[]{"json"},
+                                                         true);
+        System.out.println(
+                String.format("\tFound '%s' result files for processing", jsonFiles.size()));
         if(jsonFiles.size() == 0) {
             return "Reports not generated";
         }
@@ -92,17 +93,18 @@ public class Runner {
         System.out.println("\tCreating rich reports: " + richReportsPath);
         Configuration config = new Configuration(new File(richReportsPath), configs.get(APP_NAME));
 
-        String tagsToExclude = System.getProperty(TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT);
+        String tagsToExclude = System.getProperty(
+                TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT);
         if(null != tagsToExclude) {
-            config.setTagsToExcludeFromChart(tagsToExclude.trim()
-                                                          .split(","));
+            config.setTagsToExcludeFromChart(tagsToExclude.trim().split(","));
         }
         addClassifications(config);
 
         ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
         reportBuilder.generateReports();
         return "Reports available here: " + config.getReportDirectory()
-                                                  .getAbsolutePath() + "/cucumber-html-reports/overview-features.html";
+                                                  .getAbsolutePath() + "/cucumber-html-reports" +
+               "/overview-features.html";
     }
 
     private void addClassifications(Configuration config) {
@@ -155,7 +157,8 @@ public class Runner {
         try {
             return String.valueOf(environmentConfiguration.get(key));
         } catch(NullPointerException npe) {
-            throw new InvalidTestDataException(String.format("Invalid key name ('%s') provided", key), npe);
+            throw new InvalidTestDataException(
+                    String.format("Invalid key name ('%s') provided", key), npe);
         }
     }
 
@@ -163,7 +166,8 @@ public class Runner {
         try {
             return String.valueOf(testDataForEnvironment.get(key));
         } catch(NullPointerException npe) {
-            throw new InvalidTestDataException(String.format("Invalid key name ('%s') provided", key), npe);
+            throw new InvalidTestDataException(
+                    String.format("Invalid key name ('%s') provided", key), npe);
         }
     }
 
@@ -171,7 +175,8 @@ public class Runner {
         try {
             return testDataForEnvironment.get(key);
         } catch(NullPointerException npe) {
-            throw new InvalidTestDataException(String.format("Invalid key name ('%s') provided", key), npe);
+            throw new InvalidTestDataException(
+                    String.format("Invalid key name ('%s') provided", key), npe);
         }
     }
 
@@ -185,15 +190,17 @@ public class Runner {
         }
         if(args.length != 3) {
             throw new InvalidTestDataException(
-                    "Expected following parameters: 'String configFilePath, String stepDefDirName, String " +
-                    "featuresDirName");
+                    "Expected following parameters: 'String configFilePath, String " +
+                    "stepDefDirName, String " + "featuresDirName");
         }
         new Runner(args[0], args[1], args[2]);
     }
 
     public static Driver fetchDriver(long threadId) {
-        String userPersona = getTestExecutionContext(threadId).getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
-        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.ALL_DRIVERS);
+        String userPersona = getTestExecutionContext(threadId).getTestStateAsString(
+                TEST_CONTEXT.CURRENT_USER_PERSONA);
+        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(
+                TEST_CONTEXT.ALL_DRIVERS);
         return allDrivers.getDriverForUser(userPersona);
     }
 
@@ -202,29 +209,35 @@ public class Runner {
     }
 
     public static String fetchDeviceName(long threadId, String forUserPersona) {
-        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.ALL_DRIVERS);
+        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(
+                TEST_CONTEXT.ALL_DRIVERS);
         return allDrivers.getDeviceNameForUser(forUserPersona);
     }
 
     public static Visual fetchEyes(long threadId) {
-        String userPersona = getTestExecutionContext(threadId).getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
-        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.ALL_DRIVERS);
-        return allDrivers.getDriverForUser(userPersona)
-                         .getVisual();
+        String userPersona = getTestExecutionContext(threadId).getTestStateAsString(
+                TEST_CONTEXT.CURRENT_USER_PERSONA);
+        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(
+                TEST_CONTEXT.ALL_DRIVERS);
+        return allDrivers.getDriverForUser(userPersona).getVisual();
     }
 
     public static SoftAssertions getSoftAssertion(long threadId) {
-        return (SoftAssertions) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.SOFT_ASSERTIONS);
+        return (SoftAssertions) getTestExecutionContext(threadId).getTestState(
+                TEST_CONTEXT.SOFT_ASSERTIONS);
     }
 
-    public static Driver setCurrentDriverForUser(String userPersona, Platform forPlatform, TestExecutionContext context) {
+    public static Driver setCurrentDriverForUser(String userPersona, Platform forPlatform,
+                                                 TestExecutionContext context) {
         Drivers allDrivers = (Drivers) context.getTestState(TEST_CONTEXT.ALL_DRIVERS);
         return allDrivers.setDriverFor(userPersona, forPlatform, context);
     }
 
     public static Platform fetchPlatform(long threadId) {
-        String userPersona = getTestExecutionContext(threadId).getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
-        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(TEST_CONTEXT.ALL_DRIVERS);
+        String userPersona = getTestExecutionContext(threadId).getTestStateAsString(
+                TEST_CONTEXT.CURRENT_USER_PERSONA);
+        Drivers allDrivers = (Drivers) getTestExecutionContext(threadId).getTestState(
+                TEST_CONTEXT.ALL_DRIVERS);
         return allDrivers.getPlatformForUser(userPersona);
     }
 
@@ -277,9 +290,11 @@ public class Runner {
             }
         } catch(Exception e) {
             throw new InvalidTestDataException(
-                    String.format("There was a problem while setting browser config file '%s'", browserConfigFile));
+                    String.format("There was a problem while setting browser config file '%s'",
+                                  browserConfigFile));
         }
-        configs.put(BROWSER_CONFIG_FILE_CONTENTS, new JSONObject(new JSONTokener(inputStream)).toString());
+        configs.put(BROWSER_CONFIG_FILE_CONTENTS,
+                    new JSONObject(new JSONTokener(inputStream)).toString());
         return configs.get(BROWSER_CONFIG_FILE_CONTENTS);
     }
 

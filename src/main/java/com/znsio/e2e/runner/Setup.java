@@ -51,7 +51,8 @@ public class Setup {
     static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
     static final String BROWSER_CONFIG_FILE_CONTENTS = "BROWSER_CONFIG_FILE_CONTENTS";
     static final String DEFAULT_BROWSER_CONFIG_FILE = "/default_browser_config.json";
-    static final String CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = "CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION";
+    static final String CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION =
+            "CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION";
     static final String PLUGIN = "--plugin";
     static final String APP_PATH = "APP_PATH";
     static final String CLOUD_UPLOAD_APP = "CLOUD_UPLOAD_APP";
@@ -64,6 +65,8 @@ public class Setup {
     static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
     static final String APPIUM_SETTINGS = "io.appium.settings";
     final static String REPORTS_DIR = "reports";
+    static final String CLOUD_USE_PROXY = "CLOUD_USE_PROXY";
+    static final String CLOUD_USE_LOCAL_TESTING = "CLOUD_USE_LOCAL_TESTING";
     private static final String CHROME = "chrome";
     private static final String tempDirectory = "temp";
     private static final Platform DEFAULT_PLATFORM = Platform.android;
@@ -80,8 +83,6 @@ public class Setup {
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
-    static final String CLOUD_USE_PROXY = "CLOUD_USE_PROXY";
-    static final String CLOUD_USE_LOCAL_TESTING = "CLOUD_USE_LOCAL_TESTING";
     static Map<String, Map> environmentConfiguration;
     static Map<String, Map> testDataForEnvironment;
     static Map applitoolsConfiguration = new HashMap<>();
@@ -108,6 +109,15 @@ public class Setup {
         return properties;
     }
 
+    @NotNull
+    static String getCurlProxyCommand() {
+        String curlProxyCommand = "";
+        if(configsBoolean.get(CLOUD_USE_PROXY)) {
+            curlProxyCommand = " --proxy " + configs.get(PROXY_URL);
+        }
+        return curlProxyCommand;
+    }
+
     public List<String> getExecutionArguments() {
         loadAndUpdateConfigParameters(configFilePath);
 
@@ -128,19 +138,6 @@ public class Setup {
         LOGGER.info(printIntegerMap("Using integer values", configsInteger));
 
         return cukeArgs;
-    }
-
-    public void cleanUpExecutionEnvironment() {
-        LOGGER.info("cleanUpExecutionEnvironment");
-        if(platform.equals(Platform.android)) {
-            if(configsBoolean.get(RUN_IN_CI)) {
-                DeviceSetup.cleanupCloudExecution();
-            } else {
-                LOGGER.info("Not running in CI. Nothing to cleanup in Execution environment");
-            }
-        } else {
-            LOGGER.info("Not running on android. Nothing to cleanup in Execution environment");
-        }
     }
 
     void loadAndUpdateConfigParameters(String configFilePath) {
@@ -165,8 +162,7 @@ public class Setup {
         InputStream inputStream;
         try {
             if(properties.containsKey(LOG_PROPERTIES_FILE)) {
-                Path logFilePath = Paths.get(properties.get(LOG_PROPERTIES_FILE)
-                                                       .toString());
+                Path logFilePath = Paths.get(properties.get(LOG_PROPERTIES_FILE).toString());
                 configs.put(LOG_PROPERTIES_FILE, logFilePath.toString());
                 inputStream = Files.newInputStream(logFilePath);
             } else {
@@ -175,19 +171,21 @@ public class Setup {
             }
             PropertyConfigurator.configure(inputStream);
         } catch(Exception e) {
-            throw new InvalidTestDataException("There was a problem while setting log properties file");
+            throw new InvalidTestDataException(
+                    "There was a problem while setting log properties file");
         }
     }
 
     private void setBrowserConfigFilePath() {
         if(properties.containsKey(BROWSER_CONFIG_FILE)) {
-            Path browserConfigFilePath = Paths.get(properties.get(BROWSER_CONFIG_FILE)
-                                                             .toString());
+            Path browserConfigFilePath = Paths.get(properties.get(BROWSER_CONFIG_FILE).toString());
             configs.put(BROWSER_CONFIG_FILE, browserConfigFilePath.toString());
-            LOGGER.info(String.format("Using the provided BROWSER_CONFIG_FILE: '%s'", browserConfigFilePath));
+            LOGGER.info(String.format("Using the provided BROWSER_CONFIG_FILE: '%s'",
+                                      browserConfigFilePath));
         } else {
             configs.put(BROWSER_CONFIG_FILE, DEFAULT_BROWSER_CONFIG_FILE);
-            LOGGER.info(String.format("Using the default BROWSER_CONFIG_FILE: '%s'", DEFAULT_BROWSER_CONFIG_FILE));
+            LOGGER.info(String.format("Using the default BROWSER_CONFIG_FILE: '%s'",
+                                      DEFAULT_BROWSER_CONFIG_FILE));
         }
     }
 
@@ -200,23 +198,20 @@ public class Setup {
 
     private static Map<String, Map> loadEnvironmentConfiguration(String environment) {
         String envConfigFile = configs.get(ENVIRONMENT_CONFIG_FILE);
-        LOGGER.info("Loading environment configuration from ENVIRONMENT_CONFIG_FILE: " + envConfigFile + " for environment: " + environment);
-        return (NOT_SET.equalsIgnoreCase(envConfigFile)) ? new HashMap<>() : JsonFile.getNodeValueAsMapFromJsonFile(environment, envConfigFile);
+        LOGGER.info(
+                "Loading environment configuration from ENVIRONMENT_CONFIG_FILE: " + envConfigFile + " for environment: " + environment);
+        return (NOT_SET.equalsIgnoreCase(envConfigFile)) ? new HashMap<>()
+                                                         : JsonFile.getNodeValueAsMapFromJsonFile(
+                                                                 environment, envConfigFile);
     }
 
     private static Map<String, Map> loadTestDataForEnvironment(String environment) {
         String testDataFile = configs.get(TEST_DATA_FILE);
-        LOGGER.info("Loading test data from TEST_DATA_FILE: " + testDataFile + " for environment: " + environment);
-        return (NOT_SET.equalsIgnoreCase(testDataFile)) ? new HashMap<>() : JsonFile.getNodeValueAsMapFromJsonFile(environment, testDataFile);
-    }
-
-    @NotNull
-    static String getCurlProxyCommand() {
-        String curlProxyCommand = "";
-        if (configsBoolean.get(CLOUD_USE_PROXY)) {
-            curlProxyCommand = " --proxy " + configs.get(PROXY_URL);
-        }
-        return curlProxyCommand;
+        LOGGER.info(
+                "Loading test data from TEST_DATA_FILE: " + testDataFile + " for environment: " + environment);
+        return (NOT_SET.equalsIgnoreCase(testDataFile)) ? new HashMap<>()
+                                                        : JsonFile.getNodeValueAsMapFromJsonFile(
+                                                                environment, testDataFile);
     }
 
     private void setupExecutionEnvironment() {
@@ -227,19 +222,21 @@ public class Setup {
         cukeArgs.addAll(DeviceSetup.setupWindowsExecution());
         initialiseApplitoolsConfiguration();
 
-        String rpAttributes = "AutomationBranch:" + configs.get(BRANCH_NAME) + "; " + "ExecutedOn:" + configs.get(EXECUTED_ON) + "; " + "Installer:" + configs.get(
+        String rpAttributes = "AutomationBranch:" + configs.get(
+                BRANCH_NAME) + "; " + "ExecutedOn:" + configs.get(
+                EXECUTED_ON) + "; " + "Installer:" + configs.get(
                 APP_PATH) + "; " + "OS:" + OS_NAME + "; " + "ParallelCount:" + configsInteger.get(
-                PARALLEL) + "; " + "Platform:" + platform.name() + "; " + "RunInCI:" + configsBoolean.get(RUN_IN_CI) + "; " + "Tags:" + configs.get(
-                TAG) + "; " + "TargetEnvironment:" + configs.get(TARGET_ENVIRONMENT) + "; " + "Username:" + USER_NAME + "; " + "VisualEnabled:" + configsBoolean.get(
+                PARALLEL) + "; " + "Platform:" + platform.name() + "; " + "RunInCI:" + configsBoolean.get(
+                RUN_IN_CI) + "; " + "Tags:" + configs.get(
+                TAG) + "; " + "TargetEnvironment:" + configs.get(
+                TARGET_ENVIRONMENT) + "; " + "Username:" + USER_NAME + "; " + "VisualEnabled:" + configsBoolean.get(
                 IS_VISUAL) + "; ";
 
-        if(!configs.get(APP_VERSION)
-                   .equals(NOT_SET)) {
+        if(!configs.get(APP_VERSION).equals(NOT_SET)) {
             rpAttributes += "AppVersion: " + configs.get(APP_VERSION) + "; ";
         }
 
-        if(!configs.get(BUILD_ID)
-                   .equals(NOT_SET)) {
+        if(!configs.get(BUILD_ID).equals(NOT_SET)) {
             rpAttributes += "BuildId: " + configs.get(BUILD_ID) + "; ";
         }
 
@@ -252,12 +249,13 @@ public class Setup {
         System.setProperty("CAPS", configs.get(CAPS));
         System.setProperty("Platform", platform.name());
         System.setProperty("atd_" + platform.name() + "_app_local", configs.get(APP_PATH));
-        if (null != configs.get(PROXY_URL)) {
+        if(null != configs.get(PROXY_URL)) {
             System.setProperty("PROXY_URL", configs.get(PROXY_URL));
         }
 
         // properties needed for ReportPortal.io
-        System.setProperty("rp.description", configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
+        System.setProperty("rp.description",
+                           configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
         System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
         System.setProperty("rp.attributes", rpAttributes);
     }
@@ -266,10 +264,7 @@ public class Setup {
     private String printStringMap(String prefix, Map<String, String> printConfig) {
         StringBuilder printString = new StringBuilder(prefix + ": \n");
         for(Map.Entry<String, String> entry : printConfig.entrySet()) {
-            printString.append("\t")
-                       .append(entry.getKey())
-                       .append("=")
-                       .append(entry.getValue())
+            printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
                        .append("\n");
         }
         return printString.toString() + printConfig;
@@ -279,10 +274,7 @@ public class Setup {
     private String printBooleanMap(String prefix, Map<String, Boolean> printConfig) {
         StringBuilder printString = new StringBuilder(prefix + ": \n");
         for(Map.Entry<String, Boolean> entry : printConfig.entrySet()) {
-            printString.append("\t")
-                       .append(entry.getKey())
-                       .append("=")
-                       .append(entry.getValue())
+            printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
                        .append("\n");
         }
         return printString.toString() + printConfig;
@@ -292,58 +284,128 @@ public class Setup {
     private String printIntegerMap(String prefix, Map<String, Integer> printConfig) {
         StringBuilder printString = new StringBuilder(prefix + ": \n");
         for(Map.Entry<String, Integer> entry : printConfig.entrySet()) {
-            printString.append("\t")
-                       .append(entry.getKey())
-                       .append("=")
-                       .append(entry.getValue())
+            printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
                        .append("\n");
         }
         return printString.toString() + printConfig;
     }
 
     private void buildMapOfRequiredProperties() {
-        configs.put(APP_NAME, getOverriddenStringValue(APP_NAME, getStringValueFromPropertiesIfAvailable(APP_NAME, NOT_SET)));
-        configs.put(APP_PACKAGE_NAME, getOverriddenStringValue(APP_PACKAGE_NAME, getStringValueFromPropertiesIfAvailable(APP_PACKAGE_NAME, NOT_SET)));
-        configs.put(APP_PATH, getOverriddenStringValue(APP_PATH, getStringValueFromPropertiesIfAvailable(APP_PATH, NOT_SET)));
-        configs.put(APPLITOOLS_CONFIGURATION, getStringValueFromPropertiesIfAvailable(APPLITOOLS_CONFIGURATION, NOT_SET));
-        configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB, getStringValueFromPropertiesIfAvailable(BASE_URL_FOR_WEB, NOT_SET)));
-        configs.put(BRANCH_NAME, getOverriddenStringValue(BRANCH_NAME, getStringValueFromPropertiesIfAvailable(BRANCH_NAME, NOT_SET)));
-        configs.put(BRANCH_NAME, getOverriddenStringValue(configs.get(BRANCH_NAME), getBranchNameUsingGitCommand()));
-        configs.put(BROWSER, getOverriddenStringValue(BROWSER, getStringValueFromPropertiesIfAvailable(BROWSER, CHROME)));
-        configs.put(BUILD_ID, getOverriddenStringValue(BUILD_ID, getStringValueFromPropertiesIfAvailable(BUILD_ID, NOT_SET)));
+        configs.put(APP_NAME, getOverriddenStringValue(APP_NAME,
+                                                       getStringValueFromPropertiesIfAvailable(
+                                                               APP_NAME, NOT_SET)));
+        configs.put(APP_PACKAGE_NAME, getOverriddenStringValue(APP_PACKAGE_NAME,
+                                                               getStringValueFromPropertiesIfAvailable(
+                                                                       APP_PACKAGE_NAME, NOT_SET)));
+        configs.put(APP_PATH, getOverriddenStringValue(APP_PATH,
+                                                       getStringValueFromPropertiesIfAvailable(
+                                                               APP_PATH, NOT_SET)));
+        configs.put(APPLITOOLS_CONFIGURATION,
+                    getStringValueFromPropertiesIfAvailable(APPLITOOLS_CONFIGURATION, NOT_SET));
+        configs.put(BASE_URL_FOR_WEB, getOverriddenStringValue(BASE_URL_FOR_WEB,
+                                                               getStringValueFromPropertiesIfAvailable(
+                                                                       BASE_URL_FOR_WEB, NOT_SET)));
+        configs.put(BRANCH_NAME, getOverriddenStringValue(BRANCH_NAME,
+                                                          getStringValueFromPropertiesIfAvailable(
+                                                                  BRANCH_NAME, NOT_SET)));
+        configs.put(BRANCH_NAME, getOverriddenStringValue(configs.get(BRANCH_NAME),
+                                                          getBranchNameUsingGitCommand()));
+        configs.put(BROWSER, getOverriddenStringValue(BROWSER,
+                                                      getStringValueFromPropertiesIfAvailable(
+                                                              BROWSER, CHROME)));
+        configs.put(BUILD_ID, getOverriddenStringValue(BUILD_ID,
+                                                       getStringValueFromPropertiesIfAvailable(
+                                                               BUILD_ID, NOT_SET)));
         configs.put(BUILD_ID, getOverriddenStringValue(configs.get(BUILD_ID), NOT_SET));
-        configs.put(CAPS, getOverriddenStringValue(CAPS, getStringValueFromPropertiesIfAvailable(CAPS, NOT_SET)));
-        configsBoolean.put(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION, getOverriddenBooleanValue(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION,
-                                                                                               getBooleanValueFromPropertiesIfAvailable(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION,
-                                                                                                                                        true)));
-        configs.put(CLOUD_KEY, getOverriddenStringValue(CLOUD_KEY, getStringValueFromPropertiesIfAvailable(CLOUD_KEY, NOT_SET)));
-        configs.put(CLOUD_USER, getOverriddenStringValue(CLOUD_USER, getStringValueFromPropertiesIfAvailable(CLOUD_USER, NOT_SET)));
-        configs.put(CLOUD_NAME, getOverriddenStringValue(CLOUD_NAME, getStringValueFromPropertiesIfAvailable(CLOUD_NAME, LOCAL)));
-        configsBoolean.put(CLOUD_UPLOAD_APP, getOverriddenBooleanValue(CLOUD_UPLOAD_APP, getBooleanValueFromPropertiesIfAvailable(CLOUD_UPLOAD_APP, false)));
-        configsBoolean.put(CLOUD_USE_PROXY, getOverriddenBooleanValue(CLOUD_USE_PROXY, getBooleanValueFromPropertiesIfAvailable(CLOUD_USE_PROXY, false)));
-        configsBoolean.put(CLOUD_USE_LOCAL_TESTING, getOverriddenBooleanValue(CLOUD_USE_LOCAL_TESTING, getBooleanValueFromPropertiesIfAvailable(CLOUD_USE_LOCAL_TESTING, false)));
-        configs.put(DEVICE_LAB_URL, getOverriddenStringValue(DEVICE_LAB_URL, getStringValueFromPropertiesIfAvailable(DEVICE_LAB_URL, NOT_SET)));
-        configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE, getStringValueFromPropertiesIfAvailable(ENVIRONMENT_CONFIG_FILE, NOT_SET)));
-        configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL, getBooleanValueFromPropertiesIfAvailable(IS_VISUAL, false)));
-        configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR, getStringValueFromPropertiesIfAvailable(LOG_DIR, DEFAULT_LOG_DIR)));
+        configs.put(CAPS, getOverriddenStringValue(CAPS,
+                                                   getStringValueFromPropertiesIfAvailable(CAPS,
+                                                                                           NOT_SET)));
+        configsBoolean.put(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION,
+                           getOverriddenBooleanValue(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION,
+                                                     getBooleanValueFromPropertiesIfAvailable(
+                                                             CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION,
+                                                             true)));
+        configs.put(CLOUD_KEY, getOverriddenStringValue(CLOUD_KEY,
+                                                        getStringValueFromPropertiesIfAvailable(
+                                                                CLOUD_KEY, NOT_SET)));
+        configs.put(CLOUD_USER, getOverriddenStringValue(CLOUD_USER,
+                                                         getStringValueFromPropertiesIfAvailable(
+                                                                 CLOUD_USER, NOT_SET)));
+        configs.put(CLOUD_NAME, getOverriddenStringValue(CLOUD_NAME,
+                                                         getStringValueFromPropertiesIfAvailable(
+                                                                 CLOUD_NAME, LOCAL)));
+        configsBoolean.put(CLOUD_UPLOAD_APP, getOverriddenBooleanValue(CLOUD_UPLOAD_APP,
+                                                                       getBooleanValueFromPropertiesIfAvailable(
+                                                                               CLOUD_UPLOAD_APP,
+                                                                               false)));
+        configsBoolean.put(CLOUD_USE_PROXY, getOverriddenBooleanValue(CLOUD_USE_PROXY,
+                                                                      getBooleanValueFromPropertiesIfAvailable(
+                                                                              CLOUD_USE_PROXY,
+                                                                              false)));
+        configsBoolean.put(CLOUD_USE_LOCAL_TESTING,
+                           getOverriddenBooleanValue(CLOUD_USE_LOCAL_TESTING,
+                                                     getBooleanValueFromPropertiesIfAvailable(
+                                                             CLOUD_USE_LOCAL_TESTING, false)));
+        configs.put(DEVICE_LAB_URL, getOverriddenStringValue(DEVICE_LAB_URL,
+                                                             getStringValueFromPropertiesIfAvailable(
+                                                                     DEVICE_LAB_URL, NOT_SET)));
+        configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE,
+                                                                      getStringValueFromPropertiesIfAvailable(
+                                                                              ENVIRONMENT_CONFIG_FILE,
+                                                                              NOT_SET)));
+        configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL,
+                                                                getBooleanValueFromPropertiesIfAvailable(
+                                                                        IS_VISUAL, false)));
+        configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR,
+                                                      getStringValueFromPropertiesIfAvailable(
+                                                              LOG_DIR, DEFAULT_LOG_DIR)));
         configsInteger.put(MAX_NUMBER_OF_APPIUM_DRIVERS,
-                           getOverriddenIntValue(MAX_NUMBER_OF_APPIUM_DRIVERS, Integer.parseInt(getStringValueFromPropertiesIfAvailable(MAX_NUMBER_OF_APPIUM_DRIVERS, "5"))));
+                           getOverriddenIntValue(MAX_NUMBER_OF_APPIUM_DRIVERS, Integer.parseInt(
+                                   getStringValueFromPropertiesIfAvailable(
+                                           MAX_NUMBER_OF_APPIUM_DRIVERS, "5"))));
         configsInteger.put(MAX_NUMBER_OF_WEB_DRIVERS,
-                           getOverriddenIntValue(MAX_NUMBER_OF_WEB_DRIVERS, Integer.parseInt(getStringValueFromPropertiesIfAvailable(MAX_NUMBER_OF_WEB_DRIVERS, "5"))));
-        platform = Platform.valueOf(getOverriddenStringValue(PLATFORM, getStringValueFromPropertiesIfAvailable(PLATFORM, Platform.android.name())));
-        configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, Integer.parseInt(getStringValueFromPropertiesIfAvailable(PARALLEL, String.valueOf(DEFAULT_PARALLEL)))));
-        configs.put(PROXY_KEY, getOverriddenStringValue(PROXY_KEY, getStringValueFromPropertiesIfAvailable(PROXY_KEY, PROXY_KEY)));
+                           getOverriddenIntValue(MAX_NUMBER_OF_WEB_DRIVERS, Integer.parseInt(
+                                   getStringValueFromPropertiesIfAvailable(
+                                           MAX_NUMBER_OF_WEB_DRIVERS, "5"))));
+        platform = Platform.valueOf(getOverriddenStringValue(PLATFORM,
+                                                             getStringValueFromPropertiesIfAvailable(
+                                                                     PLATFORM,
+                                                                     Platform.android.name())));
+        configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, Integer.parseInt(
+                getStringValueFromPropertiesIfAvailable(PARALLEL,
+                                                        String.valueOf(DEFAULT_PARALLEL)))));
+        configs.put(PROXY_KEY, getOverriddenStringValue(PROXY_KEY,
+                                                        getStringValueFromPropertiesIfAvailable(
+                                                                PROXY_KEY, PROXY_KEY)));
         configs.put(PROXY_URL, getOverriddenStringValue(configs.get(PROXY_KEY)));
         configs.put(WEBDRIVER_MANAGER_PROXY_KEY,
-                    getOverriddenStringValue(WEBDRIVER_MANAGER_PROXY_KEY, getStringValueFromPropertiesIfAvailable(WEBDRIVER_MANAGER_PROXY_KEY, WEBDRIVER_MANAGER_PROXY_KEY)));
-        configs.put(WEBDRIVER_MANAGER_PROXY_URL, getOverriddenStringValue(configs.get(WEBDRIVER_MANAGER_PROXY_KEY)));
-        configs.put(REMOTE_WEBDRIVER_GRID_PORT_KEY, getStringValueFromPropertiesIfAvailable(REMOTE_WEBDRIVER_GRID_PORT, REMOTE_WEBDRIVER_GRID_PORT));
-        configs.put(REMOTE_WEBDRIVER_GRID_PORT, getOverriddenStringValue(configs.get(REMOTE_WEBDRIVER_GRID_PORT_KEY), DEFAULT_WEBDRIVER_GRID_PORT));
-        configsBoolean.put(RUN_IN_CI, getOverriddenBooleanValue(RUN_IN_CI, getBooleanValueFromPropertiesIfAvailable(RUN_IN_CI, false)));
-        configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
-        configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
-        configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
-        configs.put(LAUNCH_NAME_SUFFIX, getOverriddenStringValue(LAUNCH_NAME_SUFFIX, getStringValueFromPropertiesIfAvailable(LAUNCH_NAME_SUFFIX, "")));
+                    getOverriddenStringValue(WEBDRIVER_MANAGER_PROXY_KEY,
+                                             getStringValueFromPropertiesIfAvailable(
+                                                     WEBDRIVER_MANAGER_PROXY_KEY,
+                                                     WEBDRIVER_MANAGER_PROXY_KEY)));
+        configs.put(WEBDRIVER_MANAGER_PROXY_URL,
+                    getOverriddenStringValue(configs.get(WEBDRIVER_MANAGER_PROXY_KEY)));
+        configs.put(REMOTE_WEBDRIVER_GRID_PORT_KEY,
+                    getStringValueFromPropertiesIfAvailable(REMOTE_WEBDRIVER_GRID_PORT,
+                                                            REMOTE_WEBDRIVER_GRID_PORT));
+        configs.put(REMOTE_WEBDRIVER_GRID_PORT,
+                    getOverriddenStringValue(configs.get(REMOTE_WEBDRIVER_GRID_PORT_KEY),
+                                             DEFAULT_WEBDRIVER_GRID_PORT));
+        configsBoolean.put(RUN_IN_CI, getOverriddenBooleanValue(RUN_IN_CI,
+                                                                getBooleanValueFromPropertiesIfAvailable(
+                                                                        RUN_IN_CI, false)));
+        configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG,
+                                                                                               NOT_SET)));
+        configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT,
+                                                                 getStringValueFromPropertiesIfAvailable(
+                                                                         TARGET_ENVIRONMENT,
+                                                                         NOT_SET)));
+        configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE,
+                                                             getStringValueFromPropertiesIfAvailable(
+                                                                     TEST_DATA_FILE, NOT_SET)));
+        configs.put(LAUNCH_NAME_SUFFIX, getOverriddenStringValue(LAUNCH_NAME_SUFFIX,
+                                                                 getStringValueFromPropertiesIfAvailable(
+                                                                         LAUNCH_NAME_SUFFIX, "")));
         configs.put(APP_VERSION, NOT_SET);
     }
 
@@ -393,7 +455,9 @@ public class Setup {
 
         launchName += " " + configs.get(LAUNCH_NAME_SUFFIX);
 
-        LOGGER.info("\tRunning tests with platform: " + platform + " and the following tag criteria : " + inferredTags);
+        LOGGER.info(
+                "\tRunning tests with platform: " + platform + " and the following tag criteria :" +
+                " " + inferredTags);
         LOGGER.info("\tReportPortal Tests Launch name: " + launchName);
 
         configs.put(PLATFORM, platform.name());
@@ -408,15 +472,24 @@ public class Setup {
         cukeArgs.add("pretty");
         cukeArgs.add(PLUGIN);
         String logDir = configs.get(LOG_DIR);
-        cukeArgs.add("html:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-html-report.html");
+        cukeArgs.add(
+                "html:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-html" +
+                "-report.html");
         cukeArgs.add(PLUGIN);
-        cukeArgs.add("junit:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-junit-report.xml");
+        cukeArgs.add(
+                "junit:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber" +
+                "-junit-report.xml");
         cukeArgs.add(PLUGIN);
-        cukeArgs.add("json:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-json-report.json");
+        cukeArgs.add(
+                "json:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-json" +
+                "-report.json");
         cukeArgs.add(PLUGIN);
-        cukeArgs.add("message:" + logDir + File.separator + REPORTS_DIR + File.separator + "results.ndjson");
+        cukeArgs.add(
+                "message:" + logDir + File.separator + REPORTS_DIR + File.separator + "results" +
+                ".ndjson");
         cukeArgs.add(PLUGIN);
-        cukeArgs.add("timeline:" + logDir + File.separator + REPORTS_DIR + File.separator + "timeline");
+        cukeArgs.add(
+                "timeline:" + logDir + File.separator + REPORTS_DIR + File.separator + "timeline");
         System.setProperty("cucumber.publish.quiet", "true");
     }
 
@@ -440,16 +513,23 @@ public class Setup {
             getApplitoolsConfigFromProvidedConfigFile();
             applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
             applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(APP_NAME));
-            applitoolsConfiguration.put(APPLITOOLS.API_KEY, getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
+            applitoolsConfiguration.put(APPLITOOLS.API_KEY,
+                                        getOverriddenStringValue("APPLITOOLS_API_KEY",
+                                                                 String.valueOf(
+                                                                         applitoolsConfiguration.get(
+                                                                                 APPLITOOLS.API_KEY))));
             applitoolsConfiguration.put(BRANCH_NAME, configs.get(BRANCH_NAME));
             applitoolsConfiguration.put(PLATFORM, platform.name());
             applitoolsConfiguration.put(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
             applitoolsConfiguration.put(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
             applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());
             applitoolsConfiguration.put(APPLITOOLS.RECTANGLE_SIZE, getViewportSize());
-            applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED, isBenchmarkingEnabled());
-            applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING, isDisableBrowserFetching());
-            BatchInfo batchInfo = new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
+            applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED,
+                                        isBenchmarkingEnabled());
+            applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING,
+                                        isDisableBrowserFetching());
+            BatchInfo batchInfo = new BatchInfo(
+                    configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
             applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, batchInfo);
             batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
             batchInfo.addProperty(PLATFORM, platform.name());
@@ -468,7 +548,8 @@ public class Setup {
         String[] getBranchNameCommand = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(getBranchNameCommand);
         String branchName = response.getStdOut();
-        LOGGER.info(String.format("\tBranch name from git command: '%s': '%s'", Arrays.toString(getBranchNameCommand), branchName));
+        LOGGER.info(String.format("\tBranch name from git command: '%s': '%s'",
+                                  Arrays.toString(getBranchNameCommand), branchName));
         return branchName;
     }
 
@@ -497,7 +578,8 @@ public class Setup {
             LOGGER.warn("-------------------------------------------------------------");
             configsBoolean.put(IS_VISUAL, false);
         } else {
-            LOGGER.info("Loading Applitools configuration from: " + applitoolsConfigurationFileName);
+            LOGGER.info(
+                    "Loading Applitools configuration from: " + applitoolsConfigurationFileName);
             applitoolsConfiguration = JsonFile.loadJsonFile(applitoolsConfigurationFileName);
         }
     }
@@ -509,7 +591,8 @@ public class Setup {
     static MatchLevel getMatchLevel() {
         MatchLevel matchLevel;
         try {
-            matchLevel = MatchLevel.valueOf(String.valueOf(applitoolsConfiguration.get(APPLITOOLS.DEFAULT_MATCH_LEVEL)));
+            matchLevel = MatchLevel.valueOf(
+                    String.valueOf(applitoolsConfiguration.get(APPLITOOLS.DEFAULT_MATCH_LEVEL)));
         } catch(IllegalArgumentException | NullPointerException e) {
             matchLevel = MatchLevel.STRICT;
         }
@@ -520,20 +603,38 @@ public class Setup {
     static RectangleSize getViewportSize() {
         RectangleSize viewportSize = new RectangleSize(1280, 960);
         try {
-            String[] viewP = ((String) applitoolsConfiguration.get(APPLITOOLS.VIEWPORT_SIZE)).split("x");
-            viewportSize = new RectangleSize(Integer.parseInt(viewP[0]), Integer.parseInt(viewP[1]));
+            String[] viewP = ((String) applitoolsConfiguration.get(APPLITOOLS.VIEWPORT_SIZE)).split(
+                    "x");
+            viewportSize = new RectangleSize(Integer.parseInt(viewP[0]),
+                                             Integer.parseInt(viewP[1]));
         } catch(NullPointerException e) {
-            LOGGER.info("Unable to get viewport size from Applitools configuration. Using default: 1280x960");
+            LOGGER.info(
+                    "Unable to get viewport size from Applitools configuration. Using default: 1280x960");
         }
         return viewportSize;
     }
 
     static boolean isBenchmarkingEnabled() {
-        return Boolean.parseBoolean(String.valueOf(applitoolsConfiguration.get(APPLITOOLS.ENABLE_BENCHMARK_PER_VALIDATION)));
+        return Boolean.parseBoolean(String.valueOf(
+                applitoolsConfiguration.get(APPLITOOLS.ENABLE_BENCHMARK_PER_VALIDATION)));
     }
 
     static boolean isDisableBrowserFetching() {
-        return Boolean.parseBoolean(String.valueOf(applitoolsConfiguration.get(APPLITOOLS.DISABLE_BROWSER_FETCHING)));
+        return Boolean.parseBoolean(
+                String.valueOf(applitoolsConfiguration.get(APPLITOOLS.DISABLE_BROWSER_FETCHING)));
+    }
+
+    public void cleanUpExecutionEnvironment() {
+        LOGGER.info("cleanUpExecutionEnvironment");
+        if(platform.equals(Platform.android)) {
+            if(configsBoolean.get(RUN_IN_CI)) {
+                DeviceSetup.cleanupCloudExecution();
+            } else {
+                LOGGER.info("Not running in CI. Nothing to cleanup in Execution environment");
+            }
+        } else {
+            LOGGER.info("Not running on android. Nothing to cleanup in Execution environment");
+        }
     }
 
     private void cleanupDirectories() {

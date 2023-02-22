@@ -24,28 +24,29 @@ public class ScreenShotManager {
     private int counter;
 
     public ScreenShotManager() {
-        context = SessionContext.getTestExecutionContext(Thread.currentThread()
-                                                               .getId());
+        context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         directoryPath = context.getTestStateAsString(TEST_CONTEXT.SCREENSHOT_DIRECTORY);
         counter = 0;
         File file = new File(directoryPath);
-        file.getParentFile()
-            .mkdirs();
+        file.getParentFile().mkdirs();
     }
 
     public void takeScreenShot(WebDriver innerDriver, String fileName) {
         if(null != innerDriver) {
             fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
-            LOGGER.info("The screenshot will be placed here : " + destinationFile.getAbsolutePath());
+            LOGGER.info(
+                    "The screenshot will be placed here : " + destinationFile.getAbsolutePath());
             try {
                 File screenshot = ((TakesScreenshot) innerDriver).getScreenshotAs(OutputType.FILE);
                 LOGGER.info("Original screenshot : " + screenshot.getAbsolutePath());
                 FileUtils.copyFile(screenshot, destinationFile);
-                LOGGER.info("The screenshot is available here : " + destinationFile.getAbsolutePath());
+                LOGGER.info(
+                        "The screenshot is available here : " + destinationFile.getAbsolutePath());
                 ReportPortal.emitLog(fileName, "DEBUG", new Date(), destinationFile);
             } catch(IOException | RuntimeException e) {
-                LOGGER.info("ERROR: Unable to save or upload screenshot: '" + destinationFile.getAbsolutePath() + "' or upload screenshot to ReportPortal\n");
+                LOGGER.info(
+                        "ERROR: Unable to save or upload screenshot: '" + destinationFile.getAbsolutePath() + "' or upload screenshot to ReportPortal\n");
                 LOGGER.info(ExceptionUtils.getStackTrace(e));
             }
         } else {
@@ -55,8 +56,7 @@ public class ScreenShotManager {
 
     private String normaliseScenarioName(String scenarioName) {
         return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_")
-                           .replaceAll("__", "_")
-                           .replaceAll("__", "_");
+                           .replaceAll("__", "_").replaceAll("__", "_");
     }
 
     private int getPrefix() {
