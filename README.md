@@ -7,11 +7,11 @@
 # Breaking changes in v0.0.72:
 
 ```mermaid
-graph TD;
+flowchart TD
   You do not need to retrieve the Drivers object from TestExecutionContext anymore. 
   To create/allocate a driver to the persona, simply call the method - [Drivers.createDriverFor(....)] 
   
-  allDrivers.createDriverFor(...) --> Drivers.createDriverFor(...);
+  A[allDrivers.createDriverFor(...)] -- has changed to --> B[Drivers.createDriverFor(...)]
 ```
 
 ```mermaid
