@@ -24,11 +24,11 @@ public class BrowserStackSetup {
     private static Local bsLocal;
 
     public static void updateBrowserStackCapabilities() {
-        String authenticationUser = configs.get(CLOUD_USER);
-        String authenticationKey = configs.get(CLOUD_KEY);
+        String authenticationUser = Setup.getFromConfigs(CLOUD_USER);
+        String authenticationKey = Setup.getFromConfigs(CLOUD_KEY);
         String platformName = platform.name();
-        String capabilityFile = configs.get(CAPS);
-        String appPath = new File(configs.get(APP_PATH)).getAbsolutePath();
+        String capabilityFile = Setup.getFromConfigs(CAPS);
+        String appPath = new File(Setup.getFromConfigs(APP_PATH)).getAbsolutePath();
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
@@ -45,7 +45,7 @@ public class BrowserStackSetup {
         loadedPlatformCapability.put("browserstack.user", authenticationUser);
         loadedPlatformCapability.put("browserstack.key", authenticationKey);
         String browserStackLocalIdentifier = Randomizer.randomize(10);
-        if(configsBoolean.get(CLOUD_USE_LOCAL_TESTING)) {
+        if(Setup.getBooleanValueFromConfigs(CLOUD_USE_LOCAL_TESTING)) {
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " +
                     "identified: '%s'",
@@ -56,9 +56,9 @@ public class BrowserStackSetup {
             loadedPlatformCapability.put("browserstack.localIdentifier",
                                          browserStackLocalIdentifier);
         }
-        String subsetOfLogDir = configs.get(LOG_DIR).replace("/", "").replace("\\", "");
-        loadedPlatformCapability.put("build", configs.get(LAUNCH_NAME) + "-" + subsetOfLogDir);
-        loadedPlatformCapability.put("project", configs.get(APP_NAME));
+        String subsetOfLogDir = Setup.getFromConfigs(LOG_DIR).replace("/", "").replace("\\", "");
+        loadedPlatformCapability.put("build", Setup.getFromConfigs(LAUNCH_NAME) + "-" + subsetOfLogDir);
+        loadedPlatformCapability.put("project", Setup.getFromConfigs(APP_NAME));
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey,
                                                 loadedCapabilityFile);
     }
@@ -67,7 +67,7 @@ public class BrowserStackSetup {
                                                    String authenticationKey, String appPath) {
         LOGGER.info("getAppIdFromBrowserStack: for " + appPath);
         String appIdFromBrowserStack;
-        if(configsBoolean.get(CLOUD_UPLOAD_APP)) {
+        if(Setup.getBooleanValueFromConfigs(CLOUD_UPLOAD_APP)) {
             appIdFromBrowserStack = uploadAPKToBrowserStack(
                     authenticationUser + ":" + authenticationKey, appPath);
         } else {
@@ -90,8 +90,8 @@ public class BrowserStackSetup {
         bsLocalArgs.put("verbose", "3");
         try {
             LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
-            if(configsBoolean.get(CLOUD_USE_PROXY)) {
-                String proxyUrl = configs.get(PROXY_URL);
+            if(Setup.getBooleanValueFromConfigs(CLOUD_USE_PROXY)) {
+                String proxyUrl = Setup.getFromConfigs(PROXY_URL);
                 URL url = new URL(proxyUrl);
                 String host = url.getHost();
                 int port = url.getPort() == -1 ? url.getDefaultPort() : url.getPort();
@@ -112,7 +112,7 @@ public class BrowserStackSetup {
     private static void updateBrowserStackDevicesInCapabilities(String authenticationUser,
                                                                 String authenticationKey,
                                                                 Map<String, Map> loadedCapabilityFile) {
-        String capabilityFile = configs.get(CAPS);
+        String capabilityFile = Setup.getFromConfigs(CAPS);
         String platformName = platform.name();
         ArrayList listOfAndroidDevices = new ArrayList();
 
@@ -128,10 +128,10 @@ public class BrowserStackSetup {
         filters.put("Os_version", platformVersion); // os versions
 
         List<BrowserStackDevice> availableDevices = BrowserStackDeviceFilter.getFilteredDevices(
-                authenticationUser, authenticationKey, filters, configs.get(LOG_DIR));
+                authenticationUser, authenticationKey, filters, Setup.getFromConfigs(LOG_DIR));
 
         int deviceCount = Math.min(availableDevices.size(),
-                                   configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS));
+                                   Setup.getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS));
         LOGGER.info(String.format("Adding '%d' available devices for executing on BrowserStack",
                                   deviceCount));
         for(int numDevices = 0; numDevices < deviceCount; numDevices++) {
@@ -160,7 +160,7 @@ public class BrowserStackSetup {
         String uploadedApkId = uploadResponse.get("app_url").getAsString();
         LOGGER.info(String.format("App: '%s' uploaded to BrowserStack. Response: '%s'", appPath,
                                   uploadResponse));
-        configs.put(APP_PATH, uploadedApkId);
+        Setup.addToConfigs(APP_PATH, uploadedApkId);
         return uploadedApkId;
     }
 
@@ -200,9 +200,9 @@ public class BrowserStackSetup {
     }
 
     private static void stopBrowserStackLocal() {
-        LOGGER.info("stopBrowserStackLocal: CLOUD_USE_LOCAL_TESTING=" + configsBoolean.get(
+        LOGGER.info("stopBrowserStackLocal: CLOUD_USE_LOCAL_TESTING=" + Setup.getBooleanValueFromConfigs(
                 CLOUD_USE_LOCAL_TESTING));
-        if(configsBoolean.get(CLOUD_USE_LOCAL_TESTING)) {
+        if(Setup.getBooleanValueFromConfigs(CLOUD_USE_LOCAL_TESTING)) {
             try {
                 LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
                 if(bsLocal.isRunning()) {

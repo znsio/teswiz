@@ -30,15 +30,15 @@ public class LocalDevicesSetup {
         if(numberOfDevicesForParallelExecution == 0) {
             throw new EnvironmentSetupException("No devices available to run the tests");
         }
-        Integer providedParallelCount = configsInteger.get(PARALLEL);
+        Integer providedParallelCount = Setup.getIntegerValueFromConfigs(PARALLEL);
         if(numberOfDevicesForParallelExecution < providedParallelCount) {
             throw new EnvironmentSetupException(String.format(
                     "Fewer devices (%d) available to run the tests in parallel (Expected more " +
                     "than: %d)",
                     numberOfDevicesForParallelExecution, providedParallelCount));
         }
-        configsInteger.put(PARALLEL, providedParallelCount);
-        configs.put(EXECUTED_ON, "Local Devices");
+        Setup.addIntegerValueToConfigs(PARALLEL, providedParallelCount);
+        Setup.addToConfigs(EXECUTED_ON, "Local Devices");
     }
 
     private static List<Device> setupLocalDevices() {
@@ -83,7 +83,7 @@ public class LocalDevicesSetup {
                 device.setOsVersion(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop",
                                                                        "ro.build.version.release"));
                 devices.add(device);
-                uninstallAppFromLocalDevice(device, configs.get(APP_PACKAGE_NAME));
+                uninstallAppFromLocalDevice(device, Setup.getFromConfigs(APP_PACKAGE_NAME));
             } catch(IOException | JadbException e) {
                 throw new EnvironmentSetupException("Unable to get devices information", e);
             }
@@ -111,7 +111,7 @@ public class LocalDevicesSetup {
                                                         APPIUM_SETTINGS};
         CommandLineExecutor.execCommand(uninstallAppiumSettings);
 
-        if(configsBoolean.get(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
+        if(Setup.getBooleanValueFromConfigs(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
             String[] uninstallApp = new String[]{"adb", "-s", device.getUdid(), "uninstall",
                                                  appPackageName};
             CommandLineExecutor.execCommand(uninstallApp);

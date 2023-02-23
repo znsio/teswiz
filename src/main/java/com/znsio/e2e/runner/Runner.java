@@ -38,12 +38,8 @@ public class Runner {
     public static final String INFO = "INFO";
     public static final String WARN = "WARN";
 
-    static final Map<String, String> configs = new HashMap<>();
-    static final Map<String, Boolean> configsBoolean = new HashMap<>();
-    static final Map<String, Integer> configsInteger = new HashMap<>();
     private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
     public static Platform platform = Platform.android;
-    private Setup setup;
 
     public Runner() {
         throw new InvalidTestDataException("Required args not provided to Runner");
@@ -55,8 +51,8 @@ public class Runner {
             throw new InvalidTestDataException(
                     String.format("Invalid path ('%s') provided for config", configFilePath));
         }
-        setup = new Setup(configFilePath);
-        List<String> cukeArgs = setup.getExecutionArguments();
+        Setup.load(configFilePath);
+        List<String> cukeArgs = Setup.getExecutionArguments();
         run(cukeArgs, stepDefDirName, featuresDirName);
     }
 
@@ -67,16 +63,16 @@ public class Runner {
         LOGGER.info("Begin running tests...");
         LOGGER.info("Args: " + args);
         String[] array = args.toArray(String[]::new);
-        String logDir = Runner.USER_DIRECTORY + File.separator + configs.get(
+        String logDir = Runner.USER_DIRECTORY + File.separator + Setup.getFromConfigs(
                 LOG_DIR) + File.separator + REPORTS_DIR;
         LOGGER.info(logDir);
         byte status = Main.run(array);
-        setup.cleanUpExecutionEnvironment();
+        Setup.cleanUpExecutionEnvironment();
         System.out.println(generateReport(logDir));
         System.exit(status);
     }
 
-    private String generateReport(String reportsDir) {
+    private static String generateReport(String reportsDir) {
         System.out.println("================================");
         System.out.println("Generating reports");
         System.out.println("================================");
@@ -94,7 +90,7 @@ public class Runner {
         });
         String richReportsPath = reportsDir + File.separator + "richReports";
         System.out.println("\tCreating rich reports: " + richReportsPath);
-        Configuration config = new Configuration(new File(richReportsPath), configs.get(APP_NAME));
+        Configuration config = new Configuration(new File(richReportsPath), Setup.getFromConfigs(APP_NAME));
 
         String tagsToExclude = System.getProperty(
                 TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT);
@@ -110,14 +106,14 @@ public class Runner {
                "/overview-features.html";
     }
 
-    private void addClassifications(Configuration config) {
-        config.addClassifications("Environment", configs.get(TARGET_ENVIRONMENT));
-        config.addClassifications("Platform", configs.get(PLATFORM));
-        config.addClassifications("Tags", configs.get(TAG));
-        config.addClassifications("RUN_IN_CI", String.valueOf(configsBoolean.get(RUN_IN_CI)));
-        config.addClassifications("IS_VISUAL", String.valueOf(configsBoolean.get(IS_VISUAL)));
-        config.addClassifications("CLOUD_NAME", configs.get(CLOUD_NAME));
-        config.addClassifications("EXECUTED_ON", configs.get(EXECUTED_ON));
+    private static void addClassifications(Configuration config) {
+        config.addClassifications("Environment", Setup.getFromConfigs(TARGET_ENVIRONMENT));
+        config.addClassifications("Platform", Setup.getFromConfigs(PLATFORM));
+        config.addClassifications("Tags", Setup.getFromConfigs(TAG));
+        config.addClassifications("RUN_IN_CI", Setup.getBooleanValueAsStringFromConfigs(RUN_IN_CI));
+        config.addClassifications("IS_VISUAL", Setup.getBooleanValueAsStringFromConfigs(IS_VISUAL));
+        config.addClassifications("CLOUD_NAME", Setup.getFromConfigs(CLOUD_NAME));
+        config.addClassifications("EXECUTED_ON", Setup.getFromConfigs(EXECUTED_ON));
     }
 
     public static Map getApplitoolsConfiguration() {
@@ -125,31 +121,31 @@ public class Runner {
     }
 
     public static String getCloudName() {
-        return configs.get(CLOUD_NAME);
+        return Setup.getFromConfigs(CLOUD_NAME);
     }
 
     public static String getCloudUser() {
-        return configs.get(CLOUD_USER);
+        return Setup.getFromConfigs(CLOUD_USER);
     }
 
     public static String getCloudKey() {
-        return configs.get(CLOUD_KEY);
+        return Setup.getFromConfigs(CLOUD_KEY);
     }
 
     public static String getRemoteDriverGridPort() {
-        return configs.get(REMOTE_WEBDRIVER_GRID_PORT);
+        return Setup.getFromConfigs(REMOTE_WEBDRIVER_GRID_PORT);
     }
 
     public static int getMaxNumberOfAppiumDrivers() {
-        return configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS);
+        return Setup.getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS);
     }
 
     public static int getMaxNumberOfWebDrivers() {
-        return configsInteger.get(MAX_NUMBER_OF_WEB_DRIVERS);
+        return Setup.getIntegerValueFromConfigs(MAX_NUMBER_OF_WEB_DRIVERS);
     }
 
     public static boolean isVisualTestingEnabled() {
-        return configsBoolean.get(IS_VISUAL);
+        return Setup.getBooleanValueFromConfigs(IS_VISUAL);
     }
 
     public static void remove(long threadId) {
@@ -158,7 +154,7 @@ public class Runner {
 
     public static String getFromEnvironmentConfiguration(String key) {
         try {
-            return String.valueOf(environmentConfiguration.get(key));
+            return Setup.getFromEnvironmentConfiguration(key);
         } catch(NullPointerException npe) {
             throw new InvalidTestDataException(
                     String.format("Invalid key name ('%s') provided", key), npe);
@@ -167,7 +163,7 @@ public class Runner {
 
     public static String getTestData(String key) {
         try {
-            return String.valueOf(testDataForEnvironment.get(key));
+            return Setup.getTestDataValueAsStringForEnvironmentFor(key);
         } catch(NullPointerException npe) {
             throw new InvalidTestDataException(
                     String.format("Invalid key name ('%s') provided", key), npe);
@@ -176,7 +172,7 @@ public class Runner {
 
     public static Map getTestDataAsMap(String key) {
         try {
-            return testDataForEnvironment.get(key);
+            return Setup.getTestDataAsMapForEnvironmentFor(key);
         } catch(NullPointerException npe) {
             throw new InvalidTestDataException(
                     String.format("Invalid key name ('%s') provided", key), npe);
@@ -240,40 +236,40 @@ public class Runner {
     }
 
     public static String getTargetEnvironment() {
-        return configs.get(TARGET_ENVIRONMENT);
+        return Setup.getFromConfigs(TARGET_ENVIRONMENT);
     }
 
     public static String getBaseURLForWeb() {
-        return configs.get(BASE_URL_FOR_WEB);
+        return Setup.getFromConfigs(BASE_URL_FOR_WEB);
     }
 
     public static String getAppPackageName() {
-        return configs.get(APP_PACKAGE_NAME);
+        return Setup.getFromConfigs(APP_PACKAGE_NAME);
     }
 
     public static boolean isRunningInCI() {
-        return configsBoolean.get(RUN_IN_CI);
+        return Setup.getBooleanValueFromConfigs(RUN_IN_CI);
     }
 
     public static String getBrowser() {
-        return configs.get(BROWSER);
+        return Setup.getFromConfigs(BROWSER);
     }
 
     public static String getProxyURL() {
-        String proxyURL = configs.get(PROXY_URL);
+        String proxyURL = Setup.getFromConfigs(PROXY_URL);
         LOGGER.info("Using proxyURL: " + proxyURL);
         return proxyURL;
     }
 
     public static String getWebDriverManagerProxyURL() {
-        String webDriverManagerProxyURL = configs.get(WEBDRIVER_MANAGER_PROXY_URL);
+        String webDriverManagerProxyURL = Setup.getFromConfigs(WEBDRIVER_MANAGER_PROXY_URL);
         LOGGER.info("webDriverManagerProxyURL: " + webDriverManagerProxyURL);
         return webDriverManagerProxyURL;
     }
 
     public static String getBrowserConfigFileContents() {
         InputStream inputStream;
-        String browserConfigFile = configs.get(BROWSER_CONFIG_FILE);
+        String browserConfigFile = Setup.getFromConfigs(BROWSER_CONFIG_FILE);
         try {
             if(browserConfigFile.contains("default")) {
                 inputStream = Runner.class.getResourceAsStream(DEFAULT_BROWSER_CONFIG_FILE);
@@ -285,12 +281,12 @@ public class Runner {
                     String.format("There was a problem while setting browser config file '%s'",
                                   browserConfigFile));
         }
-        configs.put(BROWSER_CONFIG_FILE_CONTENTS,
+        Setup.addToConfigs(BROWSER_CONFIG_FILE_CONTENTS,
                     new JSONObject(new JSONTokener(inputStream)).toString());
-        return configs.get(BROWSER_CONFIG_FILE_CONTENTS);
+        return Setup.getFromConfigs(BROWSER_CONFIG_FILE_CONTENTS);
     }
 
     public static String getBrowserConfigFile() {
-        return configs.get(BROWSER_CONFIG_FILE);
+        return Setup.getFromConfigs(BROWSER_CONFIG_FILE);
     }
 }

@@ -36,6 +36,9 @@ public class Setup {
     public static final String PLATFORM = "PLATFORM";
     public static final String APP_NAME = "APP_NAME";
     static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
+    private static final Map<String, String> configs = new HashMap<>();
+    private static final Map<String, Boolean> configsBoolean = new HashMap<>();
+    private static final Map<String, Integer> configsInteger = new HashMap<>();
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     static final String IS_VISUAL = "IS_VISUAL";
     static final String BROWSER = "BROWSER";
@@ -83,22 +86,26 @@ public class Setup {
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
-    static Map<String, Map> environmentConfiguration;
-    static Map<String, Map> testDataForEnvironment;
-    static Map applitoolsConfiguration = new HashMap<>();
-    private final Properties properties;
-    private final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
-    private final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
-    private final String configFilePath;
-    private final String BUILD_ID = "BUILD_ID";
+    private static Map<String, Map> environmentConfiguration;
+    private static Map<String, Map> testDataForEnvironment;
+    private static Map applitoolsConfiguration = new HashMap<>();
+    private static Properties properties;
+    private static final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
+    private static final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
+    private static String configFilePath;
+    private static final String BUILD_ID = "BUILD_ID";
 
-    Setup(String configFilePath) {
-        this.configFilePath = configFilePath;
-        properties = loadProperties(this.configFilePath);
+    private Setup() {
+        LOGGER.debug("Setup - private constructor");
+    }
+
+    public static void load(String providedConfigFilePath) {
+        configFilePath = providedConfigFilePath;
+        properties = loadProperties(configFilePath);
     }
 
     @NotNull
-    Properties loadProperties(String configFile) {
+    static Properties loadProperties(String configFile) {
         final Properties properties;
         try(InputStream input = new FileInputStream(configFile)) {
             properties = new Properties();
@@ -118,7 +125,7 @@ public class Setup {
         return curlProxyCommand;
     }
 
-    List<String> getExecutionArguments() {
+    static List<String> getExecutionArguments() {
         loadAndUpdateConfigParameters(configFilePath);
 
         setupDirectories();
@@ -140,12 +147,12 @@ public class Setup {
         return cukeArgs;
     }
 
-    void loadAndUpdateConfigParameters(String configFilePath) {
+    static void loadAndUpdateConfigParameters(String configFilePath) {
         configs.put(CONFIG_FILE, configFilePath);
         buildMapOfRequiredProperties();
     }
 
-    private void setupDirectories() {
+    private static void setupDirectories() {
         List<String> files = listOfDirectoriesToCreate();
         LOGGER.info("Create Directories: " + files);
         for(String file : files) {
@@ -158,7 +165,7 @@ public class Setup {
         }
     }
 
-    private void setLogPropertiesFile() {
+    private static void setLogPropertiesFile() {
         InputStream inputStream;
         try {
             if(properties.containsKey(LOG_PROPERTIES_FILE)) {
@@ -167,7 +174,7 @@ public class Setup {
                 inputStream = Files.newInputStream(logFilePath);
             } else {
                 configs.put(LOG_PROPERTIES_FILE, DEFAULT_LOG_PROPERTIES_FILE);
-                inputStream = getClass().getResourceAsStream(DEFAULT_LOG_PROPERTIES_FILE);
+                inputStream = Setup.class.getResourceAsStream(DEFAULT_LOG_PROPERTIES_FILE);
             }
             PropertyConfigurator.configure(inputStream);
         } catch(Exception e) {
@@ -176,7 +183,7 @@ public class Setup {
         }
     }
 
-    private void setBrowserConfigFilePath() {
+    private static void setBrowserConfigFilePath() {
         if(properties.containsKey(BROWSER_CONFIG_FILE)) {
             Path browserConfigFilePath = Paths.get(properties.get(BROWSER_CONFIG_FILE).toString());
             configs.put(BROWSER_CONFIG_FILE, browserConfigFilePath.toString());
@@ -189,7 +196,7 @@ public class Setup {
         }
     }
 
-    private void printLoadedConfigProperties(String configFilePath) {
+    private static void printLoadedConfigProperties(String configFilePath) {
         LOGGER.info("Loaded property file: " + configFilePath);
         final String[] propVars = {""};
         properties.forEach((k, v) -> propVars[0] += ("\t" + k + ":" + v + "\n"));
@@ -214,7 +221,7 @@ public class Setup {
                                                                 environment, testDataFile);
     }
 
-    private void setupExecutionEnvironment() {
+    private static void setupExecutionEnvironment() {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
         cukeArgs.addAll(DeviceSetup.setupAndroidExecution());
@@ -261,7 +268,7 @@ public class Setup {
     }
 
     @NotNull
-    private String printStringMap(String prefix, Map<String, String> printConfig) {
+    private static String printStringMap(String prefix, Map<String, String> printConfig) {
         StringBuilder printString = new StringBuilder(prefix + ": \n");
         for(Map.Entry<String, String> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
@@ -271,7 +278,7 @@ public class Setup {
     }
 
     @NotNull
-    private String printBooleanMap(String prefix, Map<String, Boolean> printConfig) {
+    private static String printBooleanMap(String prefix, Map<String, Boolean> printConfig) {
         StringBuilder printString = new StringBuilder(prefix + ": \n");
         for(Map.Entry<String, Boolean> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
@@ -281,7 +288,7 @@ public class Setup {
     }
 
     @NotNull
-    private String printIntegerMap(String prefix, Map<String, Integer> printConfig) {
+    private static String printIntegerMap(String prefix, Map<String, Integer> printConfig) {
         StringBuilder printString = new StringBuilder(prefix + ": \n");
         for(Map.Entry<String, Integer> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
@@ -290,7 +297,7 @@ public class Setup {
         return printString.toString() + printConfig;
     }
 
-    private void buildMapOfRequiredProperties() {
+    private static void buildMapOfRequiredProperties() {
         configs.put(APP_NAME, getOverriddenStringValue(APP_NAME,
                                                        getStringValueFromPropertiesIfAvailable(
                                                                APP_NAME, NOT_SET)));
@@ -409,14 +416,14 @@ public class Setup {
         configs.put(APP_VERSION, NOT_SET);
     }
 
-    private List<String> listOfDirectoriesToCreate() {
+    private static List<String> listOfDirectoriesToCreate() {
         List<String> files = new ArrayList<>();
         files.add(tempDirectory);
         files.add(configs.get(LOG_DIR));
         return files;
     }
 
-    private void getPlatformTagsAndLaunchName() {
+    private static void getPlatformTagsAndLaunchName() {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME) + " Automated Tests Report";
         if(configsBoolean.get(RUN_IN_CI)) {
@@ -467,7 +474,7 @@ public class Setup {
         cukeArgs.add(inferredTags);
     }
 
-    private void addCucumberPlugsToArgs() {
+    private static void addCucumberPlugsToArgs() {
         cukeArgs.add(PLUGIN);
         cukeArgs.add("pretty");
         cukeArgs.add(PLUGIN);
@@ -493,7 +500,7 @@ public class Setup {
         System.setProperty("cucumber.publish.quiet", "true");
     }
 
-    private ArrayList<String> setupWebExecution() {
+    private static ArrayList<String> setupWebExecution() {
         ArrayList<String> webCukeArgs = new ArrayList<>();
         if(platform.equals(Platform.web)) {
             configs.put(APP_PATH, configs.get(BROWSER));
@@ -540,11 +547,11 @@ public class Setup {
         return applitoolsConfiguration;
     }
 
-    private String getStringValueFromPropertiesIfAvailable(String key, String defaultValue) {
+    private static String getStringValueFromPropertiesIfAvailable(String key, String defaultValue) {
         return properties.getProperty(key, String.valueOf(defaultValue));
     }
 
-    private String getBranchNameUsingGitCommand() {
+    private static String getBranchNameUsingGitCommand() {
         String[] getBranchNameCommand = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(getBranchNameCommand);
         String branchName = response.getStdOut();
@@ -553,11 +560,12 @@ public class Setup {
         return branchName;
     }
 
-    private boolean getBooleanValueFromPropertiesIfAvailable(String key, boolean defaultValue) {
+    private static boolean getBooleanValueFromPropertiesIfAvailable(String key,
+                                                                    boolean defaultValue) {
         return Boolean.parseBoolean(properties.getProperty(key, String.valueOf(defaultValue)));
     }
 
-    private String getCustomTags() {
+    private static String getCustomTags() {
         String customTags = "@" + platform + " and not @wip";
         String providedTags = configs.get(TAG);
         if(!providedTags.equalsIgnoreCase(NOT_SET)) {
@@ -624,7 +632,7 @@ public class Setup {
                 String.valueOf(applitoolsConfiguration.get(APPLITOOLS.DISABLE_BROWSER_FETCHING)));
     }
 
-    public void cleanUpExecutionEnvironment() {
+    public static void cleanUpExecutionEnvironment() {
         LOGGER.info("cleanUpExecutionEnvironment");
         if(platform.equals(Platform.android)) {
             if(configsBoolean.get(RUN_IN_CI)) {
@@ -635,6 +643,46 @@ public class Setup {
         } else {
             LOGGER.info("Not running on android. Nothing to cleanup in Execution environment");
         }
+    }
+
+    static String getFromEnvironmentConfiguration(String key) {
+        return String.valueOf(environmentConfiguration.get(key));
+    }
+
+    static String getFromConfigs(String key) {
+        return configs.get(key);
+    }
+
+    static String getBooleanValueAsStringFromConfigs(String key) {
+        return String.valueOf(configsBoolean.get(key));
+    }
+
+    static boolean getBooleanValueFromConfigs(String key) {
+        return configsBoolean.get(key);
+    }
+
+    static void addToConfigs(String key, String value) {
+        configs.put(key, value);
+    }
+
+    static int getIntegerValueFromConfigs(String key) {
+        return configsInteger.get(key);
+    }
+
+    static String getIntegerValueAsStringFromConfigs(String key) {
+        return String.valueOf(configsInteger.get(key));
+    }
+
+    static void addIntegerValueToConfigs(String key, Integer value) {
+        configsInteger.put(key, value);
+    }
+
+    static String getTestDataValueAsStringForEnvironmentFor(String key) {
+        return String.valueOf(testDataForEnvironment.get(key));
+    }
+
+    static Map getTestDataAsMapForEnvironmentFor(String key) {
+        return testDataForEnvironment.get(key);
     }
 
     private void cleanupDirectories() {

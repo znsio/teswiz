@@ -5,6 +5,7 @@ import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.tools.JsonFile;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
+import io.cucumber.java.eo.Se;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +36,7 @@ public class DeviceSetup {
 
         String updatedCapabilitiesFile = getPathForFileInLogDir(capabilityFile);
         JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitiesFile);
-        configs.put(CAPS, updatedCapabilitiesFile);
+        Setup.addToConfigs(CAPS, updatedCapabilitiesFile);
     }
 
     static String getPathForFileInLogDir(String fullFilePath) {
@@ -42,7 +44,7 @@ public class DeviceSetup {
         Path path = Paths.get(fullFilePath);
         String fileName = path.getFileName().toString();
         String newFileName = new File(
-                configs.get(LOG_DIR) + File.separator + fileName).getAbsolutePath();
+                Setup.getFromConfigs(LOG_DIR) + File.separator + fileName).getAbsolutePath();
         LOGGER.info("\tNew file available here: " + newFileName);
         return newFileName;
     }
@@ -52,13 +54,13 @@ public class DeviceSetup {
         if(platform.equals(Platform.android)) {
             verifyAppExistsAtMentionedPath();
             fetchAndroidAppVersion();
-            if(configsBoolean.get(RUN_IN_CI)) {
+            if(Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
                 LocalDevicesSetup.setupLocalExecution();
             }
             androidCukeArgs.add("--threads");
-            androidCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
+            androidCukeArgs.add(Setup.getIntegerValueAsStringFromConfigs(PARALLEL));
             androidCukeArgs.add(PLUGIN);
             androidCukeArgs.add("com.cucumber.listener.CucumberScenarioListener");
             androidCukeArgs.add(PLUGIN);
@@ -68,12 +70,12 @@ public class DeviceSetup {
     }
 
     static void verifyAppExistsAtMentionedPath() {
-        String appPath = String.valueOf(configs.get(APP_PATH));
+        String appPath = Setup.getFromConfigs(APP_PATH);
         LOGGER.info("Update path to Apk: " + appPath);
         if(appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
-            configs.put(APP_PATH, appPath);
-            String capabilitiesFileName = configs.get(CAPS);
+            Setup.addToConfigs(APP_PATH, appPath);
+            String capabilitiesFileName = Setup.getFromConfigs(CAPS);
             checkIfAppExistsAtTheMentionedPath(appPath, capabilitiesFileName);
         } else {
             LOGGER.info("\tUsing AppPath provided as environment variable -  " + appPath);
@@ -89,7 +91,7 @@ public class DeviceSetup {
         }
 
         try {
-            File appFile = new File(String.valueOf(configs.get(APP_PATH)));
+            File appFile = new File(Setup.getFromConfigs(APP_PATH));
             String appFilePath = appFile.getCanonicalPath();
             String androidHomePath = System.getenv("ANDROID_HOME");
             File buildToolsFolder = new File(androidHomePath, "build-tools");
@@ -123,11 +125,11 @@ public class DeviceSetup {
                 throw new InvalidTestDataException(
                         String.format("Provided cloudName: '%s' is not supported", cloudName));
         }
-        configs.put(EXECUTED_ON, cloudName);
+        Setup.addToConfigs(EXECUTED_ON, cloudName);
     }
 
     private static String getAppPathFromCapabilities() {
-        String capabilityFile = configs.get(CAPS);
+        String capabilityFile = Setup.getFromConfigs(CAPS);
         return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
                                                          new String[]{platform.name(), "app",
                                                                       "local"});
@@ -158,7 +160,7 @@ public class DeviceSetup {
         if(!(null == commandOutput || commandOutput.isEmpty())) {
             Matcher matcher = pattern.matcher(commandOutput);
             if(matcher.find()) {
-                configs.put(APP_VERSION, matcher.group(1));
+                Setup.addToConfigs(APP_VERSION, matcher.group(1));
                 LOGGER.info("APP_VERSION: " + matcher.group(1));
             }
         } else {
@@ -167,7 +169,7 @@ public class DeviceSetup {
     }
 
     private static String getCloudNameFromCapabilities() {
-        String capabilityFile = configs.get(CAPS);
+        String capabilityFile = Setup.getFromConfigs(CAPS);
         ArrayList<Map> hostMachines = JsonFile.getNodeValueAsArrayListFromJsonFile(capabilityFile,
                                                                                    "hostMachines");
         return String.valueOf(hostMachines.get(0).get("cloudName"));
@@ -182,7 +184,7 @@ public class DeviceSetup {
             windowsCukeArgs.add("com.cucumber.listener.CucumberScenarioListener");
             windowsCukeArgs.add(PLUGIN);
             windowsCukeArgs.add("com.cucumber.listener.CucumberScenarioReporterListener");
-            configs.put(EXECUTED_ON, "Local Desktop Apps");
+            Setup.addToConfigs(EXECUTED_ON, "Local Desktop Apps");
         }
         return windowsCukeArgs;
     }
@@ -191,7 +193,7 @@ public class DeviceSetup {
         Pattern VERSION_NAME_PATTERN = Pattern.compile("Version=([0-9]+(\\.[0-9]+)+)",
                                                        Pattern.MULTILINE);
         try {
-            File appFile = new File(String.valueOf(configs.get(APP_PATH)));
+            File appFile = new File(Setup.getFromConfigs(APP_PATH));
             String nameVariable = "name=\"" + appFile.getCanonicalPath()
                                                      .replace("\\", "\\\\") + "\"";
             String[] commandToGetAppVersion = new String[]{"wmic", "datafile", "where",

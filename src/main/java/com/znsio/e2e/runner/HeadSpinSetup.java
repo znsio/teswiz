@@ -22,21 +22,21 @@ public class HeadSpinSetup {
 
 
     static void updateHeadspinCapabilities() {
-        String authenticationKey = configs.get(CLOUD_KEY);
+        String authenticationKey = Setup.getFromConfigs(CLOUD_KEY);
         String platformName = platform.name();
-        String capabilityFile = configs.get(CAPS);
-        String appPath = configs.get(APP_PATH);
+        String capabilityFile = Setup.getFromConfigs(CAPS);
+        String appPath = Setup.getFromConfigs(APP_PATH);
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
         String appIdFromHeadspin;
-        if(configsBoolean.get(CLOUD_UPLOAD_APP)) {
+        if(Setup.getBooleanValueFromConfigs(CLOUD_UPLOAD_APP)) {
             appIdFromHeadspin = uploadAPKToHeadspin(authenticationKey, appPath);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
             appIdFromHeadspin = getAppIdFromHeadspin(authenticationKey,
-                                                     configs.get(APP_PACKAGE_NAME));
+                                                     Setup.getFromConfigs(APP_PACKAGE_NAME));
         }
         LOGGER.info("Using appId: " + appIdFromHeadspin);
         loadedPlatformCapability.put("headspin:appId", appIdFromHeadspin);
@@ -58,7 +58,7 @@ public class HeadSpinSetup {
 
     private static String uploadAPKToHeadspin(String authenticationKey, String appPath) {
         LOGGER.info(String.format("uploadAPKToHeadspin for: '%s'%n", authenticationKey));
-        String deviceLabURL = configs.get(DEVICE_LAB_URL);
+        String deviceLabURL = Setup.getFromConfigs(DEVICE_LAB_URL);
 
         String[] curlCommand = new String[]{
                 "curl --insecure " + getCurlProxyCommand() + " -X POST ",
@@ -76,7 +76,7 @@ public class HeadSpinSetup {
         JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey);
         JsonObject uploadedAppDetails = listOfAppPackages.getAsJsonObject(uploadedApkId);
         String uploadedAppName = uploadedAppDetails.get("app_name").getAsString();
-        configs.put(APP_PATH, uploadedAppName);
+        Setup.addToConfigs(APP_PATH, uploadedAppName);
         return uploadedApkId;
     }
 
@@ -99,10 +99,10 @@ public class HeadSpinSetup {
     }
 
     static void updateCapabilities(Map<String, Map> loadedCapabilityFile) {
-        String capabilityFile = configs.get(CAPS);
+        String capabilityFile = Setup.getFromConfigs(CAPS);
         String platformName = platform.name();
         ArrayList listOfAndroidDevices = new ArrayList();
-        for(int numDevices = 0; numDevices < configsInteger.get(MAX_NUMBER_OF_APPIUM_DRIVERS);
+        for(int numDevices = 0; numDevices < Setup.getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS);
             numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", String.valueOf(
@@ -116,7 +116,7 @@ public class HeadSpinSetup {
     }
 
     private static JsonObject getListOfAppPackagesFromHeadSpin(String authenticationKey) {
-        String deviceLabURL = configs.get(DEVICE_LAB_URL);
+        String deviceLabURL = Setup.getFromConfigs(DEVICE_LAB_URL);
         String[] curlCommand = new String[]{"curl --insecure", getCurlProxyCommand(),
                                             "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apks"};
         CommandLineResponse listOfUploadedFilesInHeadspinResponse = CommandLineExecutor.execCommand(
@@ -143,7 +143,7 @@ public class HeadSpinSetup {
                 if(retrievedAppPackage.equals(appPackageName)) {
                     LOGGER.info("\tThis file is available in Device Farm: " + appId);
                     uploadedAppId.set(appId);
-                    configs.put(APP_PATH, appInfoAsJson.get("app_name").getAsString());
+                    Setup.addToConfigs(APP_PATH, appInfoAsJson.get("app_name").getAsString());
                 }
             }
         });
