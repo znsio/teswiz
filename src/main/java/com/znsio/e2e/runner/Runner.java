@@ -22,7 +22,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static com.znsio.e2e.runner.Setup.*;
 
@@ -53,10 +56,6 @@ public class Runner {
         Setup.load(configFilePath);
         List<String> cukeArgs = Setup.getExecutionArguments();
         run(cukeArgs, stepDefDirName, featuresDirName);
-    }
-
-    public static Platform getPlatform() {
-        return Setup.getPlatform();
     }
 
     public void run(List<String> args, String stepDefsDir, String featuresDir) {
@@ -93,7 +92,8 @@ public class Runner {
         });
         String richReportsPath = reportsDir + File.separator + "richReports";
         System.out.println("\tCreating rich reports: " + richReportsPath);
-        Configuration config = new Configuration(new File(richReportsPath), Setup.getFromConfigs(APP_NAME));
+        Configuration config = new Configuration(new File(richReportsPath),
+                                                 Setup.getFromConfigs(APP_NAME));
 
         String tagsToExclude = System.getProperty(
                 TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT);
@@ -105,8 +105,7 @@ public class Runner {
         ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
         reportBuilder.generateReports();
         return "Reports available here: " + config.getReportDirectory()
-                                                  .getAbsolutePath() + "/cucumber-html-reports" +
-               "/overview-features.html";
+                                                  .getAbsolutePath() + "/cucumber-html-reports" + "/overview-features.html";
     }
 
     private static void addClassifications(Configuration config) {
@@ -117,6 +116,10 @@ public class Runner {
         config.addClassifications("IS_VISUAL", Setup.getBooleanValueAsStringFromConfigs(IS_VISUAL));
         config.addClassifications("CLOUD_NAME", Setup.getFromConfigs(CLOUD_NAME));
         config.addClassifications("EXECUTED_ON", Setup.getFromConfigs(EXECUTED_ON));
+    }
+
+    public static Platform getPlatform() {
+        return Setup.getPlatform();
     }
 
     public static Map getApplitoolsConfiguration() {
@@ -285,7 +288,7 @@ public class Runner {
                                   browserConfigFile));
         }
         Setup.addToConfigs(BROWSER_CONFIG_FILE_CONTENTS,
-                    new JSONObject(new JSONTokener(inputStream)).toString());
+                           new JSONObject(new JSONTokener(inputStream)).toString());
         return Setup.getFromConfigs(BROWSER_CONFIG_FILE_CONTENTS);
     }
 

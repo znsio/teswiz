@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.znsio.e2e.runner.Runner.*;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class LocalDevicesSetup {
@@ -33,8 +32,7 @@ public class LocalDevicesSetup {
         Integer providedParallelCount = Setup.getIntegerValueFromConfigs(PARALLEL);
         if(numberOfDevicesForParallelExecution < providedParallelCount) {
             throw new EnvironmentSetupException(String.format(
-                    "Fewer devices (%d) available to run the tests in parallel (Expected more " +
-                    "than: %d)",
+                    "Fewer devices (%d) available to run the tests in parallel (Expected more " + "than: %d)",
                     numberOfDevicesForParallelExecution, providedParallelCount));
         }
         Setup.addIntegerValueToConfigs(PARALLEL, providedParallelCount);
@@ -117,7 +115,8 @@ public class LocalDevicesSetup {
             CommandLineExecutor.execCommand(uninstallApp);
         } else {
             LOGGER.info(
-                    "skipping uninstalling of apk as the flag CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = false");
+                    "skipping uninstalling of apk as the flag " +
+                    "CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION = false");
         }
     }
 

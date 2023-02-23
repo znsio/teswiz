@@ -36,9 +36,6 @@ public class Setup {
     public static final String PLATFORM = "PLATFORM";
     public static final String APP_NAME = "APP_NAME";
     static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
-    private static final Map<String, String> configs = new HashMap<>();
-    private static final Map<String, Boolean> configsBoolean = new HashMap<>();
-    private static final Map<String, Integer> configsInteger = new HashMap<>();
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     static final String IS_VISUAL = "IS_VISUAL";
     static final String BROWSER = "BROWSER";
@@ -70,6 +67,9 @@ public class Setup {
     final static String REPORTS_DIR = "reports";
     static final String CLOUD_USE_PROXY = "CLOUD_USE_PROXY";
     static final String CLOUD_USE_LOCAL_TESTING = "CLOUD_USE_LOCAL_TESTING";
+    private static final Map<String, String> configs = new HashMap<>();
+    private static final Map<String, Boolean> configsBoolean = new HashMap<>();
+    private static final Map<String, Integer> configsInteger = new HashMap<>();
     private static final String CHROME = "chrome";
     private static final String tempDirectory = "temp";
     private static final Platform DEFAULT_PLATFORM = Platform.android;
@@ -86,14 +86,14 @@ public class Setup {
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
+    private static final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
+    private static final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
+    private static final String BUILD_ID = "BUILD_ID";
     private static Map<String, Map> environmentConfiguration;
     private static Map<String, Map> testDataForEnvironment;
     private static Map applitoolsConfiguration = new HashMap<>();
     private static Properties properties;
-    private static final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
-    private static final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private static String configFilePath;
-    private static final String BUILD_ID = "BUILD_ID";
     private static Platform platform = Platform.android;
 
 
@@ -465,8 +465,8 @@ public class Setup {
         launchName += " " + configs.get(LAUNCH_NAME_SUFFIX);
 
         LOGGER.info(
-                "\tRunning tests with platform: " + platform + " and the following tag criteria :" +
-                " " + inferredTags);
+                "\tRunning tests with platform: " + platform + " and the following tag criteria " +
+                ":" + " " + inferredTags);
         LOGGER.info("\tReportPortal Tests Launch name: " + launchName);
 
         configs.put(PLATFORM, platform.name());
@@ -482,20 +482,19 @@ public class Setup {
         cukeArgs.add(PLUGIN);
         String logDir = configs.get(LOG_DIR);
         cukeArgs.add(
-                "html:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-html" +
-                "-report.html");
+                "html:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-html"
+                + "-report.html");
         cukeArgs.add(PLUGIN);
         cukeArgs.add(
                 "junit:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber" +
                 "-junit-report.xml");
         cukeArgs.add(PLUGIN);
         cukeArgs.add(
-                "json:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-json" +
-                "-report.json");
+                "json:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-json"
+                + "-report.json");
         cukeArgs.add(PLUGIN);
         cukeArgs.add(
-                "message:" + logDir + File.separator + REPORTS_DIR + File.separator + "results" +
-                ".ndjson");
+                "message:" + logDir + File.separator + REPORTS_DIR + File.separator + "results" + ".ndjson");
         cukeArgs.add(PLUGIN);
         cukeArgs.add(
                 "timeline:" + logDir + File.separator + REPORTS_DIR + File.separator + "timeline");
@@ -619,7 +618,8 @@ public class Setup {
                                              Integer.parseInt(viewP[1]));
         } catch(NullPointerException e) {
             LOGGER.info(
-                    "Unable to get viewport size from Applitools configuration. Using default: 1280x960");
+                    "Unable to get viewport size from Applitools configuration. Using default: " +
+                    "1280x960");
         }
         return viewportSize;
     }

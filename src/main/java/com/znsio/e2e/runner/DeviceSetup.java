@@ -5,7 +5,6 @@ import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.tools.JsonFile;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
-import io.cucumber.java.eo.Se;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -16,11 +15,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.znsio.e2e.runner.Runner.*;
+import static com.znsio.e2e.runner.Runner.NOT_SET;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class DeviceSetup {
@@ -131,8 +129,8 @@ public class DeviceSetup {
     private static String getAppPathFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
-                                                         new String[]{Setup.getPlatform().name(), "app",
-                                                                      "local"});
+                                                         new String[]{Setup.getPlatform().name(),
+                                                                      "app", "local"});
     }
 
     private static void checkIfAppExistsAtTheMentionedPath(String appPath,
@@ -143,8 +141,8 @@ public class DeviceSetup {
         } else {
             if(Files.exists(Paths.get(appPath))) {
                 LOGGER.info(
-                        "\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName + "::" +
-                        " " + Setup.getPlatform());
+                        "\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName +
+                        "::" + " " + Setup.getPlatform());
             } else {
                 LOGGER.info("\tAppPath: " + appPath + " not found!");
                 throw new InvalidTestDataException(

@@ -16,7 +16,6 @@ import java.net.URL;
 import java.util.*;
 
 import static com.znsio.e2e.runner.DeviceSetup.saveNewCapabilitiesFile;
-import static com.znsio.e2e.runner.Runner.*;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class BrowserStackSetup {
@@ -47,8 +46,7 @@ public class BrowserStackSetup {
         String browserStackLocalIdentifier = Randomizer.randomize(10);
         if(Setup.getBooleanValueFromConfigs(CLOUD_USE_LOCAL_TESTING)) {
             LOGGER.info(String.format(
-                    "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " +
-                    "identified: '%s'",
+                    "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
                     browserStackLocalIdentifier));
             BrowserStackSetup.startBrowserStackLocal(authenticationKey,
                                                      browserStackLocalIdentifier);
@@ -57,7 +55,8 @@ public class BrowserStackSetup {
                                          browserStackLocalIdentifier);
         }
         String subsetOfLogDir = Setup.getFromConfigs(LOG_DIR).replace("/", "").replace("\\", "");
-        loadedPlatformCapability.put("build", Setup.getFromConfigs(LAUNCH_NAME) + "-" + subsetOfLogDir);
+        loadedPlatformCapability.put("build",
+                                     Setup.getFromConfigs(LAUNCH_NAME) + "-" + subsetOfLogDir);
         loadedPlatformCapability.put("project", Setup.getFromConfigs(APP_NAME));
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey,
                                                 loadedCapabilityFile);
@@ -200,8 +199,9 @@ public class BrowserStackSetup {
     }
 
     private static void stopBrowserStackLocal() {
-        LOGGER.info("stopBrowserStackLocal: CLOUD_USE_LOCAL_TESTING=" + Setup.getBooleanValueFromConfigs(
-                CLOUD_USE_LOCAL_TESTING));
+        LOGGER.info(
+                "stopBrowserStackLocal: CLOUD_USE_LOCAL_TESTING=" + Setup.getBooleanValueFromConfigs(
+                        CLOUD_USE_LOCAL_TESTING));
         if(Setup.getBooleanValueFromConfigs(CLOUD_USE_LOCAL_TESTING)) {
             try {
                 LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());

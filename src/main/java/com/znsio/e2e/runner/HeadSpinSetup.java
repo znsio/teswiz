@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.znsio.e2e.runner.DeviceSetup.saveNewCapabilitiesFile;
-import static com.znsio.e2e.runner.Runner.*;
+import static com.znsio.e2e.runner.Runner.NOT_SET;
 import static com.znsio.e2e.runner.Setup.*;
 
 public class HeadSpinSetup {
@@ -102,7 +102,8 @@ public class HeadSpinSetup {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         String platformName = Setup.getPlatform().name();
         ArrayList listOfAndroidDevices = new ArrayList();
-        for(int numDevices = 0; numDevices < Setup.getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS);
+        for(int numDevices = 0;
+            numDevices < Setup.getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS);
             numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", String.valueOf(
