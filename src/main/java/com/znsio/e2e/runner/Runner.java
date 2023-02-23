@@ -9,9 +9,6 @@ import com.znsio.e2e.tools.Driver;
 import com.znsio.e2e.tools.Drivers;
 import com.znsio.e2e.tools.Visual;
 import io.cucumber.core.cli.Main;
-import net.masterthought.cucumber.Configuration;
-import net.masterthought.cucumber.ReportBuilder;
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
@@ -22,8 +19,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +37,7 @@ public class Runner {
     public static final String WARN = "WARN";
 
     private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
+    private static final String INVALID_KEY_MESSAGE = "Invalid key name ('%s') provided";
 
     public Runner() {
         throw new InvalidTestDataException("Required args not provided to Runner");
@@ -70,52 +66,8 @@ public class Runner {
         LOGGER.info(logDir);
         byte status = Main.run(array);
         Setup.cleanUpExecutionEnvironment();
-        System.out.println(generateReport(logDir));
+        LOGGER.info(CustomReports.generateReport(logDir));
         System.exit(status);
-    }
-
-    private static String generateReport(String reportsDir) {
-        System.out.println("================================");
-        System.out.println("Generating reports");
-        System.out.println("================================");
-        Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsDir), new String[]{"json"},
-                                                         true);
-        System.out.println(
-                String.format("\tFound '%s' result files for processing", jsonFiles.size()));
-        if(jsonFiles.size() == 0) {
-            return "Reports not generated";
-        }
-        List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
-        jsonFiles.forEach(file -> {
-            System.out.println("\tProcessing result file: " + file.getAbsolutePath());
-            jsonPaths.add(file.getAbsolutePath());
-        });
-        String richReportsPath = reportsDir + File.separator + "richReports";
-        System.out.println("\tCreating rich reports: " + richReportsPath);
-        Configuration config = new Configuration(new File(richReportsPath),
-                                                 Setup.getFromConfigs(APP_NAME));
-
-        String tagsToExclude = System.getProperty(
-                TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT);
-        if(null != tagsToExclude) {
-            config.setTagsToExcludeFromChart(tagsToExclude.trim().split(","));
-        }
-        addClassifications(config);
-
-        ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
-        reportBuilder.generateReports();
-        return "Reports available here: " + config.getReportDirectory()
-                                                  .getAbsolutePath() + "/cucumber-html-reports" + "/overview-features.html";
-    }
-
-    private static void addClassifications(Configuration config) {
-        config.addClassifications("Environment", Setup.getFromConfigs(TARGET_ENVIRONMENT));
-        config.addClassifications("Platform", Setup.getFromConfigs(PLATFORM));
-        config.addClassifications("Tags", Setup.getFromConfigs(TAG));
-        config.addClassifications("RUN_IN_CI", Setup.getBooleanValueAsStringFromConfigs(RUN_IN_CI));
-        config.addClassifications("IS_VISUAL", Setup.getBooleanValueAsStringFromConfigs(IS_VISUAL));
-        config.addClassifications("CLOUD_NAME", Setup.getFromConfigs(CLOUD_NAME));
-        config.addClassifications("EXECUTED_ON", Setup.getFromConfigs(EXECUTED_ON));
     }
 
     public static Platform getPlatform() {
@@ -163,7 +115,7 @@ public class Runner {
             return Setup.getFromEnvironmentConfiguration(key);
         } catch(NullPointerException npe) {
             throw new InvalidTestDataException(
-                    String.format("Invalid key name ('%s') provided", key), npe);
+                    String.format(INVALID_KEY_MESSAGE, key), npe);
         }
     }
 
@@ -172,16 +124,16 @@ public class Runner {
             return Setup.getTestDataValueAsStringForEnvironmentFor(key);
         } catch(NullPointerException npe) {
             throw new InvalidTestDataException(
-                    String.format("Invalid key name ('%s') provided", key), npe);
+                    String.format(INVALID_KEY_MESSAGE, key), npe);
         }
     }
 
-    public static Map getTestDataAsMap(String key) {
+    public static Map<String, Object> getTestDataAsMap(String key) {
         try {
             return Setup.getTestDataAsMapForEnvironmentFor(key);
         } catch(NullPointerException npe) {
             throw new InvalidTestDataException(
-                    String.format("Invalid key name ('%s') provided", key), npe);
+                    String.format(INVALID_KEY_MESSAGE, key), npe);
         }
     }
 
@@ -277,7 +229,7 @@ public class Runner {
         InputStream inputStream;
         String browserConfigFile = Setup.getFromConfigs(BROWSER_CONFIG_FILE);
         try {
-            if(browserConfigFile.contains("default")) {
+            if(browserConfigFile.contains(DEFAULT)) {
                 inputStream = Runner.class.getResourceAsStream(DEFAULT_BROWSER_CONFIG_FILE);
             } else {
                 inputStream = Files.newInputStream(Paths.get(browserConfigFile));
