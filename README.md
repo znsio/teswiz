@@ -8,17 +8,19 @@
 
 ```mermaid
 flowchart LR
-  id(You do not need to retrieve the Drivers object from TestExecutionContext anymore. To create/allocate a driver to the persona, simply call the method - Drivers.createDriverFor(....)) 
+  You do not need to retrieve the Drivers object from TestExecutionContext anymore. 
+  To create/allocate a driver to the persona, simply call the method - [Drivers.createDriverFor(....)] 
 ```
+
 ```mermaid
-flowchart LR;
-  id1(Runner.platform)--is now changed to---id2(Runner.getPlatform());
+flowchart LR
+  [Runner.platform]--is now changed to---id2(Runner.getPlatform());
   style id1 fill:#f9f
   style id2 fill:#bbf
 ```
 ```mermaid
 flowchart LR;
-  id1(Runner.platform)--is now changed to---id2(Runner.getPlatform());
+  [Runner.platform] -->|is now changed to| [Runner.getPlatform()]
   style id1 fill:#f9f
   style id2 fill:#bbf
 ```
