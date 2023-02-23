@@ -1,4 +1,4 @@
-package com.znsio.e2e.tools;
+package com.znsio.e2e.runner;
 
 import com.appium.manager.AppiumDevice;
 import com.appium.manager.DeviceAllocationManager;
@@ -10,7 +10,6 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
-import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;

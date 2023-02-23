@@ -1,7 +1,7 @@
 package com.znsio.sample.e2e.screen.web.theapp;
 
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Visual;
+import com.znsio.e2e.runner.Driver;
+import com.znsio.e2e.runner.Visual;
 import com.znsio.sample.e2e.screen.theapp.AppLaunchScreen;
 import com.znsio.sample.e2e.screen.theapp.ClipboardDemoScreen;
 import com.znsio.sample.e2e.screen.theapp.EchoScreen;

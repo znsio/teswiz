@@ -5,7 +5,7 @@ import com.context.TestExecutionContext;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.runner.Runner;
-import com.znsio.e2e.tools.Drivers;
+import com.znsio.e2e.runner.Drivers;
 import com.znsio.sample.e2e.businessLayer.jiomeet.AuthBL;
 import com.znsio.sample.e2e.businessLayer.jiomeet.InAMeetingBL;
 import com.znsio.sample.e2e.businessLayer.jiomeet.JoinAMeetingBL;

@@ -1,4 +1,4 @@
-package com.znsio.e2e.tools;
+package com.znsio.e2e.runner;
 
 import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
@@ -6,7 +6,8 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.EnvironmentSetupException;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
-import com.znsio.e2e.runner.Runner;
+import com.znsio.e2e.tools.JsonFile;
+import com.znsio.e2e.tools.JsonSchemaValidator;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;

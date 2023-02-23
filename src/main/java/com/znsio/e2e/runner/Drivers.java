@@ -1,10 +1,9 @@
-package com.znsio.e2e.tools;
+package com.znsio.e2e.runner;
 
 import com.context.TestExecutionContext;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
-import com.znsio.e2e.runner.Runner;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.Capabilities;
 

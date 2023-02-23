@@ -2,8 +2,8 @@ package com.znsio.sample.e2e.screen.jiomeet;
 
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.runner.Runner;
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Visual;
+import com.znsio.e2e.runner.Driver;
+import com.znsio.e2e.runner.Visual;
 import com.znsio.sample.e2e.screen.android.jiomeet.LandingScreenAndroid;
 import com.znsio.sample.e2e.screen.web.jiomeet.LandingScreenWeb;
 import org.apache.commons.lang3.NotImplementedException;

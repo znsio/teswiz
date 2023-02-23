@@ -1,8 +1,8 @@
 package com.znsio.sample.e2e.screen.web.jiomeet;
 
 import com.applitools.eyes.selenium.fluent.Target;
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Visual;
+import com.znsio.e2e.runner.Driver;
+import com.znsio.e2e.runner.Visual;
 import com.znsio.sample.e2e.screen.jiomeet.InAMeetingScreen;
 import com.znsio.sample.e2e.screen.jiomeet.LandingScreen;
 import com.znsio.sample.e2e.screen.jiomeet.SignInScreen;

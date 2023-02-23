@@ -3,9 +3,8 @@ package com.znsio.sample.e2e.steps;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.e2e.entities.Platform;
-import com.znsio.e2e.tools.Drivers;
+import com.znsio.e2e.runner.Drivers;
 import com.znsio.sample.e2e.businessLayer.search.SearchBL;
-import com.znsio.sample.e2e.entities.SAMPLE_TEST_CONTEXT;
 import io.cucumber.java.en.When;
 import org.apache.log4j.Logger;
 

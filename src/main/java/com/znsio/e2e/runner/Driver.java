@@ -1,9 +1,8 @@
-package com.znsio.e2e.tools;
+package com.znsio.e2e.runner;
 
 import com.google.common.collect.ImmutableMap;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.exceptions.FileNotUploadedException;
-import com.znsio.e2e.runner.Runner;
 import io.appium.java_client.*;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.StartsActivity;

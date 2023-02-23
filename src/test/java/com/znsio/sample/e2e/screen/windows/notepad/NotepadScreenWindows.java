@@ -1,7 +1,7 @@
 package com.znsio.sample.e2e.screen.windows.notepad;
 
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Visual;
+import com.znsio.e2e.runner.Driver;
+import com.znsio.e2e.runner.Visual;
 import com.znsio.sample.e2e.screen.notepad.NotepadScreen;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;

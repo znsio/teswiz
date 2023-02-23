@@ -1,4 +1,4 @@
-package com.znsio.e2e.tools;
+package com.znsio.e2e.runner;
 
 import com.applitools.eyes.*;
 import com.applitools.eyes.appium.AppiumCheckSettings;
@@ -22,7 +22,7 @@ import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
 import com.znsio.e2e.exceptions.VisualTestSetupException;
-import com.znsio.e2e.runner.Runner;
+import com.znsio.e2e.tools.ScreenShotManager;
 import com.znsio.e2e.tools.cmd.CommandLineExecutor;
 import com.znsio.e2e.tools.cmd.CommandLineResponse;
 import org.apache.log4j.Logger;
@@ -152,8 +152,8 @@ public class Visual {
     private void validateApplitoolsAPIKeyAndServerUrl(boolean isVisualTestingEnabled) {
         if(!isVisualTestingEnabled) {
             LOGGER.info(
-                    "Since isVisualTestingEnabled: " + isVisualTestingEnabled + ", Applitools API" +
-                    " Key and Server Url validation is not required");
+                    "Since isVisualTestingEnabled: " + isVisualTestingEnabled + ", Applitools " +
+                    "API" + " Key and Server Url validation is not required");
             return;
         }
         String curlCommand = "curl -I --location --request GET '" + getValueFromConfig(
@@ -318,8 +318,8 @@ public class Visual {
 
     @NotNull
     private Configuration defaultApplitoolsUFGConfig(Configuration ufgConfig) {
-        String applitoolsUFGConfigMessage = "Using browser & device configuration provided for " +
-                                            "Applitools Ultrafast Grid";
+        String applitoolsUFGConfigMessage =
+                "Using browser & device configuration provided for " + "Applitools Ultrafast Grid";
         if(null == ufgConfig) {
             applitoolsUFGConfigMessage = "Using default browser & device configuration for " +
                                          "Applitools Ultrafast Grid: ";
@@ -568,7 +568,8 @@ public class Visual {
         long threadId = Thread.currentThread().getId();
         SoftAssertions softly = Runner.getSoftAssertion(threadId);
         softly.assertThat(areVisualDifferenceFound).as(String.format(
-                "Visual differences for user persona: '%s' on '%s' found in test: '%s'. See results here: ",
+                "Visual differences for user persona: '%s' on '%s' found in test: '%s'. See " +
+                "results here: ",
                 userPersona, onPlatform, context.getTestName()) + result.getUrl()).isFalse();
     }
 }

@@ -1,7 +1,7 @@
 package com.znsio.sample.e2e.screen.android.confengine;
 
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Visual;
+import com.znsio.e2e.runner.Driver;
+import com.znsio.e2e.runner.Visual;
 import com.znsio.sample.e2e.screen.confengine.ConfEngineLandingScreen;
 import io.appium.java_client.AppiumDriver;
 import org.apache.log4j.Logger;

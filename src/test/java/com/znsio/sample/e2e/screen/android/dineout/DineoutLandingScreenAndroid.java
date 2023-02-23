@@ -1,7 +1,7 @@
 package com.znsio.sample.e2e.screen.android.dineout;
 
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Visual;
+import com.znsio.e2e.runner.Driver;
+import com.znsio.e2e.runner.Visual;
 import com.znsio.sample.e2e.screen.dineout.DineoutLandingScreen;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;

@@ -2,8 +2,8 @@ package com.znsio.sample.e2e.screen.web.indigo;
 
 import com.context.TestExecutionContext;
 import com.znsio.e2e.runner.Runner;
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Visual;
+import com.znsio.e2e.runner.Driver;
+import com.znsio.e2e.runner.Visual;
 import com.znsio.sample.e2e.screen.indigo.IndigoFlightSearchResultsScreen;
 import com.znsio.sample.e2e.screen.indigo.IndigoGiftVouchersScreen;
 import com.znsio.sample.e2e.screen.indigo.IndigoHomeScreen;

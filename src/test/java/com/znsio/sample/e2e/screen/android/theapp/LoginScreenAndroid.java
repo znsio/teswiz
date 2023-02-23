@@ -1,8 +1,8 @@
 package com.znsio.sample.e2e.screen.android.theapp;
 
 import com.applitools.eyes.appium.Target;
-import com.znsio.e2e.tools.Driver;
-import com.znsio.e2e.tools.Visual;
+import com.znsio.e2e.runner.Driver;
+import com.znsio.e2e.runner.Visual;
 import com.znsio.sample.e2e.screen.theapp.LoginScreen;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
