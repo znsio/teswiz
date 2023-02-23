@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import static com.znsio.e2e.runner.Runner.DEBUG;
+
 public class ScreenShotManager {
 
     private static final Logger LOGGER = Logger.getLogger(ScreenShotManager.class.getName());
@@ -43,7 +45,7 @@ public class ScreenShotManager {
                 FileUtils.copyFile(screenshot, destinationFile);
                 LOGGER.info(
                         "The screenshot is available here : " + destinationFile.getAbsolutePath());
-                ReportPortal.emitLog(fileName, "DEBUG", new Date(), destinationFile);
+                ReportPortal.emitLog(fileName, DEBUG, new Date(), destinationFile);
             } catch(IOException | RuntimeException e) {
                 LOGGER.info(
                         "ERROR: Unable to save or upload screenshot: '" + destinationFile.getAbsolutePath() + "' or upload screenshot to ReportPortal\n");

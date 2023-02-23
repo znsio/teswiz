@@ -311,8 +311,7 @@ public class Driver {
 
     public void pushFileToDevice(String filePathToPush, String devicePath) {
         LOGGER.info(
-                "Pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' " +
-                "device on path: '" + devicePath + "'");
+                "Pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' " + "device on path: '" + devicePath + "'");
         try {
             if(Runner.platform.equals(Platform.android)) {
                 ((AndroidDriver) driver).pushFile(devicePath, new File(filePathToPush));

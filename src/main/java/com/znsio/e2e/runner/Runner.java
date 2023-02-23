@@ -34,6 +34,9 @@ public class Runner {
     public static final String USER_NAME = System.getProperty("user.name");
     public static final String NOT_SET = "not-set";
     public static final String DEFAULT = "default";
+    public static final String DEBUG = "DEBUG";
+    public static final String INFO = "INFO";
+    public static final String WARN = "WARN";
 
     static final Map<String, String> configs = new HashMap<>();
     static final Map<String, Boolean> configsBoolean = new HashMap<>();
@@ -233,7 +236,6 @@ public class Runner {
     }
 
     public static void closeAllDrivers(long threadId) {
-        TestExecutionContext context = getTestExecutionContext(threadId);
         Drivers.attachLogsAndCloseAllWebDrivers();
     }
 

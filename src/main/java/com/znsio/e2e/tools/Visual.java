@@ -46,9 +46,6 @@ import static com.znsio.e2e.runner.Setup.*;
 public class Visual {
     private static final Logger LOGGER = Logger.getLogger(Visual.class.getName());
     private static final String DEFAULT_APPLITOOLS_SERVER_URL = "https://eyesapi.applitools.com";
-    private static final String DEBUG = "DEBUG";
-    private static final String INFO = "INFO";
-    private static final String WARN = "WARN";
     private final String visualTestNotEnabledMessage = "Visual Test is not enabled";
     private final com.applitools.eyes.selenium.Eyes eyesOnWeb;
     private final com.applitools.eyes.appium.Eyes eyesOnApp;

@@ -14,10 +14,10 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
+import static com.znsio.e2e.runner.Runner.DEBUG;
+
 public class Hooks {
     private static final Logger LOGGER = Logger.getLogger(Hooks.class.getName());
-    private static final String DEBUG = "debug";
-    private static final String INFO = "info";
 
     public void beforeScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();

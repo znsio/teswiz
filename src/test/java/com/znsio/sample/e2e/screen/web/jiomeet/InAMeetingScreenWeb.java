@@ -16,6 +16,8 @@ import org.openqa.selenium.interactions.Actions;
 
 import java.util.Date;
 
+import static com.znsio.e2e.runner.Runner.DEBUG;
+
 public class InAMeetingScreenWeb
         extends InAMeetingScreen {
     private static final String SCREEN_NAME = InAMeetingScreenWeb.class.getSimpleName();
@@ -112,7 +114,7 @@ public class InAMeetingScreenWeb
                     "Exception occurred : enableInMeetingControls%nException: %s",
                     e.getLocalizedMessage());
             LOGGER.info(logMessage);
-            ReportPortal.emitLog(logMessage, "DEBUG", new Date());
+            ReportPortal.emitLog(logMessage, DEBUG, new Date());
         }
     }
 }

@@ -2,6 +2,7 @@ package com.znsio.e2e.tools;
 
 import com.epam.reportportal.service.ReportPortal;
 import com.znsio.e2e.exceptions.InvalidTestDataException;
+import com.znsio.e2e.runner.Runner;
 import org.apache.log4j.Logger;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
@@ -11,6 +12,8 @@ import org.json.JSONTokener;
 
 import java.io.InputStream;
 import java.util.Date;
+
+import static com.znsio.e2e.runner.Runner.DEBUG;
 
 public class JsonSchemaValidator {
     private static final Logger LOGGER = Logger.getLogger(JsonSchemaValidator.class.getName());
@@ -38,7 +41,7 @@ public class JsonSchemaValidator {
                                                     jsonFilePath,
                                                     validationException.getAllMessages());
             LOGGER.info(exceptionMessage);
-            ReportPortal.emitLog(exceptionMessage, "DEBUG", new Date());
+            ReportPortal.emitLog(exceptionMessage, DEBUG, new Date());
             throw new InvalidTestDataException(exceptionMessage);
         }
     }
