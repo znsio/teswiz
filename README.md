@@ -6,26 +6,51 @@
 
 # Breaking changes in v0.0.72:
 
-```mermaid
-flowchart TD
-  You do not need to retrieve the Drivers object from TestExecutionContext anymore. 
-  To create/allocate a driver to the persona, simply call the method - [Drivers.createDriverFor(....)] 
-  
-  A[allDrivers.createDriverFor(...)] -- has changed to --> B[Drivers.createDriverFor(...)]
-```
+## Creating Drivers
 
-```mermaid
-flowchart LR
-  [Runner.platform]--is now changed to---id2(Runner.getPlatform());
-  style id1 fill:#f9f
-  style id2 fill:#bbf
-```
-```mermaid
-flowchart LR;
-  [Runner.platform] -->|is now changed to| [Runner.getPlatform()]
-  style id1 fill:#f9f
-  style id2 fill:#bbf
-```
+| Purpose                                         | Old | New |
+|:------------------------------------------------| :--- | :--- |
+| Create/Allocate Driver                          | `allDrivers.createDriverFor(...)` | ***`Drivers.createDriverFor(...)`*** |
+| Accessing platform                              | `Runner.platform` | **`Runner.getPlatform()`** |
+| Getting platform for user                       | `allDrivers.getPlatformForUser(userPersona)` | **`Drivers.getPlatformForUser(userPersona)`** |
+| Retrieving ALL_DRIVERS from TestExecutioContext | `TEST_CONTEXT.ALL_DRIVERS` | ** Not required ** |
+
+[//]: # (```mermaid)
+
+[//]: # (flowchart TD)
+
+[//]: # (  id1[allDrivers.createDriverFor&#40;...&#41;]--has changed to---id2&#40;[Drivers.createDriverFor&#40;...&#41;]&#41;)
+
+[//]: # (  style id1 fill:#f9f)
+
+[//]: # (  style id2 fill:#bbf)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (```mermaid)
+
+[//]: # (flowchart LR)
+
+[//]: # (  [Runner.platform]--is now changed to---id2&#40;Runner.getPlatform&#40;&#41;&#41;;)
+
+[//]: # (  style id1 fill:#f9f)
+
+[//]: # (  style id2 fill:#bbf)
+
+[//]: # (```)
+
+[//]: # (```mermaid)
+
+[//]: # (flowchart LR;)
+
+[//]: # (  [Runner.platform] -->|is now changed to| [Runner.getPlatform&#40;&#41;])
+
+[//]: # (  style id1 fill:#f9f)
+
+[//]: # (  style id2 fill:#bbf)
+
+[//]: # (```)
 
 # What is this repository about?
 
