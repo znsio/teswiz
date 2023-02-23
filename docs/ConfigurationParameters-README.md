@@ -47,4 +47,4 @@ These can be overridden by providing the same either as environment variables or
     RUN_IN_CI=false -> Are tests running in CI?
     TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE
     TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
-    BROWSER_CONFIG_FILE=./src/test/resources/com/znsio/e2e/features/configs/browser_config.json -> json containing browser configurations
+    BROWSER_CONFIG_FILE=./src/test/resources/com/znsio/teswiz/features/configs/browser_config.json -> json containing browser configurations

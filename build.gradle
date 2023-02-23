@@ -172,12 +172,12 @@ task run(type: JavaExec) {
         systemProperties = System.properties
         def runnerArgs = [
                 "${configFile}",
-                "com/znsio/sample/e2e/steps",
-                "./src/test/resources/com/znsio/sample/e2e/features"
+                "com/znsio/teswiz/steps",
+                "./src/test/resources/com/znsio/teswiz/features"
         ]
         args = runnerArgs
     }
-    mainClass = "com.znsio.e2e.runner.Runner"
+    mainClass = "com.znsio.teswiz.runner.Runner"
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
 }
 

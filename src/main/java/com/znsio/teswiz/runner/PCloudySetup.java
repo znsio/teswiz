@@ -1,0 +1,187 @@
+package com.znsio.teswiz.runner;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.znsio.teswiz.exceptions.EnvironmentSetupException;
+import com.znsio.teswiz.tools.JsonFile;
+import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
+import com.znsio.teswiz.tools.cmd.CommandLineResponse;
+import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.znsio.teswiz.runner.Setup.*;
+
+public class PCloudySetup {
+    private static final Logger LOGGER = Logger.getLogger(PCloudySetup.class.getName());
+    private static final String CURL_INSECURE = "curl --insecure";
+    private static final String RESULT = "result";
+
+    private PCloudySetup() {
+        LOGGER.debug("PCloudySetup - private constructor");
+    }
+
+    static void updatePCloudyCapabilities() {
+        String emailID = Setup.getFromConfigs(CLOUD_USER);
+        String authenticationKey = Setup.getFromConfigs(CLOUD_KEY);
+        if(Setup.getBooleanValueFromConfigs(CLOUD_UPLOAD_APP)) {
+            fetchAuthTokenAndUploadAPKToPCloudy(emailID, authenticationKey);
+        } else {
+            LOGGER.info("Skip uploading the apk to Device Farm");
+        }
+        String capabilityFile = Setup.getFromConfigs(CAPS);
+        String appPath = Setup.getFromConfigs(APP_PATH);
+        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
+        String platformName = Setup.getPlatform().name();
+        Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
+        String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
+        loadedPlatformCapability.remove("app");
+        loadedPlatformCapability.put("pCloudy_Username", emailID);
+        loadedPlatformCapability.put("pCloudy_ApiKey", authenticationKey);
+        loadedPlatformCapability.put("pCloudy_ApplicationName", getAppName(appPath));
+        loadedPlatformCapability.put("pCloudy_DeviceVersion", osVersion);
+
+        updateCapabilities(loadedCapabilityFile);
+    }
+
+    private static void fetchAuthTokenAndUploadAPKToPCloudy(String emailID,
+                                                            String authenticationKey) {
+        LOGGER.info(
+                String.format("uploadAPKTopCloudy for: '%s':'%s'%n", emailID, authenticationKey));
+        String appPath = Setup.getFromConfigs(APP_PATH);
+        String deviceLabURL = Setup.getFromConfigs(DEVICE_LAB_URL);
+
+        String authToken = getPCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
+        if(isAPKAlreadyAvailableInPCloudy(authToken, appPath)) {
+            LOGGER.info("\tAPK is already available in cloud. No need to upload it again");
+        } else {
+            LOGGER.info("\tAPK is NOT available in cloud. Upload it");
+            Setup.addToConfigs(APP_PATH, uploadAPKToPCloudy(appPath, deviceLabURL, authToken));
+        }
+    }
+
+    private static String getAppName(String appPath) {
+        return new File(appPath).getName();
+    }
+
+    static void updateCapabilities(Map<String, Map> loadedCapabilityFile) {
+        String capabilityFile = Setup.getFromConfigs(CAPS);
+        String platformName = Setup.getPlatform().name();
+        ArrayList listOfAndroidDevices = new ArrayList();
+        for(int numDevices = 0;
+            numDevices < Setup.getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS);
+            numDevices++) {
+            HashMap<String, String> deviceInfo = new HashMap();
+            deviceInfo.put("osVersion", String.valueOf(
+                    loadedCapabilityFile.get(platformName).get("platformVersion")));
+            deviceInfo.put("deviceName", String.valueOf(
+                    loadedCapabilityFile.get(platformName).get("platformName")));
+            listOfAndroidDevices.add(deviceInfo);
+        }
+        DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
+                                            listOfAndroidDevices);
+    }
+
+    private static String getPCloudyAuthToken(String emailID, String authenticationKey,
+                                              String appPath, String deviceLabURL) {
+        LOGGER.info("Get pCloudy Auth Token");
+        String[] getAppToken = new String[]{CURL_INSECURE, getCurlProxyCommand(), "-u",
+                                            "\"" + emailID + ":" + authenticationKey + "\"",
+                                            deviceLabURL + "/api/access"};
+        CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken);
+        LOGGER.info("\tauthTokenResponse: " + authTokenResponse.getStdOut());
+        if(authTokenResponse.getStdOut().contains("error")) {
+            throw new EnvironmentSetupException(
+                    String.format("Unable to get auth: '%s' to '%s'%n%s", appPath, deviceLabURL,
+                                  authTokenResponse));
+        }
+        String authToken = JsonFile.convertToMap(authTokenResponse.getStdOut())
+                                   .getAsJsonObject(RESULT).get("token").getAsString();
+        LOGGER.info("\tauthToken: " + authToken);
+        return authToken;
+    }
+
+    private static boolean isAPKAlreadyAvailableInPCloudy(String authToken, String appPath) {
+        Path path = Paths.get(appPath);
+        String appNameFromPath = path.getFileName().toString();
+        LOGGER.info("isAPKAlreadyAvailableInCloud: Start: " + appPath);
+
+        CommandLineResponse uploadResponse = getListOfUploadedFilesInPCloudy(authToken);
+        JsonObject result = JsonFile.convertToMap(uploadResponse.getStdOut())
+                                    .getAsJsonObject(RESULT);
+        JsonArray availableFiles = result.getAsJsonArray("files");
+        AtomicBoolean isFileAlreadyUploaded = new AtomicBoolean(false);
+        availableFiles.forEach(file -> {
+            String fileName = ((JsonObject) file).get("file").getAsString();
+            LOGGER.info("\tThis file is available in Device Farm: " + fileName);
+            if(appNameFromPath.equals(fileName)) {
+                isFileAlreadyUploaded.set(true);
+            }
+        });
+        return isFileAlreadyUploaded.get();
+    }
+
+    private static String uploadAPKToPCloudy(String appPath, String deviceLabURL,
+                                             String authToken) {
+        LOGGER.info("uploadAPKTopCloudy: " + appPath);
+        String[] listOfDevices = new String[]{CURL_INSECURE, getCurlProxyCommand(), "-X", "POST",
+                                              "-F", "file=@\"" + appPath + "\"", "-F",
+                                              "\"source_type=raw\"", "-F",
+                                              "\"token=" + authToken + "\"", "-F", "\"filter=apk\"",
+                                              deviceLabURL + "/api/upload_file"};
+
+        CommandLineResponse uploadApkResponse = CommandLineExecutor.execCommand(listOfDevices);
+        LOGGER.info("\tuploadApkResponse: " + uploadApkResponse.getStdOut());
+        JsonObject result = JsonFile.convertToMap(uploadApkResponse.getStdOut())
+                                    .getAsJsonObject(RESULT);
+        int uploadStatus = result.get("code").getAsInt();
+        if(200 != uploadStatus) {
+            throw new EnvironmentSetupException(
+                    String.format("Unable to upload app: '%s' to '%s'%n%s", appPath, deviceLabURL,
+                                  uploadApkResponse));
+        }
+        String uploadedFileName = result.get("file").getAsString();
+        LOGGER.info("\tuploadAPKToPCloudy: Uploaded: " + uploadedFileName);
+        return uploadedFileName;
+    }
+
+    @NotNull
+    private static CommandLineResponse getListOfUploadedFilesInPCloudy(String authToken) {
+        String deviceLabURL = Setup.getFromConfigs(DEVICE_LAB_URL);
+        Map payload = new HashMap();
+        payload.put("\"token\"", "\"" + authToken + "\"");
+        payload.put("\"limit\"", 15);
+        payload.put("\"filter\"", "\"all\"");
+        String updatedPayload = payload.toString().replace("\"", "\\\"").replace("=", ":");
+
+        String[] listOfUploadedFiles;
+        listOfUploadedFiles = new String[]{CURL_INSECURE, getCurlProxyCommand(), "-H",
+                                           "Content-Type:application/json", "-d",
+                                           "\"" + updatedPayload + "\"",
+                                           deviceLabURL + "/api/drive"};
+
+        CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(
+                listOfUploadedFiles);
+        LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
+        JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut())
+                                    .getAsJsonObject(RESULT);
+        JsonElement resultCode = result.get("code");
+        int uploadStatus = (null == resultCode) ? 400 : resultCode.getAsInt();
+        if(200 != uploadStatus) {
+            throw new EnvironmentSetupException(
+                    String.format("Unable to get list of uploaded files%n%s",
+                                  listFilesInPCloudyResponse));
+        }
+
+        return listFilesInPCloudyResponse;
+    }
+
+}
