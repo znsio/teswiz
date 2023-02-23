@@ -4,31 +4,25 @@
 [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)
 
 
-[//]: # (# Important changes:)
+# Breaking changes in v0.0.72:
 
-[//]: # ()
-[//]: # (```mermaid)
+```mermaid
+flowchart LR
+  id(You do not need to retrieve the Drivers object from TestExecutionContext anymore. To create/allocate a driver to the persona, simply call the method - Drivers.createDriverFor(....)) 
+```
+```mermaid
+flowchart LR;
+  id1(Runner.platform)--is now changed to---id2(Runner.getPlatform());
+  style id1 fill:#f9f
+  style id2 fill:#bbf
+```
+```mermaid
+flowchart LR;
+  id1(Runner.platform)--is now changed to---id2(Runner.getPlatform());
+  style id1 fill:#f9f
+  style id2 fill:#bbf
+```
 
-[//]: # (flowchart LR)
-
-[//]: # (  id&#40;BROWSER_CONFIG_FILE - Provide custom browser configuration&#41; )
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (```mermaid)
-
-[//]: # (flowchart LR;)
-
-[//]: # (  id1&#40;driver.waitForVisibilityOf&#41;--is now changed to---id2&#40;driver.waitForClickabilityOf&#41;;)
-
-[//]: # (  style id1 fill:#f9f)
-
-[//]: # (  style id2 fill:#bbf)
-
-[//]: # (```)
-
-[//]: # ()
 # What is this repository about?
 
 This repository implements automated tests for Android & iOS apps, specified using cucumber-jvm and intelligently run
