@@ -4,6 +4,7 @@ import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.e2e.entities.Platform;
 import com.znsio.e2e.entities.TEST_CONTEXT;
+import com.znsio.e2e.runner.Runner;
 import com.znsio.e2e.tools.Drivers;
 import com.znsio.sample.e2e.entities.SAMPLE_TEST_CONTEXT;
 import io.cucumber.java.en.And;
@@ -24,10 +25,9 @@ public class AppLaunchSteps {
     @Given("{string} start {string}")
     public void startOn(String userPersona, String appName) {
         String[] appNameParts = appName.split("-");
-        appName = appNameParts[0].toLowerCase(Locale.ROOT);
+        appName = appNameParts[0].toLowerCase(Locale.ROOT) + "_" + Runner.getCloudName().toLowerCase();
         String onPlatform = appNameParts[appNameParts.length - 1].toLowerCase(Locale.ROOT);
-        LOGGER.info(System.out.printf("startOn - Persona:'%s', AppName: '%s', Platform: '%s'",
-                                      userPersona, appName, onPlatform));
+        LOGGER.info(System.out.printf("startOn - Persona:'%s', AppName: '%s', Platform: '%s'", userPersona, appName, onPlatform));
         context.addTestState(userPersona, userPersona);
         Drivers.createDriverFor(userPersona, appName, Platform.valueOf(onPlatform), context);
     }
