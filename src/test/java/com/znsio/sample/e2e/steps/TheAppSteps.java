@@ -29,10 +29,10 @@ public class TheAppSteps {
         LOGGER.info(System.out.printf(
                 "iLoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', " +
                 "Platform: '%s'",
-                SAMPLE_TEST_CONTEXT.ME, username, password, Runner.platform));
-        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+                SAMPLE_TEST_CONTEXT.ME, username, password, Runner.getPlatform()));
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         context.addTestState(SAMPLE_TEST_CONTEXT.ME, username);
-        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).provideInvalidDetailsForSignup(username,
+        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).provideInvalidDetailsForSignup(username,
                                                                                           password);
     }
 
@@ -91,8 +91,8 @@ public class TheAppSteps {
     @Given("I start the app")
     public void iStartTheApp() {
         LOGGER.info(System.out.printf("iStartTheApp - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
-        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
-        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
+        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform());
     }
 
     @When("I set {string} in the clipboard")
@@ -109,15 +109,15 @@ public class TheAppSteps {
     @Given("I save {string} in the clipboard")
     public void iSaveInTheClipboard(String content) {
         LOGGER.info(System.out.printf("iStartTheApp - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
-        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
-        new ClipboardBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).saveContentInClipboard(content);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
+        new ClipboardBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).saveContentInClipboard(content);
     }
 
     @Given("I am on file upload page")
     public void iAmOnFileUploadPage() {
         LOGGER.info(System.out.printf("iStartTheApp - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
-        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
-        new FileUploadBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).navigationToUploadScreen();
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
+        new FileUploadBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).navigationToUploadScreen();
     }
 
     @When("I upload the {string} file")

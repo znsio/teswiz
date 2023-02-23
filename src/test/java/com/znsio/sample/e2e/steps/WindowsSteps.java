@@ -21,11 +21,11 @@ public class WindowsSteps {
 
     @Given("I have launched Notepad application")
     public void iHaveLaunchedNotepadApplication() {
-        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         LOGGER.info(
                 System.out.printf("iHaveLaunchedNotepadApplication - Persona:'%s', Platform: '%s'",
-                                  SAMPLE_TEST_CONTEXT.ME, Runner.platform));
-        new NotepadBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).verifyLaunched();
+                                  SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()));
+        new NotepadBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyLaunched();
     }
 
     @Then("I should be able to type {string}")

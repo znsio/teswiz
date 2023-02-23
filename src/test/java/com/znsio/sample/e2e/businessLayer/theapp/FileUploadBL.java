@@ -33,7 +33,7 @@ public class FileUploadBL {
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
-        this.currentPlatform = Runner.platform;
+        this.currentPlatform = Runner.getPlatform();
     }
 
     public FileUploadBL navigationToUploadScreen() {

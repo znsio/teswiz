@@ -29,7 +29,7 @@ public abstract class IndigoGiftVouchersScreen {
                 return new IndigoGiftVouchersScreenWeb(driver, visually);
         }
         throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.platform);
+                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
     }
 
     public abstract IndigoGiftVouchersScreen select(String numberOfGiftVouchersToPurchase,

@@ -26,7 +26,7 @@ public abstract class ClipboardDemoScreen {
                 return new ClipboardDemoScreenAndroid(driver, visually);
         }
         throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.platform);
+                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
     }
 
     public abstract ClipboardDemoScreen setInClipboard(String content);

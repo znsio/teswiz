@@ -29,6 +29,6 @@ public abstract class IndigoFlightSearchResultsScreen {
                 return new IndigoFlightSearchResultsScreenWeb(driver, visually);
         }
         throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.platform);
+                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
     }
 }

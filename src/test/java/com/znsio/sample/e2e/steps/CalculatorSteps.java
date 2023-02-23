@@ -26,7 +26,7 @@ public class CalculatorSteps {
 
     @Given("I select {string}")
     public void iSelect(String number) {
-        new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).selectNumber(number);
+        new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectNumber(number);
     }
 
     @And("{string} select {string}")
@@ -37,7 +37,7 @@ public class CalculatorSteps {
 
     @When("I press {string}")
     public void iPress(String operation) {
-        new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).pressOperation(operation);
+        new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).pressOperation(operation);
     }
 
     @Then("I should see {string}")
@@ -48,8 +48,8 @@ public class CalculatorSteps {
     public void iStartTheCalculator() {
         LOGGER.info(
                 System.out.printf("iStartTheCalculator - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
-        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
-        new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).startCalculator();
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
+        new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).startCalculator();
     }
 
     @And("{string} press {string}")

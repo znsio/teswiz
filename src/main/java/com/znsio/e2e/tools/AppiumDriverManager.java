@@ -203,7 +203,7 @@ public class AppiumDriverManager {
     }
 
     static void closeAppiumDriver(String userPersona, Driver driver) {
-        if(Runner.platform.equals(Platform.windows)) {
+        if(Runner.getPlatform().equals(Platform.windows)) {
             closeWindowsAppOnMachine(userPersona, driver);
         } else {
             closeAndroidAppOnDevice(userPersona, driver);

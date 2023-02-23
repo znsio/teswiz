@@ -29,7 +29,7 @@ public abstract class EchoScreen {
                 return new EchoScreenWeb(driver, visually);
         }
         throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.platform);
+                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
     }
 
     public abstract EchoScreen echoMessage(String message);

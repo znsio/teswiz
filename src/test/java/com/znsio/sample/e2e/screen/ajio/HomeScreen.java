@@ -28,7 +28,7 @@ public abstract class HomeScreen {
                 return new HomeScreenAndroid(driver, visually);
         }
         throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.platform);
+                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
     }
 
     public abstract SearchScreen searchByImage();

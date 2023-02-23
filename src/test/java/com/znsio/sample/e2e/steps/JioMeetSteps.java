@@ -34,10 +34,10 @@ public class JioMeetSteps {
         Map userDetails = Runner.getTestDataAsMap(userSuffix);
         LOGGER.info(System.out.printf(
                 "iSignInAsARegistered - Persona:'%s', User details: '%s', Platform: '%s'",
-                SAMPLE_TEST_CONTEXT.ME, userDetails, Runner.platform));
-        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+                SAMPLE_TEST_CONTEXT.ME, userDetails, Runner.getPlatform()));
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         context.addTestState(SAMPLE_TEST_CONTEXT.ME, String.valueOf(userDetails.get("username")));
-        new AuthBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).signIn(userDetails);
+        new AuthBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).signIn(userDetails);
     }
 
     @And("I start an instant meeting")

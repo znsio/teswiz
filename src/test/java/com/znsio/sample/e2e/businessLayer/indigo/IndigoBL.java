@@ -29,7 +29,7 @@ public class IndigoBL {
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
-        this.currentPlatform = Runner.platform;
+        this.currentPlatform = Runner.getPlatform();
     }
 
     public FlightResultsBL searchForTicket(String journeyType, String from, String destination,

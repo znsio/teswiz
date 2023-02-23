@@ -23,7 +23,7 @@ public class HeadSpinSetup {
 
     static void updateHeadspinCapabilities() {
         String authenticationKey = Setup.getFromConfigs(CLOUD_KEY);
-        String platformName = platform.name();
+        String platformName = Setup.getPlatform().name();
         String capabilityFile = Setup.getFromConfigs(CAPS);
         String appPath = Setup.getFromConfigs(APP_PATH);
 
@@ -100,7 +100,7 @@ public class HeadSpinSetup {
 
     static void updateCapabilities(Map<String, Map> loadedCapabilityFile) {
         String capabilityFile = Setup.getFromConfigs(CAPS);
-        String platformName = platform.name();
+        String platformName = Setup.getPlatform().name();
         ArrayList listOfAndroidDevices = new ArrayList();
         for(int numDevices = 0; numDevices < Setup.getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS);
             numDevices++) {

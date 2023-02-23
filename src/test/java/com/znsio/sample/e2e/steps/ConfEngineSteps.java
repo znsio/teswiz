@@ -22,7 +22,7 @@ public class ConfEngineSteps {
     public void iSeeTheListOfConferences() {
         LOGGER.info(System.out.printf("iSeeTheListOfConferences - Persona:'%s'",
                                       SAMPLE_TEST_CONTEXT.ME));
-        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
-        new ConfEngineBL(SAMPLE_TEST_CONTEXT.ME, Runner.platform).seeListOfConferences();
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
+        new ConfEngineBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).seeListOfConferences();
     }
 }

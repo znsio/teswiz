@@ -24,7 +24,7 @@ public class AjioSteps {
     public void iSearchForProductsUsing(String searchtype) {
         LOGGER.info(System.out.printf("iSearchForProductsUsing:'%s' - Persona:'%s'", searchtype,
                                       SAMPLE_TEST_CONTEXT.ME));
-        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.platform, context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         new SearchBL().searchProduct(Runner.getTestDataAsMap(searchtype));
     }
 

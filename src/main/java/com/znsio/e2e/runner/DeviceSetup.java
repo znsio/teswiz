@@ -51,7 +51,7 @@ public class DeviceSetup {
 
     static ArrayList<String> setupAndroidExecution() {
         ArrayList<String> androidCukeArgs = new ArrayList<>();
-        if(platform.equals(Platform.android)) {
+        if(Setup.getPlatform().equals(Platform.android)) {
             verifyAppExistsAtMentionedPath();
             fetchAndroidAppVersion();
             if(Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
@@ -131,7 +131,7 @@ public class DeviceSetup {
     private static String getAppPathFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
-                                                         new String[]{platform.name(), "app",
+                                                         new String[]{Setup.getPlatform().name(), "app",
                                                                       "local"});
     }
 
@@ -144,7 +144,7 @@ public class DeviceSetup {
             if(Files.exists(Paths.get(appPath))) {
                 LOGGER.info(
                         "\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName + "::" +
-                        " " + platform);
+                        " " + Setup.getPlatform());
             } else {
                 LOGGER.info("\tAppPath: " + appPath + " not found!");
                 throw new InvalidTestDataException(
@@ -177,7 +177,7 @@ public class DeviceSetup {
 
     static ArrayList<String> setupWindowsExecution() {
         ArrayList<String> windowsCukeArgs = new ArrayList<>();
-        if(platform.equals(Platform.windows)) {
+        if(Setup.getPlatform().equals(Platform.windows)) {
             verifyAppExistsAtMentionedPath();
             fetchWindowsAppVersion();
             windowsCukeArgs.add(PLUGIN);

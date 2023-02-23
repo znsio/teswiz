@@ -25,7 +25,7 @@ public class Hooks {
         LOGGER.info(String.format("ThreadId : %s In RunCukes - Before: %s", threadId,
                                   scenario.getName()));
         LOGGER.info(String.format("Running test %s on %s", testExecutionContext.getTestName(),
-                                  Runner.platform.name()));
+                                  Runner.getPlatform().name()));
         testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
         SoftAssertions softly = new SoftAssertions();
         testExecutionContext.addTestState(TEST_CONTEXT.SOFT_ASSERTIONS, softly);

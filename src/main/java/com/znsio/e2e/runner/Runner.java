@@ -39,7 +39,6 @@ public class Runner {
     public static final String WARN = "WARN";
 
     private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
-    public static Platform platform = Platform.android;
 
     public Runner() {
         throw new InvalidTestDataException("Required args not provided to Runner");
@@ -54,6 +53,10 @@ public class Runner {
         Setup.load(configFilePath);
         List<String> cukeArgs = Setup.getExecutionArguments();
         run(cukeArgs, stepDefDirName, featuresDirName);
+    }
+
+    public static Platform getPlatform() {
+        return Setup.getPlatform();
     }
 
     public void run(List<String> args, String stepDefsDir, String featuresDir) {

@@ -26,7 +26,7 @@ public class BrowserStackSetup {
     public static void updateBrowserStackCapabilities() {
         String authenticationUser = Setup.getFromConfigs(CLOUD_USER);
         String authenticationKey = Setup.getFromConfigs(CLOUD_KEY);
-        String platformName = platform.name();
+        String platformName = Setup.getPlatform().name();
         String capabilityFile = Setup.getFromConfigs(CAPS);
         String appPath = new File(Setup.getFromConfigs(APP_PATH)).getAbsolutePath();
 
@@ -113,7 +113,7 @@ public class BrowserStackSetup {
                                                                 String authenticationKey,
                                                                 Map<String, Map> loadedCapabilityFile) {
         String capabilityFile = Setup.getFromConfigs(CAPS);
-        String platformName = platform.name();
+        String platformName = Setup.getPlatform().name();
         ArrayList listOfAndroidDevices = new ArrayList();
 
         String platformVersion = String.valueOf(

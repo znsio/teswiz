@@ -94,6 +94,8 @@ public class Setup {
     private static final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private static String configFilePath;
     private static final String BUILD_ID = "BUILD_ID";
+    private static Platform platform = Platform.android;
+
 
     private Setup() {
         LOGGER.debug("Setup - private constructor");
@@ -683,6 +685,10 @@ public class Setup {
 
     static Map getTestDataAsMapForEnvironmentFor(String key) {
         return testDataForEnvironment.get(key);
+    }
+
+    static Platform getPlatform() {
+        return platform;
     }
 
     private void cleanupDirectories() {

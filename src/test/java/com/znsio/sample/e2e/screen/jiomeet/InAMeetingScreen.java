@@ -29,7 +29,7 @@ public abstract class InAMeetingScreen {
                 return new InAMeetingScreenWeb(driver, visually);
         }
         throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.platform);
+                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
     }
 
     public abstract boolean isMeetingStarted();

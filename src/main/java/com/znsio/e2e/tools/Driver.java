@@ -311,23 +311,23 @@ public class Driver {
 
     public void pushFileToDevice(String filePathToPush, String devicePath) {
         LOGGER.info(
-                "Pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' " + "device on path: '" + devicePath + "'");
+                "Pushing the file: '" + filePathToPush + "' to '" + Runner.getPlatform().name() + "' " + "device on path: '" + devicePath + "'");
         try {
-            if(Runner.platform.equals(Platform.android)) {
+            if(Runner.getPlatform().equals(Platform.android)) {
                 ((AndroidDriver) driver).pushFile(devicePath, new File(filePathToPush));
-            } else if(Runner.platform.equals(Platform.iOS)) {
+            } else if(Runner.getPlatform().equals(Platform.iOS)) {
                 ((IOSDriver) driver).pushFile(devicePath, new File(filePathToPush));
             }
         } catch(IOException e) {
             throw new FileNotUploadedException(
-                    "Error in pushing the file: '" + filePathToPush + "' to '" + Runner.platform.name() + "' device on path: '" + devicePath + "'",
+                    "Error in pushing the file: '" + filePathToPush + "' to '" + Runner.getPlatform().name() + "' device on path: '" + devicePath + "'",
                     e);
         }
     }
 
     public void allowPermission(By element) {
         waitForClickabilityOf(element);
-        if(Runner.platform.equals(Platform.android)) {
+        if(Runner.getPlatform().equals(Platform.android)) {
             driver.findElement(element).click();
         }
     }
@@ -464,7 +464,7 @@ public class Driver {
             driver.findElement(locator).sendKeys(filePath);
         } catch(Exception e) {
             throw new FileNotUploadedException(
-                    "Error in uploading the file: '" + filePath + "' to '" + Runner.platform.name(),
+                    "Error in uploading the file: '" + filePath + "' to '" + Runner.getPlatform().name(),
                     e);
         }
     }

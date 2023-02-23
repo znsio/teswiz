@@ -37,7 +37,7 @@ public class PCloudySetup {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         String appPath = Setup.getFromConfigs(APP_PATH);
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
-        String platformName = platform.name();
+        String platformName = Setup.getPlatform().name();
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
         loadedPlatformCapability.remove("app");
@@ -70,7 +70,7 @@ public class PCloudySetup {
 
     static void updateCapabilities(Map<String, Map> loadedCapabilityFile) {
         String capabilityFile = Setup.getFromConfigs(CAPS);
-        String platformName = platform.name();
+        String platformName = Setup.getPlatform().name();
         ArrayList listOfAndroidDevices = new ArrayList();
         for(int numDevices = 0; numDevices < Setup.getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS);
             numDevices++) {
