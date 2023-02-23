@@ -118,7 +118,7 @@ public class Setup {
         return curlProxyCommand;
     }
 
-    public List<String> getExecutionArguments() {
+    List<String> getExecutionArguments() {
         loadAndUpdateConfigParameters(configFilePath);
 
         setupDirectories();
