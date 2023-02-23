@@ -6,7 +6,7 @@
 
 # Breaking changes in v0.0.72:
 
-## Creating Drivers
+Below is the list of the breaking changes, and the corresponding new implementation starting from teswiz v0.0.72.
 
 | Purpose                                         | Old | New |
 |:------------------------------------------------| :--- | :--- |
