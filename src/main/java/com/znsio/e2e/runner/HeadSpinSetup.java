@@ -19,8 +19,12 @@ import static com.znsio.e2e.runner.Setup.*;
 
 public class HeadSpinSetup {
     private static final Logger LOGGER = Logger.getLogger(HeadSpinSetup.class.getName());
+    private static final String PLATFORM_VERSION = "platformVersion";
 
-
+    private HeadSpinSetup() {
+        LOGGER.debug("HeadSpinSetup - private constructor");
+    }
+    
     static void updateHeadspinCapabilities() {
         String authenticationKey = Setup.getFromConfigs(CLOUD_KEY);
         String platformName = Setup.getPlatform().name();
@@ -29,7 +33,7 @@ public class HeadSpinSetup {
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
+        String osVersion = String.valueOf(loadedPlatformCapability.get(PLATFORM_VERSION));
         String appIdFromHeadspin;
         if(Setup.getBooleanValueFromConfigs(CLOUD_UPLOAD_APP)) {
             appIdFromHeadspin = uploadAPKToHeadspin(authenticationKey, appPath);
@@ -48,7 +52,7 @@ public class HeadSpinSetup {
                                                         : remoteServerURL + "/" + authenticationKey;
         hostMachines.put("machineIP", remoteServerURL);
         loadedPlatformCapability.remove("app");
-        loadedPlatformCapability.remove("platformVersion");
+        loadedPlatformCapability.remove(PLATFORM_VERSION);
         loadedPlatformCapability.put("headspin:selector", "os_version: >=" + osVersion);
         loadedPlatformCapability.put("headspin:capture", true);
         loadedPlatformCapability.put("headspin:capture.video", true);
@@ -85,7 +89,7 @@ public class HeadSpinSetup {
 
         AtomicReference<String> uploadedAppId = new AtomicReference<>(NOT_SET);
         JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey);
-        if(listOfAppPackages.keySet().size() > 0) {
+        if(!listOfAppPackages.keySet().isEmpty()) {
             getAppIdFromAvailableAppsFromHeadspin(appPackageName, listOfAppPackages, uploadedAppId);
         }
 
@@ -107,7 +111,7 @@ public class HeadSpinSetup {
             numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", String.valueOf(
-                    loadedCapabilityFile.get(platformName).get("platformVersion")));
+                    loadedCapabilityFile.get(platformName).get(PLATFORM_VERSION)));
             deviceInfo.put("deviceName", String.valueOf(
                     loadedCapabilityFile.get(platformName).get("platformName")));
             listOfAndroidDevices.add(deviceInfo);

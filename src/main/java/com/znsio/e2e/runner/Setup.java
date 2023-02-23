@@ -63,18 +63,16 @@ public class Setup {
     static final String TAG = "TAG";
     static final String APP_VERSION = "APP_VERSION";
     static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
-    static final String APPIUM_SETTINGS = "io.appium.settings";
-    final static String REPORTS_DIR = "reports";
+    static final String REPORTS_DIR = "reports";
     static final String CLOUD_USE_PROXY = "CLOUD_USE_PROXY";
     static final String CLOUD_USE_LOCAL_TESTING = "CLOUD_USE_LOCAL_TESTING";
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
     private static final String CHROME = "chrome";
-    private static final String tempDirectory = "temp";
-    private static final Platform DEFAULT_PLATFORM = Platform.android;
+    private static final String TEMP_DIRECTORY = "temp";
     private static final int DEFAULT_PARALLEL = 1;
-    private static final ArrayList<String> cukeArgs = new ArrayList<>();
+    private static final ArrayList<String> CUKE_ARGS = new ArrayList<>();
     private static final String LOG_PROPERTIES_FILE = "LOG_PROPERTIES_FILE";
     private static final String DEFAULT_LOG_DIR = "target";
     private static final String LOCAL = "LOCAL";
@@ -94,8 +92,8 @@ public class Setup {
     private static Map applitoolsConfiguration = new HashMap<>();
     private static Properties properties;
     private static String configFilePath;
-    private static Platform platform = Platform.android;
-
+    private static Platform currentPlatform = Platform.android;
+    private static final String AND_NOT_WIP = " and not @wip";
 
     private Setup() {
         LOGGER.debug("Setup - private constructor");
@@ -121,7 +119,7 @@ public class Setup {
     @NotNull
     static String getCurlProxyCommand() {
         String curlProxyCommand = "";
-        if(configsBoolean.get(CLOUD_USE_PROXY)) {
+        if(Boolean.TRUE.equals(configsBoolean.get(CLOUD_USE_PROXY))) {
             curlProxyCommand = " --proxy " + configs.get(PROXY_URL);
         }
         return curlProxyCommand;
@@ -146,7 +144,7 @@ public class Setup {
         LOGGER.info(printBooleanMap("Using boolean values", configsBoolean));
         LOGGER.info(printIntegerMap("Using integer values", configsInteger));
 
-        return cukeArgs;
+        return CUKE_ARGS;
     }
 
     static void loadAndUpdateConfigParameters(String configFilePath) {
@@ -226,16 +224,16 @@ public class Setup {
     private static void setupExecutionEnvironment() {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
-        cukeArgs.addAll(DeviceSetup.setupAndroidExecution());
-        cukeArgs.addAll(setupWebExecution());
-        cukeArgs.addAll(DeviceSetup.setupWindowsExecution());
+        CUKE_ARGS.addAll(DeviceSetup.setupAndroidExecution());
+        CUKE_ARGS.addAll(setupWebExecution());
+        CUKE_ARGS.addAll(DeviceSetup.setupWindowsExecution());
         initialiseApplitoolsConfiguration();
 
         String rpAttributes = "AutomationBranch:" + configs.get(
                 BRANCH_NAME) + "; " + "ExecutedOn:" + configs.get(
                 EXECUTED_ON) + "; " + "Installer:" + configs.get(
                 APP_PATH) + "; " + "OS:" + OS_NAME + "; " + "ParallelCount:" + configsInteger.get(
-                PARALLEL) + "; " + "Platform:" + platform.name() + "; " + "RunInCI:" + configsBoolean.get(
+                PARALLEL) + "; " + "Platform:" + currentPlatform.name() + "; " + "RunInCI:" + configsBoolean.get(
                 RUN_IN_CI) + "; " + "Tags:" + configs.get(
                 TAG) + "; " + "TargetEnvironment:" + configs.get(
                 TARGET_ENVIRONMENT) + "; " + "Username:" + USER_NAME + "; " + "VisualEnabled:" + configsBoolean.get(
@@ -252,19 +250,19 @@ public class Setup {
         LOGGER.info("ReportPortal Test Execution Attributes: " + rpAttributes);
 
         // properties needed for atd
-        System.setProperty("CLOUD_USER", configs.get(CLOUD_USER));
-        System.setProperty("CLOUD_KEY", configs.get(CLOUD_KEY));
-        System.setProperty("CONFIG_FILE", configs.get(CONFIG_FILE));
-        System.setProperty("CAPS", configs.get(CAPS));
-        System.setProperty("Platform", platform.name());
-        System.setProperty("atd_" + platform.name() + "_app_local", configs.get(APP_PATH));
+        System.setProperty(CLOUD_USER, configs.get(CLOUD_USER));
+        System.setProperty(CLOUD_KEY, configs.get(CLOUD_KEY));
+        System.setProperty(CONFIG_FILE, configs.get(CONFIG_FILE));
+        System.setProperty(CAPS, configs.get(CAPS));
+        System.setProperty("Platform", currentPlatform.name());
+        System.setProperty("atd_" + currentPlatform.name() + "_app_local", configs.get(APP_PATH));
         if(null != configs.get(PROXY_URL)) {
-            System.setProperty("PROXY_URL", configs.get(PROXY_URL));
+            System.setProperty(PROXY_URL, configs.get(PROXY_URL));
         }
 
         // properties needed for ReportPortal.io
-        System.setProperty("rp.description",
-                           configs.get(APP_NAME) + " End-2-End scenarios on " + platform.name());
+        System.setProperty("rp.description", configs.get(
+                APP_NAME) + " End-2-End scenarios on " + currentPlatform.name());
         System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
         System.setProperty("rp.attributes", rpAttributes);
     }
@@ -376,10 +374,10 @@ public class Setup {
                            getOverriddenIntValue(MAX_NUMBER_OF_WEB_DRIVERS, Integer.parseInt(
                                    getStringValueFromPropertiesIfAvailable(
                                            MAX_NUMBER_OF_WEB_DRIVERS, "5"))));
-        platform = Platform.valueOf(getOverriddenStringValue(PLATFORM,
-                                                             getStringValueFromPropertiesIfAvailable(
-                                                                     PLATFORM,
-                                                                     Platform.android.name())));
+        currentPlatform = Platform.valueOf(getOverriddenStringValue(PLATFORM,
+                                                                    getStringValueFromPropertiesIfAvailable(
+                                                                            PLATFORM,
+                                                                            Platform.android.name())));
         configsInteger.put(PARALLEL, getOverriddenIntValue(PARALLEL, Integer.parseInt(
                 getStringValueFromPropertiesIfAvailable(PARALLEL,
                                                         String.valueOf(DEFAULT_PARALLEL)))));
@@ -420,7 +418,7 @@ public class Setup {
 
     private static List<String> listOfDirectoriesToCreate() {
         List<String> files = new ArrayList<>();
-        files.add(tempDirectory);
+        files.add(TEMP_DIRECTORY);
         files.add(configs.get(LOG_DIR));
         return files;
     }
@@ -428,82 +426,81 @@ public class Setup {
     private static void getPlatformTagsAndLaunchName() {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME) + " Automated Tests Report";
-        if(configsBoolean.get(RUN_IN_CI)) {
+        if(Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
             launchName += " on Device Farm";
         }
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);
         if(providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
             LOGGER.info("\tTags not specified");
-            launchName += " - " + platform;
+            launchName += " - " + currentPlatform;
         } else {
             if(providedTags.contains("multiuser-android-web")) {
-                platform = Platform.android;
-                inferredTags = providedTags + " and not @wip";
+                currentPlatform = Platform.android;
+                inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Android & Web";
             } else if(providedTags.contains("multiuser-android")) {
-                platform = Platform.android;
-                inferredTags = providedTags + " and not @wip";
+                currentPlatform = Platform.android;
+                inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on multiple Androids";
             } else if(providedTags.contains("multiuser-web")) {
-                platform = Platform.web;
-                inferredTags = providedTags + " and not @wip";
+                currentPlatform = Platform.web;
+                inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Web";
             } else if(providedTags.contains("multiuser-windows-web")) {
-                platform = Platform.windows;
-                inferredTags = providedTags + " and not @wip";
+                currentPlatform = Platform.windows;
+                inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Windows & Web";
             } else if(providedTags.contains("multiuser-windows-android")) {
-                platform = Platform.windows;
-                inferredTags = providedTags + " and not @wip";
+                currentPlatform = Platform.windows;
+                inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Windows & Android";
             } else {
-                launchName += " - " + platform;
+                launchName += " - " + currentPlatform;
             }
         }
 
         launchName += " " + configs.get(LAUNCH_NAME_SUFFIX);
 
         LOGGER.info(
-                "\tRunning tests with platform: " + platform + " and the following tag criteria " +
-                ":" + " " + inferredTags);
+                "\tRunning tests with platform: " + currentPlatform + " and the following tag " + "criteria " + ":" + " " + inferredTags);
         LOGGER.info("\tReportPortal Tests Launch name: " + launchName);
 
-        configs.put(PLATFORM, platform.name());
+        configs.put(PLATFORM, currentPlatform.name());
         configs.put(LAUNCH_NAME, launchName);
         configs.put(TAG, inferredTags);
-        cukeArgs.add("--tags");
-        cukeArgs.add(inferredTags);
+        CUKE_ARGS.add("--tags");
+        CUKE_ARGS.add(inferredTags);
     }
 
     private static void addCucumberPlugsToArgs() {
-        cukeArgs.add(PLUGIN);
-        cukeArgs.add("pretty");
-        cukeArgs.add(PLUGIN);
+        CUKE_ARGS.add(PLUGIN);
+        CUKE_ARGS.add("pretty");
+        CUKE_ARGS.add(PLUGIN);
         String logDir = configs.get(LOG_DIR);
-        cukeArgs.add(
+        CUKE_ARGS.add(
                 "html:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-html"
                 + "-report.html");
-        cukeArgs.add(PLUGIN);
-        cukeArgs.add(
+        CUKE_ARGS.add(PLUGIN);
+        CUKE_ARGS.add(
                 "junit:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber" +
                 "-junit-report.xml");
-        cukeArgs.add(PLUGIN);
-        cukeArgs.add(
+        CUKE_ARGS.add(PLUGIN);
+        CUKE_ARGS.add(
                 "json:" + logDir + File.separator + REPORTS_DIR + File.separator + "cucumber-json"
                 + "-report.json");
-        cukeArgs.add(PLUGIN);
-        cukeArgs.add(
+        CUKE_ARGS.add(PLUGIN);
+        CUKE_ARGS.add(
                 "message:" + logDir + File.separator + REPORTS_DIR + File.separator + "results" + ".ndjson");
-        cukeArgs.add(PLUGIN);
-        cukeArgs.add(
+        CUKE_ARGS.add(PLUGIN);
+        CUKE_ARGS.add(
                 "timeline:" + logDir + File.separator + REPORTS_DIR + File.separator + "timeline");
         System.setProperty("cucumber.publish.quiet", "true");
     }
 
     private static ArrayList<String> setupWebExecution() {
         ArrayList<String> webCukeArgs = new ArrayList<>();
-        if(platform.equals(Platform.web)) {
+        if(currentPlatform.equals(Platform.web)) {
             configs.put(APP_PATH, configs.get(BROWSER));
             webCukeArgs.add("--threads");
             webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
@@ -527,7 +524,7 @@ public class Setup {
                                                                          applitoolsConfiguration.get(
                                                                                  APPLITOOLS.API_KEY))));
             applitoolsConfiguration.put(BRANCH_NAME, configs.get(BRANCH_NAME));
-            applitoolsConfiguration.put(PLATFORM, platform.name());
+            applitoolsConfiguration.put(PLATFORM, currentPlatform.name());
             applitoolsConfiguration.put(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
             applitoolsConfiguration.put(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
             applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());
@@ -540,7 +537,7 @@ public class Setup {
                     configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
             applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, batchInfo);
             batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
-            batchInfo.addProperty(PLATFORM, platform.name());
+            batchInfo.addProperty(PLATFORM, currentPlatform.name());
             batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
             batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
         }
@@ -567,7 +564,7 @@ public class Setup {
     }
 
     private static String getCustomTags() {
-        String customTags = "@" + platform + " and not @wip";
+        String customTags = "@" + currentPlatform + AND_NOT_WIP;
         String providedTags = configs.get(TAG);
         if(!providedTags.equalsIgnoreCase(NOT_SET)) {
             if(!providedTags.startsWith("@")) {
@@ -618,8 +615,7 @@ public class Setup {
                                              Integer.parseInt(viewP[1]));
         } catch(NullPointerException e) {
             LOGGER.info(
-                    "Unable to get viewport size from Applitools configuration. Using default: " +
-                    "1280x960");
+                    "Unable to get viewport size from Applitools configuration. Using default: " + "1280x960");
         }
         return viewportSize;
     }
@@ -636,8 +632,8 @@ public class Setup {
 
     public static void cleanUpExecutionEnvironment() {
         LOGGER.info("cleanUpExecutionEnvironment");
-        if(platform.equals(Platform.android)) {
-            if(configsBoolean.get(RUN_IN_CI)) {
+        if(currentPlatform.equals(Platform.android)) {
+            if(Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
                 DeviceSetup.cleanupCloudExecution();
             } else {
                 LOGGER.info("Not running in CI. Nothing to cleanup in Execution environment");
@@ -688,26 +684,6 @@ public class Setup {
     }
 
     static Platform getPlatform() {
-        return platform;
+        return currentPlatform;
     }
-
-    private void cleanupDirectories() {
-        List<String> files = listOfDirectoriesToDelete();
-        LOGGER.info("Delete Directories: " + files);
-        for(String file : files) {
-            LOGGER.info("\tDeleting directory: " + file);
-            try {
-                FileUtils.deleteDirectory(new java.io.File(file));
-            } catch(IOException e) {
-                throw new EnvironmentSetupException("Unable to cleanup & setup directories", e);
-            }
-        }
-    }
-
-    private List<String> listOfDirectoriesToDelete() {
-        List<String> files = new ArrayList<>();
-        files.add(configs.get(LOG_DIR));
-        return files;
-    }
-
 }

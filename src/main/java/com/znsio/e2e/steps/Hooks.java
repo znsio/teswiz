@@ -50,7 +50,7 @@ public class Hooks {
     public void afterScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();
         LOGGER.info("ThreadId: " + threadId + " In RunCukes - After: " + scenario.getName());
-        Runner.closeAllDrivers(threadId);
+        Runner.closeAllDrivers();
         SoftAssertions softly = Runner.getSoftAssertion(threadId);
         softly.assertAll();
     }

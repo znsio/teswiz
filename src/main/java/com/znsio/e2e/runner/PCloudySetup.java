@@ -23,12 +23,18 @@ import static com.znsio.e2e.runner.Setup.*;
 
 public class PCloudySetup {
     private static final Logger LOGGER = Logger.getLogger(PCloudySetup.class.getName());
+    private static final String CURL_INSECURE = "curl --insecure";
+    private static final String RESULT = "result";
+
+    private PCloudySetup() {
+        LOGGER.debug("PCloudySetup - private constructor");
+    }
 
     static void updatePCloudyCapabilities() {
         String emailID = Setup.getFromConfigs(CLOUD_USER);
         String authenticationKey = Setup.getFromConfigs(CLOUD_KEY);
         if(Setup.getBooleanValueFromConfigs(CLOUD_UPLOAD_APP)) {
-            uploadAPKTopCloudy(emailID, authenticationKey);
+            fetchAuthTokenAndUploadAPKToPCloudy(emailID, authenticationKey);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
         }
@@ -47,13 +53,14 @@ public class PCloudySetup {
         updateCapabilities(loadedCapabilityFile);
     }
 
-    private static void uploadAPKTopCloudy(String emailID, String authenticationKey) {
+    private static void fetchAuthTokenAndUploadAPKToPCloudy(String emailID,
+                                                            String authenticationKey) {
         LOGGER.info(
                 String.format("uploadAPKTopCloudy for: '%s':'%s'%n", emailID, authenticationKey));
         String appPath = Setup.getFromConfigs(APP_PATH);
         String deviceLabURL = Setup.getFromConfigs(DEVICE_LAB_URL);
 
-        String authToken = getpCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
+        String authToken = getPCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
         if(isAPKAlreadyAvailableInPCloudy(authToken, appPath)) {
             LOGGER.info("\tAPK is already available in cloud. No need to upload it again");
         } else {
@@ -84,10 +91,10 @@ public class PCloudySetup {
                                 listOfAndroidDevices);
     }
 
-    private static String getpCloudyAuthToken(String emailID, String authenticationKey,
+    private static String getPCloudyAuthToken(String emailID, String authenticationKey,
                                               String appPath, String deviceLabURL) {
         LOGGER.info("Get pCloudy Auth Token");
-        String[] getAppToken = new String[]{"curl --insecure", getCurlProxyCommand(), "-u",
+        String[] getAppToken = new String[]{CURL_INSECURE, getCurlProxyCommand(), "-u",
                                             "\"" + emailID + ":" + authenticationKey + "\"",
                                             deviceLabURL + "/api/access"};
         CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken);
@@ -98,7 +105,7 @@ public class PCloudySetup {
                                   authTokenResponse));
         }
         String authToken = JsonFile.convertToMap(authTokenResponse.getStdOut())
-                                   .getAsJsonObject("result").get("token").getAsString();
+                                   .getAsJsonObject(RESULT).get("token").getAsString();
         LOGGER.info("\tauthToken: " + authToken);
         return authToken;
     }
@@ -110,7 +117,7 @@ public class PCloudySetup {
 
         CommandLineResponse uploadResponse = getListOfUploadedFilesInPCloudy(authToken);
         JsonObject result = JsonFile.convertToMap(uploadResponse.getStdOut())
-                                    .getAsJsonObject("result");
+                                    .getAsJsonObject(RESULT);
         JsonArray availableFiles = result.getAsJsonArray("files");
         AtomicBoolean isFileAlreadyUploaded = new AtomicBoolean(false);
         availableFiles.forEach(file -> {
@@ -126,8 +133,8 @@ public class PCloudySetup {
     private static String uploadAPKToPCloudy(String appPath, String deviceLabURL,
                                              String authToken) {
         LOGGER.info("uploadAPKTopCloudy: " + appPath);
-        String[] listOfDevices = new String[]{"curl --insecure", getCurlProxyCommand(), "-X",
-                                              "POST", "-F", "file=@\"" + appPath + "\"", "-F",
+        String[] listOfDevices = new String[]{CURL_INSECURE, getCurlProxyCommand(), "-X", "POST",
+                                              "-F", "file=@\"" + appPath + "\"", "-F",
                                               "\"source_type=raw\"", "-F",
                                               "\"token=" + authToken + "\"", "-F", "\"filter=apk\"",
                                               deviceLabURL + "/api/upload_file"};
@@ -135,7 +142,7 @@ public class PCloudySetup {
         CommandLineResponse uploadApkResponse = CommandLineExecutor.execCommand(listOfDevices);
         LOGGER.info("\tuploadApkResponse: " + uploadApkResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(uploadApkResponse.getStdOut())
-                                    .getAsJsonObject("result");
+                                    .getAsJsonObject(RESULT);
         int uploadStatus = result.get("code").getAsInt();
         if(200 != uploadStatus) {
             throw new EnvironmentSetupException(
@@ -154,10 +161,10 @@ public class PCloudySetup {
         payload.put("\"token\"", "\"" + authToken + "\"");
         payload.put("\"limit\"", 15);
         payload.put("\"filter\"", "\"all\"");
-        String updatedPayload = payload.toString().replace("\"", "\\\"").replaceAll("=", ":");
+        String updatedPayload = payload.toString().replace("\"", "\\\"").replace("=", ":");
 
         String[] listOfUploadedFiles;
-        listOfUploadedFiles = new String[]{"curl --insecure", getCurlProxyCommand(), "-H",
+        listOfUploadedFiles = new String[]{CURL_INSECURE, getCurlProxyCommand(), "-H",
                                            "Content-Type:application/json", "-d",
                                            "\"" + updatedPayload + "\"",
                                            deviceLabURL + "/api/drive"};
@@ -166,7 +173,7 @@ public class PCloudySetup {
                 listOfUploadedFiles);
         LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
         JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut())
-                                    .getAsJsonObject("result");
+                                    .getAsJsonObject(RESULT);
         JsonElement resultCode = result.get("code");
         int uploadStatus = (null == resultCode) ? 400 : resultCode.getAsInt();
         if(200 != uploadStatus) {

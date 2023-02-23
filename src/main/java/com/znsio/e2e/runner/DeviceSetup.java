@@ -24,6 +24,10 @@ import static com.znsio.e2e.runner.Setup.*;
 public class DeviceSetup {
     private static final Logger LOGGER = Logger.getLogger(DeviceSetup.class.getName());
 
+    private DeviceSetup() {
+        LOGGER.debug("DeviceSetup - private constructor");
+    }
+
     static void saveNewCapabilitiesFile(String platformName, String capabilityFile,
                                         Map<String, Map> loadedCapabilityFile,
                                         ArrayList listOfAndroidDevices) {
@@ -81,8 +85,8 @@ public class DeviceSetup {
     }
 
     private static void fetchAndroidAppVersion() {
-        Pattern VERSION_NAME_PATTERN = Pattern.compile("versionName='([0-9]+(\\.[0-9]+)+)'",
-                                                       Pattern.MULTILINE);
+        Pattern versionNamePattern = Pattern.compile("versionName='(\\d+(\\.\\d+)+)'",
+                                                     Pattern.MULTILINE);
         String searchPattern = "grep";
         if(Runner.IS_WINDOWS) {
             searchPattern = "findstr";
@@ -99,7 +103,7 @@ public class DeviceSetup {
             String[] commandToGetAppVersion = new String[]{aaptExecutable.toString(), "dump",
                                                            "badging", appFilePath, "|",
                                                            searchPattern, "versionName"};
-            fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
+            fetchAppVersion(commandToGetAppVersion, versionNamePattern);
         } catch(Exception e) {
             LOGGER.info("fetchAndroidAppVersion: Exception: " + e.getLocalizedMessage());
         }
@@ -188,8 +192,7 @@ public class DeviceSetup {
     }
 
     private static void fetchWindowsAppVersion() {
-        Pattern VERSION_NAME_PATTERN = Pattern.compile("Version=([0-9]+(\\.[0-9]+)+)",
-                                                       Pattern.MULTILINE);
+        Pattern versionNamePattern = Pattern.compile("Version=(\\d+(\\.\\d+)+)", Pattern.MULTILINE);
         try {
             File appFile = new File(Setup.getFromConfigs(APP_PATH));
             String nameVariable = "name=\"" + appFile.getCanonicalPath()
@@ -197,7 +200,7 @@ public class DeviceSetup {
             String[] commandToGetAppVersion = new String[]{"wmic", "datafile", "where",
                                                            nameVariable, "get", "Version",
                                                            "/value"};
-            fetchAppVersion(commandToGetAppVersion, VERSION_NAME_PATTERN);
+            fetchAppVersion(commandToGetAppVersion, versionNamePattern);
         } catch(IOException e) {
             LOGGER.info("fetchWindowsAppVersion: Exception: " + e.getLocalizedMessage());
         }

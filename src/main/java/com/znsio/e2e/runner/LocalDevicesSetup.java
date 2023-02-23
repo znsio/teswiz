@@ -20,8 +20,15 @@ import static com.znsio.e2e.runner.Setup.*;
 
 public class LocalDevicesSetup {
     private static final Logger LOGGER = Logger.getLogger(LocalDevicesSetup.class.getName());
+    private static final String APPIUM_SETTINGS = "io.appium.settings";
+    private static final String UNINSTALL = "uninstall";
+    private static final String GETPROP = "getprop";
 
     private static List<Device> devices;
+
+    private LocalDevicesSetup() {
+        LOGGER.debug("LocalDevicesSetup - private constructor");
+    }
 
     static void setupLocalExecution() {
         List<Device> devices = setupLocalDevices();
@@ -70,15 +77,14 @@ public class LocalDevicesSetup {
                 Device device = new Device();
                 device.setName(jadbDevice.getSerial());
                 device.setUdid(jadbDevice.getSerial());
-                // device.setUdid(getAdbCommandOutput(jadbDevice, "getprop", "ro.serialno"));
-                device.setApiLevel(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop",
+                device.setApiLevel(getAdbCommandOutputFromLocalDevice(jadbDevice, GETPROP,
                                                                       "ro.build.version.sdk"));
-                device.setDeviceManufacturer(
-                        getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop",
-                                                           "ro.product.brand"));
-                device.setDeviceModel(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop",
+                device.setDeviceManufacturer(getAdbCommandOutputFromLocalDevice(jadbDevice, GETPROP,
+                                                                                "ro.product" +
+                                                                                ".brand"));
+                device.setDeviceModel(getAdbCommandOutputFromLocalDevice(jadbDevice, GETPROP,
                                                                          "ro.product.model"));
-                device.setOsVersion(getAdbCommandOutputFromLocalDevice(jadbDevice, "getprop",
+                device.setOsVersion(getAdbCommandOutputFromLocalDevice(jadbDevice, GETPROP,
                                                                        "ro.build.version.release"));
                 devices.add(device);
                 uninstallAppFromLocalDevice(device, Setup.getFromConfigs(APP_PACKAGE_NAME));
@@ -102,15 +108,15 @@ public class LocalDevicesSetup {
 
     private static void uninstallAppFromLocalDevice(Device device, String appPackageName) {
         String[] uninstallAppiumAutomator2Server = new String[]{"adb", "-s", device.getUdid(),
-                                                                "uninstall",
+                                                                UNINSTALL,
                                                                 APPIUM_UI_AUTOMATOR2_SERVER};
         CommandLineExecutor.execCommand(uninstallAppiumAutomator2Server);
-        String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), "uninstall",
+        String[] uninstallAppiumSettings = new String[]{"adb", "-s", device.getUdid(), UNINSTALL,
                                                         APPIUM_SETTINGS};
         CommandLineExecutor.execCommand(uninstallAppiumSettings);
 
         if(Setup.getBooleanValueFromConfigs(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION)) {
-            String[] uninstallApp = new String[]{"adb", "-s", device.getUdid(), "uninstall",
+            String[] uninstallApp = new String[]{"adb", "-s", device.getUdid(), UNINSTALL,
                                                  appPackageName};
             CommandLineExecutor.execCommand(uninstallApp);
         } else {

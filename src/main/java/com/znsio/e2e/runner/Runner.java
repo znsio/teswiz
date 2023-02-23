@@ -14,7 +14,6 @@ import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,12 +60,9 @@ public class Runner {
         LOGGER.info("Begin running tests...");
         LOGGER.info("Args: " + args);
         String[] array = args.toArray(String[]::new);
-        String logDir = Runner.USER_DIRECTORY + File.separator + Setup.getFromConfigs(
-                LOG_DIR) + File.separator + REPORTS_DIR;
-        LOGGER.info(logDir);
         byte status = Main.run(array);
         Setup.cleanUpExecutionEnvironment();
-        LOGGER.info(CustomReports.generateReport(logDir));
+        CustomReports.generateReport();
         System.exit(status);
     }
 
@@ -114,8 +110,7 @@ public class Runner {
         try {
             return Setup.getFromEnvironmentConfiguration(key);
         } catch(NullPointerException npe) {
-            throw new InvalidTestDataException(
-                    String.format(INVALID_KEY_MESSAGE, key), npe);
+            throw new InvalidTestDataException(String.format(INVALID_KEY_MESSAGE, key), npe);
         }
     }
 
@@ -123,8 +118,7 @@ public class Runner {
         try {
             return Setup.getTestDataValueAsStringForEnvironmentFor(key);
         } catch(NullPointerException npe) {
-            throw new InvalidTestDataException(
-                    String.format(INVALID_KEY_MESSAGE, key), npe);
+            throw new InvalidTestDataException(String.format(INVALID_KEY_MESSAGE, key), npe);
         }
     }
 
@@ -132,8 +126,7 @@ public class Runner {
         try {
             return Setup.getTestDataAsMapForEnvironmentFor(key);
         } catch(NullPointerException npe) {
-            throw new InvalidTestDataException(
-                    String.format(INVALID_KEY_MESSAGE, key), npe);
+            throw new InvalidTestDataException(String.format(INVALID_KEY_MESSAGE, key), npe);
         }
     }
 
@@ -163,7 +156,7 @@ public class Runner {
         return SessionContext.getTestExecutionContext(threadId);
     }
 
-    public static String fetchDeviceName(long threadId, String forUserPersona) {
+    public static String fetchDeviceName(String forUserPersona) {
         return Drivers.getDeviceNameForUser(forUserPersona);
     }
 
@@ -189,7 +182,7 @@ public class Runner {
         return Drivers.getPlatformForUser(userPersona);
     }
 
-    public static void closeAllDrivers(long threadId) {
+    public static void closeAllDrivers() {
         Drivers.attachLogsAndCloseAllWebDrivers();
     }
 
