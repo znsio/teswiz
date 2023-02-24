@@ -20,7 +20,7 @@ public class CucumberWebScenarioReporterListener
 
     @Override
     protected void startRootItem() {
-        this.rootSuiteId = rootSuiteId = new MemoizingSupplier<>(() -> {
+        this.rootSuiteId = new MemoizingSupplier<>(() -> {
             StartTestItemRQ rq = new StartTestItemRQ();
             rq.setName(DUMMY_ROOT_SUITE_NAME);
             rq.setStartTime(Calendar.getInstance().getTime());
