@@ -21,7 +21,7 @@ public class CucumberWebScenarioListener
     private final Map<String, Integer> scenarioRunCounts = new HashMap<>();
 
     public CucumberWebScenarioListener() {
-        LOGGER.info(String.format("ThreadId: %d: CucumberWebScenarioListener\n",
+        LOGGER.info(String.format("ThreadId: %d: CucumberWebScenarioListener%n",
                                   Thread.currentThread().getId()));
     }
 
@@ -35,7 +35,7 @@ public class CucumberWebScenarioListener
 
     private void webRunStartedHandler(TestRunStarted event) {
         LOGGER.info("webRunStartedHandler");
-        LOGGER.info(String.format("ThreadId: %d: beforeSuite: \n", Thread.currentThread().getId()));
+        LOGGER.info(String.format("ThreadId: %d: beforeSuite: %n", Thread.currentThread().getId()));
     }
 
     private void webCaseStartedHandler(TestCaseStarted event) {
@@ -48,7 +48,7 @@ public class CucumberWebScenarioListener
         Integer scenarioRunCount = getScenarioRunCount(scenarioName);
         String normalisedScenarioName = normaliseScenarioName(scenarioName);
 
-        LOGGER.info(String.format("ThreadId: %d: beforeScenario: for scenario: %s\n",
+        LOGGER.info(String.format("ThreadId: %d: beforeScenario: for scenario: %s%n",
                                   Thread.currentThread().getId(), scenarioName));
         testExecutionContext.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY,
                                           FileLocations.REPORTS_DIRECTORY + normalisedScenarioName);
@@ -61,7 +61,7 @@ public class CucumberWebScenarioListener
         LOGGER.info("webCaseFinishedHandler Name: " + scenarioName);
         LOGGER.info("webCaseFinishedHandler Result: " + event.getResult().getStatus().toString());
         long threadId = Thread.currentThread().getId();
-        LOGGER.info(String.format("ThreadID: %d: afterScenario: for scenario: %s\n", threadId,
+        LOGGER.info(String.format("ThreadID: %d: afterScenario: for scenario: %s%n", threadId,
                                   scenarioName));
         Runner.remove(threadId);
         LOGGER.info(
@@ -71,7 +71,7 @@ public class CucumberWebScenarioListener
     private void webRunFinishedHandler(TestRunFinished event) {
         LOGGER.info("webRunFinishedHandler: " + event.getResult().toString());
         SessionContext.setReportPortalLaunchURL();
-        LOGGER.info(String.format("ThreadId: %d: afterSuite: \n", Thread.currentThread().getId()));
+        LOGGER.info(String.format("ThreadId: %d: afterSuite: %n", Thread.currentThread().getId()));
     }
 
     private Integer getScenarioRunCount(String scenarioName) {
