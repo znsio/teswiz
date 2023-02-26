@@ -34,7 +34,8 @@ public class DeviceSetup {
         Map loadedCloudCapability = loadedCapabilityFile.get("cloud");
         loadedCloudCapability.put(platformName, listOfAndroidDevices);
 
-        LOGGER.info("Updated Device Lab Capabilities file: \n" + loadedCapabilityFile);
+        LOGGER.info(
+                String.format("Updated Device Lab Capabilities file: %n%s", loadedCapabilityFile));
 
         String updatedCapabilitiesFile = getPathForFileInLogDir(capabilityFile);
         JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitiesFile);
@@ -42,12 +43,12 @@ public class DeviceSetup {
     }
 
     static String getPathForFileInLogDir(String fullFilePath) {
-        LOGGER.info("\tgetPathForFileInLogDir: fullFilePath: " + fullFilePath);
+        LOGGER.info(String.format("\tgetPathForFileInLogDir: fullFilePath: %s", fullFilePath));
         Path path = Paths.get(fullFilePath);
         String fileName = path.getFileName().toString();
         String newFileName = new File(
                 Setup.getFromConfigs(LOG_DIR) + File.separator + fileName).getAbsolutePath();
-        LOGGER.info("\tNew file available here: " + newFileName);
+        LOGGER.info(String.format("\tNew file available here: %s", newFileName));
         return newFileName;
     }
 
@@ -73,14 +74,15 @@ public class DeviceSetup {
 
     static void verifyAppExistsAtMentionedPath() {
         String appPath = Setup.getFromConfigs(APP_PATH);
-        LOGGER.info("Update path to Apk: " + appPath);
+        LOGGER.info(String.format("Update path to Apk: %s", appPath));
         if(appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
             Setup.addToConfigs(APP_PATH, appPath);
             String capabilitiesFileName = Setup.getFromConfigs(CAPS);
             checkIfAppExistsAtTheMentionedPath(appPath, capabilitiesFileName);
         } else {
-            LOGGER.info("\tUsing AppPath provided as environment variable -  " + appPath);
+            LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s",
+                                      appPath));
         }
     }
 
@@ -94,18 +96,21 @@ public class DeviceSetup {
 
         try {
             File appFile = new File(Setup.getFromConfigs(APP_PATH));
-            String appFilePath = appFile.getCanonicalPath();
-            String androidHomePath = System.getenv("ANDROID_HOME");
-            File buildToolsFolder = new File(androidHomePath, "build-tools");
-            File buildVersionFolder = Objects.requireNonNull(buildToolsFolder.listFiles())[0];
-            File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
+            if (!isAppPathAUrl(appFile.getPath())) {
+                String appFilePath = appFile.getCanonicalPath();
+                String androidHomePath = System.getenv("ANDROID_HOME");
+                File buildToolsFolder = new File(androidHomePath, "build-tools");
+                File buildVersionFolder = Objects.requireNonNull(buildToolsFolder.listFiles())[0];
+                File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
 
-            String[] commandToGetAppVersion = new String[]{aaptExecutable.toString(), "dump",
-                                                           "badging", appFilePath, "|",
-                                                           searchPattern, "versionName"};
-            fetchAppVersion(commandToGetAppVersion, versionNamePattern);
+                String[] commandToGetAppVersion = new String[]{aaptExecutable.toString(), "dump",
+                                                               "badging", appFilePath, "|",
+                                                               searchPattern, "versionName"};
+                fetchAppVersion(commandToGetAppVersion, versionNamePattern);
+            }
         } catch(Exception e) {
-            LOGGER.info("fetchAndroidAppVersion: Exception: " + e.getLocalizedMessage());
+            LOGGER.info(
+                    String.format("fetchAndroidAppVersion: Exception: %s", e.getLocalizedMessage()));
         }
     }
 
@@ -139,20 +144,22 @@ public class DeviceSetup {
 
     private static void checkIfAppExistsAtTheMentionedPath(String appPath,
                                                            String capabilitiesFileName) {
-        if(appPath.toLowerCase().startsWith("http://") || (appPath.toLowerCase()
-                                                                  .startsWith("https://"))) {
-            LOGGER.info("\tAppPath refers to a url: " + appPath);
-        } else {
+        if(!isAppPathAUrl(appPath)) {
             if(Files.exists(Paths.get(appPath))) {
-                LOGGER.info(
-                        "\tUsing AppPath: " + appPath + " in file: " + capabilitiesFileName +
-                        "::" + " " + Setup.getPlatform());
+                LOGGER.info(String.format("\tUsing AppPath: %s in file: %s:: %s", appPath,
+                                          capabilitiesFileName, Setup.getPlatform()));
             } else {
-                LOGGER.info("\tAppPath: " + appPath + " not found!");
+                LOGGER.info(String.format("\tAppPath: %s not found!", appPath));
                 throw new InvalidTestDataException(
-                        "App file not found at the mentioned path: " + appPath);
+                        String.format("App file not found at the mentioned path: %s", appPath));
             }
         }
+    }
+
+    private static boolean isAppPathAUrl(String appPath) {
+        boolean isUrl = appPath.toLowerCase().startsWith("http");
+        LOGGER.info(String.format("\tAppPath refers to a url: %s", appPath));
+        return isUrl;
     }
 
     private static void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {
@@ -163,7 +170,7 @@ public class DeviceSetup {
             Matcher matcher = pattern.matcher(commandOutput);
             if(matcher.find()) {
                 Setup.addToConfigs(APP_VERSION, matcher.group(1));
-                LOGGER.info("APP_VERSION: " + matcher.group(1));
+                LOGGER.info(String.format("APP_VERSION: %s", matcher.group(1)));
             }
         } else {
             LOGGER.info("fetchAppVersion: " + commandResponse.getErrOut());
@@ -202,7 +209,8 @@ public class DeviceSetup {
                                                            "/value"};
             fetchAppVersion(commandToGetAppVersion, versionNamePattern);
         } catch(IOException e) {
-            LOGGER.info("fetchWindowsAppVersion: Exception: " + e.getLocalizedMessage());
+            LOGGER.info(
+                    String.format("fetchWindowsAppVersion: Exception: %s", e.getLocalizedMessage()));
         }
     }
 

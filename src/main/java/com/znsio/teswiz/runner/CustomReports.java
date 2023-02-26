@@ -35,16 +35,16 @@ class CustomReports {
 
         ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
         reportBuilder.generateReports();
-        String generatedReportsMessage = "Reports available here: " + config.getReportDirectory()
-                                                                            .getAbsolutePath() +
-                                         "/cucumber-html" + "-reports" + "/overview-features.html";
+        String generatedReportsMessage = String.format(
+                "Reports available here: %s/cucumber-html-reports/overview-features.html",
+                config.getReportDirectory().getAbsolutePath());
         LOGGER.info(generatedReportsMessage);
     }
 
     @NotNull
     private static Configuration createCucumberReportsConfiguration(String reportsDir) {
         String richReportsPath = reportsDir + File.separator + "richReports";
-        LOGGER.info("\tCreating rich reports: " + richReportsPath);
+        LOGGER.info(String.format("\tCreating rich reports: %s", richReportsPath));
         Configuration config = new Configuration(new File(richReportsPath),
                                                  Setup.getFromConfigs(APP_NAME));
         return addTestExecutionMetaDataToReportConfig(excludeCustomTagsFromReport(config));
@@ -69,7 +69,7 @@ class CustomReports {
         }
         List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
         jsonFiles.forEach(file -> {
-            LOGGER.info("\tProcessing result file: " + file.getAbsolutePath());
+            LOGGER.info(String.format("\tProcessing result file: %s", file.getAbsolutePath()));
             jsonPaths.add(file.getAbsolutePath());
         });
         return jsonPaths;

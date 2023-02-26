@@ -31,44 +31,40 @@ public class Driver {
     private static final Logger LOGGER = Logger.getLogger(Driver.class.getName());
     private final String type;
     private final WebDriver driver;
-    private final String deviceOn;
-    private final boolean shouldBrowserBeMaximized;
-    private final boolean isRunInHeadlessMode;
     private final String userPersona;
     private final String appName;
     private final Platform driverForPlatform;
+    private static final String DIMENSION = "dimension: ";
+    private static final String FROM_HEIGHT_TO_HEIGHT = "width: %s, from height: %s, to height: %s";
+    private static final String TO = "' to '";
+    private final boolean isRunningInHeadlessMode;
     private Visual visually;
 
-    public Driver(String testName, Platform forPlatform, String deviceOn, String userPersona,
+    public Driver(String testName, Platform forPlatform, String userPersona,
                   String appName, AppiumDriver<WebElement> appiumDriver) {
         this.driver = appiumDriver;
-        this.deviceOn = deviceOn;
         this.type = APPIUM_DRIVER;
-        this.shouldBrowserBeMaximized = false;
-        this.isRunInHeadlessMode = false;
         this.userPersona = userPersona;
         this.appName = appName;
         this.driverForPlatform = forPlatform;
+        this.isRunningInHeadlessMode = false;
         instantiateEyes(testName, appiumDriver);
+    }
+
+    public Driver(String testName, Platform forPlaform, String userPersona,
+                  String appName, WebDriver webDriver, boolean isRunInHeadlessMode) {
+        this.driver = webDriver;
+        this.type = WEB_DRIVER;
+        this.userPersona = userPersona;
+        this.appName = appName;
+        this.driverForPlatform = forPlaform;
+        this.isRunningInHeadlessMode = isRunInHeadlessMode;
+        instantiateEyes(testName, webDriver);
     }
 
     private void instantiateEyes(String testName, WebDriver innerDriver) {
         this.visually = new Visual(this.type, this.driverForPlatform, innerDriver, testName,
-                                   userPersona, appName, Runner.isVisualTestingEnabled());
-    }
-
-    public Driver(String testName, Platform forPlaform, String browserOn, String userPersona,
-                  String appName, WebDriver webDriver, boolean isRunInHeadlessMode,
-                  boolean shouldBrowserBeMaximized) {
-        this.driver = webDriver;
-        this.type = WEB_DRIVER;
-        this.deviceOn = browserOn;
-        this.shouldBrowserBeMaximized = shouldBrowserBeMaximized;
-        this.isRunInHeadlessMode = isRunInHeadlessMode;
-        this.userPersona = userPersona;
-        this.appName = appName;
-        this.driverForPlatform = forPlaform;
-        instantiateEyes(testName, webDriver);
+                                   userPersona, appName);
     }
 
     public WebElement waitForClickabilityOf(String elementId) {
@@ -127,25 +123,25 @@ public class Driver {
     }
 
     public boolean isElementPresent(By locator) {
-        return driver.findElements(locator).size() > 0;
+        return !driver.findElements(locator).isEmpty();
     }
 
     public boolean isElementPresentByAccessibilityId(String locator) {
-        return ((AppiumDriver) driver).findElementsByAccessibilityId(locator).size() > 0;
+        return !((AppiumDriver) driver).findElementsByAccessibilityId(locator).isEmpty();
     }
 
     public boolean isElementPresentWithin(WebElement parentElement, By locator) {
-        return parentElement.findElements(locator).size() > 0;
+        return !parentElement.findElements(locator).isEmpty();
     }
 
     public void scrollDownByScreenSize() {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage().window().getSize();
-        LOGGER.info("dimension: " + windowSize.toString());
+        LOGGER.info(DIMENSION + windowSize.toString());
         int width = windowSize.width / 2;
         int fromHeight = (int) (windowSize.height * 0.9);
         int toHeight = (int) (windowSize.height * 0.5);
-        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight,
+        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight,
                                   toHeight));
 
         TouchAction touchAction = new TouchAction(appiumDriver);
@@ -158,13 +154,13 @@ public class Driver {
                                  int percentScreenWidth) {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage().window().getSize();
-        LOGGER.info("dimension: " + windowSize.toString());
+        LOGGER.info(DIMENSION + windowSize.toString());
         int width = (windowSize.width * percentScreenWidth) / 100;
         int fromHeight = (windowSize.height * fromPercentScreenHeight) / 100;
         int toHeight = (windowSize.height * toPercentScreenHeight) / 100;
-        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight,
+        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight,
                                   toHeight));
-        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight,
+        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight,
                                   toHeight));
 
         TouchAction touchAction = new TouchAction(appiumDriver);
@@ -226,7 +222,7 @@ public class Driver {
     private int getWindowHeight() {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage().window().getSize();
-        LOGGER.info("dimension: " + windowSize.toString());
+        LOGGER.info(DIMENSION + windowSize.toString());
         return windowSize.height;
     }
 
@@ -309,7 +305,7 @@ public class Driver {
 
     public void pushFileToDevice(String filePathToPush, String devicePath) {
         LOGGER.info(
-                "Pushing the file: '" + filePathToPush + "' to '" + Runner.getPlatform().name() + "' " + "device on path: '" + devicePath + "'");
+                "Pushing the file: '" + filePathToPush + TO + Runner.getPlatform().name() + "' " + "device on path: '" + devicePath + "'");
         try {
             if(Runner.getPlatform().equals(Platform.android)) {
                 ((AndroidDriver) driver).pushFile(devicePath, new File(filePathToPush));
@@ -318,7 +314,8 @@ public class Driver {
             }
         } catch(IOException e) {
             throw new FileNotUploadedException(
-                    "Error in pushing the file: '" + filePathToPush + "' to '" + Runner.getPlatform().name() + "' device on path: '" + devicePath + "'",
+                    String.format("Error in pushing the file: '%s%s%s' device on path: '%s'",
+                                  filePathToPush, TO, Runner.getPlatform().name(), devicePath),
                     e);
         }
     }
@@ -402,7 +399,7 @@ public class Driver {
     }
 
     public boolean isDriverRunningInHeadlessMode() {
-        return this.isRunInHeadlessMode;
+        return this.isRunningInHeadlessMode;
     }
 
     public WebDriver setWebViewContext() {
@@ -462,7 +459,8 @@ public class Driver {
             driver.findElement(locator).sendKeys(filePath);
         } catch(Exception e) {
             throw new FileNotUploadedException(
-                    "Error in uploading the file: '" + filePath + "' to '" + Runner.getPlatform().name(),
+                    String.format("Error in uploading the file: '%s%s%s", filePath, TO,
+                                  Runner.getPlatform().name()),
                     e);
         }
     }

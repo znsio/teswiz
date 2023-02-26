@@ -4,6 +4,7 @@ import com.browserstack.local.Local;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.Randomizer;
@@ -17,7 +18,12 @@ import java.util.*;
 
 public class BrowserStackSetup {
     private static final Logger LOGGER = Logger.getLogger(BrowserStackSetup.class.getName());
+    private static final String DEVICE = "device";
     private static Local bsLocal;
+
+    private BrowserStackSetup() {
+        LOGGER.debug("BrowserStackSetup - private constructor");
+    }
 
     public static void updateBrowserStackCapabilities() {
         String authenticationUser = Setup.getFromConfigs(Setup.CLOUD_USER);
@@ -61,7 +67,7 @@ public class BrowserStackSetup {
 
     private static String getAppIdFromBrowserStack(String authenticationUser,
                                                    String authenticationKey, String appPath) {
-        LOGGER.info("getAppIdFromBrowserStack: for " + appPath);
+        LOGGER.info(String.format("getAppIdFromBrowserStack: for %s", appPath));
         String appIdFromBrowserStack;
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_UPLOAD_APP)) {
             appIdFromBrowserStack = uploadAPKToBrowserStack(
@@ -78,7 +84,7 @@ public class BrowserStackSetup {
     public static void startBrowserStackLocal(String authenticationKey, String id) {
         bsLocal = new Local();
 
-        HashMap<String, String> bsLocalArgs = new HashMap<String, String>();
+        HashMap<String, String> bsLocalArgs = new HashMap<>();
         bsLocalArgs.put("key", authenticationKey);
         bsLocalArgs.put("v", "true");
         bsLocalArgs.put("localIdentifier", id);
@@ -91,17 +97,17 @@ public class BrowserStackSetup {
                 URL url = new URL(proxyUrl);
                 String host = url.getHost();
                 int port = url.getPort() == -1 ? url.getDefaultPort() : url.getPort();
-                LOGGER.info("Using proxyHost: " + host);
-                LOGGER.info("Using proxyPort: " + port);
+                LOGGER.info(String.format("Using proxyHost: %s", host));
+                LOGGER.info(String.format("Using proxyPort: %d", port));
                 bsLocalArgs.put("proxyHost", host);
                 bsLocalArgs.put("proxyPort", String.valueOf(port));
             }
 
-            LOGGER.info("Start BrowserStackLocal using: " + bsLocalArgs);
+            LOGGER.info(String.format("Start BrowserStackLocal using: %s", bsLocalArgs));
             bsLocal.start(bsLocalArgs);
-            LOGGER.info("Is BrowserStackLocal started? - " + bsLocal.isRunning());
+            LOGGER.info(String.format("Is BrowserStackLocal started? - %s", bsLocal.isRunning()));
         } catch(Exception e) {
-            throw new RuntimeException("Error starting BrowserStackLocal", e);
+            throw new EnvironmentSetupException("Error starting BrowserStackLocal", e);
         }
     }
 
@@ -114,8 +120,8 @@ public class BrowserStackSetup {
 
         String platformVersion = String.valueOf(
                 loadedCapabilityFile.get(platformName).get("platformVersion"));
-        String deviceName = String.valueOf(loadedCapabilityFile.get(platformName).get("device"));
-        loadedCapabilityFile.get(platformName).remove("device");
+        String deviceName = String.valueOf(loadedCapabilityFile.get(platformName).get(DEVICE));
+        loadedCapabilityFile.get(platformName).remove(DEVICE);
 
         Map<String, String> filters = new LinkedHashMap<>();
         filters.put("Platform", "mobile");// mobile-desktop
@@ -135,7 +141,7 @@ public class BrowserStackSetup {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("osVersion", availableDevices.get(numDevices).getOs_version());
             deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
-            deviceInfo.put("device", availableDevices.get(numDevices).getDevice());
+            deviceInfo.put(DEVICE, availableDevices.get(numDevices).getDevice());
             listOfAndroidDevices.add(deviceInfo);
         }
         DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
@@ -197,19 +203,20 @@ public class BrowserStackSetup {
     }
 
     private static void stopBrowserStackLocal() {
-        LOGGER.info(
-                "stopBrowserStackLocal: CLOUD_USE_LOCAL_TESTING=" + Setup.getBooleanValueFromConfigs(
-                        Setup.CLOUD_USE_LOCAL_TESTING));
+        LOGGER.info(String.format("stopBrowserStackLocal: CLOUD_USE_LOCAL_TESTING=%s",
+                                  Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)));
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
             try {
-                LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
+                LOGGER.info(
+                        String.format("Is BrowserStackLocal running? - %s", bsLocal.isRunning()));
                 if(bsLocal.isRunning()) {
                     LOGGER.info("Stopping BrowserStackLocal");
                     bsLocal.stop();
-                    LOGGER.info("Is BrowserStackLocal stopped? - " + !bsLocal.isRunning());
+                    LOGGER.info(String.format("Is BrowserStackLocal stopped? - %s",
+                                              !bsLocal.isRunning()));
                 }
             } catch(Exception e) {
-                throw new RuntimeException("Exception in stopping BrowserStackLocal", e);
+                throw new EnvironmentSetupException("Exception in stopping BrowserStackLocal", e);
             }
         }
     }

@@ -4,8 +4,8 @@ import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
-import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Drivers;
+import com.znsio.teswiz.runner.Runner;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import org.apache.log4j.Logger;
@@ -24,9 +24,11 @@ public class AppLaunchSteps {
     @Given("{string} start {string}")
     public void startOn(String userPersona, String appName) {
         String[] appNameParts = appName.split("-");
-        appName = appNameParts[0].toLowerCase(Locale.ROOT) + "_" + Runner.getCloudName().toLowerCase();
+        appName = appNameParts[0].toLowerCase(Locale.ROOT) + "_" + Runner.getCloudName()
+                                                                         .toLowerCase();
         String onPlatform = appNameParts[appNameParts.length - 1].toLowerCase(Locale.ROOT);
-        LOGGER.info(System.out.printf("startOn - Persona:'%s', AppName: '%s', Platform: '%s'", userPersona, appName, onPlatform));
+        LOGGER.info(System.out.printf("startOn - Persona:'%s', AppName: '%s', Platform: '%s'",
+                                      userPersona, appName, onPlatform));
         context.addTestState(userPersona, userPersona);
         Drivers.createDriverFor(userPersona, appName, Platform.valueOf(onPlatform), context);
     }
@@ -42,7 +44,7 @@ public class AppLaunchSteps {
                 appName, evaluatedBrowser, onPlatform));
         context.addTestState(userPersona, userPersona);
         Drivers.createDriverFor(userPersona, appName, evaluatedBrowser,
-                                   Platform.valueOf(onPlatform), context);
+                                Platform.valueOf(onPlatform), context);
     }
 
     /**

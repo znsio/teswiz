@@ -133,7 +133,7 @@ public class Setup {
         setBrowserConfigFilePath();
 
         System.setProperty(LOG_DIR, configs.get(LOG_DIR));
-        LOGGER.info("Runner called from user directory: " + Runner.USER_DIRECTORY);
+        LOGGER.info(String.format("Runner called from user directory: %s", Runner.USER_DIRECTORY));
         printLoadedConfigProperties(configFilePath);
 
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
@@ -154,9 +154,9 @@ public class Setup {
 
     private static void setupDirectories() {
         List<String> files = listOfDirectoriesToCreate();
-        LOGGER.info("Create Directories: " + files);
+        LOGGER.info(String.format("Create Directories: %s", files));
         for(String file : files) {
-            LOGGER.info("\tCreating directory: " + file);
+            LOGGER.info(String.format("\tCreating directory: %s", file));
             try {
                 FileUtils.forceMkdir(new java.io.File(file));
             } catch(IOException e) {
@@ -197,16 +197,18 @@ public class Setup {
     }
 
     private static void printLoadedConfigProperties(String configFilePath) {
-        LOGGER.info("Loaded property file: " + configFilePath);
+        LOGGER.info(String.format("Loaded property file: %s", configFilePath));
         final String[] propVars = {""};
         properties.forEach((k, v) -> propVars[0] += ("\t" + k + ":" + v + "\n"));
-        LOGGER.info("Config properties: " + configFilePath + ":\n" + propVars[0]);
+        LOGGER.info(String.format("Config properties: %s:%n%s", configFilePath, propVars[0]));
     }
 
     private static Map<String, Map> loadEnvironmentConfiguration(String environment) {
         String envConfigFile = configs.get(ENVIRONMENT_CONFIG_FILE);
-        LOGGER.info(
-                "Loading environment configuration from ENVIRONMENT_CONFIG_FILE: " + envConfigFile + " for environment: " + environment);
+        LOGGER.info(String.format(
+                "Loading environment configuration from ENVIRONMENT_CONFIG_FILE: %s for " +
+                "environment: %s",
+                envConfigFile, environment));
         return (NOT_SET.equalsIgnoreCase(envConfigFile)) ? new HashMap<>()
                                                          : JsonFile.getNodeValueAsMapFromJsonFile(
                                                                  environment, envConfigFile);
@@ -214,8 +216,8 @@ public class Setup {
 
     private static Map<String, Map> loadTestDataForEnvironment(String environment) {
         String testDataFile = configs.get(TEST_DATA_FILE);
-        LOGGER.info(
-                "Loading test data from TEST_DATA_FILE: " + testDataFile + " for environment: " + environment);
+        LOGGER.info(String.format("Loading test data from TEST_DATA_FILE: %s for environment: %s",
+                                  testDataFile, environment));
         return (NOT_SET.equalsIgnoreCase(testDataFile)) ? new HashMap<>()
                                                         : JsonFile.getNodeValueAsMapFromJsonFile(
                                                                 environment, testDataFile);
@@ -229,25 +231,24 @@ public class Setup {
         CUKE_ARGS.addAll(DeviceSetup.setupWindowsExecution());
         initialiseApplitoolsConfiguration();
 
-        String rpAttributes = "AutomationBranch:" + configs.get(
-                BRANCH_NAME) + "; " + "ExecutedOn:" + configs.get(
-                EXECUTED_ON) + "; " + "Installer:" + configs.get(
-                APP_PATH) + "; " + "OS:" + OS_NAME + "; " + "ParallelCount:" + configsInteger.get(
-                PARALLEL) + "; " + "Platform:" + currentPlatform.name() + "; " + "RunInCI:" + configsBoolean.get(
-                RUN_IN_CI) + "; " + "Tags:" + configs.get(
-                TAG) + "; " + "TargetEnvironment:" + configs.get(
-                TARGET_ENVIRONMENT) + "; " + "Username:" + USER_NAME + "; " + "VisualEnabled:" + configsBoolean.get(
-                IS_VISUAL) + "; ";
+        String rpAttributes = String.format(
+                "AutomationBranch:%s; ExecutedOn:%s; Installer:%s; OS:%s; ParallelCount:%d; " +
+                "Platform:%s; RunInCI:%s; Tags:%s; TargetEnvironment:%s; Username:%s; " +
+                "VisualEnabled:%s; ",
+                configs.get(BRANCH_NAME), configs.get(EXECUTED_ON), configs.get(APP_PATH), OS_NAME,
+                configsInteger.get(PARALLEL), currentPlatform.name(), configsBoolean.get(RUN_IN_CI),
+                configs.get(TAG), configs.get(TARGET_ENVIRONMENT), USER_NAME,
+                configsBoolean.get(IS_VISUAL));
 
         if(!configs.get(APP_VERSION).equals(NOT_SET)) {
-            rpAttributes += "AppVersion: " + configs.get(APP_VERSION) + "; ";
+            rpAttributes += String.format("AppVersion: %s; ", configs.get(APP_VERSION));
         }
 
         if(!configs.get(BUILD_ID).equals(NOT_SET)) {
-            rpAttributes += "BuildId: " + configs.get(BUILD_ID) + "; ";
+            rpAttributes += String.format("BuildId: %s; ", configs.get(BUILD_ID));
         }
 
-        LOGGER.info("ReportPortal Test Execution Attributes: " + rpAttributes);
+        LOGGER.info(String.format("ReportPortal Test Execution Attributes: %s", rpAttributes));
 
         // properties needed for atd
         System.setProperty(CLOUD_USER, configs.get(CLOUD_USER));
@@ -269,30 +270,30 @@ public class Setup {
 
     @NotNull
     private static String printStringMap(String prefix, Map<String, String> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": \n");
+        StringBuilder printString = new StringBuilder(prefix + ": %n");
         for(Map.Entry<String, String> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
-                       .append("\n");
+                       .append("%n");
         }
         return printString.toString() + printConfig;
     }
 
     @NotNull
     private static String printBooleanMap(String prefix, Map<String, Boolean> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": \n");
+        StringBuilder printString = new StringBuilder(prefix + ": %n");
         for(Map.Entry<String, Boolean> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
-                       .append("\n");
+                       .append("%n");
         }
         return printString.toString() + printConfig;
     }
 
     @NotNull
     private static String printIntegerMap(String prefix, Map<String, Integer> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": \n");
+        StringBuilder printString = new StringBuilder(prefix + ": %n");
         for(Map.Entry<String, Integer> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
-                       .append("\n");
+                       .append("%n");
         }
         return printString.toString() + printConfig;
     }
@@ -462,9 +463,10 @@ public class Setup {
 
         launchName += " " + configs.get(LAUNCH_NAME_SUFFIX);
 
-        LOGGER.info(
-                "\tRunning tests with platform: " + currentPlatform + " and the following tag " + "criteria " + ":" + " " + inferredTags);
-        LOGGER.info("\tReportPortal Tests Launch name: " + launchName);
+        LOGGER.info(String.format(
+                "\tRunning tests with platform: %s and the following tag criteria : %s",
+                currentPlatform, inferredTags));
+        LOGGER.info(String.format("\tReportPortal Tests Launch name: %s", launchName));
 
         configs.put(PLATFORM, currentPlatform.name());
         configs.put(LAUNCH_NAME, launchName);
@@ -541,7 +543,7 @@ public class Setup {
             batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
             batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
         }
-        LOGGER.info("applitoolsConfiguration: " + applitoolsConfiguration);
+        LOGGER.info(String.format("applitoolsConfiguration: %s", applitoolsConfiguration));
         return applitoolsConfiguration;
     }
 
@@ -584,8 +586,8 @@ public class Setup {
             LOGGER.warn("-------------------------------------------------------------");
             configsBoolean.put(IS_VISUAL, false);
         } else {
-            LOGGER.info(
-                    "Loading Applitools configuration from: " + applitoolsConfigurationFileName);
+            LOGGER.info(String.format("Loading Applitools configuration from: %s",
+                                      applitoolsConfigurationFileName));
             applitoolsConfiguration = JsonFile.loadJsonFile(applitoolsConfigurationFileName);
         }
     }
@@ -614,8 +616,9 @@ public class Setup {
             viewportSize = new RectangleSize(Integer.parseInt(viewP[0]),
                                              Integer.parseInt(viewP[1]));
         } catch(NullPointerException e) {
-            LOGGER.info(
-                    "Unable to get viewport size from Applitools configuration. Using default: " + "1280x960");
+            LOGGER.info(String.format(
+                    "Unable to get viewport size from Applitools configuration. Using default: " +
+                    "1280x960"));
         }
         return viewportSize;
     }

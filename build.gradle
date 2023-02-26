@@ -176,6 +176,11 @@ task run(type: JavaExec) {
                 "./src/test/resources/com/znsio/teswiz/features"
         ]
         args = runnerArgs
+
+        // attach debugger
+        if (System.getProperty('debug', 'false') == 'true') {
+            jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
+        }
     }
     mainClass = "com.znsio.teswiz.runner.Runner"
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
@@ -199,12 +204,12 @@ test {
 
     // attach debugger
     if (System.getProperty('debug', 'false') == 'true') {
-        jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009'
+        jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
     }
     reports {
-        html.enabled = true
-        junitXml.enabled = true
-        html.destination = file("$buildDir/unit-test-results")
-        junitXml.destination = file("$buildDir/unit-test-results")
+        html.enabled(true)
+        junitXml.enabled(true)
+        html.destination(file("$buildDir/unit-test-results"))
+        junitXml.destination(file("$buildDir/unit-test-results"))
     }
 }

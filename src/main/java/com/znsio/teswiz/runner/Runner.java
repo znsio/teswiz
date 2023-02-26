@@ -53,7 +53,7 @@ public class Runner {
         args.add(stepDefsDir);
         args.add(featuresDir);
         LOGGER.info("Begin running tests...");
-        LOGGER.info("Args: " + args);
+        LOGGER.info(String.format("Args: %s", args));
         String[] array = args.toArray(String[]::new);
         byte status = Main.run(array);
         Setup.cleanUpExecutionEnvironment();
@@ -203,13 +203,13 @@ public class Runner {
 
     public static String getProxyURL() {
         String proxyURL = Setup.getFromConfigs(Setup.PROXY_URL);
-        LOGGER.info("Using proxyURL: " + proxyURL);
+        LOGGER.info(String.format("Using proxyURL: %s", proxyURL));
         return proxyURL;
     }
 
     public static String getWebDriverManagerProxyURL() {
         String webDriverManagerProxyURL = Setup.getFromConfigs(Setup.WEBDRIVER_MANAGER_PROXY_URL);
-        LOGGER.info("webDriverManagerProxyURL: " + webDriverManagerProxyURL);
+        LOGGER.info(String.format("webDriverManagerProxyURL: %s", webDriverManagerProxyURL));
         return webDriverManagerProxyURL;
     }
 
