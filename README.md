@@ -20,7 +20,9 @@ Accordingly, the following changes will need to be made in your existing tests.
 | Importing Platform (*.java)          | `import com.znsio.e2e.entities.Platform`                 | `import com.znsio.teswiz.entities.Platform`                 |
 | Importing TEST_CONTEXT (*.java)      | `import com.znsio.e2e.entities.TEST_CONTEXT`             | `import com.znsio.teswiz.entities.TEST_CONTEXT`             |
 | Importing Driver (*.java)            | `import com.znsio.e2e.tools.Driver`                      | `import com.znsio.teswiz.runner.Driver`                     |
+| Importing Drivers (*.java)           | `import com.znsio.e2e.tools.Drivers`                     | `import com.znsio.teswiz.runner.Drivers`                    |
 | Importing Visual (*.java)            | `import com.znsio.e2e.tools.Visual`                      | `import com.znsio.teswiz.runner.Visual`                     |
+| Importing APPLITOOLS (*.java)        | `import com.znsio.e2e.entities.APPLITOOLS`               | `import com.znsio.teswiz.entities.APPLITOOLS`               |
 | Importing waitFor (*.java)           | `import com.znsio.e2e.tools.Wait.waitFor`                | `import com.znsio.teswiz.tools.Wait.waitFor`                |
 | Importing custom exceptions (*.java) | `import com.znsio.e2e.exceptions.*`                      | `import com.znsio.teswiz.exceptions.*`                      |
 | Importing Hooks (*.java)             | `import static com.znsio.e2e.runner.Runner.fetchDriver;` | `import static com.znsio.teswiz.runner.Runner.fetchDriver;` |
