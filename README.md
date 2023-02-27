@@ -13,18 +13,20 @@ The package naming has been made consistent - **com.znsio.teswiz**.
 
 Accordingly, the following changes will need to be made in your existing tests.
 
-| Purpose                              | Old                                          | New                                             |
-|:-------------------------------------|:---------------------------------------------|:------------------------------------------------|
-| Runner (build.gradle)                | `mainClass = "com.znsio.e2e.runner.Runner"`  | `mainClass = "com.znsio.teswiz.runner.Runner"`  |
-| Importing Runner (*.java)            | `import com.znsio.e2e.runner.Runner`         | `import com.znsio.teswiz.runner.Runner`         |
-| Importing Platform (*.java)          | `import com.znsio.e2e.entities.Platform`     | `import com.znsio.teswiz.entities.Platform`     |
-| Importing TEST_CONTEXT (*.java)      | `import com.znsio.e2e.entities.TEST_CONTEXT` | `import com.znsio.teswiz.entities.TEST_CONTEXT` |
-| Importing Driver (*.java)            | `import com.znsio.e2e.tools.Driver`          | `import com.znsio.teswiz.runner.Driver`         |
-| Importing Visual (*.java)            | `import com.znsio.e2e.tools.Visual`          | `import com.znsio.teswiz.runner.Visual`         |
-| Importing waitFor (*.java)           | `import com.znsio.e2e.tools.Wait.waitFor`    | `import com.znsio.teswiz.tools.Wait.waitFor`    |
-| Importing custom exceptions (*.java) | `import com.znsio.e2e.exceptions.*`          | `import com.znsio.teswiz.exceptions.*`          |
-| Importing Hooks (*.java)             | `import com.znsio.e2e.steps.Hooks`           | `import com.znsio.teswiz.steps.Hooks`           |
-| Platform (build.gradle)              | `mainClass = "com.znsio.e2e.runner.Runner"`  | `mainClass = "com.znsio.teswiz.runner.Runner"`  |
+| Purpose                              | Old                                                      | New                                                         |
+|:-------------------------------------|:---------------------------------------------------------|:------------------------------------------------------------|
+| Runner (build.gradle)                | `mainClass = "com.znsio.e2e.runner.Runner"`              | `mainClass = "com.znsio.teswiz.runner.Runner"`              |
+| Importing Runner (*.java)            | `import com.znsio.e2e.runner.Runner`                     | `import com.znsio.teswiz.runner.Runner`                     |
+| Importing Platform (*.java)          | `import com.znsio.e2e.entities.Platform`                 | `import com.znsio.teswiz.entities.Platform`                 |
+| Importing TEST_CONTEXT (*.java)      | `import com.znsio.e2e.entities.TEST_CONTEXT`             | `import com.znsio.teswiz.entities.TEST_CONTEXT`             |
+| Importing Driver (*.java)            | `import com.znsio.e2e.tools.Driver`                      | `import com.znsio.teswiz.runner.Driver`                     |
+| Importing Visual (*.java)            | `import com.znsio.e2e.tools.Visual`                      | `import com.znsio.teswiz.runner.Visual`                     |
+| Importing waitFor (*.java)           | `import com.znsio.e2e.tools.Wait.waitFor`                | `import com.znsio.teswiz.tools.Wait.waitFor`                |
+| Importing custom exceptions (*.java) | `import com.znsio.e2e.exceptions.*`                      | `import com.znsio.teswiz.exceptions.*`                      |
+| Importing Hooks (*.java)             | `import static com.znsio.e2e.runner.Runner.fetchDriver;` | `import static com.znsio.teswiz.runner.Runner.fetchDriver;` |
+| Importing Hooks (*.java)             | `import static com.znsio.e2e.runner.Runner.fetchEyes;`   | `import static com.znsio.teswiz.runner.Runner.fetchEyes;`   |
+| Importing Hooks (*.java)             | `import com.znsio.e2e.steps.Hooks`                       | `import com.znsio.teswiz.steps.Hooks`                       |
+| Platform (build.gradle)              | `mainClass = "com.znsio.e2e.runner.Runner"`              | `mainClass = "com.znsio.teswiz.runner.Runner"`              |
 
 ## Method name changes
 
