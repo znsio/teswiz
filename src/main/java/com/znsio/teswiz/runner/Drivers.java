@@ -17,9 +17,9 @@ import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
 public class Drivers {
+    private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
     private static final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<>();
     private static final Map<String, String> userPersonaApps = new HashMap<>();
-    private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
     private static final Map<String, Driver> userPersonaDrivers = new HashMap<>();
     private static final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private static final String NO_DRIVER_FOUND_FOR_USER_PERSONA = "No Driver found for user " +
