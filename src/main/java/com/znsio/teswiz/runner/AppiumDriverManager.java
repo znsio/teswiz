@@ -269,6 +269,8 @@ public class AppiumDriverManager {
         String logMessage;
         String appPackageName = Runner.getAppPackageName();
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
+        --numberOfAppiumDriversUsed;
+        LOGGER.info(String.format("numberOfAppiumDriversUsed: %d", numberOfAppiumDriversUsed));
         if(null == appiumDriver) {
             logMessage = String.format("Strange. But WindowsDriver for user '%s' already closed",
                                        userPersona);
@@ -302,6 +304,8 @@ public class AppiumDriverManager {
                                         Driver driver) {
         String appPackageName = Runner.getAppPackageName();
         String logMessage;
+        --numberOfAppiumDriversUsed;
+        LOGGER.info(String.format("numberOfAppiumDriversUsed: %d", numberOfAppiumDriversUsed));
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
         if(null == appiumDriver) {
             logMessage = String.format("Strange. But AppiumDriver for user '%s' already closed",

@@ -448,6 +448,8 @@ public class BrowserDriverManager {
                                Driver driver) {
         String browserNameForUser = Drivers.getBrowserNameForUser(userPersona);
         String logFileName = Drivers.getBrowserLogFileNameFor(userPersona, Platform.web.name(), browserNameForUser);
+        --numberOfWebDriversUsed;
+        LOGGER.info(String.format("numberOfWebDriversUsed: %d", numberOfWebDriversUsed));
         String logMessage = String.format("Browser logs for user: %s" + "%nlogFileName: %s",
                                           userPersona, logFileName);
         LOGGER.info(logMessage);
