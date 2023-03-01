@@ -25,8 +25,9 @@ Accordingly, the following changes will need to be made in your existing tests.
 | Importing APPLITOOLS (*.java)        | `import com.znsio.e2e.entities.APPLITOOLS`               | `import com.znsio.teswiz.entities.APPLITOOLS`               |
 | Importing waitFor (*.java)           | `import com.znsio.e2e.tools.Wait.waitFor`                | `import com.znsio.teswiz.tools.Wait.waitFor`                |
 | Importing custom exceptions (*.java) | `import com.znsio.e2e.exceptions.*`                      | `import com.znsio.teswiz.exceptions.*`                      |
-| Importing Hooks (*.java)             | `import static com.znsio.e2e.runner.Runner.fetchDriver;` | `import static com.znsio.teswiz.runner.Runner.fetchDriver;` |
-| Importing Hooks (*.java)             | `import static com.znsio.e2e.runner.Runner.fetchEyes;`   | `import static com.znsio.teswiz.runner.Runner.fetchEyes;`   |
+| Importing fetchDriver (*.java)       | `import static com.znsio.e2e.runner.Runner.fetchDriver;` | `import static com.znsio.teswiz.runner.Runner.fetchDriver;` |
+| Importing fetchEyes (*.java)         | `import static com.znsio.e2e.runner.Runner.fetchEyes;`   | `import static com.znsio.teswiz.runner.Runner.fetchEyes;`   |
+| Importing Randomizer (*.java)        | `import static com.znsio.e2e.tools.Randomizer;`          | `import static com.znsio.teswiz.tools.Randomizer;`          |
 | Importing Hooks (*.java)             | `import com.znsio.e2e.steps.Hooks`                       | `import com.znsio.teswiz.steps.Hooks`                       |
 | Platform (build.gradle)              | `mainClass = "com.znsio.e2e.runner.Runner"`              | `mainClass = "com.znsio.teswiz.runner.Runner"`              |
 
