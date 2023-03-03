@@ -11,7 +11,7 @@ import com.znsio.teswiz.tools.Randomizer;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.log4j.Logger;
-
+import org.openqa.selenium.MutableCapabilities;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
@@ -35,7 +35,7 @@ class BrowserStackSetup {
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser,
-                                                                authenticationKey, appPath);
+                authenticationKey, appPath);
 
         ArrayList hostMachinesList = (ArrayList) loadedCapabilityFile.get("hostMachines");
         Map hostMachines = (Map) hostMachinesList.get(0);
@@ -51,8 +51,8 @@ class BrowserStackSetup {
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
                     browserStackLocalIdentifier));
-            BrowserStackSetup.startBrowserStackLocal(authenticationKey,
-                                                     browserStackLocalIdentifier);
+            startBrowserStackLocal(authenticationKey,
+                    browserStackLocalIdentifier);
             loadedPlatformCapability.put("browserstack.local", "true");
             loadedPlatformCapability.put("browserstack.localIdentifier",
                                          browserStackLocalIdentifier);
@@ -63,6 +63,37 @@ class BrowserStackSetup {
         loadedPlatformCapability.put("project", Setup.getFromConfigs(Setup.APP_NAME));
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey,
                                                 loadedCapabilityFile);
+    }
+
+    static MutableCapabilities updateBrowserStackCapabilities(MutableCapabilities capabilities) {
+
+        String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
+        String platformName = Setup.getPlatform().name();
+        String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
+
+        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
+        Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
+
+        String browserStackLocalIdentifier = Randomizer.randomize(10);
+        String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "").replace("\\", "");
+
+        capabilities.setCapability("browserName", loadedPlatformCapability.get("browserName"));
+
+        Map<String, String> browserstackOptions = (Map<String, String>) loadedPlatformCapability.get("browserstackOptions");
+        browserstackOptions.put("projectName", Setup.getFromConfigs(Setup.APP_NAME));
+        browserstackOptions.put("buildName", Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
+
+        if (Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
+            LOGGER.info(String.format(
+                    "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
+                    browserStackLocalIdentifier));
+            startBrowserStackLocal(authenticationKey,
+                    browserStackLocalIdentifier);
+            browserstackOptions.put("local", "true");
+        }
+        capabilities.setCapability("bstack:options", browserstackOptions);
+
+        return capabilities;
     }
 
     private static String getAppIdFromBrowserStack(String authenticationUser,
@@ -81,13 +112,15 @@ class BrowserStackSetup {
         return appIdFromBrowserStack;
     }
 
-    static void startBrowserStackLocal(String authenticationKey, String id) {
+    private static void startBrowserStackLocal(String authenticationKey, String id) {
         bsLocal = new Local();
 
         HashMap<String, String> bsLocalArgs = new HashMap<>();
         bsLocalArgs.put("key", authenticationKey);
         bsLocalArgs.put("v", "true");
-        bsLocalArgs.put("localIdentifier", id);
+        if (!Runner.getPlatform().name().equalsIgnoreCase("web")) {
+            bsLocalArgs.put("localIdentifier", id);
+        }
         bsLocalArgs.put("forcelocal", "true");
         bsLocalArgs.put("verbose", "3");
         try {
