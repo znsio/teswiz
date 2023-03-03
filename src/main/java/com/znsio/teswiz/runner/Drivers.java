@@ -119,7 +119,21 @@ public class Drivers {
         return createDriverFor(userPersona, appName, Runner.getBrowser(), forPlatform, context);
     }
 
-    static Driver getDriverForUser(long threadId) {
+    public static Driver getDriverForUser(String userPersona) {
+        TestExecutionContext context = getTestExecutionContext(Thread.currentThread().getId());
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
+
+        if(!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
+            LOGGER.info(
+                    "getDriverForUser: Drivers available for userPersonas: " + userPersonaDetails.getAllUserPersonasForAssignedDrivers());
+            throw new InvalidTestDataException(
+                    String.format(NO_DRIVER_FOUND_FOR_USER_PERSONA, userPersona));
+        }
+
+        return userPersonaDetails.getDriverAssignedForUser(userPersona);
+    }
+
+    static Driver getDriverForCurrentUser(long threadId) {
         TestExecutionContext context = getTestExecutionContext(threadId);
         String userPersona = context.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
