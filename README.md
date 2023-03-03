@@ -42,7 +42,6 @@ There are some method name changes as listed below:
 | Retrieving test data                             | `public static Map getTestDataAsMap(String key)`      | **`public static Map<String, Object> getTestDataAsMap(String key)`**         |
 | Getting the Driver for the current user          | `Runner.fetchDriver(Thread.currentThread().getId());` | **`Drivers.getDriverForCurrentUser(Thread.currentThread().getId());`**       | 
 | Getting the Visual driver for the current user   | `Runner.fetchEyes(Thread.currentThread().getId());`   | **`Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());`** |
-| Getting the Visual driver for the current user   | `Runner.fetchEyes(Thread.currentThread().getId());`   | **`Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());`** |
 
 [//]: # (```mermaid)
 
