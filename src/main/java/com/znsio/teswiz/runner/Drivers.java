@@ -8,24 +8,17 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
+import static com.context.SessionContext.getTestExecutionContext;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
 public class Drivers {
     private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
-    private static final Map<String, Capabilities> userPersonaDriverCapabilities = new HashMap<>();
-    private static final Map<String, String> userPersonaApps = new HashMap<>();
-    private static final Map<String, Driver> userPersonaDrivers = new HashMap<>();
-    private static final Map<String, Platform> userPersonaPlatforms = new HashMap<>();
     private static final String NO_DRIVER_FOUND_FOR_USER_PERSONA = "No Driver found for user " +
                                                                    "persona: '%s'";
-    private static final Map<String, String> deviceLogFileNameForUserPersonaAndPlaform =
-            new HashMap<>();
 
     private Drivers() {
         LOGGER.debug("Drivers - private constructor");
@@ -36,17 +29,22 @@ public class Drivers {
         LOGGER.info(
                 String.format("setDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona,
                               forPlatform.name()));
-        if(!userPersonaDrivers.containsKey(userPersona)) {
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
+        if(!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
             String message = String.format(
                     "ERROR: Driver for user persona: '%s' DOES NOT EXIST%nAvailable drivers: '%s'",
-                    userPersona, userPersonaDrivers.keySet());
+                    userPersona, userPersonaDetails.getAllUserPersonasForAssignedDrivers());
             throw new InvalidTestDataException(message);
         }
-        Driver currentDriver = userPersonaDrivers.get(userPersona);
+        Driver currentDriver = userPersonaDetails.getDriverAssignedForUser(userPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, forPlatform);
         return currentDriver;
+    }
+
+    static UserPersonaDetails getUserPersonaDetails(TestExecutionContext context) {
+        return (UserPersonaDetails) context.getTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS);
     }
 
     public static Driver createDriverFor(String userPersona, Platform forPlatform,
@@ -60,17 +58,32 @@ public class Drivers {
                                   userPersona, forPlatform.name()));
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, forPlatform);
-        userPersonaApps.put(userPersona, appName);
-        userPersonaPlatforms.put(userPersona, forPlatform);
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
+        userPersonaDetails.addAppName(userPersona, appName);
+        userPersonaDetails.addPlatform(userPersona, forPlatform);
 
-        Driver currentDriver;
-        if(userPersonaDrivers.containsKey(userPersona)) {
+        if(userPersonaDetails.isDriverAssignedForUser(userPersona)) {
             String message = String.format(
                     "ERROR: Driver for user persona: '%s' ALREADY EXISTS%nAvailable drivers: '%s'",
-                    userPersona, userPersonaDrivers.keySet());
+                    userPersona, userPersonaDetails.getAllUserPersonasForAssignedDrivers());
             throw new InvalidTestDataException(message);
         }
 
+        Driver currentDriver = createDriverForPlatform(userPersona, browserName, forPlatform,
+                                                       context);
+        context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
+        userPersonaDetails.addDriver(userPersona, currentDriver);
+        LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n",
+                                  userPersona, forPlatform.name()));
+
+        return currentDriver;
+    }
+
+    @NotNull
+    private static Driver createDriverForPlatform(String userPersona, String browserName,
+                                                  Platform forPlatform,
+                                                  TestExecutionContext context) {
+        Driver currentDriver;
         switch(forPlatform) {
             case android:
                 currentDriver = AppiumDriverManager.createAndroidDriverForUser(userPersona,
@@ -93,11 +106,6 @@ public class Drivers {
                         "'%s': ",
                         forPlatform, userPersona));
         }
-        context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
-        userPersonaDrivers.put(userPersona, currentDriver);
-        LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n",
-                                  userPersona, forPlatform.name()));
-
         return currentDriver;
     }
 
@@ -111,67 +119,84 @@ public class Drivers {
         return createDriverFor(userPersona, appName, Runner.getBrowser(), forPlatform, context);
     }
 
-    public static Driver getDriverForUser(String userPersona) {
-        if(!userPersonaDrivers.containsKey(userPersona)) {
+    static Driver getDriverForUser(long threadId) {
+        TestExecutionContext context = getTestExecutionContext(threadId);
+        String userPersona = context.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
+
+        if(!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
             LOGGER.info(
-                    "getDriverForUser: Drivers available for userPersonas: " + userPersonaDrivers.keySet());
+                    "getDriverForUser: Drivers available for userPersonas: " + userPersonaDetails.getAllUserPersonasForAssignedDrivers());
             throw new InvalidTestDataException(
                     String.format(NO_DRIVER_FOUND_FOR_USER_PERSONA, userPersona));
         }
 
-        return userPersonaDrivers.get(userPersona);
+        return userPersonaDetails.getDriverAssignedForUser(userPersona);
     }
 
-    public static String getDeviceNameForUser(String userPersona) {
+    static String getDeviceNameForUser(String userPersona) {
         return getDeviceOrBrowserNameFromCapabilitiesForUser(userPersona, DEVICE_NAME);
     }
 
-    public static String getBrowserNameForUser(String userPersona) {
+    static String getBrowserNameForUser(String userPersona) {
         return getDeviceOrBrowserNameFromCapabilitiesForUser(userPersona, BROWSER_NAME);
     }
 
     @NotNull
     private static String getDeviceOrBrowserNameFromCapabilitiesForUser(String userPersona,
                                                                         String capabilityName) {
-        Capabilities userPersonaCapabilities = userPersonaDriverCapabilities.get(userPersona);
-        String name = (String) userPersonaCapabilities.getCapability(capabilityName);
-        if(null == name) {
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
+                getTestExecutionContext(Thread.currentThread().getId()));
+        Capabilities userPersonaCapabilities = userPersonaDetails.getCapabilitiesAssignedForUser(
+                userPersona);
+        String deviceOrBrowserName = (String) userPersonaCapabilities.getCapability(capabilityName);
+        if(null == deviceOrBrowserName) {
             LOGGER.info(
                     "Capabilities available for userPersona: '" + userPersona + "': " + userPersonaCapabilities.asMap()
                                                                                                                .keySet());
-            throw new InvalidTestDataException(String.format(
-                    capabilityName + " capability NOT found for user persona: '%s'%n%s",
-                    userPersona, userPersonaCapabilities.asMap().keySet()));
+            throw new InvalidTestDataException(
+                    String.format("'%s' capability NOT found for user persona: '%s'%n%s",
+                                  capabilityName, userPersona,
+                                  userPersonaCapabilities.asMap().keySet()));
         }
-        return name;
+        return deviceOrBrowserName;
     }
 
     public static Platform getPlatformForUser(String userPersona) {
-        if(!userPersonaDrivers.containsKey(userPersona)) {
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
+                getTestExecutionContext(Thread.currentThread().getId()));
+
+        if(!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
             LOGGER.info("getPlatformForUser: Platforms available for userPersonas: ");
-            userPersonaPlatforms.keySet().forEach(key -> LOGGER.info(
-                    "\tUser Persona: " + key + ": Platform: " + userPersonaPlatforms.get(key)
-                                                                                    .name()));
+            userPersonaDetails.getAllUserPersonasForAssignedPlatforms().forEach(key -> LOGGER.info(
+                    "\tUser Persona: " + key + ": Platform: " + userPersonaDetails.getPlatformAssignedForUser(
+                            key).name()));
             throw new InvalidTestDataException(
                     String.format(NO_DRIVER_FOUND_FOR_USER_PERSONA, userPersona));
         }
 
-        return userPersonaPlatforms.get(userPersona);
+        return userPersonaDetails.getPlatformAssignedForUser(userPersona);
     }
 
     public static void attachLogsAndCloseAllWebDrivers() {
-        LOGGER.info("Close all drivers:");
-        userPersonaDrivers.forEach((userPersona, driver) -> {
-            LOGGER.info("\tUser Persona: " + userPersona);
+        long currentThreadId = Thread.currentThread().getId();
+        LOGGER.info(String.format("Close all drivers for test on ThreadId: - %d", currentThreadId));
+        TestExecutionContext context = getTestExecutionContext(currentThreadId);
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
+
+        userPersonaDetails.getAllAssignedUserPersonasAndDrivers().forEach((userPersona, driver) -> {
+            LOGGER.info(String.format(
+                    "\tGetting visual validation results and closing driver for: User Persona: %s",
+                    userPersona));
             validateVisualTestResults(userPersona, driver);
             attachLogsAndCloseDriver(userPersona, driver);
         });
         AppiumDriverManager.freeDevices();
-        userPersonaDrivers.clear();
-        userPersonaApps.clear();
-        userPersonaDriverCapabilities.clear();
-        userPersonaPlatforms.clear();
-        deviceLogFileNameForUserPersonaAndPlaform.clear();
+        userPersonaDetails.clearAllDrivers();
+        userPersonaDetails.clearAllAppNames();
+        userPersonaDetails.clearAllCapabilities();
+        userPersonaDetails.clearAllPlatforms();
+        userPersonaDetails.clearLogFileNames();
     }
 
     private static void validateVisualTestResults(String userPersona, Driver driver) {
@@ -196,77 +221,55 @@ public class Drivers {
     }
 
     public static Set<String> getAvailableUserPersonas() {
-        return userPersonaDrivers.keySet();
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
+                getTestExecutionContext(Thread.currentThread().getId()));
+        return userPersonaDetails.getAllUserPersonasForAssignedDrivers();
     }
 
     public static void assignNewPersonaToExistingDriver(String userPersona, String newUserPersona,
                                                         TestExecutionContext context) {
-        if(!userPersonaDrivers.containsKey(userPersona)) {
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
+
+        if(!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
             LOGGER.info(
-                    "assignNewPersonaToExistingDriver: Drivers available for userPersonas: " + userPersonaDrivers.keySet());
+                    "assignNewPersonaToExistingDriver: Drivers available for userPersonas: " + userPersonaDetails.getAllUserPersonasForAssignedDrivers());
             throw new InvalidTestDataException(
                     String.format(NO_DRIVER_FOUND_FOR_USER_PERSONA, userPersona));
         }
 
-        Driver currentDriver = userPersonaDrivers.get(userPersona);
-        Platform currentPlatform = userPersonaPlatforms.get(userPersona);
-        Capabilities userPersonaCapabilities = userPersonaDriverCapabilities.get(userPersona);
+        Driver currentDriver = userPersonaDetails.getDriverAssignedForUser(userPersona);
+        Platform currentPlatform = userPersonaDetails.getPlatformAssignedForUser(userPersona);
+        Capabilities userPersonaCapabilities = userPersonaDetails.getCapabilitiesAssignedForUser(
+                userPersona);
 
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, newUserPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, currentPlatform);
 
-        userPersonaDrivers.remove(userPersona);
-        userPersonaPlatforms.remove(userPersona);
-        userPersonaDriverCapabilities.remove(userPersona);
-
-        userPersonaDrivers.put(newUserPersona, currentDriver);
-        userPersonaPlatforms.put(newUserPersona, currentPlatform);
-        userPersonaDriverCapabilities.put(newUserPersona, userPersonaCapabilities);
+        userPersonaDetails.replaceDriverFor(userPersona, currentDriver);
+        userPersonaDetails.replacePlatformFor(userPersona, currentPlatform);
+        userPersonaDetails.replaceCapabilitiesFor(userPersona, userPersonaCapabilities);
 
         LOGGER.info(
                 String.format("assignNewPersonaToExistingDriver: Persona updated from '%s' to '%s'",
                               userPersona, newUserPersona));
     }
 
-    public static void addUserPersonaDriverCapabilities(String userPersona,
-                                                        Capabilities capabilities) {
-        userPersonaDriverCapabilities.put(userPersona, capabilities);
+    static void addUserPersonaDriverCapabilities(String userPersona, Capabilities capabilities) {
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
+                Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        userPersonaDetails.addCapabilities(userPersona, capabilities);
     }
 
-    public static Capabilities getCapabilitiesFor(String userPersona) {
-        return userPersonaDriverCapabilities.get(userPersona);
+    static Capabilities getCapabilitiesFor(String userPersona) {
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
+                Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        return userPersonaDetails.getCapabilitiesAssignedForUser(userPersona);
     }
 
-    public static String getAppNamefor(String userPersona) {
-        return userPersonaApps.get(userPersona);
-    }
-
-    static String getDeviceLogFileNameFor(String userPersona, String forPlatform) {
-        return deviceLogFileNameForUserPersonaAndPlaform.get(
-                getKeyForDeviceLogFiles(userPersona, forPlatform));
-    }
-
-    static void addDeviceLogFileNameFor(String userPersona, String forPlatform,
-                                        String deviceLogFileName) {
-        deviceLogFileNameForUserPersonaAndPlaform.put(
-                getKeyForDeviceLogFiles(userPersona, forPlatform), deviceLogFileName);
-    }
-
-    @NotNull
-    private static String getKeyForDeviceLogFiles(String userPersona, String platform) {
-        return userPersona + "-" + platform;
-    }
-
-    static void addBrowserLogFileNameFor(String userPersona, String forPlatform, String browserType,
-                                         String logFileName) {
-        deviceLogFileNameForUserPersonaAndPlaform.put(
-                getKeyForDeviceLogFiles(userPersona, forPlatform + "-" + browserType), logFileName);
-    }
-
-    static String getBrowserLogFileNameFor(String userPersona, String forPlatform,
-                                           String browserType) {
-        return deviceLogFileNameForUserPersonaAndPlaform.get(
-                getKeyForDeviceLogFiles(userPersona, forPlatform + "-" + browserType));
+    static String getAppNamefor(String userPersona) {
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
+                Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        return userPersonaDetails.getAppName(userPersona);
     }
 }

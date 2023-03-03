@@ -40,20 +40,28 @@ public class CucumberWebScenarioListener
 
     private void webCaseStartedHandler(TestCaseStarted event) {
         String scenarioName = event.getTestCase().getName();
-        TestExecutionContext testExecutionContext = new TestExecutionContext(scenarioName);
-
-        LOGGER.info(
-                "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   TEST-CASE  -- " + scenarioName + "  STARTED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-        LOGGER.info("webCaseStartedHandler: " + scenarioName);
         Integer scenarioRunCount = getScenarioRunCount(scenarioName);
+        TestExecutionContext testExecutionContext = new TestExecutionContext(
+                scenarioRunCount + "-" + scenarioName);
+
+        LOGGER.info(String.format(
+                "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   TEST-CASE  -- %s  " +
+                "STARTED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$",
+                scenarioName));
+        LOGGER.info(
+                String.format("webCaseStartedHandler: '%s' with scenarioRunCount: %d", scenarioName,
+                              scenarioRunCount));
         String normalisedScenarioName = normaliseScenarioName(scenarioName);
 
         LOGGER.info(String.format("ThreadId: %d: beforeScenario: for scenario: %s%n",
                                   Thread.currentThread().getId(), scenarioName));
+        String scenarioLogDirectory = FileLocations.REPORTS_DIRECTORY + normalisedScenarioName;
         testExecutionContext.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY,
-                                          FileLocations.REPORTS_DIRECTORY + normalisedScenarioName);
-        testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_DIRECTORY,
-                                          FileLocations.REPORTS_DIRECTORY + normalisedScenarioName + File.separator + "screenshot" + File.separator);
+                                          scenarioLogDirectory);
+        String screenshotDirectory =
+                FileLocations.REPORTS_DIRECTORY + normalisedScenarioName + File.separator +
+                "screenshot" + File.separator;
+        testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_DIRECTORY, screenshotDirectory);
     }
 
     private void webCaseFinishedHandler(TestCaseFinished event) {

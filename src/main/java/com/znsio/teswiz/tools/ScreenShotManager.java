@@ -49,7 +49,7 @@ public class ScreenShotManager {
             } catch(IOException | RuntimeException e) {
                 LOGGER.info(
                         "ERROR: Unable to save or upload screenshot: '" + destinationFile.getAbsolutePath() + "' or upload screenshot to ReportPortal\n");
-                LOGGER.info(ExceptionUtils.getStackTrace(e));
+                LOGGER.debug(ExceptionUtils.getStackTrace(e));
             }
         } else {
             LOGGER.info("Driver is not instantiated for this test");

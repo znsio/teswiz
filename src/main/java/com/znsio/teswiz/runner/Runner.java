@@ -142,9 +142,7 @@ public class Runner {
     }
 
     public static Driver fetchDriver(long threadId) {
-        String userPersona = getTestExecutionContext(threadId).getTestStateAsString(
-                TEST_CONTEXT.CURRENT_USER_PERSONA);
-        return Drivers.getDriverForUser(userPersona);
+        return Drivers.getDriverForUser(threadId);
     }
 
     public static TestExecutionContext getTestExecutionContext(long threadId) {
@@ -156,9 +154,7 @@ public class Runner {
     }
 
     public static Visual fetchEyes(long threadId) {
-        String userPersona = getTestExecutionContext(threadId).getTestStateAsString(
-                TEST_CONTEXT.CURRENT_USER_PERSONA);
-        return Drivers.getDriverForUser(userPersona).getVisual();
+        return Drivers.getDriverForUser(threadId).getVisual();
     }
 
     public static SoftAssertions getSoftAssertion(long threadId) {

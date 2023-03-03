@@ -182,8 +182,7 @@ public class AppiumDriverManager {
         try {
             String deviceLogFileName = availableDevice.startDataCapture(normalisedScenarioName,
                                                                         scenarioRunCount);
-            Drivers.addDeviceLogFileNameFor(userPersona, Platform.android.name(),
-                                            deviceLogFileName);
+            addDeviceLogFileNameFor(userPersona, Platform.android.name(), deviceLogFileName);
             LOGGER.info(String.format("Started device log capture in file: %s", deviceLogFileName));
         } catch(IOException | InterruptedException e) {
             LOGGER.info(String.format("Error in starting data capture: %s", e.getMessage()));
@@ -355,13 +354,25 @@ public class AppiumDriverManager {
     }
 
     private static void attachDeviceLogsToReportPortal(String userPersona) {
-        String deviceLogFileName = Drivers.getDeviceLogFileNameFor(userPersona,
-                                                                   Platform.android.name());
+        String deviceLogFileName = getDeviceLogFileNameFor(userPersona, Platform.android.name());
 
         String adbLogMessage = String.format("ADB Logs for %s, file name: %s",
                                              Drivers.getDeviceNameForUser(userPersona),
                                              deviceLogFileName);
         ReportPortal.emitLog(adbLogMessage, "DEBUG", new Date(), new File(deviceLogFileName));
+    }
+
+    private static String getDeviceLogFileNameFor(String userPersona, String forPlatform) {
+        UserPersonaDetails userPersonaDetails = Drivers.getUserPersonaDetails(
+                Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        return userPersonaDetails.getDeviceLogFileNameFor(userPersona, forPlatform);
+    }
+
+    private static void addDeviceLogFileNameFor(String userPersona, String forPlatform,
+                                                String deviceLogFileName) {
+        UserPersonaDetails userPersonaDetails = Drivers.getUserPersonaDetails(
+                Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        userPersonaDetails.addDeviceLogFileNameFor(userPersona, forPlatform, deviceLogFileName);
     }
 
     static void freeDevices() {

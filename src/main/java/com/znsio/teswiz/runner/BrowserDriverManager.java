@@ -59,21 +59,22 @@ public class BrowserDriverManager {
     @NotNull
     static Driver createWebDriverForUser(String userPersona, String browserName,
                                          Platform forPlatform, TestExecutionContext context) {
-        JSONObject browserConfig = null;
         LOGGER.info(String.format(
                 "createWebDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: " + "'%s', Number of webdrivers: '%d'%n",
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
+        LOGGER.info("Active thread count: " + Thread.activeCount());
 
         String baseUrl = getBaseUrl(userPersona);
         String appName = Drivers.getAppNamefor(userPersona);
 
-        if(numberOfWebDriversUsed == 0) {
+        JSONObject browserConfig = (JSONObject) context.getTestState(TEST_CONTEXT.BROWSER_CONFIG);
+        if(null == browserConfig) {
             browserConfig = getBrowserConfig();
             context.addTestState(TEST_CONTEXT.BROWSER_CONFIG, browserConfig);
-            checkConnectivityToBaseUrl(baseUrl);
-        } else {
-            browserConfig = (JSONObject) context.getTestState(TEST_CONTEXT.BROWSER_CONFIG);
         }
+        context.addTestState(TEST_CONTEXT.BROWSER_CONFIG, browserConfig);
+
+        checkConnectivityToBaseUrl(baseUrl);
 
         Driver currentDriver;
         if(numberOfWebDriversUsed == MAX_NUMBER_OF_WEB_DRIVERS) {
@@ -86,15 +87,19 @@ public class BrowserDriverManager {
         String runningOn = Runner.isRunningInCI() ? "CI" : "local";
         context.addTestState(TEST_CONTEXT.WEB_BROWSER_ON, runningOn);
         if(numberOfWebDriversUsed < MAX_NUMBER_OF_WEB_DRIVERS) {
-            LOGGER.info("Create new webdriver instance");
+            LOGGER.info(String.format(
+                    "Create new webdriver instance for: %s, on: %s, with browserConfig: %s",
+                    userPersona, browserName, browserConfig));
             WebDriver newWebDriver = createNewWebDriver(userPersona, browserName, context,
                                                         browserConfig);
             LOGGER.info("Webdriver instance created");
             newWebDriver.get(baseUrl);
             LOGGER.info("Navigated to baseUrl: " + baseUrl);
-            currentDriver = new Driver(updatedTestName, forPlatform, userPersona,
-                                       appName, newWebDriver, isRunInHeadlessMode);
-            LOGGER.info("New Driver with Visual instance created");
+            currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName,
+                                       newWebDriver, isRunInHeadlessMode);
+            numberOfWebDriversUsed++;
+            LOGGER.info(
+                    "New Driver with Visual instance created: numberOfWebDriversUsed: " + numberOfWebDriversUsed);
         } else {
             throw new InvalidTestDataException(String.format(
                     "Current number of WebDriver instances used: '%d'. " + "Unable to create " +
@@ -102,7 +107,6 @@ public class BrowserDriverManager {
                     numberOfWebDriversUsed, MAX_NUMBER_OF_WEB_DRIVERS, userPersona,
                     forPlatform.name()));
         }
-        numberOfWebDriversUsed++;
 
         LOGGER.info(String.format(
                 "createWebDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', "
@@ -138,9 +142,11 @@ public class BrowserDriverManager {
     }
 
     private static void checkConnectivityToBaseUrl(String baseUrl) {
-        LOGGER.info(String.format("Check connectivity to baseUrl: '%s'", baseUrl));
-        String[] curlCommand = new String[]{"curl -m 60 --insecure -I " + baseUrl};
-        CommandLineExecutor.execCommand(curlCommand);
+        if(numberOfWebDriversUsed == 0) {
+            LOGGER.info(String.format("Check connectivity to baseUrl: '%s'", baseUrl));
+            String[] curlCommand = new String[]{"curl -m 60 --insecure -I " + baseUrl};
+            CommandLineExecutor.execCommand(curlCommand);
+        }
     }
 
     @NotNull
@@ -150,21 +156,22 @@ public class BrowserDriverManager {
 
         DriverManagerType driverManagerType = setupBrowserDriver(testExecutionContext, browserName);
         WebDriver driver = null;
+        LOGGER.info(
+                BrowserDriverManager.class.getName() + "-createNewWebDriver: " + driverManagerType.getBrowserNameLowerCase());
+        JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(
+                driverManagerType.getBrowserNameLowerCase());
         switch(driverManagerType) {
             case CHROME:
                 driver = createChromeDriver(forUserPersona, testExecutionContext,
-                                            browserConfig.getJSONObject(
-                                                    driverManagerType.getBrowserNameLowerCase()));
+                                            browserConfigForBrowserType);
                 break;
             case FIREFOX:
                 driver = createFirefoxDriver(forUserPersona, testExecutionContext,
-                                             browserConfig.getJSONObject(
-                                                     driverManagerType.getBrowserNameLowerCase()));
+                                             browserConfigForBrowserType);
                 break;
             case SAFARI:
                 driver = createSafariDriver(forUserPersona, testExecutionContext,
-                                            browserConfig.getJSONObject(
-                                                    driverManagerType.getBrowserNameLowerCase()));
+                                            browserConfigForBrowserType);
                 break;
             case EDGE:
             case IEXPLORER:
@@ -175,7 +182,7 @@ public class BrowserDriverManager {
         }
         LOGGER.info("Driver created");
 
-        if (null == driver) {
+        if(null == driver) {
             throw new EnvironmentSetupException(
                     String.format("Unable to create %s browser driver for user: %s", browserName,
                                   forUserPersona));
@@ -411,7 +418,15 @@ public class BrowserDriverManager {
         LOGGER.info(logMessage);
         ReportPortal.emitLog(logMessage, DEBUG, new Date());
         System.setProperty("webdriver." + browserType + ".logfile", logFile);
-        Drivers.addBrowserLogFileNameFor(forUserPersona, Platform.web.name(), browserType, logFile);
+        addBrowserLogFileNameFor(forUserPersona, Platform.web.name(), browserType, logFile);
+    }
+
+    private static void addBrowserLogFileNameFor(String userPersona, String forPlatform,
+                                                 String browserType, String logFileName) {
+        UserPersonaDetails userPersonaDetails = Drivers.getUserPersonaDetails(
+                Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        userPersonaDetails.addBrowserLogFileNameFor(userPersona, forPlatform, browserType,
+                                                    logFileName);
     }
 
     @NotNull
@@ -447,9 +462,10 @@ public class BrowserDriverManager {
                                @NotNull
                                Driver driver) {
         String browserNameForUser = Drivers.getBrowserNameForUser(userPersona);
-        String logFileName = Drivers.getBrowserLogFileNameFor(userPersona, Platform.web.name(), browserNameForUser);
+        String logFileName = getBrowserLogFileNameFor(userPersona, Platform.web.name(),
+                                                      browserNameForUser);
         --numberOfWebDriversUsed;
-        LOGGER.info(String.format("numberOfWebDriversUsed: %d", numberOfWebDriversUsed));
+        LOGGER.info(String.format("Reduced numberOfWebDriversUsed: %d", numberOfWebDriversUsed));
         String logMessage = String.format("Browser logs for user: %s" + "%nlogFileName: %s",
                                           userPersona, logFileName);
         LOGGER.info(logMessage);
@@ -467,4 +483,12 @@ public class BrowserDriverManager {
             webDriver.quit();
         }
     }
+
+    private static String getBrowserLogFileNameFor(String userPersona, String forPlatform,
+                                                   String browserType) {
+        UserPersonaDetails userPersonaDetails = Drivers.getUserPersonaDetails(
+                Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        return userPersonaDetails.getBrowserLogFileNameFor(userPersona, forPlatform, browserType);
+    }
+
 }

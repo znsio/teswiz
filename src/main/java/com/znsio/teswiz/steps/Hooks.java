@@ -4,6 +4,7 @@ import com.context.TestExecutionContext;
 import com.epam.reportportal.service.ReportPortal;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.runner.UserPersonaDetails;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import io.cucumber.java.Scenario;
 import org.apache.log4j.Logger;
@@ -26,6 +27,8 @@ public class Hooks {
         LOGGER.info(String.format("Running test %s on %s", testExecutionContext.getTestName(),
                                   Runner.getPlatform().name()));
         testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
+        testExecutionContext.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS,
+                                          new UserPersonaDetails());
         SoftAssertions softly = new SoftAssertions();
         testExecutionContext.addTestState(TEST_CONTEXT.SOFT_ASSERTIONS, softly);
         addEnvironmentVariablesToReportPortal();
