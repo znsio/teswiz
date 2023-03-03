@@ -12,6 +12,7 @@ import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.MutableCapabilities;
+
 import java.io.File;
 import java.net.URL;
 import java.util.*;
@@ -35,7 +36,7 @@ class BrowserStackSetup {
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser,
-                authenticationKey, appPath);
+                                                                authenticationKey, appPath);
 
         ArrayList hostMachinesList = (ArrayList) loadedCapabilityFile.get("hostMachines");
         Map hostMachines = (Map) hostMachinesList.get(0);
@@ -46,23 +47,27 @@ class BrowserStackSetup {
         app.put("cloud", appIdFromBrowserStack);
         loadedPlatformCapability.put("browserstack.user", authenticationUser);
         loadedPlatformCapability.put("browserstack.key", authenticationKey);
-        String browserStackLocalIdentifier = Randomizer.randomize(10);
+        setupLocalTesting(authenticationKey, loadedPlatformCapability);
+        String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "")
+                                     .replace("\\", "");
+        loadedPlatformCapability.put("build", Setup.getFromConfigs(
+                Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
+        loadedPlatformCapability.put("project", Setup.getFromConfigs(Setup.APP_NAME));
+        updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey,
+                                                loadedCapabilityFile);
+    }
+
+    private static void setupLocalTesting(String authenticationKey, Map loadedPlatformCapability) {
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
+            String browserStackLocalIdentifier = Randomizer.randomize(10);
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
                     browserStackLocalIdentifier));
-            startBrowserStackLocal(authenticationKey,
-                    browserStackLocalIdentifier);
+            startBrowserStackLocal(authenticationKey, browserStackLocalIdentifier);
             loadedPlatformCapability.put("browserstack.local", "true");
             loadedPlatformCapability.put("browserstack.localIdentifier",
                                          browserStackLocalIdentifier);
         }
-        String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "").replace("\\", "");
-        loadedPlatformCapability.put("build",
-                                     Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
-        loadedPlatformCapability.put("project", Setup.getFromConfigs(Setup.APP_NAME));
-        updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey,
-                                                loadedCapabilityFile);
     }
 
     static MutableCapabilities updateBrowserStackCapabilities(MutableCapabilities capabilities) {
@@ -75,20 +80,23 @@ class BrowserStackSetup {
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
 
         String browserStackLocalIdentifier = Randomizer.randomize(10);
-        String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "").replace("\\", "");
+        String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "")
+                                     .replace("\\", "");
 
         capabilities.setCapability("browserName", loadedPlatformCapability.get("browserName"));
 
-        Map<String, String> browserstackOptions = (Map<String, String>) loadedPlatformCapability.get("browserstackOptions");
+        Map<String, String> browserstackOptions =
+                (Map<String, String>) loadedPlatformCapability.get(
+                "browserstackOptions");
         browserstackOptions.put("projectName", Setup.getFromConfigs(Setup.APP_NAME));
-        browserstackOptions.put("buildName", Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
+        browserstackOptions.put("buildName",
+                                Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
 
-        if (Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
+        if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
                     browserStackLocalIdentifier));
-            startBrowserStackLocal(authenticationKey,
-                    browserStackLocalIdentifier);
+            startBrowserStackLocal(authenticationKey, browserStackLocalIdentifier);
             browserstackOptions.put("local", "true");
         }
         capabilities.setCapability("bstack:options", browserstackOptions);
@@ -118,7 +126,7 @@ class BrowserStackSetup {
         HashMap<String, String> bsLocalArgs = new HashMap<>();
         bsLocalArgs.put("key", authenticationKey);
         bsLocalArgs.put("v", "true");
-        if (!Runner.getPlatform().name().equalsIgnoreCase("web")) {
+        if(!Runner.getPlatform().name().equalsIgnoreCase("web")) {
             bsLocalArgs.put("localIdentifier", id);
         }
         bsLocalArgs.put("forcelocal", "true");
@@ -163,11 +171,11 @@ class BrowserStackSetup {
         filters.put("Os_version", platformVersion); // os versions
 
         List<BrowserStackDevice> availableDevices = BrowserStackDeviceFilter.getFilteredDevices(
-                authenticationUser, authenticationKey, filters, Setup.getFromConfigs(Setup.LOG_DIR));
+                authenticationUser, authenticationKey, filters,
+                Setup.getFromConfigs(Setup.LOG_DIR));
 
-        int deviceCount = Math.min(availableDevices.size(),
-                                   Setup.getIntegerValueFromConfigs(
-                                           Setup.MAX_NUMBER_OF_APPIUM_DRIVERS));
+        int deviceCount = Math.min(availableDevices.size(), Setup.getIntegerValueFromConfigs(
+                Setup.MAX_NUMBER_OF_APPIUM_DRIVERS));
         LOGGER.info(String.format("Adding '%d' available devices for executing on BrowserStack",
                                   deviceCount));
         for(int numDevices = 0; numDevices < deviceCount; numDevices++) {

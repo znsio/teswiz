@@ -7,6 +7,7 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +27,8 @@ class BrowserStackDeviceFilter {
     }
 
     static List<BrowserStackDevice> getFilteredDevices(String authenticationUser,
-                                                              String authenticationKey,
-                                                              Map<String, String> filters,
-                                                              String logDir) {
+                                                       String authenticationKey,
+                                                       Map<String, String> filters, String logDir) {
         // fetch the browser list from browserstack
         List<BrowserStackDevice> filteredDevices = null;
         String filteredDeviceFileName = logDir + File.separator +
@@ -37,11 +37,9 @@ class BrowserStackDeviceFilter {
                 logDir + File.separator + "allAvailableBrowsersAndDevices.json").getAbsolutePath();
         try {
 
-            String[] curlCommand = new String[]{
-                    "curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationUser +
-                    ":" + authenticationKey + "\"",
-                    "\"https://api.browserstack.com/automate/browsers.json\"",
-                    "> " + allAvailableBrowsersAndDevicesFileName};
+            String[] curlCommand = getCurlCommandForFetchingAllAvailableDevices(authenticationUser,
+                                                                                authenticationKey,
+                                                                                allAvailableBrowsersAndDevicesFileName);
 
             CommandLineExecutor.execCommand(curlCommand);
 
@@ -62,6 +60,16 @@ class BrowserStackDeviceFilter {
                     filters, filteredDeviceFileName));
         }
         return filteredDevices;
+    }
+
+    @NotNull
+    private static String[] getCurlCommandForFetchingAllAvailableDevices(String authenticationUser,
+                                                                         String authenticationKey,
+                                                                         String allAvailableBrowsersAndDevicesFileName) {
+        return new String[]{
+                "curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationUser + ":" + authenticationKey + "\"",
+                "\"https://api.browserstack.com/automate/browsers.json\"",
+                "> " + allAvailableBrowsersAndDevicesFileName};
     }
 
     private static List<BrowserStackDevice> applyFilters(List<BrowserStackDevice> all_devices,
