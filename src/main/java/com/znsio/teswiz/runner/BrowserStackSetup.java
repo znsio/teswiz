@@ -51,8 +51,8 @@ class BrowserStackSetup {
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
                     browserStackLocalIdentifier));
-            BrowserStackSetup.startBrowserStackLocal(authenticationKey,
-                                                     browserStackLocalIdentifier);
+            startBrowserStackLocal(authenticationKey,
+                    browserStackLocalIdentifier);
             loadedPlatformCapability.put("browserstack.local", "true");
             loadedPlatformCapability.put("browserstack.localIdentifier",
                                          browserStackLocalIdentifier);
@@ -65,7 +65,7 @@ class BrowserStackSetup {
                                                 loadedCapabilityFile);
     }
 
-    public static MutableCapabilities updateBrowserStackCapabilities(MutableCapabilities capabilities) {
+    static MutableCapabilities updateBrowserStackCapabilities(MutableCapabilities capabilities) {
 
         String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
         String platformName = Setup.getPlatform().name();
@@ -87,7 +87,7 @@ class BrowserStackSetup {
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
                     browserStackLocalIdentifier));
-            BrowserStackSetup.startBrowserStackLocal(authenticationKey,
+            startBrowserStackLocal(authenticationKey,
                     browserStackLocalIdentifier);
             browserstackOptions.put("local", "true");
         }
@@ -112,7 +112,7 @@ class BrowserStackSetup {
         return appIdFromBrowserStack;
     }
 
-    static void startBrowserStackLocal(String authenticationKey, String id) {
+    private static void startBrowserStackLocal(String authenticationKey, String id) {
         bsLocal = new Local();
 
         HashMap<String, String> bsLocalArgs = new HashMap<>();
