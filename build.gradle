@@ -3,30 +3,30 @@ import java.text.SimpleDateFormat
 buildscript {
     ext {
         gradleVersion = '7.3.3'
-        assertJVersion = '3.23.1'
-        atdVersion = 'dbef9bed7d'
+        assertJVersion = '3.24.2'
+        atdVersion = 'dbef9be'
         applitoolsSeleniumVersion = '3.213.0'
         applitoolsAppiumVersion = '3.213.0'
         commonsLang3Version = '3.12.0'
-        unirestVersion = '3.14.0'
+        unirestVersion = '3.14.2'
         jadbVersion = '1.2.1'
-        webDriverManagerVersion = '5.3.0'
+        webDriverManagerVersion = '5.3.2'
         googleCodeJsonSimpleVersion = '1.1.1'
-        junitVersion = '5.9.1'
-        slf4jVersion = '2.0.5'
+        junitVersion = '5.9.2'
+        slf4jVersion = '2.0.6'
         reportportalAgentCucumberVersion = '5.0.6'
         reportportalAgentTestNGVersion = '5.0.11'
-        fasterxmlJacksonVersion = '2.13.4'
+        fasterxmlJacksonVersion = '2.14.2'
         jsonPathVersion = '2.7.0'
         everitSchemaValidatorVersion = '1.5.1'
-        jodaTimeVersion = '2.12.1'
-        masterThoughtVersion = '5.7.4'
+        jodaTimeVersion = '2.12.2'
+        masterThoughtVersion = '5.7.5'
         browserStackLocalVersion = '1.0.6'
     }
 }
 
 plugins {
-    id "org.sonarqube" version "3.5.0.2730"
+    id "org.sonarqube" version "4.0.0.2929"
     id "java"
     id "idea"
     id 'com.github.johnrengelman.shadow' version '7.1.2'
@@ -34,7 +34,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.70'
+version '0.0.72'
 
 repositories {
     mavenLocal()
@@ -154,7 +154,7 @@ task run(type: JavaExec) {
         System.setProperty "LOG_DIR", "$logDirectory"
 
         def configFile = System.getenv("CONFIG")
-        if(null == configFile || !file(configFile).exists()) {
+        if (null == configFile || !file(configFile).exists()) {
             println("CONFIG file not provided, or does not exist")
             println("Run the test by providing the CONFIG file not provided, or does not exist")
             assert file(configFile).exists()
@@ -172,11 +172,44 @@ task run(type: JavaExec) {
         systemProperties = System.properties
         def runnerArgs = [
                 "${configFile}",
-                "com/znsio/sample/e2e/steps",
-                "./src/test/resources/com/znsio/sample/e2e/features"
+                "com/znsio/teswiz/steps",
+                "./src/test/resources/com/znsio/teswiz/features"
         ]
         args = runnerArgs
+
+        // attach debugger
+        if (System.getProperty('debug', 'false') == 'true') {
+            jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
+        }
     }
-    mainClass = "com.znsio.e2e.runner.Runner"
+    mainClass = "com.znsio.teswiz.runner.Runner"
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+}
+
+test {
+    useJUnitPlatform()
+
+    outputs.upToDateWhen { false }
+
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+        // show standard out and standard error of the test JVM(s) on the console
+        showStandardStreams = true
+        // show full exception trace
+        exceptionFormat = 'full'
+        showStackTraces = true
+        showCauses = true
+        showExceptions = true
+    }
+
+    // attach debugger
+    if (System.getProperty('debug', 'false') == 'true') {
+        jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
+    }
+    reports {
+        html.enabled(true)
+        junitXml.enabled(true)
+        html.destination(file("$buildDir/unit-test-results"))
+        junitXml.destination(file("$buildDir/unit-test-results"))
+    }
 }
