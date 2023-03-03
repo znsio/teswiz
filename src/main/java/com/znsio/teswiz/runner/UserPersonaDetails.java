@@ -34,7 +34,7 @@ public class UserPersonaDetails {
         return apps.get(keyForCurrentThread(userPersona));
     }
 
-    public void clearAllAppNames() {
+    void clearAllAppNames() {
         clearMap(" - clearAllAppNames - before: ", apps, " - clearAllAppNames - after: ");
     }
 
@@ -62,7 +62,7 @@ public class UserPersonaDetails {
         return drivers.containsKey(keyForCurrentThread(userPersona));
     }
 
-    public void clearAllDrivers() {
+    void clearAllDrivers() {
         LOGGER.info(Thread.currentThread()
                           .getId() + " - clearAllDrivers - before: " + drivers.keySet());
 
@@ -75,28 +75,28 @@ public class UserPersonaDetails {
                 Thread.currentThread().getId() + " - clearAllDrivers - after: " + drivers.keySet());
     }
 
-    public Set<String> getAllUserPersonasForAssignedDrivers() {
+    Set<String> getAllUserPersonasForAssignedDrivers() {
         return drivers.keySet();
     }
 
-    public void replaceDriverFor(String userPersona, Driver newDriver) {
+    void replaceDriverFor(String userPersona, Driver newDriver) {
         //        userPersonaDrivers.remove(userPersona);
         drivers.put(keyForCurrentThread(userPersona), newDriver);
     }
 
-    public void addPlatform(String userPersona, Platform platform) {
+    void addPlatform(String userPersona, Platform platform) {
         platforms.put(keyForCurrentThread(userPersona), platform);
     }
 
-    public Set<String> getAllUserPersonasForAssignedPlatforms() {
+    Set<String> getAllUserPersonasForAssignedPlatforms() {
         return platforms.keySet();
     }
 
-    public Platform getPlatformAssignedForUser(String userPersona) {
+    Platform getPlatformAssignedForUser(String userPersona) {
         return platforms.get(keyForCurrentThread(userPersona));
     }
 
-    public void clearAllPlatforms() {
+    void clearAllPlatforms() {
         LOGGER.info(Thread.currentThread()
                           .getId() + " - clearAllPlatforms - before: " + platforms.keySet());
 
@@ -109,15 +109,15 @@ public class UserPersonaDetails {
                           .getId() + " - clearAllPlatforms - after: " + platforms.keySet());
     }
 
-    public void replacePlatformFor(String userPersona, Platform newPlatform) {
+    void replacePlatformFor(String userPersona, Platform newPlatform) {
         platforms.put(keyForCurrentThread(userPersona), newPlatform);
     }
 
-    public Capabilities getCapabilitiesAssignedForUser(String userPersona) {
+    Capabilities getCapabilitiesAssignedForUser(String userPersona) {
         return capabilities.get(keyForCurrentThread(userPersona));
     }
 
-    public void clearAllCapabilities() {
+    void clearAllCapabilities() {
         LOGGER.info(Thread.currentThread()
                           .getId() + " - clearAllCapabilities - before: " + capabilities.keySet());
 
@@ -130,44 +130,44 @@ public class UserPersonaDetails {
                           .getId() + " - clearAllCapabilities - after: " + capabilities.keySet());
     }
 
-    public void replaceCapabilitiesFor(String userPersona, Capabilities newCapabilities) {
+    void replaceCapabilitiesFor(String userPersona, Capabilities newCapabilities) {
         capabilities.put(keyForCurrentThread(userPersona), newCapabilities);
     }
 
-    public void addCapabilities(String userPersona, Capabilities capabilities) {
+    void addCapabilities(String userPersona, Capabilities capabilities) {
         this.capabilities.put(keyForCurrentThread(userPersona), capabilities);
     }
 
-    public void clearLogFileNames() {
+    void clearLogFileNames() {
         clearMap(" - clearLogFileNames - before: ", deviceLogFileNameForUserPersonaAndPlatform,
                  " - clearLogFileNames - after: ");
     }
 
-    public String getDeviceLogFileNameFor(String userPersona, String platform) {
+    String getDeviceLogFileNameFor(String userPersona, String platform) {
         return deviceLogFileNameForUserPersonaAndPlatform.get(
                 keyForCurrentThread(userPersona) + "-" + platform);
     }
 
-    public String getBrowserLogFileNameFor(String userPersona, String platform,
+    String getBrowserLogFileNameFor(String userPersona, String platform,
                                            String browserType) {
         return deviceLogFileNameForUserPersonaAndPlatform.get(
                 keyForCurrentThread(userPersona) + "-" + (platform + "-" + browserType));
     }
 
-    public void addDeviceLogFileNameFor(String userPersona, String platform,
+    void addDeviceLogFileNameFor(String userPersona, String platform,
                                         String deviceLogFileName) {
         deviceLogFileNameForUserPersonaAndPlatform.put(
                 keyForCurrentThread(userPersona) + "-" + platform, deviceLogFileName);
     }
 
-    public void addBrowserLogFileNameFor(String userPersona, String forplatform, String browserType,
+    void addBrowserLogFileNameFor(String userPersona, String forplatform, String browserType,
                                          String logFileName) {
         deviceLogFileNameForUserPersonaAndPlatform.put(
                 keyForCurrentThread(userPersona) + "-" + (forplatform + "-" + browserType),
                 logFileName);
     }
 
-    public Map<String, Driver> getAllAssignedUserPersonasAndDrivers() {
+    Map<String, Driver> getAllAssignedUserPersonasAndDrivers() {
         return drivers;
     }
 }

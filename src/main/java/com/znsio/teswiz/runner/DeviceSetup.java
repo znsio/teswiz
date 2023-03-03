@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static com.znsio.teswiz.runner.Setup.*;
 
-public class DeviceSetup {
+class DeviceSetup {
     private static final Logger LOGGER = Logger.getLogger(DeviceSetup.class.getName());
 
     private DeviceSetup() {
@@ -214,7 +214,7 @@ public class DeviceSetup {
         }
     }
 
-    public static void cleanupCloudExecution() {
+    static void cleanupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
         switch(cloudName.toLowerCase()) {
             case "browserstack":

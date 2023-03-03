@@ -32,7 +32,7 @@ import static com.znsio.teswiz.runner.Runner.DEBUG;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
-public class AppiumDriverManager {
+class AppiumDriverManager {
     private static final int MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
     private static final List<AppiumDevice> additionalDevices = new ArrayList<>();
     private static final Logger LOGGER = Logger.getLogger(AppiumDriverManager.class.getName());

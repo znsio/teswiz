@@ -133,7 +133,7 @@ public class Drivers {
         return userPersonaDetails.getDriverAssignedForUser(userPersona);
     }
 
-    static Driver getDriverForCurrentUser(long threadId) {
+    public static Driver getDriverForCurrentUser(long threadId) {
         TestExecutionContext context = getTestExecutionContext(threadId);
         String userPersona = context.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
@@ -176,7 +176,7 @@ public class Drivers {
         return deviceOrBrowserName;
     }
 
-    public static Platform getPlatformForUser(String userPersona) {
+    static Platform getPlatformForUser(String userPersona) {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
                 getTestExecutionContext(Thread.currentThread().getId()));
 
@@ -192,7 +192,7 @@ public class Drivers {
         return userPersonaDetails.getPlatformAssignedForUser(userPersona);
     }
 
-    public static void attachLogsAndCloseAllWebDrivers() {
+    static void attachLogsAndCloseAllWebDrivers() {
         long currentThreadId = Thread.currentThread().getId();
         LOGGER.info(String.format("Close all drivers for test on ThreadId: - %d", currentThreadId));
         TestExecutionContext context = getTestExecutionContext(currentThreadId);
@@ -234,7 +234,7 @@ public class Drivers {
         }
     }
 
-    public static Set<String> getAvailableUserPersonas() {
+    static Set<String> getAvailableUserPersonas() {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
                 getTestExecutionContext(Thread.currentThread().getId()));
         return userPersonaDetails.getAllUserPersonasForAssignedDrivers();
@@ -285,5 +285,9 @@ public class Drivers {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
                 Runner.getTestExecutionContext(Thread.currentThread().getId()));
         return userPersonaDetails.getAppName(userPersona);
+    }
+
+    public static Visual getVisualDriverForCurrentUser(long threadId) {
+        return getDriverForCurrentUser(threadId).getVisual();
     }
 }

@@ -39,7 +39,7 @@ import java.util.logging.Level;
 import static com.znsio.teswiz.runner.Runner.*;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
-public class BrowserDriverManager {
+class BrowserDriverManager {
     private static final Logger LOGGER = Logger.getLogger(BrowserDriverManager.class.getName());
     private static final int MAX_NUMBER_OF_WEB_DRIVERS = Runner.getMaxNumberOfWebDrivers();
     private static final String BROWSER_CONFIG_SCHEMA_FILE = "BrowserConfigSchema.json";

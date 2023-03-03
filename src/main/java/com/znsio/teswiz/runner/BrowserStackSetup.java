@@ -16,7 +16,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 
-public class BrowserStackSetup {
+class BrowserStackSetup {
     private static final Logger LOGGER = Logger.getLogger(BrowserStackSetup.class.getName());
     private static final String DEVICE = "device";
     private static Local bsLocal;
@@ -25,7 +25,7 @@ public class BrowserStackSetup {
         LOGGER.debug("BrowserStackSetup - private constructor");
     }
 
-    public static void updateBrowserStackCapabilities() {
+    static void updateBrowserStackCapabilities() {
         String authenticationUser = Setup.getFromConfigs(Setup.CLOUD_USER);
         String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
         String platformName = Setup.getPlatform().name();
@@ -81,7 +81,7 @@ public class BrowserStackSetup {
         return appIdFromBrowserStack;
     }
 
-    public static void startBrowserStackLocal(String authenticationKey, String id) {
+    static void startBrowserStackLocal(String authenticationKey, String id) {
         bsLocal = new Local();
 
         HashMap<String, String> bsLocalArgs = new HashMap<>();
@@ -198,7 +198,7 @@ public class BrowserStackSetup {
         return new File(appPath).getName();
     }
 
-    public static void cleanUp() {
+    static void cleanUp() {
         stopBrowserStackLocal();
     }
 

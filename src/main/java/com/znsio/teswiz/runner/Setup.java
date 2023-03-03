@@ -27,14 +27,14 @@ import java.util.*;
 import static com.appium.utils.OverriddenVariable.*;
 import static com.znsio.teswiz.runner.Runner.*;
 
-public class Setup {
-    public static final String RUN_IN_CI = "RUN_IN_CI";
-    public static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
-    public static final String BRANCH_NAME = "BRANCH_NAME";
-    public static final String CAPS = "CAPS";
-    public static final String CLOUD_KEY = "CLOUD_KEY";
-    public static final String PLATFORM = "PLATFORM";
-    public static final String APP_NAME = "APP_NAME";
+class Setup {
+    static final String RUN_IN_CI = "RUN_IN_CI";
+    static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
+    static final String BRANCH_NAME = "BRANCH_NAME";
+    static final String CAPS = "CAPS";
+    static final String CLOUD_KEY = "CLOUD_KEY";
+    static final String PLATFORM = "PLATFORM";
+    static final String APP_NAME = "APP_NAME";
     static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     static final String IS_VISUAL = "IS_VISUAL";
@@ -99,7 +99,7 @@ public class Setup {
         LOGGER.debug("Setup - private constructor");
     }
 
-    public static void load(String providedConfigFilePath) {
+    static void load(String providedConfigFilePath) {
         configFilePath = providedConfigFilePath;
         properties = loadProperties(configFilePath);
     }
@@ -633,7 +633,7 @@ public class Setup {
                 String.valueOf(applitoolsConfiguration.get(APPLITOOLS.DISABLE_BROWSER_FETCHING)));
     }
 
-    public static void cleanUpExecutionEnvironment() {
+    static void cleanUpExecutionEnvironment() {
         LOGGER.info("cleanUpExecutionEnvironment");
         if(currentPlatform.equals(Platform.android)) {
             if(Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {

@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 
-public class HeadSpinSetup {
+class HeadSpinSetup {
     private static final Logger LOGGER = Logger.getLogger(HeadSpinSetup.class.getName());
     private static final String PLATFORM_VERSION = "platformVersion";
 

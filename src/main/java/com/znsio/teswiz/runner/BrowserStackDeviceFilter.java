@@ -18,14 +18,14 @@ import java.util.stream.Collectors;
 
 import static com.znsio.teswiz.runner.Setup.getCurlProxyCommand;
 
-public class BrowserStackDeviceFilter {
+class BrowserStackDeviceFilter {
     private static final Logger LOGGER = Logger.getLogger(BrowserStackDeviceFilter.class.getName());
 
     private BrowserStackDeviceFilter() {
         LOGGER.debug("BrowserStackDeviceFilter - private constructor");
     }
 
-    public static List<BrowserStackDevice> getFilteredDevices(String authenticationUser,
+    static List<BrowserStackDevice> getFilteredDevices(String authenticationUser,
                                                               String authenticationKey,
                                                               Map<String, String> filters,
                                                               String logDir) {

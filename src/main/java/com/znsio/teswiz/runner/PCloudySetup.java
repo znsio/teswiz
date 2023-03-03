@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.znsio.teswiz.runner.Setup.*;
 
-public class PCloudySetup {
+class PCloudySetup {
     private static final Logger LOGGER = Logger.getLogger(PCloudySetup.class.getName());
     private static final String CURL_INSECURE = "curl --insecure";
     private static final String RESULT = "result";

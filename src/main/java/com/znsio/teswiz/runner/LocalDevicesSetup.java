@@ -18,7 +18,7 @@ import java.util.List;
 
 import static com.znsio.teswiz.runner.Setup.*;
 
-public class LocalDevicesSetup {
+class LocalDevicesSetup {
     private static final Logger LOGGER = Logger.getLogger(LocalDevicesSetup.class.getName());
     private static final String APPIUM_SETTINGS = "io.appium.settings";
     private static final String UNINSTALL = "uninstall";

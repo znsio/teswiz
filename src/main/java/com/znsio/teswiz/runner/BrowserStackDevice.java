@@ -2,7 +2,7 @@ package com.znsio.teswiz.runner;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class BrowserStackDevice {
+class BrowserStackDevice {
 
     private String name;
     private String device;
@@ -14,60 +14,59 @@ public class BrowserStackDevice {
     @JsonProperty("real_mobile")
     private boolean real_mobile;
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    void setName(String name) {
         this.name = name;
     }
 
-    public String getDevice() {
+    String getDevice() {
         return device;
     }
 
-    public void setDevice(String device) {
+    void setDevice(String device) {
         this.device = device;
     }
 
-    public String getOs() {
+    String getOs() {
         return os;
     }
 
-    public void setOs(String os) {
+    void setOs(String os) {
         this.os = os;
     }
 
-    public String getOs_version() {
+    String getOs_version() {
         return os_version;
     }
 
-    public void setOs_version(String os_version) {
+    void setOs_version(String os_version) {
         this.os_version = os_version;
     }
 
-    public String getBrowser() {
+    String getBrowser() {
         return browser;
     }
 
-    public void setBrowser(String browser) {
+    void setBrowser(String browser) {
         this.browser = browser;
     }
 
-    public String getBrowserVersion() {
+    String getBrowserVersion() {
         return browser_version;
     }
 
-    public void setBrowserVersion(String browser_version) {
+    void setBrowserVersion(String browser_version) {
         this.browser_version = browser_version;
     }
 
-    public boolean isRealMobile() {
+    boolean isRealMobile() {
         return real_mobile;
     }
 
-    public void setRealMobile(boolean real_mobile) {
+    void setRealMobile(boolean real_mobile) {
         this.real_mobile = real_mobile;
     }
-
 }
