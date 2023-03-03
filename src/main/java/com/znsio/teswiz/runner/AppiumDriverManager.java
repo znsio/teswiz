@@ -320,6 +320,9 @@ public class AppiumDriverManager {
             if(appiumDriver.equals(atdAppiumDriver)) {
                 LOGGER.info(
                         String.format("ATD will quit the driver for persona: '%s'", userPersona));
+                LOGGER.info("Close the app");
+                appiumDriver.closeApp();
+
             } else {
                 LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
                 attachDeviceLogsToReportPortal(userPersona);
