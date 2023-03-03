@@ -3,6 +3,7 @@ package com.znsio.teswiz.runner;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,8 +23,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class BrowserStackDeviceFilterTest {
 
     List<BrowserStackDevice> browserStackDevices;
+    private static final String LOG_DIR = "./target/testLogs";
 
     Method applyFilters;
+
+    @BeforeAll
+    public static void setupBefore() {
+        System.setProperty("LOG_DIR", LOG_DIR);
+        new File(LOG_DIR).mkdirs();
+    }
 
     @BeforeEach
     public void Setup() throws FileNotFoundException, NoSuchMethodException {
