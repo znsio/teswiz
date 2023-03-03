@@ -40,7 +40,7 @@ public class Driver {
     private final boolean isRunningInHeadlessMode;
     private Visual visually;
 
-    public Driver(String testName, Platform forPlatform, String userPersona,
+    Driver(String testName, Platform forPlatform, String userPersona,
                   String appName, AppiumDriver<WebElement> appiumDriver) {
         this.driver = appiumDriver;
         this.type = APPIUM_DRIVER;
@@ -51,7 +51,7 @@ public class Driver {
         instantiateEyes(testName, appiumDriver);
     }
 
-    public Driver(String testName, Platform forPlaform, String userPersona,
+    Driver(String testName, Platform forPlaform, String userPersona,
                   String appName, WebDriver webDriver, boolean isRunInHeadlessMode) {
         this.driver = webDriver;
         this.type = WEB_DRIVER;

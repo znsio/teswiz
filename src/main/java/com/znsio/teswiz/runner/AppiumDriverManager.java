@@ -360,7 +360,7 @@ class AppiumDriverManager {
         String deviceLogFileName = getDeviceLogFileNameFor(userPersona, Platform.android.name());
 
         String adbLogMessage = String.format("ADB Logs for %s, file name: %s",
-                                             Drivers.getDeviceNameForUser(userPersona),
+                                             Drivers.getNameOfDeviceUsedByUser(userPersona),
                                              deviceLogFileName);
         ReportPortal.emitLog(adbLogMessage, "DEBUG", new Date(), new File(deviceLogFileName));
     }

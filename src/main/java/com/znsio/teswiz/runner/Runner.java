@@ -149,10 +149,6 @@ public class Runner {
         return SessionContext.getTestExecutionContext(threadId);
     }
 
-    public static String fetchDeviceName(String forUserPersona) {
-        return Drivers.getDeviceNameForUser(forUserPersona);
-    }
-
     public static SoftAssertions getSoftAssertion(long threadId) {
         return (SoftAssertions) getTestExecutionContext(threadId).getTestState(
                 TEST_CONTEXT.SOFT_ASSERTIONS);

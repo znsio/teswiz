@@ -148,7 +148,7 @@ public class Drivers {
         return userPersonaDetails.getDriverAssignedForUser(userPersona);
     }
 
-    static String getDeviceNameForUser(String userPersona) {
+    public static String getNameOfDeviceUsedByUser(String userPersona) {
         return getDeviceOrBrowserNameFromCapabilitiesForUser(userPersona, DEVICE_NAME);
     }
 
