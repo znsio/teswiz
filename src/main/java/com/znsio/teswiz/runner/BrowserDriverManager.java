@@ -451,9 +451,8 @@ class BrowserDriverManager {
                 String authenticationKey = Runner.getCloudKey();
                 remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub.browserstack.com/wd/hub";
                 capabilities = BrowserStackSetup.updateBrowserStackCapabilities(capabilities);
-            } else {
-                throw new NotImplementedException("Cloud not yet supported: " + cloudName);
             }
+            
             LOGGER.info(String.format("Starting RemoteWebDriver using url: %s", remoteUrl));
             RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(remoteUrl),
                     capabilities);
