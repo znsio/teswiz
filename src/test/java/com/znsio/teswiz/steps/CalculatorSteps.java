@@ -31,7 +31,7 @@ public class CalculatorSteps {
 
     @And("{string} select {string}")
     public void select(String userPersona, String action) {
-        Platform onPlatform = Drivers.getPlatformForUser(userPersona);
+        Platform onPlatform = Runner.getPlatformForUser(userPersona);
         new CalculatorBL(userPersona, onPlatform).startCalculator().selectNumber(action);
     }
 
@@ -54,7 +54,7 @@ public class CalculatorSteps {
 
     @And("{string} press {string}")
     public void press(String userPersona, String action) {
-        Platform onPlatform = Drivers.getPlatformForUser(userPersona);
+        Platform onPlatform = Runner.getPlatformForUser(userPersona);
         new CalculatorBL(userPersona, onPlatform).pressOperation(action);
         if(action.equalsIgnoreCase("equals")) {
             waitFor(10);

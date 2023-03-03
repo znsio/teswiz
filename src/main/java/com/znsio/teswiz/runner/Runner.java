@@ -48,6 +48,10 @@ public class Runner {
         run(cukeArgs, stepDefDirName, featuresDirName);
     }
 
+    public static Platform getPlatformForUser(String userPersona) {
+        return Drivers.getPlatformForUser(userPersona);
+    }
+
     public void run(List<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);
@@ -141,20 +145,12 @@ public class Runner {
         new Runner(args[0], args[1], args[2]);
     }
 
-    public static Driver fetchDriver(long threadId) {
-        return Drivers.getDriverForCurrentUser(threadId);
-    }
-
     public static TestExecutionContext getTestExecutionContext(long threadId) {
         return SessionContext.getTestExecutionContext(threadId);
     }
 
     public static String fetchDeviceName(String forUserPersona) {
         return Drivers.getDeviceNameForUser(forUserPersona);
-    }
-
-    public static Visual fetchEyes(long threadId) {
-        return Drivers.getDriverForCurrentUser(threadId).getVisual();
     }
 
     public static SoftAssertions getSoftAssertion(long threadId) {
