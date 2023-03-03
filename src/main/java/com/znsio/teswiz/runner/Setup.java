@@ -635,14 +635,14 @@ class Setup {
 
     static void cleanUpExecutionEnvironment() {
         LOGGER.info("cleanUpExecutionEnvironment");
-        if(currentPlatform.equals(Platform.android)) {
+        if(currentPlatform.equals(Platform.android) || currentPlatform.equals(Platform.web)) {
             if(Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
                 DeviceSetup.cleanupCloudExecution();
             } else {
                 LOGGER.info("Not running in CI. Nothing to cleanup in Execution environment");
             }
         } else {
-            LOGGER.info("Not running on android. Nothing to cleanup in Execution environment");
+            LOGGER.info("Not running on android/Web. Nothing to cleanup in Execution environment");
         }
     }
 
