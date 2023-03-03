@@ -43,6 +43,11 @@ public class Drivers {
         return currentDriver;
     }
 
+    public static boolean isDriverAssignedForUser(String userPersona) {
+        TestExecutionContext context = getTestExecutionContext(Thread.currentThread().getId());
+        return getUserPersonaDetails(context).isDriverAssignedForUser(userPersona);
+    }
+
     static UserPersonaDetails getUserPersonaDetails(TestExecutionContext context) {
         return (UserPersonaDetails) context.getTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS);
     }
@@ -234,7 +239,7 @@ public class Drivers {
         }
     }
 
-    static Set<String> getAvailableUserPersonas() {
+    public static Set<String> getAvailableUserPersonas() {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
                 getTestExecutionContext(Thread.currentThread().getId()));
         return userPersonaDetails.getAllUserPersonasForAssignedDrivers();
