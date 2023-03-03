@@ -11,6 +11,7 @@ import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -29,13 +30,11 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
-
 import static com.znsio.teswiz.runner.Runner.*;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
@@ -430,13 +429,13 @@ class BrowserDriverManager {
     }
 
     @NotNull
-    private static RemoteWebDriver createRemoteWebDriver(MutableCapabilities chromeOptions) {
+    private static RemoteWebDriver createRemoteWebDriver(MutableCapabilities capabilities) {
         try {
             String cloudName = Runner.getCloudName();
             String webDriverHubSuffix = "/wd/hub";
             String remoteUrl =
                     "http://localhost:" + Runner.getRemoteDriverGridPort() + webDriverHubSuffix;
-            if(cloudName.equalsIgnoreCase("headspin")) {
+            if (cloudName.equalsIgnoreCase("headspin")) {
                 String authenticationKey = Runner.getCloudKey();
                 String capabilityFile = System.getProperty(CAPS);
                 Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
@@ -444,16 +443,23 @@ class BrowserDriverManager {
                 Map hostMachines = (Map) hostMachinesList.get(0);
                 String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
                 remoteUrl = remoteServerURL.endsWith("/")
-                            ? remoteServerURL + authenticationKey + webDriverHubSuffix
-                            : remoteServerURL + "/" + authenticationKey + webDriverHubSuffix;
+                        ? remoteServerURL + authenticationKey + webDriverHubSuffix
+                        : remoteServerURL + "/" + authenticationKey + webDriverHubSuffix;
                 remoteUrl = remoteUrl.startsWith("https") ? remoteUrl : "https://" + remoteUrl;
+            } else if (cloudName.equalsIgnoreCase("browserstack")) {
+                String authenticationUser = Runner.getCloudUser();
+                String authenticationKey = Runner.getCloudKey();
+                remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub.browserstack.com/wd/hub";
+                capabilities = BrowserStackSetup.updateBrowserStackCapabilities(capabilities);
+            } else {
+                throw new NotImplementedException("Cloud not yet supported: " + cloudName);
             }
             LOGGER.info(String.format("Starting RemoteWebDriver using url: %s", remoteUrl));
             RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(remoteUrl),
-                                                                  chromeOptions);
+                    capabilities);
             LOGGER.info(String.format("RemoteWebDriver created using url: %s", remoteUrl));
             return remoteWebDriver;
-        } catch(MalformedURLException e) {
+        } catch (MalformedURLException e) {
             throw new EnvironmentSetupException("Unable to create a new RemoteWebDriver", e);
         }
     }
