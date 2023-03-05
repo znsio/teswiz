@@ -3,7 +3,7 @@
 [![CI](https://github.com/znsio/teswiz/actions/workflows/CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/CI.yml)
 [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)
 
-# Breaking changes in v0.0.72:
+# Breaking changes in v0.0.72
 
 Below is the list of the breaking changes, and the corresponding new implementation starting from teswiz v0.0.72.
 
