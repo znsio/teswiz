@@ -5,9 +5,9 @@
 
 # Breaking changes in v0.0.72
 
-$${\color{red}Breaking changes in v0.0.72}$$ 
+$${\Breaking changes in v0.0.72{red}}$$ 
 
-# $${\color{red}Breaking changes in v0.0.72}$$ 
+# $${\Breaking changes in v0.0.72{red}}$$ 
 
 Below is the list of the breaking changes, and the corresponding new implementation starting from teswiz v0.0.72.
 
