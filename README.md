@@ -3,11 +3,7 @@
 [![CI](https://github.com/znsio/teswiz/actions/workflows/CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/CI.yml)
 [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)
 
-# Breaking changes in v0.0.72
-
-$${Breaking{red} \space changes{red} \space in{red} \space v0.0.72{red}}$$ 
-
-# $${Breaking{red} \space changes{red} \space in{red} \space v0.0.72{red}}$$ 
+# ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Breaking changes in v0.0.72 ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png)
 
 Below is the list of the breaking changes, and the corresponding new implementation starting from teswiz v0.0.72.
 
@@ -17,36 +13,36 @@ The package naming has been made consistent - **com.znsio.teswiz**.
 
 Accordingly, the following changes will need to be made in your existing tests.
 
-| Purpose                              | Old                                             | New                                                |
-|:-------------------------------------|:------------------------------------------------|:---------------------------------------------------|
-| Runner (build.gradle)                | `mainClass = "com.znsio.e2e.runner.Runner"`     | `mainClass = "com.znsio.teswiz.runner.Runner"`     |
-| Importing Runner (*.java)            | `import com.znsio.e2e.runner.Runner`            | `import com.znsio.teswiz.runner.Runner`            |
-| Importing Platform (*.java)          | `import com.znsio.e2e.entities.Platform`        | `import com.znsio.teswiz.entities.Platform`        |
-| Importing TEST_CONTEXT (*.java)      | `import com.znsio.e2e.entities.TEST_CONTEXT`    | `import com.znsio.teswiz.entities.TEST_CONTEXT`    |
-| Importing Driver (*.java)            | `import com.znsio.e2e.tools.Driver`             | `import com.znsio.teswiz.runner.Driver`            |
-| Importing Drivers (*.java)           | `import com.znsio.e2e.tools.Drivers`            | `import com.znsio.teswiz.runner.Drivers`           |
-| Importing Visual (*.java)            | `import com.znsio.e2e.tools.Visual`             | `import com.znsio.teswiz.runner.Visual`            |
-| Importing APPLITOOLS (*.java)        | `import com.znsio.e2e.entities.APPLITOOLS`      | `import com.znsio.teswiz.entities.APPLITOOLS`      |
-| Importing waitFor (*.java)           | `import com.znsio.e2e.tools.Wait.waitFor`       | `import com.znsio.teswiz.tools.Wait.waitFor`       |
-| Importing custom exceptions (*.java) | `import com.znsio.e2e.exceptions.*`             | `import com.znsio.teswiz.exceptions.*`             |
-| Importing Randomizer (*.java)        | `import static com.znsio.e2e.tools.Randomizer;` | `import static com.znsio.teswiz.tools.Randomizer;` |
-| Importing Hooks (*.java)             | `import com.znsio.e2e.steps.Hooks`              | `import com.znsio.teswiz.steps.Hooks`              |
-| Platform (build.gradle)              | `mainClass = "com.znsio.e2e.runner.Runner"`     | `mainClass = "com.znsio.teswiz.runner.Runner"`     |
+| Purpose                              | ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Old ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
+|:-------------------------------------|:----------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
+| Runner (build.gradle)                | `mainClass = "com.znsio.e2e.runner.Runner"`                                                                           | `mainClass = "com.znsio.teswiz.runner.Runner"`                                                                        |
+| Importing Runner (*.java)            | `import com.znsio.e2e.runner.Runner`                                                                                  | `import com.znsio.teswiz.runner.Runner`                                                                               |
+| Importing Platform (*.java)          | `import com.znsio.e2e.entities.Platform`                                                                              | `import com.znsio.teswiz.entities.Platform`                                                                           |
+| Importing TEST_CONTEXT (*.java)      | `import com.znsio.e2e.entities.TEST_CONTEXT`                                                                          | `import com.znsio.teswiz.entities.TEST_CONTEXT`                                                                       |
+| Importing Driver (*.java)            | `import com.znsio.e2e.tools.Driver`                                                                                   | `import com.znsio.teswiz.runner.Driver`                                                                               |
+| Importing Drivers (*.java)           | `import com.znsio.e2e.tools.Drivers`                                                                                  | `import com.znsio.teswiz.runner.Drivers`                                                                              |
+| Importing Visual (*.java)            | `import com.znsio.e2e.tools.Visual`                                                                                   | `import com.znsio.teswiz.runner.Visual`                                                                               |
+| Importing APPLITOOLS (*.java)        | `import com.znsio.e2e.entities.APPLITOOLS`                                                                            | `import com.znsio.teswiz.entities.APPLITOOLS`                                                                         |
+| Importing waitFor (*.java)           | `import com.znsio.e2e.tools.Wait.waitFor`                                                                             | `import com.znsio.teswiz.tools.Wait.waitFor`                                                                          |
+| Importing custom exceptions (*.java) | `import com.znsio.e2e.exceptions.*`                                                                                   | `import com.znsio.teswiz.exceptions.*`                                                                                |
+| Importing Randomizer (*.java)        | `import static com.znsio.e2e.tools.Randomizer;`                                                                       | `import static com.znsio.teswiz.tools.Randomizer;`                                                                    |
+| Importing Hooks (*.java)             | `import com.znsio.e2e.steps.Hooks`                                                                                    | `import com.znsio.teswiz.steps.Hooks`                                                                                 |
+| Platform (build.gradle)              | `mainClass = "com.znsio.e2e.runner.Runner"`                                                                           | `mainClass = "com.znsio.teswiz.runner.Runner"`                                                                        |
 
 ## Method name changes
 
 There are some method name changes as listed below:
 
-| Purpose                                          | Old                                                   | New                                                                          |
-|:-------------------------------------------------|:------------------------------------------------------|:-----------------------------------------------------------------------------|
-| Create/Allocate Driver                           | `allDrivers.createDriverFor(...)`                     | **`Drivers.createDriverFor(...)`**                                           |
-| Accessing platform                               | `Runner.platform`                                     | **`Runner.getPlatform()`**                                                   |
-| Getting platform for user                        | `allDrivers.getPlatformForUser(userPersona)`          | **`Runner.getPlatformForUser(userPersona)`**                                 |
-| Retrieving ALL_DRIVERS from TestExecutionContext | `TEST_CONTEXT.ALL_DRIVERS`                            | ** Not required **                                                           |
-| Retrieving test data                             | `public static Map getTestDataAsMap(String key)`      | **`public static Map<String, Object> getTestDataAsMap(String key)`**         |
-| Getting the Driver for the current user          | `Runner.fetchDriver(Thread.currentThread().getId());` | **`Drivers.getDriverForCurrentUser(Thread.currentThread().getId());`**       | 
-| Getting the Visual driver for the current user   | `Runner.fetchEyes(Thread.currentThread().getId());`   | **`Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());`** |
-| Getting the device name for user                 | `Runner.fetchDeviceName(userPersona);`                | **`Drivers.getNameOfDeviceUsedByUser(userPersona);`**                        |
+| Purpose                                          | ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Old ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
+|:-------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
+| Create/Allocate Driver                           | `allDrivers.createDriverFor(...)`                                                                                     | **`Drivers.createDriverFor(...)`**                                                                                    |
+| Accessing platform                               | `Runner.platform`                                                                                                     | **`Runner.getPlatform()`**                                                                                            |
+| Getting platform for user                        | `allDrivers.getPlatformForUser(userPersona)`                                                                          | **`Runner.getPlatformForUser(userPersona)`**                                                                          |
+| Retrieving ALL_DRIVERS from TestExecutionContext | `TEST_CONTEXT.ALL_DRIVERS`                                                                                            | ** Not required **                                                                                                    |
+| Retrieving test data                             | `public static Map getTestDataAsMap(String key)`                                                                      | **`public static Map<String, Object> getTestDataAsMap(String key)`**                                                  |
+| Getting the Driver for the current user          | `Runner.fetchDriver(Thread.currentThread().getId());`                                                                 | **`Drivers.getDriverForCurrentUser(Thread.currentThread().getId());`**                                                | 
+| Getting the Visual driver for the current user   | `Runner.fetchEyes(Thread.currentThread().getId());`                                                                   | **`Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());`**                                          |
+| Getting the device name for user                 | `Runner.fetchDeviceName(userPersona);`                                                                                | **`Drivers.getNameOfDeviceUsedByUser(userPersona);`**                                                                 |
 
 [//]: # (```mermaid)
 
