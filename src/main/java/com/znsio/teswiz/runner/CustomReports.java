@@ -36,7 +36,7 @@ class CustomReports {
         ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
         reportBuilder.generateReports();
         String generatedReportsMessage = String.format(
-                "Reports available here: %s/cucumber-html-reports/overview-features.html",
+                "Reports available here: file://%s/cucumber-html-reports/overview-features.html",
                 config.getReportDirectory().getAbsolutePath());
         LOGGER.info(generatedReportsMessage);
     }
