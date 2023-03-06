@@ -10,6 +10,8 @@ import java.io.File;
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import static com.znsio.e2e.runner.Runner.configs;
 import static com.znsio.e2e.runner.Setup.*;
@@ -17,10 +19,10 @@ import static com.znsio.e2e.tools.Wait.waitFor;
 
 public class BrowserStackImageInjection {
 
-   private static final Logger LOGGER = Logger.getLogger(BrowserStackImageInjection.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(BrowserStackImageInjection.class.getName());
 
 
-    public static String uploadToCloud(String uploadFilePath) {
+    private static String uploadToCloud(String uploadFilePath) {
         uploadFilePath = new File(uploadFilePath).getAbsolutePath();
         String fileName = new File(uploadFilePath).getName();
         String cloudUser = configs.get(CLOUD_USER);
@@ -28,7 +30,13 @@ public class BrowserStackImageInjection {
         String cloudName = configs.get(CLOUD_NAME);
         String mediaUrl = Runner.NOT_SET;
 
-        if(cloudName.equalsIgnoreCase("browserstack")) {
+        if (cloudUser == null && cloudKey == null && cloudName == null) {
+            cloudUser = System.getenv(CLOUD_USER);
+            cloudKey = System.getenv(CLOUD_KEY);
+            cloudName = System.getenv(CLOUD_NAME);
+        }
+
+        if (cloudName.equalsIgnoreCase("browserstack")) {
             String[] curlCommand = new String[]{
                     "curl --insecure -u \"" + cloudUser + ":" + cloudKey + "\"",
                     "-X POST \"https://api-cloud.browserstack.com/app-automate/upload-media\"",
@@ -42,16 +50,20 @@ public class BrowserStackImageInjection {
             mediaUrl = new JSONObject(stdOut).getString("media_url");
             LOGGER.info(String.format("Uploaded file: '%s' to '%s'. Media URL: '%s'", uploadFilePath, cloudName, mediaUrl));
             waitFor(5);
+
         } else {
             throw new NotImplementedException("uploadToCloud is not implemented for device in: " + cloudName);
         }
         return mediaUrl;
     }
 
-    public static void injectMediaToDriver(String mediaUrl, AppiumDriver driver) {
+    public static String injectMediaToDriver(String uploadFilePath, AppiumDriver driver) {
+        String mediaUrl = uploadToCloud(uploadFilePath);
         LOGGER.info(String.format("Inject media url in driver: '%s'", mediaUrl));
-        driver.executeScript("browserstack_executor: {\"action\":\"cameraImageInjection\", \"arguments\": {" +
-                "    \"imageUrl\" : \"" + mediaUrl + "\"}}");
+        driver.executeScript("browserstack_executor: {\"action\":\"cameraImageInjection\"," +
+                " \"arguments\": {\"imageUrl\" : \"" + mediaUrl + "\"}}");
         waitFor(5);
+        return mediaUrl;
     }
+
 }
