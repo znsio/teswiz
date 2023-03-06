@@ -1,19 +1,15 @@
 package com.znsio.e2e.runner;
 
+import com.znsio.teswiz.runner.BrowserStackImageInjection;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import static com.znsio.e2e.runner.Runner.configs;
-import static com.znsio.e2e.runner.Setup.CLOUD_KEY;
-import static com.znsio.e2e.runner.Setup.CLOUD_USER;
 import static org.testng.AssertJUnit.assertNotNull;
 
 

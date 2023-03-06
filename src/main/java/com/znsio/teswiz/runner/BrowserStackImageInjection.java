@@ -1,21 +1,16 @@
-package com.znsio.e2e.runner;
+package com.znsio.teswiz.runner;
 
-import com.znsio.e2e.tools.cmd.CommandLineExecutor;
-import com.znsio.e2e.tools.cmd.CommandLineResponse;
+import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
+import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
 import org.apache.commons.lang3.NotImplementedException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Arrays;
-
 import org.apache.log4j.Logger;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.RemoteWebDriver;
-
-import static com.znsio.e2e.runner.Runner.configs;
-import static com.znsio.e2e.runner.Setup.*;
-import static com.znsio.e2e.tools.Wait.waitFor;
+import static com.znsio.teswiz.runner.Setup.*;
+import static com.znsio.teswiz.tools.Wait.waitFor;
 
 public class BrowserStackImageInjection {
 
@@ -25,9 +20,9 @@ public class BrowserStackImageInjection {
     private static String uploadToCloud(String uploadFilePath) {
         uploadFilePath = new File(uploadFilePath).getAbsolutePath();
         String fileName = new File(uploadFilePath).getName();
-        String cloudUser = configs.get(CLOUD_USER);
-        String cloudKey = configs.get(CLOUD_KEY);
-        String cloudName = configs.get(CLOUD_NAME);
+        String cloudUser = Setup.getFromConfigs(Setup.CLOUD_USER);
+        String cloudKey = Setup.getFromConfigs(CLOUD_KEY);
+        String cloudName = Setup.getFromConfigs(CLOUD_NAME);
         String mediaUrl = Runner.NOT_SET;
 
         if (cloudUser == null && cloudKey == null && cloudName == null) {
