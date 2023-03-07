@@ -2,6 +2,7 @@ package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.entities.Platform;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
 
 import java.util.Map;
@@ -28,11 +29,31 @@ public class UserPersonaDetails {
     }
 
     private void replaceLogFileNameFor(String userPersona, String newUserPersona) {
+        LOGGER.info("deviceLogFileNameForUserPersonaAndPlatform: before replace: " + deviceLogFileNameForUserPersonaAndPlatform.keySet());
+        Platform currentPlatform = platforms.get(keyForCurrentThread(newUserPersona));
+        String currentKey = getKeyNameForDeviceLogs(newUserPersona, currentPlatform.name());
+        if(currentPlatform.equals(Platform.web)) {
+            currentKey = getKeyNameForBrowserLogs(userPersona, currentPlatform.name(),
+                                                  Drivers.getBrowserNameForUser(newUserPersona));
+        }
+        LOGGER.info("currentKey: " + currentKey);
+
         String existingLogFileNameforUser = deviceLogFileNameForUserPersonaAndPlatform.get(
-                keyForCurrentThread(userPersona));
-        deviceLogFileNameForUserPersonaAndPlatform.remove(keyForCurrentThread(userPersona));
-        deviceLogFileNameForUserPersonaAndPlatform.put(keyForCurrentThread(newUserPersona),
+                currentKey);
+        LOGGER.info("existingLogFileNameforUser: " + existingLogFileNameforUser);
+
+        deviceLogFileNameForUserPersonaAndPlatform.remove(currentKey);
+
+        String newKey = getKeyNameForDeviceLogs(newUserPersona, currentPlatform.name());
+        if(currentPlatform.equals(Platform.web)) {
+            newKey = getKeyNameForBrowserLogs(newUserPersona, currentPlatform.name(),
+                                                  Drivers.getBrowserNameForUser(newUserPersona));
+        }
+        LOGGER.info("newKey: " + newKey);
+
+        deviceLogFileNameForUserPersonaAndPlatform.put(newKey,
                                                        existingLogFileNameforUser);
+        LOGGER.info("deviceLogFileNameForUserPersonaAndPlatform: after replace: " + deviceLogFileNameForUserPersonaAndPlatform.keySet());
     }
 
     private void replaceAppNameFor(String userPersona, String newUserPersona) {
@@ -173,24 +194,34 @@ public class UserPersonaDetails {
 
     String getDeviceLogFileNameFor(String userPersona, String platform) {
         return deviceLogFileNameForUserPersonaAndPlatform.get(
-                keyForCurrentThread(userPersona) + "-" + platform);
+                getKeyNameForDeviceLogs(userPersona, platform));
     }
 
     String getBrowserLogFileNameFor(String userPersona, String platform, String browserType) {
         return deviceLogFileNameForUserPersonaAndPlatform.get(
-                keyForCurrentThread(userPersona) + "-" + (platform + "-" + browserType));
+                getKeyNameForBrowserLogs(userPersona, platform, browserType));
     }
 
     void addDeviceLogFileNameFor(String userPersona, String platform, String deviceLogFileName) {
         deviceLogFileNameForUserPersonaAndPlatform.put(
-                keyForCurrentThread(userPersona) + "-" + platform, deviceLogFileName);
+                getKeyNameForDeviceLogs(userPersona, platform), deviceLogFileName);
+    }
+
+    @NotNull
+    private String getKeyNameForDeviceLogs(String userPersona, String platform) {
+        return keyForCurrentThread(userPersona) + "-" + platform;
     }
 
     void addBrowserLogFileNameFor(String userPersona, String forplatform, String browserType,
                                   String logFileName) {
         deviceLogFileNameForUserPersonaAndPlatform.put(
-                keyForCurrentThread(userPersona) + "-" + (forplatform + "-" + browserType),
-                logFileName);
+                getKeyNameForBrowserLogs(userPersona, forplatform, browserType), logFileName);
+    }
+
+    @NotNull
+    private String getKeyNameForBrowserLogs(String userPersona, String forplatform,
+                                            String browserType) {
+        return keyForCurrentThread(userPersona) + "-" + forplatform + "-" + browserType;
     }
 
     Map<String, Driver> getAllAssignedUserPersonasAndDrivers() {
