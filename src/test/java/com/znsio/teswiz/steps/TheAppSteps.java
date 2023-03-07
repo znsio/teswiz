@@ -157,4 +157,9 @@ public class TheAppSteps {
         Drivers.createDriverFor(userPersona, currentPlatform, context);
         new AppBL(userPersona, currentPlatform).provideInvalidDetailsForSignup(username, password);
     }
+
+    @When("{string} changed to {string}")
+    public void changedTo(String oldUserPersona, String newUserPersona) {
+        Drivers.assignNewPersonaToExistingDriver(oldUserPersona,newUserPersona,context);
+    }
 }

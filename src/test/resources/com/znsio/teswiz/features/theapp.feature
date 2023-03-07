@@ -79,3 +79,29 @@ Feature: Scenarios for "The App"
     Given I am on file upload page
     When I upload the "image" file
     Then File is uploaded successfully
+
+    #  CONFIG=./configs/theapp_local_config.properties TAG="@multiuserPersona-web and @theapp"  PLATFORM=web ./gradlew run
+  @multiuserPersona-web @theapp @web
+  Scenario: Orchestrating multiple users with changing user persona on different platforms as part of same test
+    Given "I" login with invalid credentials - "znsio1", "invalid password" on "web"
+    And "You" login with invalid credentials - "znsio2", "invalid password" on "web"
+    When "You" changed to "We"
+    Then "We" login again with invalid credentials - "znsio4", "invalid password"
+
+
+       #  CONFIG=./configs/theapp_local_config.properties TAG="@multiuserPersona-android-web and @theapp"  PLATFORM=android ./gradlew run
+  @multiuserPersona-android-web @theapp @android
+  Scenario: Orchestrating multiple users with changing user persona on different platforms as part of same test
+    Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
+    And "You" login with invalid credentials - "znsio2", "invalid password" on "web"
+    When "You" changed to "We"
+    Then "We" login again with invalid credentials - "znsio4", "invalid password"
+
+
+       #  CONFIG=./configs/theapp_local_config.properties TAG="@multiuserPersona-android and @theapp"  PLATFORM=android ./gradlew run
+  @multiuserPersona-android @theapp @android
+  Scenario: Orchestrating multiple users with changing user persona on different platforms as part of same test
+    Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
+    And "You" login with invalid credentials - "znsio2", "invalid password" on "android"
+    When "You" changed to "We"
+    Then "We" login again with invalid credentials - "znsio4", "invalid password"
