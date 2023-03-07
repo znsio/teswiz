@@ -140,6 +140,7 @@ class AppiumDriverManager {
         context.addTestState(TEST_CONTEXT.DEVICE_ON, deviceInfo.getDeviceOn());
         LOGGER.info(CAPABILITIES + appiumDriverCapabilities);
         Drivers.addUserPersonaDriverCapabilities(userPersona, appiumDriverCapabilities);
+        Drivers.addUserPersonaDeviceLogFileName(userPersona, context.getTestStateAsString("deviceLog"));
         currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform,
                                    userPersona, appName, appiumDriver);
         return currentDriver;

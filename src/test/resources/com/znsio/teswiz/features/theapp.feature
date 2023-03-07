@@ -7,7 +7,7 @@ Feature: Scenarios for "The App"
   Scenario: Switch user persona
     And "I" login to TheApp with invalid credentials - "znsio1", "invalid password"
     When "I" switch my role to "You"
-    Then "You" can login again with invalid credentials - "znsio2", "another invalid password"
+    Then "You" can login again with invalid credentials - "switched user", "switched user invalid password"
 
 #  CONFIG=./configs/theapp_local_config.properties PLATFORM=web TAG="@theapp and @invalidLogin1" ./gradlew run
 #  CONFIG=./configs/theapp_local_config.properties PLATFORM=android TAG="@theapp and @invalidLogin1" ./gradlew run

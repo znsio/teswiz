@@ -276,6 +276,13 @@ public class Drivers {
         userPersonaDetails.addCapabilities(userPersona, capabilities);
     }
 
+    static void addUserPersonaDeviceLogFileName(String userPersona, String deviceLogsFileName) {
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
+                Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        userPersonaDetails.addDeviceLogFileNameFor(userPersona, Platform.android.name(),
+                                                   deviceLogsFileName);
+    }
+
     static Capabilities getCapabilitiesFor(String userPersona) {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
                 Runner.getTestExecutionContext(Thread.currentThread().getId()));
@@ -291,4 +298,5 @@ public class Drivers {
     public static Visual getVisualDriverForCurrentUser(long threadId) {
         return getDriverForCurrentUser(threadId).getVisual();
     }
+
 }

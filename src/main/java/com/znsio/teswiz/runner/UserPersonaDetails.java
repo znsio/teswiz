@@ -29,18 +29,15 @@ public class UserPersonaDetails {
     }
 
     private void replaceLogFileNameFor(String userPersona, String newUserPersona) {
-        LOGGER.info("deviceLogFileNameForUserPersonaAndPlatform: before replace: " + deviceLogFileNameForUserPersonaAndPlatform.keySet());
         Platform currentPlatform = platforms.get(keyForCurrentThread(newUserPersona));
-        String currentKey = getKeyNameForDeviceLogs(newUserPersona, currentPlatform.name());
+        String currentKey = getKeyNameForDeviceLogs(userPersona, currentPlatform.name());
         if(currentPlatform.equals(Platform.web)) {
             currentKey = getKeyNameForBrowserLogs(userPersona, currentPlatform.name(),
                                                   Drivers.getBrowserNameForUser(newUserPersona));
         }
-        LOGGER.info("currentKey: " + currentKey);
 
         String existingLogFileNameforUser = deviceLogFileNameForUserPersonaAndPlatform.get(
                 currentKey);
-        LOGGER.info("existingLogFileNameforUser: " + existingLogFileNameforUser);
 
         deviceLogFileNameForUserPersonaAndPlatform.remove(currentKey);
 
@@ -49,11 +46,9 @@ public class UserPersonaDetails {
             newKey = getKeyNameForBrowserLogs(newUserPersona, currentPlatform.name(),
                                                   Drivers.getBrowserNameForUser(newUserPersona));
         }
-        LOGGER.info("newKey: " + newKey);
 
         deviceLogFileNameForUserPersonaAndPlatform.put(newKey,
                                                        existingLogFileNameforUser);
-        LOGGER.info("deviceLogFileNameForUserPersonaAndPlatform: after replace: " + deviceLogFileNameForUserPersonaAndPlatform.keySet());
     }
 
     private void replaceAppNameFor(String userPersona, String newUserPersona) {
