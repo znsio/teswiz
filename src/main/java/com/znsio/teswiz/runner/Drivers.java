@@ -258,16 +258,12 @@ public class Drivers {
 
         Driver currentDriver = userPersonaDetails.getDriverAssignedForUser(userPersona);
         Platform currentPlatform = userPersonaDetails.getPlatformAssignedForUser(userPersona);
-        Capabilities userPersonaCapabilities = userPersonaDetails.getCapabilitiesAssignedForUser(
-                userPersona);
 
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, newUserPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, currentPlatform);
 
-        userPersonaDetails.replaceDriverFor(userPersona, currentDriver);
-        userPersonaDetails.replacePlatformFor(userPersona, currentPlatform);
-        userPersonaDetails.replaceCapabilitiesFor(userPersona, userPersonaCapabilities);
+        userPersonaDetails.assignNewPersonaForUser(userPersona, newUserPersona);
 
         LOGGER.info(
                 String.format("assignNewPersonaToExistingDriver: Persona updated from '%s' to '%s'",
