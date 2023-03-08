@@ -4,13 +4,13 @@ import com.appium.manager.AppiumDevice;
 import com.appium.manager.DeviceAllocationManager;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
-import com.epam.reportportal.service.ReportPortal;
 import com.github.device.Device;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.DriverCreationException;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
@@ -140,7 +140,9 @@ class AppiumDriverManager {
         context.addTestState(TEST_CONTEXT.DEVICE_ON, deviceInfo.getDeviceOn());
         LOGGER.info(CAPABILITIES + appiumDriverCapabilities);
         Drivers.addUserPersonaDriverCapabilities(userPersona, appiumDriverCapabilities);
-        Drivers.addUserPersonaDeviceLogFileName(userPersona, context.getTestStateAsString("deviceLog"), forPlatform);
+        Drivers.addUserPersonaDeviceLogFileName(userPersona,
+                                                context.getTestStateAsString("deviceLog"),
+                                                forPlatform);
         currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform,
                                    userPersona, appName, appiumDriver);
         return currentDriver;
@@ -165,9 +167,9 @@ class AppiumDriverManager {
             updateAvailableDeviceInformation(availableDevice);
             startDataCaptureFromDevice(userPersona, normalisedScenarioName, scenarioRunCount,
                                        availableDevice);
-            ReportPortal.emitLog(
+            ReportPortalLogger.logDebugMessage(
                     String.format("allocateNewDeviceAndStartAppiumDriver: Device Info%n%s",
-                                  availableDevice), DEBUG, new Date());
+                                  availableDevice));
             return driver;
         } catch(Exception e) {
             LOGGER.info(ExceptionUtils.getStackTrace(e));
@@ -275,7 +277,7 @@ class AppiumDriverManager {
             logMessage = String.format("Strange. But WindowsDriver for user '%s' already closed",
                                        userPersona);
             LOGGER.info(logMessage);
-            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+            ReportPortalLogger.logDebugMessage(logMessage);
         } else {
             logMessage = String.format("Closing WindowsDriver for App '%s' for user '%s'",
                                        appPackageName, userPersona);
@@ -295,7 +297,7 @@ class AppiumDriverManager {
             }
             logMessage = String.format("App: '%s' terminated", appPackageName);
             LOGGER.info(logMessage);
-            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+            ReportPortalLogger.logDebugMessage(logMessage);
         }
     }
 
@@ -311,7 +313,7 @@ class AppiumDriverManager {
             logMessage = String.format("Strange. But AppiumDriver for user '%s' already closed",
                                        userPersona);
             LOGGER.info(logMessage);
-            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+            ReportPortalLogger.logDebugMessage(logMessage);
         } else {
             TestExecutionContext context = SessionContext.getTestExecutionContext(
                     Thread.currentThread().getId());
@@ -343,7 +345,7 @@ class AppiumDriverManager {
             logMessage = String.format("App: '%s' Application state before closing app: '%s'%n",
                                        appPackageName, applicationState);
             LOGGER.info(logMessage);
-            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+            ReportPortalLogger.logDebugMessage(logMessage);
             appiumDriver.closeApp();
             appiumDriver.terminateApp(appPackageName);
             applicationState = appiumDriver.queryAppState(appPackageName);
@@ -354,7 +356,7 @@ class AppiumDriverManager {
             logMessage = e.getMessage();
             LOGGER.info(logMessage);
         }
-        ReportPortal.emitLog(logMessage, DEBUG, new Date());
+        ReportPortalLogger.logDebugMessage(logMessage);
     }
 
     private static void attachDeviceLogsToReportPortal(String userPersona) {
@@ -363,7 +365,7 @@ class AppiumDriverManager {
         String adbLogMessage = String.format("ADB Logs for %s, file name: %s",
                                              Drivers.getNameOfDeviceUsedByUser(userPersona),
                                              deviceLogFileName);
-        ReportPortal.emitLog(adbLogMessage, "DEBUG", new Date(), new File(deviceLogFileName));
+        ReportPortalLogger.attachFileInReportPortal(adbLogMessage, new File(deviceLogFileName));
     }
 
     private static String getDeviceLogFileNameFor(String userPersona, String forPlatform) {
@@ -422,8 +424,10 @@ class AppiumDriverManager {
             Capabilities windowsDriverCapabilities = windowsDriver.getCapabilities();
             LOGGER.info(CAPABILITIES + windowsDriverCapabilities);
             Drivers.addUserPersonaDriverCapabilities(userPersona, windowsDriverCapabilities);
-            LOGGER.info("deviceLog for windows driver: " + context.getTestStateAsString("deviceLog"));
-            Drivers.addUserPersonaDeviceLogFileName(userPersona, context.getTestStateAsString("deviceLog"),
+            LOGGER.info(
+                    "deviceLog for windows driver: " + context.getTestStateAsString("deviceLog"));
+            Drivers.addUserPersonaDeviceLogFileName(userPersona,
+                                                    context.getTestStateAsString("deviceLog"),
                                                     forPlatform);
         } else {
             throw new InvalidTestDataException(String.format(
