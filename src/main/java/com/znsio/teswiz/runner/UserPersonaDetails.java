@@ -44,19 +44,19 @@ public class UserPersonaDetails {
             newKey = getKeyNameForBrowserLogs(newUserPersona, currentPlatform.name(),
                                                   Drivers.getBrowserNameForUser(newUserPersona));
         }
-        LOGGER.info("userPersona: " + userPersona + ", newUserPersona: " + newUserPersona);
-        LOGGER.info("currentPlatform: " + currentPlatform.name());
-        LOGGER.info("existingLogFileNameforUser: " + existingLogFileNameforUser);
-        LOGGER.info("currentKey: " + currentKey);
-        LOGGER.info("newKey: " + newKey);
+        LOGGER.debug("userPersona: " + userPersona + ", newUserPersona: " + newUserPersona);
+        LOGGER.debug("currentPlatform: " + currentPlatform.name());
+        LOGGER.debug("existingLogFileNameforUser: " + existingLogFileNameforUser);
+        LOGGER.debug("currentKey: " + currentKey);
+        LOGGER.debug("newKey: " + newKey);
 
-        LOGGER.info("deviceLogFileNameForUserPersonaAndPlatform before removing currentKey: " + deviceLogFileNameForUserPersonaAndPlatform);
+        LOGGER.debug("deviceLogFileNameForUserPersonaAndPlatform before removing currentKey: " + deviceLogFileNameForUserPersonaAndPlatform);
         deviceLogFileNameForUserPersonaAndPlatform.remove(currentKey);
-        LOGGER.info("deviceLogFileNameForUserPersonaAndPlatform after removing currentKey: " + deviceLogFileNameForUserPersonaAndPlatform);
+        LOGGER.debug("deviceLogFileNameForUserPersonaAndPlatform after removing currentKey: " + deviceLogFileNameForUserPersonaAndPlatform);
 
         deviceLogFileNameForUserPersonaAndPlatform.put(newKey,
                                                        existingLogFileNameforUser);
-        LOGGER.info("deviceLogFileNameForUserPersonaAndPlatform after adding newKey: " + deviceLogFileNameForUserPersonaAndPlatform);
+        LOGGER.debug("deviceLogFileNameForUserPersonaAndPlatform after adding newKey: " + deviceLogFileNameForUserPersonaAndPlatform);
     }
 
     private void replaceAppNameFor(String userPersona, String newUserPersona) {
@@ -105,14 +105,14 @@ public class UserPersonaDetails {
 
     private void clearMap(String beforeClearMessagePrefix, ConcurrentHashMap<String, String> map,
                           String afterClearMessagePrefix) {
-        LOGGER.info(Thread.currentThread().getId() + beforeClearMessagePrefix + map.keySet());
+        LOGGER.debug(Thread.currentThread().getId() + beforeClearMessagePrefix + map.keySet());
 
         for(Map.Entry<String, String> item : map.entrySet()) {
             if(item.getKey() != null && item.getKey().startsWith(keyPrefix)) {
                 map.remove(item.getKey());
             }
         }
-        LOGGER.info(Thread.currentThread().getId() + afterClearMessagePrefix + map.keySet());
+        LOGGER.debug(Thread.currentThread().getId() + afterClearMessagePrefix + map.keySet());
     }
 
     void addDriver(String userPersona, Driver driver) {
@@ -128,7 +128,7 @@ public class UserPersonaDetails {
     }
 
     void clearAllDrivers() {
-        LOGGER.info(Thread.currentThread()
+        LOGGER.debug(Thread.currentThread()
                           .getId() + " - clearAllDrivers - before: " + drivers.keySet());
 
         for(Map.Entry<String, Driver> item : drivers.entrySet()) {
@@ -136,7 +136,7 @@ public class UserPersonaDetails {
                 drivers.remove(item.getKey());
             }
         }
-        LOGGER.info(
+        LOGGER.debug(
                 Thread.currentThread().getId() + " - clearAllDrivers - after: " + drivers.keySet());
     }
 
@@ -157,7 +157,7 @@ public class UserPersonaDetails {
     }
 
     void clearAllPlatforms() {
-        LOGGER.info(Thread.currentThread()
+        LOGGER.debug(Thread.currentThread()
                           .getId() + " - clearAllPlatforms - before: " + platforms.keySet());
 
         for(Map.Entry<String, Platform> item : platforms.entrySet()) {
@@ -165,7 +165,7 @@ public class UserPersonaDetails {
                 platforms.remove(item.getKey());
             }
         }
-        LOGGER.info(Thread.currentThread()
+        LOGGER.debug(Thread.currentThread()
                           .getId() + " - clearAllPlatforms - after: " + platforms.keySet());
     }
 
@@ -174,7 +174,7 @@ public class UserPersonaDetails {
     }
 
     void clearAllCapabilities() {
-        LOGGER.info(Thread.currentThread()
+        LOGGER.debug(Thread.currentThread()
                           .getId() + " - clearAllCapabilities - before: " + capabilities.keySet());
 
         for(Map.Entry<String, Capabilities> item : capabilities.entrySet()) {
@@ -182,7 +182,7 @@ public class UserPersonaDetails {
                 capabilities.remove(item.getKey());
             }
         }
-        LOGGER.info(Thread.currentThread()
+        LOGGER.debug(Thread.currentThread()
                           .getId() + " - clearAllCapabilities - after: " + capabilities.keySet());
     }
 
