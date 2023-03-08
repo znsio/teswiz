@@ -283,7 +283,7 @@ public class Drivers {
     static void addUserPersonaDeviceLogFileName(String userPersona, String deviceLogsFileName) {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
                 Runner.getTestExecutionContext(Thread.currentThread().getId()));
-        userPersonaDetails.addDeviceLogFileNameFor(userPersona, Platform.android.name(),
+        userPersonaDetails.addDeviceLogFileNameFor(userPersona, getPlatformForUser(userPersona).name(),
                                                    deviceLogsFileName);
     }
 
