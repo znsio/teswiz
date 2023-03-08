@@ -12,8 +12,16 @@ public class ReportPortalLogger {
     private static final Logger LOGGER = Logger.getLogger(ReportPortalLogger.class.getName());
 
     public static void attachFileInReportPortal(String message, File destinationFile) {
-        if(!ReportPortal.emitLog(message, DEBUG, new Date(), destinationFile)) {
+        boolean isEmitLogSuccessful = ReportPortal.emitLog(message, DEBUG, new Date(), destinationFile);
+        if(isEmitLogSuccessful) {
+            LOGGER.debug(String.format("'%s' - Upload of file: '%s'::'%s' to reportportal succeeded",
+                                       getCallingClassAndMethodName(), message, destinationFile));
+            System.out.println(String.format("'%s' - Upload of file: '%s'::'%s' to reportportal succeeded",
+                                       getCallingClassAndMethodName(), message, destinationFile));
+        } else {
             LOGGER.error(String.format("'%s' - Upload of file: '%s'::'%s' to reportportal failed",
+                                       getCallingClassAndMethodName(), message, destinationFile));
+            System.out.println(String.format("'%s' - Upload of file: '%s'::'%s' to reportportal failed",
                                        getCallingClassAndMethodName(), message, destinationFile));
         }
     }
@@ -41,7 +49,16 @@ public class ReportPortalLogger {
     }
 
     private static void logMessage(String message, String level) {
-        if(!ReportPortal.emitLog(message, level, new Date())) {
+        boolean isEmitLogSuccessful = ReportPortal.emitLog(message, level, new Date());
+        if(isEmitLogSuccessful) {
+            System.out.println(String.format("'%s' - Logging message: '%s' to reportportal succeeded",
+                                       getCallingClassAndMethodName(), message));
+            LOGGER.debug(String.format("'%s' - Logging message: '%s' to reportportal succeeded",
+                                      getCallingClassAndMethodName(), message));
+
+        } else {
+            System.out.println(String.format("'%s' - Logging message: '%s' to reportportal failed",
+                                             getCallingClassAndMethodName(), message));
             LOGGER.error(String.format("'%s' - Logging message: '%s' to reportportal failed",
                                        getCallingClassAndMethodName(), message));
         }
