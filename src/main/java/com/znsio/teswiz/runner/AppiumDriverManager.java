@@ -422,6 +422,8 @@ class AppiumDriverManager {
             Capabilities windowsDriverCapabilities = windowsDriver.getCapabilities();
             LOGGER.info(CAPABILITIES + windowsDriverCapabilities);
             Drivers.addUserPersonaDriverCapabilities(userPersona, windowsDriverCapabilities);
+            LOGGER.info("deviceLog for windows driver: " + context.getTestStateAsString("deviceLog"));
+            Drivers.addUserPersonaDeviceLogFileName(userPersona, context.getTestStateAsString("deviceLog"));
         } else {
             throw new InvalidTestDataException(String.format(
                     "Current number of WindowsDriver instances used: '%d'. " + "Unable to create "
