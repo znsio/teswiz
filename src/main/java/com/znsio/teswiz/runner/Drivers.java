@@ -280,10 +280,11 @@ public class Drivers {
         userPersonaDetails.addCapabilities(userPersona, capabilities);
     }
 
-    static void addUserPersonaDeviceLogFileName(String userPersona, String deviceLogsFileName) {
+    static void addUserPersonaDeviceLogFileName(String userPersona, String deviceLogsFileName,
+                                                Platform forPlatform) {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
                 Runner.getTestExecutionContext(Thread.currentThread().getId()));
-        userPersonaDetails.addDeviceLogFileNameFor(userPersona, getPlatformForUser(userPersona).name(),
+        userPersonaDetails.addDeviceLogFileNameFor(userPersona, forPlatform.name(),
                                                    deviceLogsFileName);
     }
 

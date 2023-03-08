@@ -140,7 +140,7 @@ class AppiumDriverManager {
         context.addTestState(TEST_CONTEXT.DEVICE_ON, deviceInfo.getDeviceOn());
         LOGGER.info(CAPABILITIES + appiumDriverCapabilities);
         Drivers.addUserPersonaDriverCapabilities(userPersona, appiumDriverCapabilities);
-        Drivers.addUserPersonaDeviceLogFileName(userPersona, context.getTestStateAsString("deviceLog"));
+        Drivers.addUserPersonaDeviceLogFileName(userPersona, context.getTestStateAsString("deviceLog"), forPlatform);
         currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform,
                                    userPersona, appName, appiumDriver);
         return currentDriver;
@@ -423,7 +423,8 @@ class AppiumDriverManager {
             LOGGER.info(CAPABILITIES + windowsDriverCapabilities);
             Drivers.addUserPersonaDriverCapabilities(userPersona, windowsDriverCapabilities);
             LOGGER.info("deviceLog for windows driver: " + context.getTestStateAsString("deviceLog"));
-            Drivers.addUserPersonaDeviceLogFileName(userPersona, context.getTestStateAsString("deviceLog"));
+            Drivers.addUserPersonaDeviceLogFileName(userPersona, context.getTestStateAsString("deviceLog"),
+                                                    forPlatform);
         } else {
             throw new InvalidTestDataException(String.format(
                     "Current number of WindowsDriver instances used: '%d'. " + "Unable to create "
