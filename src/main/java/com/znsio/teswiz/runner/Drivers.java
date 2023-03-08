@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.context.SessionContext.getTestExecutionContext;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
@@ -242,7 +243,10 @@ public class Drivers {
     public static Set<String> getAvailableUserPersonas() {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
                 getTestExecutionContext(Thread.currentThread().getId()));
-        return userPersonaDetails.getAllUserPersonasForAssignedDrivers();
+        String userPersonaPrefix = Thread.currentThread().getId() + "-";
+        return userPersonaDetails.getAllUserPersonasForAssignedDrivers().stream()
+                                 .map(personaForCurrentThread -> personaForCurrentThread.replace(
+                                         userPersonaPrefix, "")).collect(Collectors.toSet());
     }
 
     public static void assignNewPersonaToExistingDriver(String userPersona, String newUserPersona,
