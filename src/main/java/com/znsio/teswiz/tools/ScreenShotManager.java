@@ -33,14 +33,14 @@ public class ScreenShotManager {
         file.getParentFile().mkdirs();
     }
 
-    public void takeScreenShot(WebDriver innerDriver, String fileName) {
-        if(null != innerDriver) {
+    public void takeScreenShot(WebDriver driver, String fileName) {
+        if(null != driver) {
             fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
             LOGGER.info(
                     "The screenshot will be placed here : " + destinationFile.getAbsolutePath());
             try {
-                File screenshot = ((TakesScreenshot) innerDriver).getScreenshotAs(OutputType.FILE);
+                File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
                 LOGGER.info("Original screenshot : " + screenshot.getAbsolutePath());
                 FileUtils.copyFile(screenshot, destinationFile);
                 LOGGER.info(
