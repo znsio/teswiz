@@ -35,7 +35,7 @@ public class LoginScreenAndroid
         passwordElement.clear();
         passwordElement.sendKeys(password);
         //        driver.waitForVisibilityOf(passwordId).sendKeys(username);
-        visually.check(SCREEN_NAME, "entered login details",
+        visually.check(SCREEN_NAME, "Entered login details",
                        Target.window().fully().layout(userNameElement, passwordElement));
         return this;
     }
@@ -45,6 +45,7 @@ public class LoginScreenAndroid
         waitFor(1);
         driver.findElementByAccessibilityId(loginButtonId).click();
         waitFor(2);
+        visually.checkWindow(SCREEN_NAME, "Clicked on Login");
         return this;
     }
 
