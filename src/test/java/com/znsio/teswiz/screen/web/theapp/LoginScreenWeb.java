@@ -22,7 +22,6 @@ public class LoginScreenWeb
     public LoginScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
-        visually.checkWindow(SCREEN_NAME, "Home screen");
     }
 
     @Override
@@ -30,7 +29,7 @@ public class LoginScreenWeb
         waitFor(2);
         driver.findElement(userNameId).sendKeys(username);
         driver.findElement(passwordId).sendKeys(password);
-        visually.checkWindow(SCREEN_NAME, "entered login details");
+        visually.checkWindow(SCREEN_NAME, "Entered login details");
         return this;
     }
 
@@ -38,6 +37,7 @@ public class LoginScreenWeb
     public LoginScreen login() {
         driver.findElement(loginButtonXpath).click();
         waitFor(2);
+        visually.checkWindow(SCREEN_NAME, "Clicked on Login");
         return this;
     }
 

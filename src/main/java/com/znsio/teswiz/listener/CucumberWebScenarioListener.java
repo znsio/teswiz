@@ -71,7 +71,7 @@ public class CucumberWebScenarioListener
         long threadId = Thread.currentThread().getId();
         LOGGER.info(String.format("ThreadID: %d: afterScenario: for scenario: %s%n", threadId,
                                   scenarioName));
-        Runner.remove(threadId);
+        SessionContext.remove(threadId);
         LOGGER.info(
                 "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   TEST-CASE  -- " + scenarioName + "  ENDED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
     }

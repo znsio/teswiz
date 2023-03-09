@@ -2,6 +2,7 @@ package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.entities.Platform;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
 
 import java.util.Map;
@@ -18,6 +19,70 @@ public class UserPersonaDetails {
             new ConcurrentHashMap<>();
 
     private String keyPrefix = Thread.currentThread().getId() + "-";
+
+    void assignNewPersonaForUser(String userPersona, String newUserPersona) {
+        replaceCapabilitiesFor(userPersona, newUserPersona);
+        replaceDriverFor(userPersona, newUserPersona);
+        replaceAppNameFor(userPersona, newUserPersona);
+        replacePlatformFor(userPersona, newUserPersona);
+        replaceLogFileNameFor(userPersona, newUserPersona);
+    }
+
+    private void replaceLogFileNameFor(String userPersona, String newUserPersona) {
+        Platform currentPlatform = platforms.get(keyForCurrentThread(newUserPersona));
+        String currentKey = getKeyNameForDeviceLogs(userPersona, currentPlatform.name());
+        if(currentPlatform.equals(Platform.web)) {
+            currentKey = getKeyNameForBrowserLogs(userPersona, currentPlatform.name(),
+                                                  Drivers.getBrowserNameForUser(newUserPersona));
+        }
+
+        String existingLogFileNameforUser = deviceLogFileNameForUserPersonaAndPlatform.get(
+                currentKey);
+
+        String newKey = getKeyNameForDeviceLogs(newUserPersona, currentPlatform.name());
+        if(currentPlatform.equals(Platform.web)) {
+            newKey = getKeyNameForBrowserLogs(newUserPersona, currentPlatform.name(),
+                                                  Drivers.getBrowserNameForUser(newUserPersona));
+        }
+        LOGGER.debug("userPersona: " + userPersona + ", newUserPersona: " + newUserPersona);
+        LOGGER.debug("currentPlatform: " + currentPlatform.name());
+        LOGGER.debug("existingLogFileNameforUser: " + existingLogFileNameforUser);
+        LOGGER.debug("currentKey: " + currentKey);
+        LOGGER.debug("newKey: " + newKey);
+
+        LOGGER.debug("deviceLogFileNameForUserPersonaAndPlatform before removing currentKey: " + deviceLogFileNameForUserPersonaAndPlatform);
+        deviceLogFileNameForUserPersonaAndPlatform.remove(currentKey);
+        LOGGER.debug("deviceLogFileNameForUserPersonaAndPlatform after removing currentKey: " + deviceLogFileNameForUserPersonaAndPlatform);
+
+        deviceLogFileNameForUserPersonaAndPlatform.put(newKey,
+                                                       existingLogFileNameforUser);
+        LOGGER.debug("deviceLogFileNameForUserPersonaAndPlatform after adding newKey: " + deviceLogFileNameForUserPersonaAndPlatform);
+    }
+
+    private void replaceAppNameFor(String userPersona, String newUserPersona) {
+        String existingAppNameForUser = apps.get(keyForCurrentThread(userPersona));
+        apps.remove(keyForCurrentThread(userPersona));
+        apps.put(keyForCurrentThread(newUserPersona), existingAppNameForUser);
+    }
+
+    private void replaceDriverFor(String userPersona, String newUserPersona) {
+        Driver existingDriverForUser = drivers.get(keyForCurrentThread(userPersona));
+        drivers.remove(keyForCurrentThread(userPersona));
+        drivers.put(keyForCurrentThread(newUserPersona), existingDriverForUser);
+    }
+
+    private void replacePlatformFor(String userPersona, String newUserName) {
+        Platform existingPlatformForUser = platforms.get(keyForCurrentThread(userPersona));
+        platforms.remove(keyForCurrentThread(userPersona));
+        platforms.put(keyForCurrentThread(newUserName), existingPlatformForUser);
+    }
+
+    private void replaceCapabilitiesFor(String userPersona, String newUserPersona) {
+        Capabilities existingCapabilitiesForUser = capabilities.get(
+                keyForCurrentThread(userPersona));
+        capabilities.remove(keyForCurrentThread(userPersona));
+        capabilities.put(keyForCurrentThread(newUserPersona), existingCapabilitiesForUser);
+    }
 
     void addAppName(String userPersona, String appName) {
         apps.put(keyForCurrentThread(userPersona), appName);
@@ -40,14 +105,14 @@ public class UserPersonaDetails {
 
     private void clearMap(String beforeClearMessagePrefix, ConcurrentHashMap<String, String> map,
                           String afterClearMessagePrefix) {
-        LOGGER.info(Thread.currentThread().getId() + beforeClearMessagePrefix + map.keySet());
+        LOGGER.debug(Thread.currentThread().getId() + beforeClearMessagePrefix + map.keySet());
 
         for(Map.Entry<String, String> item : map.entrySet()) {
             if(item.getKey() != null && item.getKey().startsWith(keyPrefix)) {
                 map.remove(item.getKey());
             }
         }
-        LOGGER.info(Thread.currentThread().getId() + afterClearMessagePrefix + map.keySet());
+        LOGGER.debug(Thread.currentThread().getId() + afterClearMessagePrefix + map.keySet());
     }
 
     void addDriver(String userPersona, Driver driver) {
@@ -63,7 +128,7 @@ public class UserPersonaDetails {
     }
 
     void clearAllDrivers() {
-        LOGGER.info(Thread.currentThread()
+        LOGGER.debug(Thread.currentThread()
                           .getId() + " - clearAllDrivers - before: " + drivers.keySet());
 
         for(Map.Entry<String, Driver> item : drivers.entrySet()) {
@@ -71,17 +136,12 @@ public class UserPersonaDetails {
                 drivers.remove(item.getKey());
             }
         }
-        LOGGER.info(
+        LOGGER.debug(
                 Thread.currentThread().getId() + " - clearAllDrivers - after: " + drivers.keySet());
     }
 
     Set<String> getAllUserPersonasForAssignedDrivers() {
         return drivers.keySet();
-    }
-
-    void replaceDriverFor(String userPersona, Driver newDriver) {
-        //        userPersonaDrivers.remove(userPersona);
-        drivers.put(keyForCurrentThread(userPersona), newDriver);
     }
 
     void addPlatform(String userPersona, Platform platform) {
@@ -97,7 +157,7 @@ public class UserPersonaDetails {
     }
 
     void clearAllPlatforms() {
-        LOGGER.info(Thread.currentThread()
+        LOGGER.debug(Thread.currentThread()
                           .getId() + " - clearAllPlatforms - before: " + platforms.keySet());
 
         for(Map.Entry<String, Platform> item : platforms.entrySet()) {
@@ -105,12 +165,8 @@ public class UserPersonaDetails {
                 platforms.remove(item.getKey());
             }
         }
-        LOGGER.info(Thread.currentThread()
+        LOGGER.debug(Thread.currentThread()
                           .getId() + " - clearAllPlatforms - after: " + platforms.keySet());
-    }
-
-    void replacePlatformFor(String userPersona, Platform newPlatform) {
-        platforms.put(keyForCurrentThread(userPersona), newPlatform);
     }
 
     Capabilities getCapabilitiesAssignedForUser(String userPersona) {
@@ -118,7 +174,7 @@ public class UserPersonaDetails {
     }
 
     void clearAllCapabilities() {
-        LOGGER.info(Thread.currentThread()
+        LOGGER.debug(Thread.currentThread()
                           .getId() + " - clearAllCapabilities - before: " + capabilities.keySet());
 
         for(Map.Entry<String, Capabilities> item : capabilities.entrySet()) {
@@ -126,12 +182,8 @@ public class UserPersonaDetails {
                 capabilities.remove(item.getKey());
             }
         }
-        LOGGER.info(Thread.currentThread()
+        LOGGER.debug(Thread.currentThread()
                           .getId() + " - clearAllCapabilities - after: " + capabilities.keySet());
-    }
-
-    void replaceCapabilitiesFor(String userPersona, Capabilities newCapabilities) {
-        capabilities.put(keyForCurrentThread(userPersona), newCapabilities);
     }
 
     void addCapabilities(String userPersona, Capabilities capabilities) {
@@ -145,29 +197,38 @@ public class UserPersonaDetails {
 
     String getDeviceLogFileNameFor(String userPersona, String platform) {
         return deviceLogFileNameForUserPersonaAndPlatform.get(
-                keyForCurrentThread(userPersona) + "-" + platform);
+                getKeyNameForDeviceLogs(userPersona, platform));
     }
 
-    String getBrowserLogFileNameFor(String userPersona, String platform,
-                                           String browserType) {
+    String getBrowserLogFileNameFor(String userPersona, String platform, String browserType) {
         return deviceLogFileNameForUserPersonaAndPlatform.get(
-                keyForCurrentThread(userPersona) + "-" + (platform + "-" + browserType));
+                getKeyNameForBrowserLogs(userPersona, platform, browserType));
     }
 
-    void addDeviceLogFileNameFor(String userPersona, String platform,
-                                        String deviceLogFileName) {
+    void addDeviceLogFileNameFor(String userPersona, String platform, String deviceLogFileName) {
         deviceLogFileNameForUserPersonaAndPlatform.put(
-                keyForCurrentThread(userPersona) + "-" + platform, deviceLogFileName);
+                getKeyNameForDeviceLogs(userPersona, platform), deviceLogFileName);
+    }
+
+    @NotNull
+    private String getKeyNameForDeviceLogs(String userPersona, String platform) {
+        return keyForCurrentThread(userPersona) + "-" + platform;
     }
 
     void addBrowserLogFileNameFor(String userPersona, String forplatform, String browserType,
-                                         String logFileName) {
+                                  String logFileName) {
         deviceLogFileNameForUserPersonaAndPlatform.put(
-                keyForCurrentThread(userPersona) + "-" + (forplatform + "-" + browserType),
-                logFileName);
+                getKeyNameForBrowserLogs(userPersona, forplatform, browserType), logFileName);
+    }
+
+    @NotNull
+    private String getKeyNameForBrowserLogs(String userPersona, String forplatform,
+                                            String browserType) {
+        return keyForCurrentThread(userPersona) + "-" + forplatform + "-" + browserType;
     }
 
     Map<String, Driver> getAllAssignedUserPersonasAndDrivers() {
         return drivers;
     }
+
 }

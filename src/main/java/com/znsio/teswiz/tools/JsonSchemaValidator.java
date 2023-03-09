@@ -1,6 +1,5 @@
 package com.znsio.teswiz.tools;
 
-import com.epam.reportportal.service.ReportPortal;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import org.apache.log4j.Logger;
 import org.everit.json.schema.Schema;
@@ -10,9 +9,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.InputStream;
-import java.util.Date;
-
-import static com.znsio.teswiz.runner.Runner.DEBUG;
 
 public class JsonSchemaValidator {
     private static final Logger LOGGER = Logger.getLogger(JsonSchemaValidator.class.getName());
@@ -40,7 +36,7 @@ public class JsonSchemaValidator {
                                                     jsonFilePath,
                                                     validationException.getAllMessages());
             LOGGER.info(exceptionMessage);
-            ReportPortal.emitLog(exceptionMessage, DEBUG, new Date());
+            ReportPortalLogger.logDebugMessage(exceptionMessage);
             throw new InvalidTestDataException(exceptionMessage);
         }
     }

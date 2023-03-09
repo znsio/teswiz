@@ -2,14 +2,16 @@ package com.znsio.teswiz.steps;
 
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
+import com.znsio.teswiz.businessLayer.jiomeet.AuthBL;
 import com.znsio.teswiz.businessLayer.theapp.AppBL;
 import com.znsio.teswiz.businessLayer.theapp.ClipboardBL;
 import com.znsio.teswiz.businessLayer.theapp.EchoBL;
 import com.znsio.teswiz.businessLayer.theapp.FileUploadBL;
 import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
+import com.znsio.teswiz.runner.Drivers;
+import com.znsio.teswiz.runner.Runner;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -128,5 +130,36 @@ public class TheAppSteps {
     @Then("File is uploaded successfully")
     public void fileIsUploadedSuccessfully() {
         new FileUploadBL().verifyFileUpload();
+    }
+
+    @When("{string} switch my role to {string}")
+    public void switchMyRoleTo(String currentUserPersona, String newUserPersona) {
+        Drivers.assignNewPersonaToExistingDriver(currentUserPersona, newUserPersona, context);
+    }
+
+    @Then("{string} can login again with invalid credentials - {string}, {string}")
+    public void canLoginAgainWithInvalidCredentials(String userPersona, String username,
+                                                    String password) {
+        LOGGER.info(System.out.printf(
+                "'%s' canLoginAgainWithInvalidCredentials - Username: '%s', Password:'%s'",
+                userPersona, username, password));
+        Platform platformForUser = Runner.getPlatformForUser(userPersona);
+        new AppBL(userPersona, platformForUser).loginAgain(username, password);
+    }
+
+    @And("{string} login to TheApp with invalid credentials - {string}, " + "{string}")
+    public void loginToTheAppWithInvalidCredentials(String userPersona, String username,
+                                                    String password) {
+        LOGGER.info(System.out.printf(
+                "'%s' loginToTheAppWithInvalidCredentials - Username: '%s', Password:'%s'",
+                userPersona, username, password));
+        Platform currentPlatform = Runner.getPlatform();
+        Drivers.createDriverFor(userPersona, currentPlatform, context);
+        new AppBL(userPersona, currentPlatform).provideInvalidDetailsForSignup(username, password);
+    }
+
+    @When("{string} changed to {string}")
+    public void changedTo(String oldUserPersona, String newUserPersona) {
+        Drivers.assignNewPersonaToExistingDriver(oldUserPersona,newUserPersona,context);
     }
 }
