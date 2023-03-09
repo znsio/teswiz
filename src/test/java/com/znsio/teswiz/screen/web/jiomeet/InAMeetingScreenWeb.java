@@ -1,22 +1,18 @@
 package com.znsio.teswiz.screen.web.jiomeet;
 
 import com.context.TestExecutionContext;
-import com.epam.reportportal.service.ReportPortal;
-import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.runner.Driver;
-import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
+import com.znsio.teswiz.runner.Driver;
+import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiomeet.InAMeetingScreen;
+import com.znsio.teswiz.tools.ReportPortalLogger;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-
-import java.util.Date;
-
-import static com.znsio.teswiz.runner.Runner.DEBUG;
 
 public class InAMeetingScreenWeb
         extends InAMeetingScreen {
@@ -114,7 +110,7 @@ public class InAMeetingScreenWeb
                     "Exception occurred : enableInMeetingControls%nException: %s",
                     e.getLocalizedMessage());
             LOGGER.info(logMessage);
-            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+            ReportPortalLogger.logDebugMessage(logMessage);
         }
     }
 }

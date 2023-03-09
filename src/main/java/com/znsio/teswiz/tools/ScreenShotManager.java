@@ -2,7 +2,6 @@ package com.znsio.teswiz.tools;
 
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
-import com.epam.reportportal.service.ReportPortal;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
 import org.apache.commons.io.FileUtils;
@@ -14,9 +13,6 @@ import org.openqa.selenium.WebDriver;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-
-import static com.znsio.teswiz.runner.Runner.DEBUG;
 
 public class ScreenShotManager {
 
@@ -33,19 +29,19 @@ public class ScreenShotManager {
         file.getParentFile().mkdirs();
     }
 
-    public void takeScreenShot(WebDriver innerDriver, String fileName) {
-        if(null != innerDriver) {
+    public void takeScreenShot(WebDriver driver, String fileName) {
+        if(null != driver) {
             fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
             LOGGER.info(
                     "The screenshot will be placed here : " + destinationFile.getAbsolutePath());
             try {
-                File screenshot = ((TakesScreenshot) innerDriver).getScreenshotAs(OutputType.FILE);
+                File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
                 LOGGER.info("Original screenshot : " + screenshot.getAbsolutePath());
                 FileUtils.copyFile(screenshot, destinationFile);
                 LOGGER.info(
                         "The screenshot is available here : " + destinationFile.getAbsolutePath());
-                ReportPortal.emitLog(fileName, DEBUG, new Date(), destinationFile);
+                ReportPortalLogger.attachFileInReportPortal(fileName, destinationFile);
             } catch(IOException | RuntimeException e) {
                 LOGGER.info(
                         "ERROR: Unable to save or upload screenshot: '" + destinationFile.getAbsolutePath() + "' or upload screenshot to ReportPortal\n");

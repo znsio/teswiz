@@ -101,10 +101,6 @@ public class Runner {
         return Setup.getBooleanValueFromConfigs(Setup.IS_VISUAL);
     }
 
-    public static void remove(long threadId) {
-        SessionContext.remove(threadId);
-    }
-
     public static String getFromEnvironmentConfiguration(String key) {
         try {
             return Setup.getFromEnvironmentConfiguration(key);
@@ -163,10 +159,6 @@ public class Runner {
         String userPersona = getTestExecutionContext(threadId).getTestStateAsString(
                 TEST_CONTEXT.CURRENT_USER_PERSONA);
         return Drivers.getPlatformForUser(userPersona);
-    }
-
-    public static void closeAllDrivers() {
-        Drivers.attachLogsAndCloseAllWebDrivers();
     }
 
     public static String getTargetEnvironment() {

@@ -1,17 +1,16 @@
 package com.znsio.teswiz.runner;
 
 import com.context.TestExecutionContext;
-import com.epam.reportportal.service.ReportPortal;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonSchemaValidator;
+import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -209,7 +208,7 @@ class BrowserDriverManager {
         String message = String.format("Using %s browser version: %s", driverManagerType,
                                        downloadedDriverVersion);
         LOGGER.info(message);
-        ReportPortal.emitLog(message, INFO, new Date());
+        ReportPortalLogger.logInfoMessage(message);
         return driverManagerType;
     }
 
@@ -415,7 +414,7 @@ class BrowserDriverManager {
 
         String logMessage = String.format("Creating %s logs in file: %s", browserType, logFile);
         LOGGER.info(logMessage);
-        ReportPortal.emitLog(logMessage, DEBUG, new Date());
+        ReportPortalLogger.logDebugMessage(logMessage);
         System.setProperty("webdriver." + browserType + ".logfile", logFile);
         addBrowserLogFileNameFor(forUserPersona, Platform.web.name(), browserType, logFile);
     }
@@ -474,7 +473,7 @@ class BrowserDriverManager {
         String logMessage = String.format("Browser logs for user: %s" + "%nlogFileName: %s",
                                           userPersona, logFileName);
         LOGGER.info(logMessage);
-        ReportPortal.emitLog(logMessage, DEBUG, new Date(), new File(logFileName));
+        ReportPortalLogger.attachFileInReportPortal(logMessage, new File(logFileName));
 
         WebDriver webDriver = driver.getInnerDriver();
         if(null == webDriver) {
@@ -484,7 +483,7 @@ class BrowserDriverManager {
         } else {
             logMessage = String.format("Closing WebDriver for user: '%s'", userPersona);
             LOGGER.info(logMessage);
-            ReportPortal.emitLog(logMessage, DEBUG, new Date());
+            ReportPortalLogger.logDebugMessage(logMessage);
             webDriver.quit();
         }
     }

@@ -1,6 +1,14 @@
 @theapp
 Feature: Scenarios for "The App"
 
+#  CONFIG=./configs/theapp_local_config.properties PLATFORM=web TAG="@theapp and @switchUser" ./gradlew run
+#  CONFIG=./configs/theapp_local_config.properties PLATFORM=android TAG="@theapp and @switchUser" ./gradlew run
+  @android @web @switchUser @theapp
+  Scenario: Switch user persona
+    And "I" login to TheApp with invalid credentials - "znsio1", "invalid password"
+    When "I" switch my role to "You"
+    Then "You" can login again with invalid credentials - "switched user", "switched user invalid password"
+
 #  CONFIG=./configs/theapp_local_config.properties PLATFORM=web TAG="@theapp and @invalidLogin1" ./gradlew run
 #  CONFIG=./configs/theapp_local_config.properties PLATFORM=android TAG="@theapp and @invalidLogin1" ./gradlew run
   @android @web @invalidLogin @invalidLogin1 @theapp
@@ -71,3 +79,28 @@ Feature: Scenarios for "The App"
     Given I am on file upload page
     When I upload the "image" file
     Then File is uploaded successfully
+
+    #  CONFIG=./configs/theapp_local_config.properties TAG="@multiuser-web and @theapp and @switchUser"  PLATFORM=web ./gradlew run
+  @multiuser-web @theapp @web @switchUser
+  Scenario: Orchestrating multiple users with changing user persona on different platforms as part of same test
+    Given "I" login with invalid credentials - "znsio1", "invalid password" on "web"
+    And "You" login with invalid credentials - "znsio2", "invalid password" on "web"
+    When "You" changed to "We"
+    Then "We" login again with invalid credentials - "znsio4", "invalid password"
+
+       #  CONFIG=./configs/theapp_local_config.properties TAG="@multiuser-android-web and @theapp and @switchUser"  PLATFORM=android ./gradlew run
+  @multiuser-android-web @theapp @android @switchUser
+  Scenario: Orchestrating multiple users with changing user persona on different platforms as part of same test
+    Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
+    And "You" login with invalid credentials - "znsio2", "invalid password" on "web"
+    When "You" changed to "We"
+    Then "We" login again with invalid credentials - "znsio4", "invalid password"
+
+
+       #  CONFIG=./configs/theapp_local_config.properties TAG="@multiuser-android and @theapp and @switchUser"  PLATFORM=android ./gradlew run
+  @multiuser-android @theapp @android @switchUser
+  Scenario: Orchestrating multiple users with changing user persona on different platforms as part of same test
+    Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
+    And "You" login with invalid credentials - "znsio2", "invalid password" on "android"
+    When "You" changed to "We"
+    Then "We" login again with invalid credentials - "znsio4", "invalid password"
