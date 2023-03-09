@@ -11,18 +11,24 @@ import static com.znsio.teswiz.runner.Runner.*;
 public class ReportPortalLogger {
     private static final Logger LOGGER = Logger.getLogger(ReportPortalLogger.class.getName());
 
+    private ReportPortalLogger() {
+        LOGGER.debug("ReportPortalLogger - private constructor");
+    }
+
     public static void attachFileInReportPortal(String message, File destinationFile) {
-        boolean isEmitLogSuccessful = ReportPortal.emitLog(message, DEBUG, new Date(), destinationFile);
+        boolean isEmitLogSuccessful = ReportPortal.emitLog(message, DEBUG, new Date(),
+                                                           destinationFile);
         if(isEmitLogSuccessful) {
-            LOGGER.debug(String.format("'%s' - Upload of file: '%s'::'%s' to reportportal succeeded",
-                                       getCallingClassAndMethodName(), message, destinationFile));
-            System.out.println(String.format("'%s' - Upload of file: '%s'::'%s' to reportportal succeeded",
-                                       getCallingClassAndMethodName(), message, destinationFile));
+            LOGGER.debug(
+                    String.format("'%s' - Upload of file: '%s'::'%s' to ReportPortal succeeded",
+                                  getCallingClassAndMethodName(), message, destinationFile));
+            System.out.printf("'%s' - Upload of file: '%s'::'%s' to ReportPortal succeeded%n",
+                              getCallingClassAndMethodName(), message, destinationFile);
         } else {
-            LOGGER.error(String.format("'%s' - Upload of file: '%s'::'%s' to reportportal failed",
+            LOGGER.error(String.format("'%s' - Upload of file: '%s'::'%s' to ReportPortal failed",
                                        getCallingClassAndMethodName(), message, destinationFile));
-            System.out.println(String.format("'%s' - Upload of file: '%s'::'%s' to reportportal failed",
-                                       getCallingClassAndMethodName(), message, destinationFile));
+            System.out.printf("'%s' - Upload of file: '%s'::'%s' to ReportPortal failed%n",
+                              getCallingClassAndMethodName(), message, destinationFile);
         }
     }
 
@@ -51,15 +57,15 @@ public class ReportPortalLogger {
     private static void logMessage(String message, String level) {
         boolean isEmitLogSuccessful = ReportPortal.emitLog(message, level, new Date());
         if(isEmitLogSuccessful) {
-            System.out.println(String.format("'%s' - Logging message: '%s' to reportportal succeeded",
+            System.out.printf("'%s' - Logging message: '%s' to ReportPortal succeeded%n",
+                              getCallingClassAndMethodName(), message);
+            LOGGER.debug(String.format("'%s' - Logging message: '%s' to ReportPortal succeeded",
                                        getCallingClassAndMethodName(), message));
-            LOGGER.debug(String.format("'%s' - Logging message: '%s' to reportportal succeeded",
-                                      getCallingClassAndMethodName(), message));
 
         } else {
-            System.out.println(String.format("'%s' - Logging message: '%s' to reportportal failed",
-                                             getCallingClassAndMethodName(), message));
-            LOGGER.error(String.format("'%s' - Logging message: '%s' to reportportal failed",
+            System.out.printf("'%s' - Logging message: '%s' to ReportPortal failed%n",
+                              getCallingClassAndMethodName(), message);
+            LOGGER.error(String.format("'%s' - Logging message: '%s' to ReportPortal failed",
                                        getCallingClassAndMethodName(), message));
         }
     }
