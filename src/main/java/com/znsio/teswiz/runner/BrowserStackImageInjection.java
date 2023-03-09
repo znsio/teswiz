@@ -8,15 +8,13 @@ import java.io.File;
 import java.util.Arrays;
 import org.apache.log4j.Logger;
 import static com.znsio.teswiz.tools.Wait.waitFor;
-
 public class BrowserStackImageInjection {
-
     private static final Logger LOGGER = Logger.getLogger(BrowserStackImageInjection.class.getName());
-
-    private static String uploadToCloud(String uploadFilePath,String cloudUser, String cloudKey, String cloudName) {
+    private static String uploadToCloud(String uploadFilePath,String cloudUser, String cloudKey) {
         uploadFilePath = new File(uploadFilePath).getAbsolutePath();
         String fileName = new File(uploadFilePath).getName();
         String mediaUrl = Runner.NOT_SET;
+        String cloudName = System.getenv("CLOUD_NAME");
 
             String[] curlCommand = new String[]{
                     "curl --insecure -u \"" + cloudUser + ":" + cloudKey + "\"",
@@ -34,8 +32,8 @@ public class BrowserStackImageInjection {
         return mediaUrl;
     }
 
-    public static String injectMediaToDriver(String uploadFilePath, AppiumDriver driver ,String cloudUser, String cloudKey, String cloudName) {
-        String mediaUrl = BrowserStackImageInjection.uploadToCloud(uploadFilePath,cloudUser,cloudKey,cloudName);
+    public static String injectMediaToDriver(String uploadFilePath, AppiumDriver driver ,String cloudUser, String cloudKey) {
+        String mediaUrl = BrowserStackImageInjection.uploadToCloud(uploadFilePath,cloudUser,cloudKey);
         LOGGER.info(String.format("Inject media url in driver: '%s'", mediaUrl));
         driver.executeScript("browserstack_executor: {\"action\":\"cameraImageInjection\"," +
                 " \"arguments\": {\"imageUrl\" : \"" + mediaUrl + "\"}}");

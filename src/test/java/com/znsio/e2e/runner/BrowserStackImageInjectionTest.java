@@ -7,10 +7,8 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import static org.testng.AssertJUnit.assertNotNull;
 
 
@@ -22,13 +20,13 @@ public class BrowserStackImageInjectionTest  {
      AndroidDriver<AndroidElement> driver;
      String authenticationUser = null;
      String authenticationKey = null;
-    String cloudUser = null;
+    String cloudName = null;
 
     @BeforeMethod
     public void getSetup() {
         authenticationUser = System.getenv("CLOUD_USER");
         authenticationKey = System.getenv("CLOUD_KEY");
-        cloudUser = System.getenv("CLOUD_NAME");
+        cloudName = System.getenv("CLOUD_NAME");
         DesiredCapabilities caps = new DesiredCapabilities();
         caps.setCapability("device", "Samsung Galaxy S20");
         caps.setCapability("os_version", "10.0");
@@ -45,7 +43,7 @@ public class BrowserStackImageInjectionTest  {
     @Test
     public void toVerifyUploadURLIsGettingGenerated() {
         String imageFile = System.getProperty("user.dir")+ "/src/test/resources/images/handbag.jpg";
-        assertNotNull(BrowserStackImageInjection.injectMediaToDriver(imageFile,driver,authenticationUser,authenticationKey,cloudUser));
+        assertNotNull(BrowserStackImageInjection.injectMediaToDriver(imageFile,driver,authenticationUser,authenticationKey));
     }
 
 }

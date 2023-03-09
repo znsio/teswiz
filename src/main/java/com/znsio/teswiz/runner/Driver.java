@@ -477,19 +477,12 @@ public class Driver {
      */
     public void injectMediaToBrowserstackDevice(String uploadFileURL) {
         String cloudName = Setup.getFromConfigs(CLOUD_NAME);
-        try {
             if (Setup.getPlatform().equals(Platform.android) && cloudName == "browserstack") {
                 String cloudUser = Setup.getFromConfigs(Setup.CLOUD_USER);
                 String cloudKey = Setup.getFromConfigs(CLOUD_KEY);
-                BrowserStackImageInjection.injectMediaToDriver(uploadFileURL, ((AppiumDriver) driver), cloudUser, cloudKey, cloudName);
+                BrowserStackImageInjection.injectMediaToDriver(uploadFileURL, ((AppiumDriver) driver), cloudUser, cloudKey);
             } else {
                 throw new NotImplementedException("injectMediaToBrowserstackDevice is not implemented for: " + cloudName);
             }
-        }catch (Exception exception){
-            throw new FileNotUploadedException(
-                    String.format("Error in uploading the file: '%s%s%s", uploadFileURL, TO,
-                            Runner.getPlatform().name()),
-                    exception);
-        }
     }
 }
