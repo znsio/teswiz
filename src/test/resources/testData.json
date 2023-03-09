@@ -13,5 +13,9 @@
       "UPLOAD_IMAGE_LOCATION": "/sdcard/Images/handbag.jpg"
     }
   },
-  "dev": {}
+  "dev": {},
+  "browserStack": {
+    "username": "eot.testing@gmail.com",
+    "password": "eotTesting@0"
+  }
 }
