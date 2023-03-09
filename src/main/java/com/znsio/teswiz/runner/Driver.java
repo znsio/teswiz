@@ -20,15 +20,14 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static com.znsio.teswiz.runner.Setup.*;
-import static com.znsio.teswiz.tools.Wait.waitFor;
+import static com.znsio.teswiz.runner.Setup.CLOUD_KEY;
+import static com.znsio.teswiz.runner.Setup.CLOUD_NAME;
 
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
@@ -45,8 +44,8 @@ public class Driver {
     private final boolean isRunningInHeadlessMode;
     private Visual visually;
 
-    Driver(String testName, Platform forPlatform, String userPersona,
-                  String appName, AppiumDriver<WebElement> appiumDriver) {
+    Driver(String testName, Platform forPlatform, String userPersona, String appName,
+           AppiumDriver<WebElement> appiumDriver) {
         this.driver = appiumDriver;
         this.type = APPIUM_DRIVER;
         this.userPersona = userPersona;
@@ -56,8 +55,8 @@ public class Driver {
         instantiateEyes(testName, appiumDriver);
     }
 
-    Driver(String testName, Platform forPlaform, String userPersona,
-                  String appName, WebDriver webDriver, boolean isRunInHeadlessMode) {
+    Driver(String testName, Platform forPlaform, String userPersona, String appName,
+           WebDriver webDriver, boolean isRunInHeadlessMode) {
         this.driver = webDriver;
         this.type = WEB_DRIVER;
         this.userPersona = userPersona;
@@ -146,8 +145,7 @@ public class Driver {
         int width = windowSize.width / 2;
         int fromHeight = (int) (windowSize.height * 0.9);
         int toHeight = (int) (windowSize.height * 0.5);
-        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight,
-                                  toHeight));
+        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight, toHeight));
 
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.press(PointOption.point(new Point(width, fromHeight)))
@@ -163,10 +161,8 @@ public class Driver {
         int width = (windowSize.width * percentScreenWidth) / 100;
         int fromHeight = (windowSize.height * fromPercentScreenHeight) / 100;
         int toHeight = (windowSize.height * toPercentScreenHeight) / 100;
-        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight,
-                                  toHeight));
-        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight,
-                                  toHeight));
+        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight, toHeight));
+        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight, toHeight));
 
         TouchAction touchAction = new TouchAction(appiumDriver);
         touchAction.press(PointOption.point(new Point(width, fromHeight)))
@@ -309,8 +305,9 @@ public class Driver {
     }
 
     public void pushFileToDevice(String filePathToPush, String devicePath) {
-        LOGGER.info(
-                "Pushing the file: '" + filePathToPush + TO + Runner.getPlatform().name() + "' " + "device on path: '" + devicePath + "'");
+        LOGGER.info("Pushing the file: '" + filePathToPush + TO + Runner.getPlatform()
+                                                                        .name() + "' " + "device "
+                    + "on path: '" + devicePath + "'");
         try {
             if(Runner.getPlatform().equals(Platform.android)) {
                 ((AndroidDriver) driver).pushFile(devicePath, new File(filePathToPush));
@@ -320,8 +317,7 @@ public class Driver {
         } catch(IOException e) {
             throw new FileNotUploadedException(
                     String.format("Error in pushing the file: '%s%s%s' device on path: '%s'",
-                                  filePathToPush, TO, Runner.getPlatform().name(), devicePath),
-                    e);
+                                  filePathToPush, TO, Runner.getPlatform().name(), devicePath), e);
         }
     }
 
@@ -465,24 +461,28 @@ public class Driver {
         } catch(Exception e) {
             throw new FileNotUploadedException(
                     String.format("Error in uploading the file: '%s%s%s", filePath, TO,
-                                  Runner.getPlatform().name()),
-                    e);
+                                  Runner.getPlatform().name()), e);
         }
     }
 
     /**
      * This method injects the media to browserstack to perform,
      * image scanning eg: QRcode,barcode etc
+     * Throws NotImplementedException if platform is NOT android, and cloudName is NOT browserstack
+     *
      * @param uploadFileURL
      */
     public void injectMediaToBrowserstackDevice(String uploadFileURL) {
         String cloudName = Setup.getFromConfigs(CLOUD_NAME);
-            if (Setup.getPlatform().equals(Platform.android) && cloudName == "browserstack") {
-                String cloudUser = Setup.getFromConfigs(Setup.CLOUD_USER);
-                String cloudKey = Setup.getFromConfigs(CLOUD_KEY);
-                BrowserStackImageInjection.injectMediaToDriver(uploadFileURL, ((AppiumDriver) driver), cloudUser, cloudKey);
-            } else {
-                throw new NotImplementedException("injectMediaToBrowserstackDevice is not implemented for: " + cloudName);
-            }
+        if(Runner.getPlatform().equals(Platform.android) && cloudName.equalsIgnoreCase(
+                "browserstack")) {
+            String cloudUser = Setup.getFromConfigs(Setup.CLOUD_USER);
+            String cloudKey = Setup.getFromConfigs(CLOUD_KEY);
+            BrowserStackImageInjection.injectMediaToDriver(uploadFileURL, ((AppiumDriver) driver),
+                                                           cloudUser, cloudKey);
+        } else {
+            throw new NotImplementedException(
+                    "injectMediaToBrowserstackDevice is not implemented for: " + cloudName);
+        }
     }
 }
