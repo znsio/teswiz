@@ -44,6 +44,17 @@ There are some method name changes as listed below:
 | Getting the Visual driver for the current user   | `Runner.fetchEyes(Thread.currentThread().getId());`                                                                   | **`Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());`**                                          |
 | Getting the device name for user                 | `Runner.fetchDeviceName(userPersona);`                                                                                | **`Drivers.getNameOfDeviceUsedByUser(userPersona);`**                                                                 |
 
+## Logging to ReportPortal
+
+To make it easy to log to ReportPortal, the following new methods have been added:
+
+```
+        ReportPortalLogger.logDebugMessage("debugMessage");
+        ReportPortalLogger.logInfoMessage("infoMessage");
+        ReportPortalLogger.logWarningMessage("warningMessage");
+        ReportPortalLogger.attachFileInReportPortal("message", new File("fileName"));
+```
+
 [//]: # (```mermaid)
 
 [//]: # (flowchart TD)
