@@ -205,6 +205,7 @@ public class Drivers {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
 
         userPersonaDetails.getAllAssignedUserPersonasAndDrivers().forEach((userPersona, driver) -> {
+            driver.getVisual().takeScreenshot("afterHooks", userPersona);
             LOGGER.info(String.format(
                     "\tGetting visual validation results and closing driver for: User Persona: %s",
                     userPersona));

@@ -492,12 +492,10 @@ public class Visual {
     public void handleTestResults(String userPersona, String driverType) {
         switch(driverType) {
             case Driver.WEB_DRIVER:
-                takeScreenshot(userPersona, "afterHooks");
                 getVisualResultsFromWeb(userPersona);
                 break;
 
             case Driver.APPIUM_DRIVER:
-                takeScreenshot(userPersona, "afterHooks");
                 getVisualResultsFromApp(userPersona);
                 break;
 
