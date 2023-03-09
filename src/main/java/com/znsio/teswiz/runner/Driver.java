@@ -12,6 +12,7 @@ import io.appium.java_client.touch.LongPressOptions;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
@@ -19,11 +20,15 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import static com.znsio.teswiz.runner.Setup.*;
+import static com.znsio.teswiz.tools.Wait.waitFor;
 
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
@@ -462,6 +467,29 @@ public class Driver {
                     String.format("Error in uploading the file: '%s%s%s", filePath, TO,
                                   Runner.getPlatform().name()),
                     e);
+        }
+    }
+
+    /**
+     * This method injects the media to browserstack to perform,
+     * image scanning eg: QRcode,barcode etc
+     * @param uploadFileURL
+     */
+    public void injectMediaToBrowserstackDevice(String uploadFileURL) {
+        String cloudName = Setup.getFromConfigs(CLOUD_NAME);
+        try {
+            if (Setup.getPlatform().equals(Platform.android) && cloudName == "browserstack") {
+                String cloudUser = Setup.getFromConfigs(Setup.CLOUD_USER);
+                String cloudKey = Setup.getFromConfigs(CLOUD_KEY);
+                BrowserStackImageInjection.injectMediaToDriver(uploadFileURL, ((AppiumDriver) driver), cloudUser, cloudKey, cloudName);
+            } else {
+                throw new NotImplementedException("injectMediaToBrowserstackDevice is not implemented for: " + cloudName);
+            }
+        }catch (Exception exception){
+            throw new FileNotUploadedException(
+                    String.format("Error in uploading the file: '%s%s%s", uploadFileURL, TO,
+                            Runner.getPlatform().name()),
+                    exception);
         }
     }
 }

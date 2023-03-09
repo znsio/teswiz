@@ -3,35 +3,21 @@ package com.znsio.teswiz.runner;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
-import org.apache.commons.lang3.NotImplementedException;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.util.Arrays;
 import org.apache.log4j.Logger;
-import static com.znsio.teswiz.runner.Setup.*;
 import static com.znsio.teswiz.tools.Wait.waitFor;
 
 public class BrowserStackImageInjection {
 
     private static final Logger LOGGER = Logger.getLogger(BrowserStackImageInjection.class.getName());
 
-
-    private static String uploadToCloud(String uploadFilePath) {
+    private static String uploadToCloud(String uploadFilePath,String cloudUser, String cloudKey, String cloudName) {
         uploadFilePath = new File(uploadFilePath).getAbsolutePath();
         String fileName = new File(uploadFilePath).getName();
-        String cloudUser = Setup.getFromConfigs(Setup.CLOUD_USER);
-        String cloudKey = Setup.getFromConfigs(CLOUD_KEY);
-        String cloudName = Setup.getFromConfigs(CLOUD_NAME);
         String mediaUrl = Runner.NOT_SET;
 
-        if (cloudUser == null && cloudKey == null && cloudName == null) {
-            cloudUser = System.getenv(CLOUD_USER);
-            cloudKey = System.getenv(CLOUD_KEY);
-            cloudName = System.getenv(CLOUD_NAME);
-        }
-
-        if (cloudName.equalsIgnoreCase("browserstack")) {
             String[] curlCommand = new String[]{
                     "curl --insecure -u \"" + cloudUser + ":" + cloudKey + "\"",
                     "-X POST \"https://api-cloud.browserstack.com/app-automate/upload-media\"",
@@ -39,26 +25,23 @@ public class BrowserStackImageInjection {
                     "-F \"custom_id=" + fileName + "\""
             };
             LOGGER.info(String.format("Uploading file: '%s' to '%s' using command: '%s'", uploadFilePath, cloudName, Arrays.toString(curlCommand)));
-            CommandLineResponse uploadQRToCloud = CommandLineExecutor.execCommand(curlCommand);
-            String stdOut = uploadQRToCloud.getStdOut();
+            CommandLineResponse uploadFileResponse = CommandLineExecutor.execCommand(curlCommand);
+            String stdOut = uploadFileResponse.getStdOut();
             LOGGER.info(String.format("Response of upload command: '%s'", stdOut));
             mediaUrl = new JSONObject(stdOut).getString("media_url");
             LOGGER.info(String.format("Uploaded file: '%s' to '%s'. Media URL: '%s'", uploadFilePath, cloudName, mediaUrl));
             waitFor(5);
-
-        } else {
-            throw new NotImplementedException("uploadToCloud is not implemented for device in: " + cloudName);
-        }
         return mediaUrl;
     }
 
-    public static String injectMediaToDriver(String uploadFilePath, AppiumDriver driver) {
-        String mediaUrl = uploadToCloud(uploadFilePath);
+    public static String injectMediaToDriver(String uploadFilePath, AppiumDriver driver ,String cloudUser, String cloudKey, String cloudName) {
+        String mediaUrl = BrowserStackImageInjection.uploadToCloud(uploadFilePath,cloudUser,cloudKey,cloudName);
         LOGGER.info(String.format("Inject media url in driver: '%s'", mediaUrl));
         driver.executeScript("browserstack_executor: {\"action\":\"cameraImageInjection\"," +
                 " \"arguments\": {\"imageUrl\" : \"" + mediaUrl + "\"}}");
         waitFor(5);
         return mediaUrl;
     }
+
 
 }
