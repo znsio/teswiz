@@ -198,7 +198,7 @@ public class Drivers {
         return userPersonaDetails.getPlatformAssignedForUser(userPersona);
     }
 
-    static void attachLogsAndCloseAllWebDrivers() {
+    public static void attachLogsAndCloseAllDrivers() {
         long currentThreadId = Thread.currentThread().getId();
         LOGGER.info(String.format("Close all drivers for test on ThreadId: - %d", currentThreadId));
         TestExecutionContext context = getTestExecutionContext(currentThreadId);

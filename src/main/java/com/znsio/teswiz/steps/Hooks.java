@@ -1,8 +1,8 @@
 package com.znsio.teswiz.steps;
 
 import com.context.TestExecutionContext;
-import com.epam.reportportal.service.ReportPortal;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
+import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.UserPersonaDetails;
 import com.znsio.teswiz.tools.ReportPortalLogger;
@@ -11,11 +11,8 @@ import io.cucumber.java.Scenario;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
-
-import static com.znsio.teswiz.runner.Runner.DEBUG;
 
 public class Hooks {
     private static final Logger LOGGER = Logger.getLogger(Hooks.class.getName());
@@ -53,7 +50,7 @@ public class Hooks {
     public void afterScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();
         LOGGER.info("ThreadId: " + threadId + " In RunCukes - After: " + scenario.getName());
-        Runner.closeAllDrivers();
+        Drivers.attachLogsAndCloseAllDrivers();
         SoftAssertions softly = Runner.getSoftAssertion(threadId);
         LOGGER.info("Assert all soft assertions");
         softly.assertAll();
