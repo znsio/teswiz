@@ -12,7 +12,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class BrowserStackImageInjectionTest {
+class BrowserStackImageInjectionTest {
     private static final String LOG_DIR = "./target/testLogs";
 
     private static final Logger LOGGER = Logger.getLogger(
