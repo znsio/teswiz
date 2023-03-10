@@ -26,9 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static com.znsio.teswiz.runner.Setup.CLOUD_KEY;
-import static com.znsio.teswiz.runner.Setup.CLOUD_NAME;
-
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
     public static final String APPIUM_DRIVER = "AppiumDriver";
@@ -473,11 +470,11 @@ public class Driver {
      * @param uploadFileURL
      */
     public void injectMediaToBrowserstackDevice(String uploadFileURL) {
-        String cloudName = Setup.getFromConfigs(CLOUD_NAME);
+        String cloudName = Runner.getCloudName();
         if(Runner.getPlatform().equals(Platform.android) && cloudName.equalsIgnoreCase(
                 "browserstack")) {
-            String cloudUser = Setup.getFromConfigs(Setup.CLOUD_USER);
-            String cloudKey = Setup.getFromConfigs(CLOUD_KEY);
+            String cloudUser = Runner.getCloudUser();
+            String cloudKey = Runner.getCloudKey();
             BrowserStackImageInjection.injectMediaToDriver(uploadFileURL, ((AppiumDriver) driver),
                                                            cloudUser, cloudKey);
         } else {
