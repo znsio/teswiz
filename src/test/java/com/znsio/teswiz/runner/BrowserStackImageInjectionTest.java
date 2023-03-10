@@ -6,11 +6,12 @@ import org.apache.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.testng.AssertJUnit;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class BrowserStackImageInjectionTest {
     private static final String LOG_DIR = "./target/testLogs";
@@ -24,7 +25,7 @@ class BrowserStackImageInjectionTest {
     static String cloudName = null;
 
     @BeforeAll
-    public static void getSetup() {
+    static void getSetup() {
         System.setProperty("LOG_DIR", LOG_DIR);
         new File(LOG_DIR).mkdirs();
 
@@ -38,22 +39,23 @@ class BrowserStackImageInjectionTest {
         caps.setCapability("browserstack.enableCameraImageInjection", "true");
         try {
             driver = new AndroidDriver(
-                    new URL("https://" + authenticationUser + ":" + authenticationKey + "@hub" +
-                            "-cloud.browserstack.com/wd/hub"),
-                    caps);
+                    new URL(String.format("https://%s:%s@hub-cloud.browserstack.com/wd/hub",
+                                          authenticationUser, authenticationKey)), caps);
 
         } catch(MalformedURLException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(
+                    String.format("Error starting Android driver: %s", e.getMessage()), e);
         }
     }
 
 //    @Test
-    public void toVerifyUploadURLIsGettingGenerated() {
+    void toVerifyUploadURLIsGettingGenerated() {
         String imageFile = System.getProperty(
                 "user.dir") + "/src/test/resources/images/handbag.jpg";
-        AssertJUnit.assertNotNull(BrowserStackImageInjection.injectMediaToDriver(imageFile, driver,
-                                                                                 authenticationUser,
-                                                                                 authenticationKey));
+        assertThat(BrowserStackImageInjection.injectMediaToDriver(imageFile, driver,
+                                                                  authenticationUser,
+                                                                  authenticationKey)).as(
+                "Injecting image to device failed").isNotNull();
     }
 
 }
