@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -204,7 +205,10 @@ public class Drivers {
         TestExecutionContext context = getTestExecutionContext(currentThreadId);
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
 
-        userPersonaDetails.getAllAssignedUserPersonasAndDrivers().forEach((userPersona, driver) -> {
+        Map<String, Driver> allAssignedUserPersonasAndDrivers =
+                userPersonaDetails.getAllAssignedUserPersonasAndDrivers();
+        LOGGER.info("Closing driver for the following userPersonas: " + allAssignedUserPersonasAndDrivers.keySet());
+        allAssignedUserPersonasAndDrivers.forEach((userPersona, driver) -> {
             driver.getVisual().takeScreenshot("afterHooks", userPersona);
             LOGGER.info(String.format(
                     "\tGetting visual validation results and closing driver for: User Persona: %s",
