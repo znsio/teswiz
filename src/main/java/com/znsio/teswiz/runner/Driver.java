@@ -484,15 +484,16 @@ public class Driver {
         }
     }
 
-    public static void scrollInDynamicLayer(Driver driver, String direction) {
-        Dimension dimension = driver.getInnerDriver().manage().window().getSize();
+    public void scrollInDynamicLayer(String direction) {
+        Dimension dimension = driver.manage().window().getSize();
         int width = (int) (dimension.width * 0.5);
         int fromHeight = (int) (dimension.height * 0.7), toHeight = (int) (dimension.height * 0.6);
         int[] height = {fromHeight, toHeight};
-        if (direction.equalsIgnoreCase("up"))
+        if (direction.equalsIgnoreCase("up")) {
             Arrays.sort(height);
+        }
 
-        TouchAction<?> touchAction = new TouchAction<>((PerformsTouchActions) driver.getInnerDriver());
+        TouchAction<?> touchAction = new TouchAction<>((PerformsTouchActions) driver);
         touchAction.press(PointOption.point(width, height[0]))
                 .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
                 .moveTo(PointOption.point(width, height[1])).release().perform();
