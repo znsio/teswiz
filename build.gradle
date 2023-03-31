@@ -21,7 +21,7 @@ buildscript {
         everitSchemaValidatorVersion = '1.5.1'
         jodaTimeVersion = '2.12.4'
         masterThoughtVersion = '5.7.5'
-        browserStackLocalVersion = '1.0.6'
+        browserStackLocalVersion = '1.0.7'
     }
 }
 
