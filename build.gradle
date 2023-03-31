@@ -17,7 +17,7 @@ buildscript {
         reportportalAgentCucumberVersion = '5.0.6'
         reportportalAgentTestNGVersion = '5.0.11'
         fasterxmlJacksonVersion = '2.14.2'
-        jsonPathVersion = '2.7.0'
+        jsonPathVersion = '2.8.0'
         everitSchemaValidatorVersion = '1.5.1'
         jodaTimeVersion = '2.12.2'
         masterThoughtVersion = '5.7.5'
