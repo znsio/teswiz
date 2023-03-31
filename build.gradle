@@ -13,7 +13,7 @@ buildscript {
         webDriverManagerVersion = '5.3.2'
         googleCodeJsonSimpleVersion = '1.1.1'
         junitVersion = '5.9.2'
-        slf4jVersion = '2.0.6'
+        slf4jVersion = '2.0.7'
         reportportalAgentCucumberVersion = '5.0.6'
         reportportalAgentTestNGVersion = '5.0.11'
         fasterxmlJacksonVersion = '2.14.2'
