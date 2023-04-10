@@ -160,12 +160,12 @@ public class Visual {
     private void validateApplitoolsAPIKeyAndServerUrl(boolean isVisualTestingEnabled) {
         if(!isVisualTestingEnabled) {
             LOGGER.info(String.format(
-                    "Since isVisualTestingEnabled: %s, Applitools API Key and Server Url " +
+                    "VisualTesting is Disabled: %s, Applitools API Key and Server Url " +
                     "validation is not required",
                     isVisualTestingEnabled));
             return;
         }
-        String curlCommand = "curl -I --location --request GET '" + getValueFromConfig(
+        String curlCommand = "curl -I " + getProxyURLForCurl() + " --location --request GET '" + getValueFromConfig(
                 APPLITOOLS.SERVER_URL,
                 DEFAULT_APPLITOOLS_SERVER_URL) + "api/sessions/renderinfo?apiKey=" + getApplitoolsAPIKey(
                 isVisualTestingEnabled) + "'";
@@ -178,6 +178,9 @@ public class Visual {
         }
     }
 
+    private String getProxyURLForCurl() {
+        return (null == getProxyURL()) ? "" : " --proxy " + getProxyURL() + " ";
+    }
 
     private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType,
                                                                  Platform platform,
