@@ -270,30 +270,30 @@ class Setup {
 
     @NotNull
     private static String printStringMap(String prefix, Map<String, String> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": %n");
+        StringBuilder printString = new StringBuilder(prefix + ": \n");
         for(Map.Entry<String, String> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
-                       .append("%n");
+                       .append("\n");
         }
         return printString.toString() + printConfig;
     }
 
     @NotNull
     private static String printBooleanMap(String prefix, Map<String, Boolean> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": %n");
+        StringBuilder printString = new StringBuilder(prefix + ": \n");
         for(Map.Entry<String, Boolean> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
-                       .append("%n");
+                       .append("\n");
         }
         return printString.toString() + printConfig;
     }
 
     @NotNull
     private static String printIntegerMap(String prefix, Map<String, Integer> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": %n");
+        StringBuilder printString = new StringBuilder(prefix + ": \n");
         for(Map.Entry<String, Integer> entry : printConfig.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
-                       .append("%n");
+                       .append("\n");
         }
         return printString.toString() + printConfig;
     }
