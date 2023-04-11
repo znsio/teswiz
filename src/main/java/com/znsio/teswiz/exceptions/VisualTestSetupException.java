@@ -8,5 +8,6 @@ public class VisualTestSetupException
 
     public VisualTestSetupException(String message, Exception ex) {
         super(message, ex);
+        ex.printStackTrace();
     }
 }
