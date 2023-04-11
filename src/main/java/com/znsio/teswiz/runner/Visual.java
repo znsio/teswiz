@@ -136,6 +136,12 @@ public class Visual {
 
         try {
             validateApplitoolsAPIKeyAndServerUrl(isVisualTestingEnabled);
+
+            String proxyUrl = (String) applitoolsConfig.get(APPLITOOLS.PROXY_URL);
+            if (null != proxyUrl) {
+                LOGGER.info(String.format("Set proxyUrl for appEyes: %s", proxyUrl));
+                appEyes.setProxy(new ProxySettings(proxyUrl));
+            }
             appEyes.open(innerDriver, appName + "-" + platform, testName);
             LOGGER.info(String.format(
                     "instantiateAppiumEyes: Is Applitools Visual Testing enabled? - %s",
@@ -246,6 +252,11 @@ public class Visual {
 
         try {
             validateApplitoolsAPIKeyAndServerUrl(isVisualTestingEnabled);
+            String proxyUrl = (String) applitoolsConfig.get(APPLITOOLS.PROXY_URL);
+            if (null != proxyUrl) {
+                LOGGER.info(String.format("Set proxyUrl for appEyes: %s", proxyUrl));
+                webEyes.setProxy(new ProxySettings(proxyUrl));
+            }
             webEyes.open(innerDriver, appName + "-" + platform, testName, setBrowserViewPortSize);
             LOGGER.info(
                     String.format("instantiateWebEyes:  Is Applitools Visual Testing enabled? - %s",
