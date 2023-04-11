@@ -394,7 +394,7 @@ class Setup {
         configs.put(PROXY_KEY, getOverriddenStringValue(PROXY_KEY,
                                                         getStringValueFromPropertiesIfAvailable(
                                                                 PROXY_KEY, PROXY_KEY)));
-        configs.put(PROXY_URL, getOverriddenStringValue(configs.get(PROXY_KEY)));
+        configs.put(PROXY_URL, (null != configs.get(PROXY_KEY)) ? getOverriddenStringValue(configs.get(PROXY_KEY)) : configs.put(PROXY_URL, null));
         configs.put(WEBDRIVER_MANAGER_PROXY_KEY,
                     getOverriddenStringValue(WEBDRIVER_MANAGER_PROXY_KEY,
                                              getStringValueFromPropertiesIfAvailable(
