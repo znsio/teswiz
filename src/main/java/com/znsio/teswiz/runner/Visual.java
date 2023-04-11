@@ -135,8 +135,6 @@ public class Visual {
         appEyes.addProperty("USER_NAME", USER_NAME);
 
         try {
-//            validateApplitoolsAPIKeyAndServerUrl(isVisualTestingEnabled);
-
             String proxyUrl = (String) applitoolsConfig.get(APPLITOOLS.PROXY_URL);
             if (null != proxyUrl) {
                 LOGGER.info(String.format("Set proxyUrl for appEyes: %s", proxyUrl));
@@ -161,31 +159,6 @@ public class Visual {
     private String getApplitoolsAPIKey(boolean isVisualTestingEnabled) {
         return isVisualTestingEnabled ? getValueFromConfig(APPLITOOLS.API_KEY, null)
                                       : getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET);
-    }
-
-    private void validateApplitoolsAPIKeyAndServerUrl(boolean isVisualTestingEnabled) {
-        if(!isVisualTestingEnabled) {
-            LOGGER.info(String.format(
-                    "VisualTesting is Disabled: %s, Applitools API Key and Server Url " +
-                    "validation is not required",
-                    isVisualTestingEnabled));
-            return;
-        }
-        String curlCommand = "curl -I " + getProxyURLForCurl() + " --location --request GET '" + getValueFromConfig(
-                APPLITOOLS.SERVER_URL,
-                DEFAULT_APPLITOOLS_SERVER_URL) + "api/sessions/renderinfo?apiKey=" + getApplitoolsAPIKey(
-                isVisualTestingEnabled) + "'";
-        String[] urlList = new String[]{curlCommand};
-        CommandLineResponse response = CommandLineExecutor.execCommand(urlList);
-        if(response.getExitCode() == 0 && response.getStdOut().contains("200 OK")) {
-            LOGGER.info("Applitools connectivity check was successful");
-        } else {
-            throw new IllegalArgumentException("Applitools connectivity check was failed");
-        }
-    }
-
-    private String getProxyURLForCurl() {
-        return (null == applitoolsConfig.get(APPLITOOLS.PROXY_URL)) ? "" : " --proxy " + applitoolsConfig.get(APPLITOOLS.PROXY_URL) + " ";
     }
 
     private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType,
@@ -251,7 +224,6 @@ public class Visual {
                                   setBrowserViewPortSize));
 
         try {
-//            validateApplitoolsAPIKeyAndServerUrl(isVisualTestingEnabled);
             String proxyUrl = (String) applitoolsConfig.get(APPLITOOLS.PROXY_URL);
             if (null != proxyUrl) {
                 LOGGER.info(String.format("Set proxyUrl for webEyes: %s", proxyUrl));
