@@ -179,7 +179,7 @@ public class Visual {
     }
 
     private String getProxyURLForCurl() {
-        return (null == getProxyURL()) ? "" : " --proxy " + getProxyURL() + " ";
+        return (null == applitoolsConfig.get(APPLITOOLS.PROXY_URL)) ? "" : " --proxy " + applitoolsConfig.get(APPLITOOLS.PROXY_URL) + " ";
     }
 
     private com.applitools.eyes.selenium.Eyes instantiateWebEyes(String driverType,

@@ -18,4 +18,6 @@ public class APPLITOOLS {
     public static final String CONCURRENCY = "testConcurrency";
     public static final String UFG_CONFIG = "ufgConfig";
     public static final String DISABLE_BROWSER_FETCHING = "disableBrowserFetching";
+    public static final String PROXY_KEY = "APPLITOOLS_PROXY_KEY";
+    public static final String PROXY_URL = "APPLITOOLS_PROXY_URL";
 }

@@ -80,7 +80,7 @@ class Setup {
     private static final String PROXY_KEY = "PROXY_KEY";
     private static final String WEBDRIVER_MANAGER_PROXY_KEY = "WEBDRIVER_MANAGER_PROXY_KEY";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
-    private static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
+    static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
@@ -101,7 +101,16 @@ class Setup {
 
     static void load(String providedConfigFilePath) {
         configFilePath = providedConfigFilePath;
+        reset();
         properties = loadProperties(configFilePath);
+    }
+
+    private static void reset() {
+        properties = null;
+        configs.clear();
+        configsBoolean.clear();
+        configsInteger.clear();
+        applitoolsConfiguration.clear();
     }
 
     @NotNull
@@ -531,6 +540,7 @@ class Setup {
             applitoolsConfiguration.put(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
             applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());
             applitoolsConfiguration.put(APPLITOOLS.RECTANGLE_SIZE, getViewportSize());
+            updateApplitoolsProxyUrl();
             applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED,
                                         isBenchmarkingEnabled());
             applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING,
@@ -545,6 +555,17 @@ class Setup {
         }
         LOGGER.info(String.format("applitoolsConfiguration: %s", applitoolsConfiguration));
         return applitoolsConfiguration;
+    }
+
+    private static void updateApplitoolsProxyUrl() {
+        String providedProxyKey = (String) applitoolsConfiguration.getOrDefault(APPLITOOLS.PROXY_KEY,
+                                                                                APPLITOOLS.PROXY_KEY);
+        if (providedProxyKey.isBlank()) {
+            providedProxyKey = APPLITOOLS.PROXY_KEY;
+        }
+        applitoolsConfiguration.put(APPLITOOLS.PROXY_KEY, getOverriddenStringValue(APPLITOOLS.PROXY_KEY, providedProxyKey));
+        applitoolsConfiguration.put(APPLITOOLS.PROXY_URL, getOverriddenStringValue(
+                (String) applitoolsConfiguration.get(APPLITOOLS.PROXY_KEY)));
     }
 
     private static String getStringValueFromPropertiesIfAvailable(String key, String defaultValue) {
