@@ -135,7 +135,7 @@ public class Visual {
         appEyes.addProperty("USER_NAME", USER_NAME);
 
         try {
-            validateApplitoolsAPIKeyAndServerUrl(isVisualTestingEnabled);
+//            validateApplitoolsAPIKeyAndServerUrl(isVisualTestingEnabled);
 
             String proxyUrl = (String) applitoolsConfig.get(APPLITOOLS.PROXY_URL);
             if (null != proxyUrl) {
@@ -251,10 +251,10 @@ public class Visual {
                                   setBrowserViewPortSize));
 
         try {
-            validateApplitoolsAPIKeyAndServerUrl(isVisualTestingEnabled);
+//            validateApplitoolsAPIKeyAndServerUrl(isVisualTestingEnabled);
             String proxyUrl = (String) applitoolsConfig.get(APPLITOOLS.PROXY_URL);
             if (null != proxyUrl) {
-                LOGGER.info(String.format("Set proxyUrl for appEyes: %s", proxyUrl));
+                LOGGER.info(String.format("Set proxyUrl for webEyes: %s", proxyUrl));
                 webEyes.setProxy(new ProxySettings(proxyUrl));
             }
             webEyes.open(innerDriver, appName + "-" + platform, testName, setBrowserViewPortSize);
