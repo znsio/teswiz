@@ -200,6 +200,7 @@ class BrowserDriverManager {
                 "Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'",
                 webDriverManagerProxyUrl, browserType));
 
+        // TODO - get browser version from local or container. What about cloud?
         WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
                                                             .proxy(webDriverManagerProxyUrl);
         webDriverManager.setup();
