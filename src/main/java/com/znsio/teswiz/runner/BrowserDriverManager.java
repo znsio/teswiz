@@ -224,6 +224,7 @@ class BrowserDriverManager {
         String proxyUrl = Runner.getProxyURL();
 
         ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--disable-gpu");
 
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
 
