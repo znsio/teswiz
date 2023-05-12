@@ -34,7 +34,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.73'
+version '0.0.74'
 
 repositories {
     mavenLocal()
