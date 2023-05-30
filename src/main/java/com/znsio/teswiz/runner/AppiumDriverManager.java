@@ -1,14 +1,13 @@
 package com.znsio.teswiz.runner;
 
 import com.appium.capabilities.DriverSession;
+import com.appium.filelocations.FileLocations;
 import com.appium.manager.AppiumDeviceManager;
-import com.appium.manager.TestLogger;
 import com.appium.plugin.PluginClI;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
-import com.znsio.teswiz.exceptions.DriverCreationException;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.ReportPortalLogger;
@@ -16,18 +15,20 @@ import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.appmanagement.ApplicationState;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.NoSuchSessionException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.logging.LogEntries;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
+import static com.cucumber.listener.CucumberScenarioListener.createFile;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
@@ -108,15 +109,14 @@ class AppiumDriverManager {
                                                 File capabilityFileToUseForDriverCreation) {
         Driver currentDriver;
         try {
-//            AppiumDriver appiumDriver = allocateNewDeviceAndStartAppiumDriver(userPersona, context,
-//                                                                              capabilityFileToUseForDriverCreation.getAbsolutePath());
             AppiumDriver appiumDriver = new com.appium.manager.AppiumDriverManager().startAppiumDriverInstance(userPersona,
                     capabilityFileToUseForDriverCreation.getAbsolutePath());
 
-            System.out.println("ALL context info: " + context.getAllTestState());
+
             String scenarioDirectory = context.getTestStateAsString("scenarioDirectory");
-            new TestLogger().startDeviceLogAndVideoCapture(scenarioDirectory,
-                    "");
+            Integer scenarioRunCount = (Integer) context.getTestState("scenarioRunCount");
+            String deviceLogFileName = startDataCapture(scenarioRunCount, scenarioDirectory);
+            addDeviceLogFileNameFor(userPersona, forPlatform.name(), deviceLogFileName);
 
             currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform,
                                        userPersona, appName, appiumDriver);
@@ -132,6 +132,31 @@ class AppiumDriverManager {
                                   numberOfAppiumDriversUsed, userPersona));
         }
         return currentDriver;
+    }
+
+    private static String startDataCapture(Integer scenarioRunCount,
+                                    String deviceLogFileDirectory) {
+        String fileName = String.format("/run-%s", scenarioRunCount);
+        if (AppiumDeviceManager.getAppiumDevice().getPlatformName().equalsIgnoreCase("android")) {
+            try {
+                fileName = String.format("/%s-run-%s",
+                        AppiumDeviceManager.getAppiumDevice().getUdid(), scenarioRunCount);
+                File logFile = createFile(deviceLogFileDirectory
+                                                  + FileLocations.DEVICE_LOGS_DIRECTORY,
+                        fileName);
+                fileName = logFile.getAbsolutePath();
+                LOGGER.debug("Capturing device logs here: " + fileName);
+                PrintStream logFileStream = null;
+                logFileStream = new PrintStream(logFile);
+                LogEntries logcatOutput = com.appium.manager.AppiumDriverManager.getDriver()
+                                                  .manage().logs().get("logcat");
+                StreamSupport.stream(logcatOutput.spliterator(), false)
+                        .forEach(logFileStream::println);
+            } catch (FileNotFoundException e) {
+                LOGGER.warn("ERROR in getting logcat. Skipping logcat capture");
+            }
+        }
+        return fileName;
     }
 
     @NotNull
@@ -309,11 +334,13 @@ class AppiumDriverManager {
 
     private static void attachDeviceLogsToReportPortal(String userPersona) {
         String deviceLogFileName = getDeviceLogFileNameFor(userPersona, Platform.android.name());
+        File destinationFile = new File(deviceLogFileName);
 
         String adbLogMessage = String.format("ADB Logs for %s, file name: %s",
                                              Drivers.getNameOfDeviceUsedByUser(userPersona),
-                                             deviceLogFileName);
-        ReportPortalLogger.attachFileInReportPortal(adbLogMessage, new File(deviceLogFileName));
+                                             destinationFile.getName());
+        LOGGER.info(adbLogMessage);
+        ReportPortalLogger.attachFileInReportPortal(adbLogMessage, destinationFile);
     }
 
     private static String getDeviceLogFileNameFor(String userPersona, String forPlatform) {
