@@ -62,7 +62,7 @@ public class IndigoGiftVouchersScreenAndroid
                                                      numberOfGiftVouchersToPurchase);
         driver.waitTillElementIsVisible(By.xpath(quantitytoSelectXpath)).click();
         visually.checkWindow(SCREEN_NAME, "Selected voucher quantity");
-        Set<String> contextNames = ((AppiumDriver) driver.getInnerDriver()).getContextHandles();
+        Set<String> contextNames = ((AppiumDriver) driver.getInnerDriver()).getWindowHandles();
         driver.scrollDownByScreenSize();
 
         String lblTotal = driver.findElement(byTotalAmountId).getText();

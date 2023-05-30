@@ -4,24 +4,25 @@ buildscript {
     ext {
         gradleVersion = '7.3.3'
         assertJVersion = '3.24.2'
-        atdVersion = 'aa5b694566'
-        applitoolsSeleniumVersion = '3.213.0'
-        applitoolsAppiumVersion = '3.213.0'
+        atdVersion = '13.0.100'
+        applitoolsSeleniumVersion = '5.53.0'
+        applitoolsAppiumVersion = '5.53.0'
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.14.2'
         jadbVersion = '1.2.1'
-        webDriverManagerVersion = '5.3.2'
+        webDriverManagerVersion = '5.3.3'
         googleCodeJsonSimpleVersion = '1.1.1'
-        junitVersion = '5.9.2'
+        junitVersion = '5.9.3'
         slf4jVersion = '2.0.7'
         reportportalAgentCucumberVersion = '5.0.6'
-        reportportalAgentTestNGVersion = '5.0.11'
-        fasterxmlJacksonVersion = '2.14.2'
+        reportportalAgentTestNGVersion = '5.2.0'
+        fasterxmlJacksonVersion = '2.15.1'
         jsonPathVersion = '2.8.0'
         everitSchemaValidatorVersion = '1.5.1'
-        jodaTimeVersion = '2.12.4'
+        jodaTimeVersion = '2.12.5'
         masterThoughtVersion = '5.7.5'
         browserStackLocalVersion = '1.0.7'
+        jetbrainsAnnotationsVersion = '24.0.0'
     }
 }
 
@@ -73,18 +74,13 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion") {
-        exclude group: 'io.appium', module: 'java-client'
-    }
-    implementation ("io.appium:java-client:8.2.0") {
-        exclude group: 'io.netty', module:'netty-transport-native-epoll'
-    }
-    // https://mvnrepository.com/artifact/org.jetbrains/annotations
-    implementation group: 'org.jetbrains', name: 'annotations', version: '24.0.0'
+    implementation ("com.github.saikrishna321:AppiumTestDistribution:$project.atdVersion")
+    implementation "org.jetbrains:annotations:24.0.0"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.jayway.jsonpath:json-path:$project.jsonPathVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
+    implementation "org.jetbrains:annotations:$project.jetbrainsAnnotationsVersion"
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
     implementation "com.epam.reportportal:agent-java-cucumber6:$project.reportportalAgentCucumberVersion"
     implementation "org.slf4j:slf4j-api:$project.slf4jVersion"
@@ -93,19 +89,11 @@ dependencies {
     implementation("com.epam.reportportal:agent-java-testng:$project.reportportalAgentTestNGVersion") {
         exclude group: 'com.fasterxml.jackson.core'
     }
-    implementation("com.applitools:eyes-appium-java3:$project.applitoolsAppiumVersion") {
-        exclude group: 'java-client'
-        exclude group: 'selenium-java'
-        exclude group: 'eyes-connectivity-java5-jersey2x'
-    }
-    implementation("com.applitools:eyes-selenium-java3:$project.applitoolsSeleniumVersion") {
-        exclude group: 'java-client'
-        exclude group: 'selenium-java'
-        exclude group: 'eyes-connectivity-java5-jersey2x'
-    }
-    implementation "com.applitools:eyes-connectivity-java3-jersey1x:$project.applitoolsSeleniumVersion"
+    implementation("com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion")
+    implementation("com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion")
     implementation "org.everit.json:org.everit.json.schema:$project.everitSchemaValidatorVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
+    implementation 'com.squareup.retrofit2:retrofit:2.7.2'
 }
 
 shadowJar {

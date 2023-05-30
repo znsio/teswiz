@@ -25,7 +25,7 @@ public class CucumberWebScenarioReporterListener
             rq.setName(DUMMY_ROOT_SUITE_NAME);
             rq.setStartTime(Calendar.getInstance().getTime());
             rq.setType(RP_STORY_TYPE);
-            return launch.get().startTestItem(rq);
+            return getLaunch().startTestItem(rq);
         });
     }
 }

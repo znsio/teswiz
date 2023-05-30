@@ -3,18 +3,30 @@ package com.znsio.teswiz.runner;
 import com.google.common.collect.ImmutableMap;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.FileNotUploadedException;
-import com.znsio.teswiz.tools.Wait;
-import io.appium.java_client.*;
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.HidesKeyboard;
+import io.appium.java_client.MobileBy;
+import io.appium.java_client.PerformsTouchActions;
+import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.HasNotifications;
 import io.appium.java_client.android.StartsActivity;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.SupportsContextSwitching;
 import io.appium.java_client.touch.LongPressOptions;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -27,6 +39,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static com.znsio.teswiz.tools.Wait.waitFor;
+
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
     public static final String APPIUM_DRIVER = "AppiumDriver";
@@ -38,12 +52,12 @@ public class Driver {
     private final Platform driverForPlatform;
     private static final String DIMENSION = "dimension: ";
     private static final String FROM_HEIGHT_TO_HEIGHT = "width: %s, from height: %s, to height: %s";
-    private static final String TO = "' to '";
     private final boolean isRunningInHeadlessMode;
+    private static final String TO = "' to '";
     private Visual visually;
 
     Driver(String testName, Platform forPlatform, String userPersona, String appName,
-           AppiumDriver<WebElement> appiumDriver) {
+           AppiumDriver appiumDriver) {
         this.driver = appiumDriver;
         this.type = APPIUM_DRIVER;
         this.userPersona = userPersona;
@@ -53,15 +67,19 @@ public class Driver {
         instantiateEyes(testName, appiumDriver);
     }
 
-    Driver(String testName, Platform forPlaform, String userPersona, String appName,
+    Driver(String testName, Platform forPlatform, String userPersona, String appName,
            WebDriver webDriver, boolean isRunInHeadlessMode) {
         this.driver = webDriver;
         this.type = WEB_DRIVER;
         this.userPersona = userPersona;
         this.appName = appName;
-        this.driverForPlatform = forPlaform;
+        this.driverForPlatform = forPlatform;
         this.isRunningInHeadlessMode = isRunInHeadlessMode;
         instantiateEyes(testName, webDriver);
+    }
+
+    private void instantiateEyes(String testName, AppiumDriver innerDriver) {
+        this.visually = new Visual(this.type, this.driverForPlatform, innerDriver, testName, userPersona, appName);
     }
 
     private void instantiateEyes(String testName, WebDriver innerDriver) {
@@ -74,8 +92,7 @@ public class Driver {
     }
 
     public WebElement waitForClickabilityOf(String elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(
-                ExpectedConditions.elementToBeClickable(findElementByAccessibilityId(elementId)));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait))).until(ExpectedConditions.elementToBeClickable(findElementByAccessibilityId(elementId)));
     }
 
     public WebElement findElementByAccessibilityId(String locator) {
@@ -87,9 +104,9 @@ public class Driver {
     }
 
     public void waitForAlert(int numberOfSecondsToWait) {
-        (new WebDriverWait(driver, numberOfSecondsToWait)).until(
-                ExpectedConditions.alertIsPresent());
-        driver.switchTo().alert();
+        new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.alertIsPresent());
+        driver.switchTo()
+              .alert();
     }
 
     public WebElement findElement(By elementId) {
@@ -97,7 +114,7 @@ public class Driver {
     }
 
     public void hideKeyboard() {
-        ((AppiumDriver) driver).hideKeyboard();
+        ((HidesKeyboard) driver).hideKeyboard();
     }
 
     public List<WebElement> findElements(By element) {
@@ -113,10 +130,14 @@ public class Driver {
     }
 
     public void scroll(Point fromPoint, Point toPoint) {
-        TouchAction touchAction = new TouchAction(((AppiumDriver) driver));
-        touchAction.press(PointOption.point(fromPoint))
-                   .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)))
-                   .moveTo(PointOption.point(toPoint)).release().perform();
+        throw new NotImplementedException("To be migrated to appium 2.0");
+        // todo - to be implemented in appium 2.0
+//        TouchAction touchAction = new TouchAction(((AppiumDriver) driver));
+//        touchAction.press(PointOption.point(fromPoint))
+//                   .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)))
+//                   .moveTo(PointOption.point(toPoint))
+//                   .release()
+//                   .perform();
     }
 
     public WebElement scrollToAnElementByText(String text) {
@@ -129,7 +150,8 @@ public class Driver {
     }
 
     public boolean isElementPresentByAccessibilityId(String locator) {
-        return !((AppiumDriver) driver).findElementsByAccessibilityId(locator).isEmpty();
+        return driver.findElements(AppiumBy.accessibilityId(locator))
+                                      .size() > 0;
     }
 
     public boolean isElementPresentWithin(WebElement parentElement, By locator) {
@@ -143,12 +165,15 @@ public class Driver {
         int width = windowSize.width / 2;
         int fromHeight = (int) (windowSize.height * 0.9);
         int toHeight = (int) (windowSize.height * 0.5);
-        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight, toHeight));
-
-        TouchAction touchAction = new TouchAction(appiumDriver);
-        touchAction.press(PointOption.point(new Point(width, fromHeight)))
-                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-                   .moveTo(PointOption.point(new Point(width, toHeight))).release().perform();
+        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
+        throw new NotImplementedException("To be migrated to appium 2.0");
+        // todo - to be implemented in appium 2.0
+//        TouchAction touchAction = new TouchAction(appiumDriver);
+//        touchAction.press(PointOption.point(new Point(width, fromHeight)))
+//                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
+//                   .moveTo(PointOption.point(new Point(width, toHeight)))
+//                   .release()
+//                   .perform();
     }
 
     public void scrollVertically(int fromPercentScreenHeight, int toPercentScreenHeight,
@@ -159,13 +184,16 @@ public class Driver {
         int width = (windowSize.width * percentScreenWidth) / 100;
         int fromHeight = (windowSize.height * fromPercentScreenHeight) / 100;
         int toHeight = (windowSize.height * toPercentScreenHeight) / 100;
-        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight, toHeight));
-        LOGGER.info(String.format(FROM_HEIGHT_TO_HEIGHT, width, fromHeight, toHeight));
-
-        TouchAction touchAction = new TouchAction(appiumDriver);
-        touchAction.press(PointOption.point(new Point(width, fromHeight)))
-                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-                   .moveTo(PointOption.point(new Point(width, toHeight))).release().perform();
+        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
+        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
+        throw new NotImplementedException("To be migrated to appium 2.0");
+// todo - to be implemented in appium 2.0
+//        TouchAction touchAction = new TouchAction(appiumDriver);
+//        touchAction.press(PointOption.point(new Point(width, fromHeight)))
+//                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
+//                   .moveTo(PointOption.point(new Point(width, toHeight)))
+//                   .release()
+//                   .perform();
     }
 
     public void tapOnMiddleOfScreen() {
@@ -181,12 +209,13 @@ public class Driver {
         Dimension screenSize = appiumDriver.manage().window().getSize();
         int midHeight = screenSize.height / 2;
         int midWidth = screenSize.width / 2;
-        LOGGER.info(String.format(
-                "tapOnMiddleOfScreen: Screen dimensions: '%s'. Tapping on coordinates: %d:%d%n",
-                screenSize, midWidth, midHeight));
-        TouchAction touchAction = new TouchAction(appiumDriver);
-        touchAction.tap(PointOption.point(midWidth, midHeight)).perform();
-        Wait.waitFor(1);
+        LOGGER.info(String.format("tapOnMiddleOfScreen: Screen dimensions: '%s'. Tapping on coordinates: %d:%d%n", screenSize, midWidth, midHeight));
+        throw new NotImplementedException("To be migrated to appium 2.0");
+// todo - to be implemented in appium 2.0
+//        TouchAction touchAction = new TouchAction(appiumDriver);
+//        touchAction.tap(PointOption.point(midWidth, midHeight))
+//                   .perform();
+//        waitFor(1);
     }
 
     private void simulateMouseMovementOnBrowser() {
@@ -207,7 +236,7 @@ public class Driver {
         LOGGER.info(String.format("Using offset: '%d':'%d'", offsetX, offsetY));
 
         actions.moveByOffset(offsetX, offsetY).perform();
-        Wait.waitFor(1);
+        waitFor(1);
     }
 
     public void swipeRight() {
@@ -232,10 +261,14 @@ public class Driver {
 
     private void swipe(int height, int fromWidth, int toWidth) {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
-        TouchAction touchAction = new TouchAction(appiumDriver);
-        touchAction.press(PointOption.point(new Point(fromWidth, height)))
-                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-                   .moveTo(PointOption.point(new Point(toWidth, height))).release().perform();
+        throw new NotImplementedException("To be migrated to appium 2.0");
+// todo - to be implemented in appium 2.0
+//        TouchAction touchAction = new TouchAction(appiumDriver);
+//        touchAction.press(PointOption.point(new Point(fromWidth, height)))
+//                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
+//                   .moveTo(PointOption.point(new Point(toWidth, height)))
+//                   .release()
+//                   .perform();
     }
 
     public void swipeLeft() {
@@ -249,9 +282,9 @@ public class Driver {
 
     public void openNotifications() {
         LOGGER.info("Fetching the NOTIFICATIONS on the device: ");
-        Wait.waitFor(3);
-        ((AndroidDriver<WebElement>) driver).openNotifications();
-        Wait.waitFor(2);
+        waitFor(3);
+        ((HasNotifications) driver).openNotifications();
+        waitFor(2);
     }
 
     public void selectNotification(By selectNotificationLocator) {
@@ -260,14 +293,19 @@ public class Driver {
         LOGGER.info("Notification found: " + selectNotificationElement.isDisplayed());
         Point notificationCoordinates = selectNotificationElement.getLocation();
 
-        TouchAction touchAction = new TouchAction(appiumDriver);
-        touchAction.tap(PointOption.point(notificationCoordinates)).perform();
-        LOGGER.info("Tapped on notification. Go back to meeting");
-        Wait.waitFor(3);
+        throw new NotImplementedException("To be migrated to appium 2.0");
+        // todo - to be implemented in appium 2.0
+//        TouchAction touchAction = new TouchAction(appiumDriver);
+//        touchAction.tap(PointOption.point(notificationCoordinates))
+//                   .perform();
+//        LOGGER.info("Tapped on notification. Go back to meeting");
+//        waitFor(3);
     }
 
     public void putAppInBackground(int duration) {
-        ((AppiumDriver) driver).runAppInBackground(Duration.ofSeconds(duration));
+        throw new NotImplementedException("To be migrated to appium 2.0");
+        // todo - implement for appium2.0
+//        ((AppiumDriver) driver).runAppInBackground(Duration.ofSeconds(duration));
     }
 
     public void bringAppInForeground() {
@@ -293,8 +331,8 @@ public class Driver {
     }
 
     public void longPress(By elementId) {
-        MobileElement elementToBeLongTapped = (MobileElement) new WebDriverWait(driver, 10).until(
-                ExpectedConditions.elementToBeClickable(elementId));
+        WebElement elementToBeLongTapped =
+                new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(elementId));
 
         TouchAction action = new TouchAction((PerformsTouchActions) driver);
         action.longPress(LongPressOptions.longPressOptions()
@@ -331,40 +369,35 @@ public class Driver {
     }
 
     public WebElement waitForClickabilityOf(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(
-                ExpectedConditions.elementToBeClickable(elementId));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.elementToBeClickable(elementId)));
     }
 
     public List<WebElement> findElementsByAccessibilityId(String elementId) {
-        return ((AppiumDriver) driver).findElementsByAccessibilityId(elementId);
+        return ((AppiumDriver) driver).findElements(AppiumBy.accessibilityId(elementId));
     }
 
     public WebElement waitTillElementIsPresent(By elementId) {
         return waitTillElementIsPresent(elementId, 10);
     }
 
-    public WebElement waitTillElementIsPresent(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(
-                ExpectedConditions.presenceOfElementLocated(elementId));
-    }
-
     public WebElement waitTillElementIsVisible(By elementId) {
         return waitTillElementIsVisible(elementId, 10);
     }
 
+    public WebElement waitTillElementIsPresent(By elementId, int numberOfSecondsToWait) {
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.presenceOfElementLocated(elementId)));
+    }
+
     public WebElement waitTillElementIsVisible(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(
-                ExpectedConditions.visibilityOfElementLocated(elementId));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.visibilityOfElementLocated(elementId)));
     }
 
     public List<WebElement> waitTillVisibilityOfAllElements(By elementId) {
         return waitTillVisibilityOfAllElements(elementId, 10);
     }
 
-    public List<WebElement> waitTillVisibilityOfAllElements(By elementId,
-                                                            int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(
-                ExpectedConditions.visibilityOfAllElementsLocatedBy(elementId));
+    public List<WebElement> waitTillVisibilityOfAllElements(By elementId, int numberOfSecondsToWait){
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(elementId)));
     }
 
     public WebElement waitTillElementIsVisible(String elementId) {
@@ -372,8 +405,7 @@ public class Driver {
     }
 
     public WebElement waitTillElementIsVisible(String elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(
-                ExpectedConditions.visibilityOf(findElementByAccessibilityId(elementId)));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.visibilityOf(findElementByAccessibilityId(elementId))));
     }
 
     public List<WebElement> waitTillPresenceOfAllElements(By elementId) {
@@ -381,8 +413,7 @@ public class Driver {
     }
 
     public List<WebElement> waitTillPresenceOfAllElements(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, numberOfSecondsToWait)).until(
-                ExpectedConditions.presenceOfAllElementsLocatedBy(elementId));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(elementId)));
     }
 
     public void setWindowSize(int width, int height) {
@@ -394,7 +425,7 @@ public class Driver {
     public void moveToElement(By moveToElementLocator) {
         Actions actions = new Actions(driver);
         actions.moveToElement(driver.findElement(moveToElementLocator)).build().perform();
-        Wait.waitFor(1);
+        waitFor(1);
     }
 
     public boolean isDriverRunningInHeadlessMode() {
@@ -402,9 +433,13 @@ public class Driver {
     }
 
     public WebDriver setWebViewContext() {
-        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver;
-        Set<String> contextNames = appiumDriver.getContextHandles();
-        return appiumDriver.context((String) contextNames.toArray()[contextNames.size() - 1]);
+// todo - to be fixed for appium 2.0
+//        AppiumDriver appiumDriver = (AppiumDriver) driver;
+//        Set<String> contextNames = appiumDriver.getContextHandles();
+//        return appiumDriver.context((String) contextNames.toArray()[contextNames.size() - 1]);
+        SupportsContextSwitching contextSwitchingDriver = (SupportsContextSwitching) driver;
+        Set<String> contextHandles = contextSwitchingDriver.getContextHandles();
+        return contextSwitchingDriver.context((String) contextHandles.toArray()[contextHandles.size() - 1]);
     }
 
     public WebDriver setNativeAppContext() {
@@ -412,8 +447,11 @@ public class Driver {
     }
 
     public WebDriver setNativeAppContext(String contextName) {
-        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver;
-        return appiumDriver.context(contextName);
+        // todo - to be fixed for appium 2.0
+//        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver;
+//        return appiumDriver.context(contextName);
+        SupportsContextSwitching contextSwitchingDriver = (SupportsContextSwitching) driver;
+        return contextSwitchingDriver.context(contextName);
     }
 
     public WebDriver switchFrameToDefault() {

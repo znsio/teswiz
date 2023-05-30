@@ -247,7 +247,7 @@ class BrowserDriverManager {
         } else {
             logPrefs.enable(LogType.BROWSER, Level.ALL);
         }
-        chromeOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+        chromeOptions.setCapability(ChromeOptions.LOGGING_PREFS, logPrefs);
 
         if(null != proxyUrl) {
             LOGGER.info(SETTING_PROXY_FOR_BROWSER + proxyUrl);
@@ -341,7 +341,8 @@ class BrowserDriverManager {
             firefoxOptions.setLogLevel(FirefoxDriverLogLevel.INFO);
             logPrefs.enable(LogType.BROWSER, Level.ALL);
         }
-        firefoxOptions.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+        // todo - fix
+//        firefoxOptions.setCapability(FirefoxOptions.LOGGING_PREFS, logPrefs);
 
         if(null != proxyUrl) {
             LOGGER.info(SETTING_PROXY_FOR_BROWSER + proxyUrl);
@@ -372,13 +373,12 @@ class BrowserDriverManager {
                                                 TestExecutionContext testExecutionContext,
                                                 JSONObject safariConfigurations) {
         SafariOptions safariOptions = new SafariOptions();
-        DesiredCapabilities caps = DesiredCapabilities.safari();
         boolean setUseTechnologyPreview = safariConfigurations.getBoolean(
                 "setUseTechnologyPreview");
         boolean acceptInsecureCerts = safariConfigurations.getBoolean(ACCEPT_INSECURE_CERTS);
         String proxyUrl = Runner.getProxyURL();
         shouldBrowserBeMaximized = safariConfigurations.getBoolean(MAXIMIZE);
-        caps.setCapability(ACCEPT_INSECURE_CERTS, acceptInsecureCerts);
+        safariOptions.setCapability(ACCEPT_INSECURE_CERTS, acceptInsecureCerts);
         if(null != proxyUrl) {
             LOGGER.info(String.format("%s%s", SETTING_PROXY_FOR_BROWSER, proxyUrl));
             safariOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
