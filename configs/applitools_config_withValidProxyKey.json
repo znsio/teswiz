@@ -1,0 +1,13 @@
+{
+  "serverUrl": "https://eyesapi.applitools.com/",
+  "defaultMatchLevel": "strict",
+  "enableBenchmarkPerValidation": true,
+  "sendDOM": true,
+  "stitchMode": "css",
+  "takeFullPageScreenShot": true,
+  "viewportSize": "1280x900",
+  "useUFG": true,
+  "testConcurrency": 10,
+  "showLogs": true,
+  "APPLITOOLS_PROXY_KEY": "user.dir"
+}

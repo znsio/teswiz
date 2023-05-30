@@ -25,7 +25,7 @@
     ],
     "maximize": true,
     "acceptInsecureCerts": true,
-    "verboseLogging": true,
+    "verboseLogging": false,
     "headlessOptions": {
       "headless": false,
       "include": [
@@ -48,7 +48,7 @@
     ],
     "maximize": true,
     "acceptInsecureCerts": true,
-    "verboseLogging": true,
+    "verboseLogging": false,
     "headlessOptions": {
       "headless": false
     }
