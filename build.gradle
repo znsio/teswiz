@@ -4,7 +4,7 @@ buildscript {
     ext {
         gradleVersion = '7.3.3'
         assertJVersion = '3.24.2'
-        atdVersion = '13.0.100'
+        atdVersion = '2bef2c84c1'
         applitoolsSeleniumVersion = '5.53.0'
         applitoolsAppiumVersion = '5.53.0'
         commonsLang3Version = '3.12.0'
@@ -74,7 +74,7 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation ("com.github.saikrishna321:AppiumTestDistribution:$project.atdVersion")
+    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion")
     implementation "org.jetbrains:annotations:24.0.0"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
@@ -93,7 +93,6 @@ dependencies {
     implementation("com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion")
     implementation "org.everit.json:org.everit.json.schema:$project.everitSchemaValidatorVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
-    implementation 'com.squareup.retrofit2:retrofit:2.7.2'
 }
 
 shadowJar {
