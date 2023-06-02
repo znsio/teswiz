@@ -4,7 +4,7 @@ buildscript {
     ext {
         gradleVersion = '7.3.3'
         assertJVersion = '3.24.2'
-        atdVersion = '2bef2c84c1'
+        atdVersion = '6c6f58446c'
         applitoolsSeleniumVersion = '5.53.0'
         applitoolsAppiumVersion = '5.53.0'
         commonsLang3Version = '3.12.0'
@@ -14,7 +14,7 @@ buildscript {
         googleCodeJsonSimpleVersion = '1.1.1'
         junitVersion = '5.9.3'
         slf4jVersion = '2.0.7'
-        reportportalAgentCucumberVersion = '5.0.6'
+        reportportalAgentCucumberVersion = '5.1.3'
         reportportalAgentTestNGVersion = '5.2.0'
         fasterxmlJacksonVersion = '2.15.1'
         jsonPathVersion = '2.8.0'
