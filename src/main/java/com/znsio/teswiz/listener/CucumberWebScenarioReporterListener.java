@@ -26,9 +26,9 @@ public class CucumberWebScenarioReporterListener
             rq.setName(DUMMY_ROOT_SUITE_NAME);
             rq.setStartTime(Calendar.getInstance().getTime());
             rq.setType(RP_STORY_TYPE);
-            launchUUID = rq.getLaunchUuid();
-            LOGGER.info("CucumberWebScenarioReporterListener: rp.getLaunchUuid: " + launchUUID);
-            return getLaunch().startTestItem(rq);
+            launchUUID = this.getItemTree().getLaunchId().blockingGet();
+            LOGGER.info("CucumberWebScenarioReporterListener: launchUUID: " + launchUUID);
+            return this.getLaunch().startTestItem(rq);
         });
     }
 }

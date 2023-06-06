@@ -79,8 +79,9 @@ public class CucumberWebScenarioListener
 
     private void webRunFinishedHandler(TestRunFinished event) {
         LOGGER.info("webRunFinishedHandler: " + event.getResult().toString());
+        LOGGER.debug("webRunFinishedHandler: rp.launch.id: " + System.getProperty("rp.launch.id"));
         LOGGER.info("CucumberWebScenarioReporterListener.launchUUID: " + CucumberWebScenarioReporterListener.launchUUID);
-        SessionContext.setReportPortalLaunchURL();
+        SessionContext.setReportPortalLaunchURL(CucumberWebScenarioReporterListener.launchUUID);
         LOGGER.info(String.format("ThreadId: %d: afterSuite: %n", Thread.currentThread().getId()));
     }
 

@@ -4,7 +4,7 @@ buildscript {
     ext {
         gradleVersion = '7.3.3'
         assertJVersion = '3.24.2'
-        atdVersion = 'd7588775c4'
+        atdVersion = '0095bb7a8b'
         applitoolsSeleniumVersion = '5.53.0'
         applitoolsAppiumVersion = '5.53.0'
         commonsLang3Version = '3.12.0'
@@ -159,9 +159,12 @@ task run(type: JavaExec) {
         ]
         args = runnerArgs
 
+        println("Debug mode: " + System.getProperty('debug', 'false'))
         // attach debugger
         if (System.getProperty('debug', 'false') == 'true') {
-            jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
+            println("In debug mode")
+            jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,' +
+                    'address=*:5005'
         }
     }
     mainClass = "com.znsio.teswiz.runner.Runner"
