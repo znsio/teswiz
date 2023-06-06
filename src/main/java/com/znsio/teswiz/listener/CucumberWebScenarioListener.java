@@ -3,6 +3,7 @@ package com.znsio.teswiz.listener;
 import com.appium.filelocations.FileLocations;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
+import com.cucumber.listener.CucumberScenarioReporterListener;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
 import io.cucumber.plugin.ConcurrentEventListener;
@@ -78,6 +79,7 @@ public class CucumberWebScenarioListener
 
     private void webRunFinishedHandler(TestRunFinished event) {
         LOGGER.info("webRunFinishedHandler: " + event.getResult().toString());
+        LOGGER.info("CucumberWebScenarioReporterListener.launchUUID: " + CucumberWebScenarioReporterListener.launchUUID);
         SessionContext.setReportPortalLaunchURL();
         LOGGER.info(String.format("ThreadId: %d: afterSuite: %n", Thread.currentThread().getId()));
     }

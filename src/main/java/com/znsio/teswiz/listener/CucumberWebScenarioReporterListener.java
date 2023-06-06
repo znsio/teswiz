@@ -13,6 +13,7 @@ public class CucumberWebScenarioReporterListener
             CucumberWebScenarioReporterListener.class.getName());
     private static final String DUMMY_ROOT_SUITE_NAME = "End-2-End Tests";
     private static final String RP_STORY_TYPE = "SUITE";
+    public static String launchUUID;
 
     public CucumberWebScenarioReporterListener() {
         LOGGER.info("CucumberWebScenarioReporterListener");
@@ -25,6 +26,8 @@ public class CucumberWebScenarioReporterListener
             rq.setName(DUMMY_ROOT_SUITE_NAME);
             rq.setStartTime(Calendar.getInstance().getTime());
             rq.setType(RP_STORY_TYPE);
+            launchUUID = rq.getLaunchUuid();
+            LOGGER.info("CucumberWebScenarioReporterListener: rp.getLaunchUuid: " + launchUUID);
             return getLaunch().startTestItem(rq);
         });
     }
