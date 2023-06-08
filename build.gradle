@@ -4,7 +4,7 @@ buildscript {
     ext {
         gradleVersion = '7.3.3'
         assertJVersion = '3.24.2'
-        atdVersion = '0095bb7a8b'
+        atdVersion = '54ff762128'
         applitoolsSeleniumVersion = '5.53.0'
         applitoolsAppiumVersion = '5.53.0'
         commonsLang3Version = '3.12.0'
@@ -68,7 +68,11 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion")
+    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion") {
+//        exclude group: 'com.epam.reportportal', module: 'agent-java-cucumber6'
+//        exclude group: 'com.epam.reportportal', module: 'agent-java-testng'
+//        exclude group: 'com.epam.reportportal', module: 'client-java'
+    }
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
@@ -80,6 +84,9 @@ dependencies {
     implementation("com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion")
     implementation("com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion")
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
+//    implementation 'com.epam.reportportal:agent-java-cucumber6:5.0.6'
+//    implementation 'com.epam.reportportal:agent-java-testng:5.2.0'
+//    implementation 'com.epam.reportportal:commons-model:5.8.0'
 }
 
 shadowJar {
