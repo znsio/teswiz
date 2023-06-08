@@ -68,11 +68,7 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion") {
-//        exclude group: 'com.epam.reportportal', module: 'agent-java-cucumber6'
-//        exclude group: 'com.epam.reportportal', module: 'agent-java-testng'
-//        exclude group: 'com.epam.reportportal', module: 'client-java'
-    }
+    implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
@@ -81,12 +77,9 @@ dependencies {
     implementation "org.slf4j:slf4j-api:$project.slf4jVersion"
     implementation "joda-time:joda-time:$project.jodaTimeVersion"
     implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
-    implementation("com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion")
-    implementation("com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion")
+    implementation "com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion"
+    implementation "com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
-//    implementation 'com.epam.reportportal:agent-java-cucumber6:5.0.6'
-//    implementation 'com.epam.reportportal:agent-java-testng:5.2.0'
-//    implementation 'com.epam.reportportal:commons-model:5.8.0'
 }
 
 shadowJar {
