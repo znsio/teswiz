@@ -6,7 +6,6 @@ import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import io.appium.java_client.AppiumBy;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
-import org.openqa.selenium.WebElement;
 
 public class VodqaScreenAndroid extends VodqaScreen {
     private static final String SCREEN_NAME = VodqaScreenAndroid.class.getSimpleName();
