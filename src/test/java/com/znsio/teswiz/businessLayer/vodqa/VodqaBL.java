@@ -48,4 +48,16 @@ public class VodqaBL {
         assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
         return this;
     }
+
+    public VodqaBL tapInTheMiddleOfTheScreen() {
+        LOGGER.info("performTapActionInTheMiddle(): perform tap operation in the middle of the screen");
+        VodqaScreen.get().tapInTheMiddle();
+        return this;
+    }
+
+    public VodqaBL verifyPageHeader(String pageHeader) {
+        LOGGER.info("performTapActionInTheMiddle(): verify the operation has been executed successfully or not");
+        assertThat(VodqaScreen.get().isPageHeaderVisible(pageHeader)).as(String.format("User is not on %s page", pageHeader)).isTrue();
+        return this;
+    }
 }

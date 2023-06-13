@@ -6,6 +6,7 @@ import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import io.appium.java_client.AppiumBy;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.WebElement;
 
 public class VodqaScreenAndroid extends VodqaScreen {
     private final Driver driver;
@@ -16,6 +17,8 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byCLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' C']");
     private final By byRubyLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Ruby']");
     private final By byJasmineLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Jasmine']");
+    private final By byNativeViewXpath = By.xpath("//android.widget.TextView[@content-desc=\"chainedView\"]");
+    private static final String byPageHeaderXpath = "//android.widget.TextView[@text='%s']";
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -47,5 +50,19 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public boolean isElementWithTextVisible() {
         return driver.isElementPresent(byJasmineLanguageTextView);
+    }
+    @Override
+    public VodqaScreen tapInTheMiddle() {
+        driver.waitTillElementIsVisible(byNativeViewXpath);
+        visually.checkWindow(SCREEN_NAME, "Sample List page");
+        driver.tapOnMiddleOfScreen();
+        return null;
+    }
+
+    @Override
+    public boolean isPageHeaderVisible(String pageHeader) {
+        visually.checkWindow(SCREEN_NAME, pageHeader);
+        WebElement pageHeaderElement = driver.waitTillElementIsPresent(By.xpath(String.format(byPageHeaderXpath, pageHeader)));
+        return pageHeaderElement.isDisplayed();
     }
 }

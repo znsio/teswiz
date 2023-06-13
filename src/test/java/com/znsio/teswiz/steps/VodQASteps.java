@@ -37,4 +37,13 @@ public class VodQASteps {
     public void isElementWithTextVisible() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
     }
+    @When("I tap in the middle of the screen")
+    public void iTapInTheMiddleOfTheScreen() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).tapInTheMiddleOfTheScreen();
+    }
+
+    @Then("I am able to view {string} page")
+    public void iAmAbleToViewElement(String pageHeader) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyPageHeader(pageHeader);
+    }
 }
