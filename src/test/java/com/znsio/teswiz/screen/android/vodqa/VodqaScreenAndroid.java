@@ -13,7 +13,9 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final String SCREEN_NAME = VodqaScreenAndroid.class.getSimpleName();
     private final By byLoginButton = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='login']/android.widget.Button");
     private final By byVerticalSwipeViewGroup = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='verticalSwipe']");
-    private By byLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Java']");
+    private final By byCLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' C']");
+    private final By byRubyLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Ruby']");
+    private final By byJasmineLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Jasmine']");
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -23,26 +25,27 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public VodqaScreen login() {
         driver.waitTillElementIsPresent(byLoginButton);
+        visually.checkWindow(SCREEN_NAME, "Login Screen");
         driver.findElement(byLoginButton).click();
         return this;
     }
 
     @Override
-    public VodqaScreen scrollFromOneElementPointToAnother(String fromElement, String toElement) {
+    public VodqaScreen scrollFromOneElementPointToAnother() {
         driver.waitTillElementIsPresent(byVerticalSwipeViewGroup);
+        visually.checkWindow(SCREEN_NAME, "Home Screen");
         driver.findElement(byVerticalSwipeViewGroup).click();
-        byLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' "+fromElement+"']");
-        driver.waitTillElementIsPresent(byLanguageTextView);
-        Point fromPoint = driver.findElement(byLanguageTextView).getLocation();
-        byLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' "+toElement+"']");
-        Point toPoint = driver.findElement(byLanguageTextView).getLocation();
+        driver.waitTillElementIsPresent(byCLanguageTextView);
+        visually.checkWindow(SCREEN_NAME, "Vertical Swiping Screen Before Scroll");
+        Point fromPoint = driver.findElement(byCLanguageTextView).getLocation();
+        Point toPoint = driver.findElement(byRubyLanguageTextView).getLocation();
         driver.scroll(fromPoint, toPoint);
+        visually.checkWindow(SCREEN_NAME, "Vertical Swiping Screen After Scroll");
         return this;
     }
 
     @Override
-    public boolean verifyScrollSuccessOrFail(String elementText) {
-        byLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' "+elementText+"']");
-        return driver.isElementPresent(byLanguageTextView);
+    public boolean isElementWithTextVisible() {
+        return driver.isElementPresent(byJasmineLanguageTextView);
     }
 }
