@@ -28,13 +28,13 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).login();
     }
 
-    @When("I scroll from {string} to {string} element on vertical swiping screen")
-    public void scrollToElement(String fromElement, String toElement) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollFromOneElementPointToAnother(fromElement, toElement);
+    @When("I scroll from one to another element point on vertical swiping screen")
+    public void scrollToElement() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollFromOneElementPointToAnother();
     }
 
-    @Then("{string} element should be visible")
-    public void verifyScrollSuccessOrFail(String elementText) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyScrollSuccessOrFail(elementText);
+    @Then("Element text should be visible")
+    public void isElementWithTextVisible() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
     }
 }
