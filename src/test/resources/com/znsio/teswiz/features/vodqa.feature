@@ -5,5 +5,5 @@ Feature: Vodqa test
   @android
   Scenario: Validating scroll functionality using 2 points
     Given I login to vodqa application using credentials
-    When I scroll from "C" to "Ruby" element on vertical swiping screen
-    Then "Jasmine" element should be visible
+    When I scroll from one to another element point on vertical swiping screen
+    Then Element text should be visible
