@@ -56,7 +56,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
         driver.waitTillElementIsVisible(byNativeViewXpath);
         visually.checkWindow(SCREEN_NAME, "Sample List page");
         driver.tapOnMiddleOfScreen();
-        return null;
+        return this;
     }
 
     @Override
