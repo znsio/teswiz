@@ -38,14 +38,14 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL scrollFromOneElementPointToAnother(String fromElement, String toElement) {
-        VodqaScreen.get().scrollFromOneElementPointToAnother(fromElement, toElement);
+    public VodqaBL scrollFromOneElementPointToAnother() {
+        VodqaScreen.get().scrollFromOneElementPointToAnother();
         return this;
     }
 
-    public VodqaBL verifyScrollSuccessOrFail(String elementText) {
-        boolean isScrollSuccessful= VodqaScreen.get().verifyScrollSuccessOrFail(elementText);
-        assertThat(isScrollSuccessful).as("Scroll was not successful, "+elementText+" is not visible").isTrue();
+    public VodqaBL isElementWithTextVisible() {
+        boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible();
+        assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
         return this;
     }
 }

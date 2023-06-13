@@ -28,6 +28,6 @@ public abstract class VodqaScreen {
     }
 
     public abstract VodqaScreen login();
-    public abstract VodqaScreen scrollFromOneElementPointToAnother(String fromElement, String toElement);
-    public abstract boolean verifyScrollSuccessOrFail(String elementText);
+    public abstract VodqaScreen scrollFromOneElementPointToAnother();
+    public abstract boolean isElementWithTextVisible();
 }
