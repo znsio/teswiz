@@ -144,6 +144,7 @@ task run(type: JavaExec) {
 
         def configFile = System.getenv("CONFIG")
         if (null == configFile || !file(configFile).exists()) {
+            configFile=System.getProperty("user.dir")+"/configs/vodqa_local_config.properties";
             println("CONFIG file not provided, or does not exist")
             println("Run the test by providing the CONFIG file not provided, or does not exist")
             assert file(configFile).exists()
