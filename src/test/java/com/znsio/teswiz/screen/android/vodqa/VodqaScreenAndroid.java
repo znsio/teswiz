@@ -13,9 +13,8 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final String SCREEN_NAME = VodqaScreenAndroid.class.getSimpleName();
     private final By byLoginButton = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='login']/android.widget.Button");
     private final By byVerticalSwipeViewGroup = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='verticalSwipe']");
-    private final By byJavaLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Java']");
-    private final By byCLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' C']");
-    private By byJasmineLanguageTextView;
+    private By byLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Java']");
+
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
@@ -36,17 +35,19 @@ public class VodqaScreenAndroid extends VodqaScreen {
     }
 
     @Override
-    public VodqaScreen scrollToElement(String viewName) {
-        driver.waitTillElementIsPresent(byCLanguageTextView);
-        Point fromPoint = driver.findElement(byCLanguageTextView).getLocation();
-        Point toPoint = driver.findElement(byJavaLanguageTextView).getLocation();
+    public VodqaScreen scrollFromOneElementPointToAnother(String fromElement, String toElement) {
+        byLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' "+fromElement+"']");
+        driver.waitTillElementIsPresent(byLanguageTextView);
+        Point fromPoint = driver.findElement(byLanguageTextView).getLocation();
+        byLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' "+toElement+"']");
+        Point toPoint = driver.findElement(byLanguageTextView).getLocation();
         driver.scroll(fromPoint, toPoint);
         return this;
     }
 
     @Override
-    public boolean verifyScrollSuccessOrFail(String viewName) {
-        byJasmineLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' "+viewName+"']");
-        return driver.isElementPresent(byJasmineLanguageTextView);
+    public boolean verifyScrollSuccessOrFail(String elementText) {
+        byLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' "+elementText+"']");
+        return driver.isElementPresent(byLanguageTextView);
     }
 }

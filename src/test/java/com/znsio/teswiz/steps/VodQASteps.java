@@ -33,13 +33,13 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectVerticalSwipingTile();
     }
 
-    @And("I scroll to element {string}")
-    public void scrollToElement(String viewName) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollToElement(viewName);
+    @And("I scroll from {string} to {string} element")
+    public void scrollToElement(String fromElement, String toElement) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollFromOneElementPointToAnother(fromElement, toElement);
     }
 
     @Then("{string} element should be visible")
-    public void verifyScrollSuccessOrFail(String viewName) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyScrollSuccessOrFail(viewName);
+    public void verifyScrollSuccessOrFail(String elementText) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyScrollSuccessOrFail(elementText);
     }
 }

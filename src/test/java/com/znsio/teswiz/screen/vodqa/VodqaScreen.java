@@ -30,6 +30,6 @@ public abstract class VodqaScreen {
     public abstract VodqaScreen login();
 
     public abstract VodqaScreen selectVerticalSwipingTile();
-    public abstract VodqaScreen scrollToElement(String viewName);
-    public abstract boolean verifyScrollSuccessOrFail(String viewName);
+    public abstract VodqaScreen scrollFromOneElementPointToAnother(String fromElement, String toElement);
+    public abstract boolean verifyScrollSuccessOrFail(String elementText);
 }

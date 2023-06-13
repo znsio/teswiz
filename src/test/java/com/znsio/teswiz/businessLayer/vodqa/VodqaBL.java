@@ -43,14 +43,14 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL scrollToElement(String viewName) {
-        VodqaScreen.get().scrollToElement(viewName);
+    public VodqaBL scrollFromOneElementPointToAnother(String fromElement, String toElement) {
+        VodqaScreen.get().scrollFromOneElementPointToAnother(fromElement, toElement);
         return this;
     }
 
-    public VodqaBL verifyScrollSuccessOrFail(String viewName) {
-        boolean isScrollSuccessful= VodqaScreen.get().verifyScrollSuccessOrFail(viewName);
-        assertThat(isScrollSuccessful).as("Scroll was not successful, "+viewName+" is not visible").isTrue();
+    public VodqaBL verifyScrollSuccessOrFail(String elementText) {
+        boolean isScrollSuccessful= VodqaScreen.get().verifyScrollSuccessOrFail(elementText);
+        assertThat(isScrollSuccessful).as("Scroll was not successful, "+elementText+" is not visible").isTrue();
         return this;
     }
 }
