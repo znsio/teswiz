@@ -1,10 +1,10 @@
 @vodqa
-
 Feature: Vodqa test
 
+#  CONFIG=./configs/vodqa_local_config.properties PLATFORM=android TAG=vodqa ./gradlew run
   @android
-  Scenario: Scrolling using fromPoint and toPoint
+  Scenario: Validating scroll functionality using 2 points
     Given I login to vodqa application using credentials
     When I click on Vertical Swiping
-    And I scroll to element "Jasmine"
+    And I scroll from "C" to "Ruby" element
     Then "Jasmine" element should be visible
