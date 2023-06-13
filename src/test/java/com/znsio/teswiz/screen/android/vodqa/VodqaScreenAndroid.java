@@ -17,7 +17,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byRubyLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Ruby']");
     private final By byJasmineLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Jasmine']");
     private final By byNativeViewXpath = By.xpath("//android.widget.TextView[@content-desc=\"chainedView\"]");
-    private static final String byPageHeaderXpath = "//android.widget.TextView[@text='%s']";
+    private final String byPageHeaderXpath = "//android.widget.TextView[@text='%s']";
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
