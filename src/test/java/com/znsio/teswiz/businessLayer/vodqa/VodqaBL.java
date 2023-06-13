@@ -38,11 +38,6 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL selectVerticalSwipingTile() {
-        VodqaScreen.get().selectVerticalSwipingTile();
-        return this;
-    }
-
     public VodqaBL scrollFromOneElementPointToAnother(String fromElement, String toElement) {
         VodqaScreen.get().scrollFromOneElementPointToAnother(fromElement, toElement);
         return this;

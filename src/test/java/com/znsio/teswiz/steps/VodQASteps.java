@@ -28,12 +28,7 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).login();
     }
 
-    @When("I click on Vertical Swiping")
-    public void selectVerticalSwipingTile() {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectVerticalSwipingTile();
-    }
-
-    @And("I scroll from {string} to {string} element")
+    @When("I scroll from {string} to {string} element on vertical swiping screen")
     public void scrollToElement(String fromElement, String toElement) {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollFromOneElementPointToAnother(fromElement, toElement);
     }

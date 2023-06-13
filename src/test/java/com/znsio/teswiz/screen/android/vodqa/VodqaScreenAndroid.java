@@ -28,14 +28,9 @@ public class VodqaScreenAndroid extends VodqaScreen {
     }
 
     @Override
-    public VodqaScreen selectVerticalSwipingTile() {
+    public VodqaScreen scrollFromOneElementPointToAnother(String fromElement, String toElement) {
         driver.waitTillElementIsPresent(byVerticalSwipeViewGroup);
         driver.findElement(byVerticalSwipeViewGroup).click();
-        return this;
-    }
-
-    @Override
-    public VodqaScreen scrollFromOneElementPointToAnother(String fromElement, String toElement) {
         byLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' "+fromElement+"']");
         driver.waitTillElementIsPresent(byLanguageTextView);
         Point fromPoint = driver.findElement(byLanguageTextView).getLocation();
