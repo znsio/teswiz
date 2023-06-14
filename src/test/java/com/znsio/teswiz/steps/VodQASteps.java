@@ -2,7 +2,6 @@ package com.znsio.teswiz.steps;
 
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
-import com.znsio.teswiz.businessLayer.calculator.CalculatorBL;
 import com.znsio.teswiz.businessLayer.vodqa.VodqaBL;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
@@ -36,5 +35,20 @@ public class VodQASteps {
     @Then("Element text should be visible")
     public void isElementWithTextVisible() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
+    }
+
+    @When("I enter into hacker news under webview section")
+    public void iEnterIntoHackerNewsUnderWebviewSection() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).enterIntoNewsWebViewSection();
+    }
+
+    @Then("I am able to see hacker news login option in webview section")
+    public void iAmAbleToSeeHackerNewsLoginOptionInWebViewSection() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyLoginOptionForHackerNewsWebview();
+    }
+
+    @And("I am able to navigate back to native view section")
+    public void iAmAbleToNavigateBackToNativeViewSection() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).enterIntoNativeViewSection();
     }
 }
