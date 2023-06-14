@@ -5,15 +5,15 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
-import com.znsio.teswiz.screen.android.vodqa.VodqaScreenAndroid;
+import com.znsio.teswiz.screen.android.vodqa.NativeViewScreenAndroid;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 
-public abstract class VodqaScreen {
-    private static final String SCREEN_NAME = VodqaScreen.class.getSimpleName();
+public abstract class NativeViewScreen {
+    private static final String SCREEN_NAME = NativeViewScreen.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
 
-    public static VodqaScreen get() {
+    public static NativeViewScreen get() {
         Driver driver = Drivers.getDriverForCurrentUser(Thread.currentThread().getId());
         Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
@@ -21,19 +21,11 @@ public abstract class VodqaScreen {
 
         switch(platform) {
             case android:
-                return new VodqaScreenAndroid(driver, visually);
+                return new NativeViewScreenAndroid(driver, visually);
         }
         throw new NotImplementedException(
                 SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
     }
 
-    public abstract VodqaScreen login();
-
-    public abstract VodqaScreen scrollFromOneElementPointToAnother();
-
-    public abstract boolean isElementWithTextVisible();
-
-    public abstract WebViewScreen enterIntoNewsWebViewSection();
-
-    public abstract NativeViewScreen enterIntoNativeViewSection();
+    public abstract boolean isUserOnNativeViewScreen();
 }

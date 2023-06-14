@@ -442,8 +442,10 @@ public class Driver {
 //        AppiumDriver appiumDriver = (AppiumDriver) driver;
 //        Set<String> contextNames = appiumDriver.getContextHandles();
 //        return appiumDriver.context((String) contextNames.toArray()[contextNames.size() - 1]);
+        LOGGER.info("Setting web view context");
         SupportsContextSwitching contextSwitchingDriver = (SupportsContextSwitching) driver;
         Set<String> contextHandles = contextSwitchingDriver.getContextHandles();
+        contextHandles.stream().forEach(handle -> LOGGER.info("Value of context handle " + handle));
         return contextSwitchingDriver.context((String) contextHandles.toArray()[contextHandles.size() - 1]);
     }
 
@@ -455,6 +457,7 @@ public class Driver {
         // todo - to be fixed for appium 2.0
 //        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) driver;
 //        return appiumDriver.context(contextName);
+        LOGGER.info("Setting native app context");
         SupportsContextSwitching contextSwitchingDriver = (SupportsContextSwitching) driver;
         return contextSwitchingDriver.context(contextName);
     }
