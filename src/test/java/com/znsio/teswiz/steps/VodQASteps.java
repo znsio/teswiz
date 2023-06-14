@@ -37,4 +37,16 @@ public class VodQASteps {
     public void isElementWithTextVisible() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
     }
+
+    @When("I scroll down by screen size on vertical swiping screen")
+    public void iScrollDownByScreenSizeOnVerticalSwipingScreen() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollDownByScreenSizeOnVerticalSwipingScreen();
+
+    }
+
+    @Then("Element lower in the list should be visible")
+    public void elementLowerInTheListShouldBeVisible() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
+
+    }
 }

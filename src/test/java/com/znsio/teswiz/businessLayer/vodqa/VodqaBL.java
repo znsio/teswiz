@@ -48,4 +48,9 @@ public class VodqaBL {
         assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
         return this;
     }
+
+    public VodqaBL scrollDownByScreenSizeOnVerticalSwipingScreen() {
+        VodqaScreen.get().openVerticalSwipingScreen().scrollDownByScreenSize();
+        return this;
+    }
 }

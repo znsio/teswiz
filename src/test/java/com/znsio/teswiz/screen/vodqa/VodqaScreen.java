@@ -30,4 +30,6 @@ public abstract class VodqaScreen {
     public abstract VodqaScreen login();
     public abstract VodqaScreen scrollFromOneElementPointToAnother();
     public abstract boolean isElementWithTextVisible();
+    public abstract VodqaScreen openVerticalSwipingScreen();
+    public abstract VodqaScreen scrollDownByScreenSize();
 }
