@@ -142,7 +142,8 @@ task run(type: JavaExec) {
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
 
-        def configFile = System.getenv("CONFIG")
+//        def configFile = System.getenv("CONFIG")
+        def configFile=System.getProperty("user.dir")+"/configs/vodqa_local_config.properties";
         if (null == configFile || !file(configFile).exists()) {
             println("CONFIG file not provided, or does not exist")
             println("Run the test by providing the CONFIG file not provided, or does not exist")
