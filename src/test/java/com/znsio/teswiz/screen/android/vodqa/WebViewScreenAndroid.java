@@ -14,6 +14,7 @@ public class WebViewScreenAndroid extends WebViewScreen {
     private final Visual visually;
     private static final String SCREEN_NAME = WebViewScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+
     private static final By byWebViewScreenHeaderXpath = AppiumBy.xpath("//android.widget.TextView[@text = 'Webview']");
     private static final By byLoginOptionWebviewXpath = By.xpath("//a[text()='login']");
     private static final By byBackButtonXpath = AppiumBy.xpath("//android.widget.TextView[@text = 'Back']");
@@ -26,6 +27,7 @@ public class WebViewScreenAndroid extends WebViewScreen {
     @Override
     public boolean isUserOnNewsWebViewScreen() {
         LOGGER.info("Verify user is on news web view screen");
+        visually.checkWindow(SCREEN_NAME, "Web View Screen");
         return driver.findElement(byWebViewScreenHeaderXpath).isDisplayed();
     }
 

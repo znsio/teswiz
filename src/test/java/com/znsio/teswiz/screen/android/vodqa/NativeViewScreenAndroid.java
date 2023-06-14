@@ -23,6 +23,7 @@ public class NativeViewScreenAndroid extends NativeViewScreen {
     @Override
     public boolean isUserOnNativeViewScreen() {
         LOGGER.info("Verify user is on native view screen");
+        visually.checkWindow(SCREEN_NAME, "Native View Screen");
         return driver.findElement(byNativeViewScreenHeaderXpath).isDisplayed();
     }
 }
