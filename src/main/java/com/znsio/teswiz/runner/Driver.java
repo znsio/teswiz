@@ -28,6 +28,7 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
+import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
 
 public class Driver {
@@ -168,17 +170,12 @@ public class Driver {
         Dimension windowSize = appiumDriver.manage().window().getSize();
         LOGGER.info(DIMENSION + windowSize.toString());
         int width = windowSize.width / 2;
-        int fromHeight = (int) (windowSize.height * 0.9);
-        int toHeight = (int) (windowSize.height * 0.5);
+        int fromHeight = (int) (windowSize.height * 0.2);
+        int toHeight = (int) (windowSize.height * 0.8);
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
-        throw new NotImplementedException("To be migrated to appium 2.0");
-        // todo - to be implemented in appium 2.0
-//        TouchAction touchAction = new TouchAction(appiumDriver);
-//        touchAction.press(PointOption.point(new Point(width, fromHeight)))
-//                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-//                   .moveTo(PointOption.point(new Point(width, toHeight)))
-//                   .release()
-//                   .perform();
+        Point from=new Point(width,fromHeight);
+        Point to=new Point(width,toHeight);
+        scroll(from,to);
     }
 
     public void scrollVertically(int fromPercentScreenHeight, int toPercentScreenHeight,
@@ -191,14 +188,9 @@ public class Driver {
         int toHeight = (windowSize.height * toPercentScreenHeight) / 100;
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
-        throw new NotImplementedException("To be migrated to appium 2.0");
-// todo - to be implemented in appium 2.0
-//        TouchAction touchAction = new TouchAction(appiumDriver);
-//        touchAction.press(PointOption.point(new Point(width, fromHeight)))
-//                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-//                   .moveTo(PointOption.point(new Point(width, toHeight)))
-//                   .release()
-//                   .perform();
+        Point from=new Point(width,fromHeight);
+        Point to=new Point(width,toHeight);
+        scroll(from,to);
     }
 
     public void tapOnMiddleOfScreen() {
