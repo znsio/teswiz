@@ -41,7 +41,7 @@ public class VodQASteps {
     }
 
     @Then("I am able to move from {string} page to next page")
-    public void iAmAbleToMoveFromPageToNextPage(String pageHeader) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyUserOnNextSection(pageHeader);
+    public void iAmAbleToMoveFromPageToNextPage(String pageHeading) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyUserMoveToNextPage(pageHeading);
     }
 }

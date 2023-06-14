@@ -54,9 +54,10 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL verifyUserOnNextSection(String pageHeader) {
+    public VodqaBL verifyUserMoveToNextPage(String pageHeading) {
         LOGGER.info("performTapActionInTheMiddle(): verify the operation has been executed successfully or not");
-        assertThat(VodqaScreen.get().isPreviousPageHeaderNotVisible(pageHeader)).as(String.format("User is still on %s page", pageHeader)).isTrue();
+        assertThat(VodqaScreen.get().isPreviousPageHeadingVisible(pageHeading)).as(String.format("User is still on %s page", pageHeading)).isFalse();
         return this;
     }
 }
+
