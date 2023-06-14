@@ -64,6 +64,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public VodqaScreen scrollDownByScreenSize() {
+        driver.waitTillElementIsPresent(byCLanguageTextView);
         driver.scrollDownByScreenSize();
         visually.checkWindow(SCREEN_NAME, "Screen scrolled down");
         return this;
