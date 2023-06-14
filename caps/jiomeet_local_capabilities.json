@@ -1,9 +1,7 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": {
-      "local": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/com.jio.rilconferences_v4.21.6.7-421607_Android-5.0.apk"
-    },
+    "app": "src/test/resources/sampleApps/jioMeet.apk",
     "appActivity": "org.jio.meet.introduction.views.SplashActivity",
     "appPackage": "com.jio.rilconferences",
     "appWaitDuration": 45000,
@@ -16,7 +14,6 @@
     "newCommandTimeout": 12000,
     "noSign": true,
     "platformName": "android",
-    "platformVersion": "11.0",
     "printPageSourceOnFindFailure": true,
     "skipUnlock": true,
     "noReset": false

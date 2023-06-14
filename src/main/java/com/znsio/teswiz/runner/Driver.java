@@ -28,6 +28,8 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -40,6 +42,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
+import static java.util.Collections.singletonList;
 
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
@@ -287,19 +290,29 @@ public class Driver {
         waitFor(2);
     }
 
-    public void selectNotification(By selectNotificationLocator) {
+    public void selectNotificationFromNotificationDrawer(By selectNotificationLocator) {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
-        WebElement selectNotificationElement = driver.findElement(selectNotificationLocator);
-        LOGGER.info("Notification found: " + selectNotificationElement.isDisplayed());
-        Point notificationCoordinates = selectNotificationElement.getLocation();
-
-        throw new NotImplementedException("To be migrated to appium 2.0");
+//        throw new NotImplementedException("To be migrated to appium 2.0");
         // todo - to be implemented in appium 2.0
 //        TouchAction touchAction = new TouchAction(appiumDriver);
 //        touchAction.tap(PointOption.point(notificationCoordinates))
 //                   .perform();
 //        LOGGER.info("Tapped on notification. Go back to meeting");
 //        waitFor(3);
+        Dimension screenSize = appiumDriver.manage().window().getSize();
+        PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
+        Sequence scroller = new Sequence(touch, 1);
+        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), screenSize.width / 2, 0));
+        scroller.addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), screenSize.width / 2, screenSize.height));
+        scroller.addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        appiumDriver.perform(singletonList(scroller));
+        appiumDriver.perform(singletonList(scroller));
+        waitFor(1);
+
+        WebElement selectNotificationElement = driver.findElement(selectNotificationLocator);
+        LOGGER.info("Notification found: " + selectNotificationElement.isDisplayed());
+        selectNotificationElement.click();
     }
 
     public void putAppInBackground(int duration) {
