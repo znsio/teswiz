@@ -8,9 +8,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 
 public class VodqaScreenAndroid extends VodqaScreen {
-    private static final String SCREEN_NAME = VodqaScreenAndroid.class.getSimpleName();
     private final Driver driver;
     private final Visual visually;
+    private final String SCREEN_NAME = VodqaScreenAndroid.class.getSimpleName();
     private final By byLoginButton = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='login']/android.widget.Button");
     private final By byVerticalSwipeViewGroup = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='verticalSwipe']");
     private final By byCLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' C']");

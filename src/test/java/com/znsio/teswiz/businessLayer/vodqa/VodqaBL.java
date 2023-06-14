@@ -33,9 +33,6 @@ public class VodqaBL {
         this.currentPlatform = Runner.getPlatform();
     }
     public VodqaBL login() {
-        LOGGER.info("login(): login into the application");
-        VodqaScreen vodqaScreen = VodqaScreen.get();
-        vodqaScreen.login();
         VodqaScreen.get().login();
         return this;
     }
