@@ -102,7 +102,7 @@ public class InAMeetingScreenWeb
 
     @Override
     public InAMeetingScreen openJioMeetNotification() {
-        throw new NotImplementedException("Device notification for JioMeet Meeting not available in Web");
+        throw new NotImplementedException("Jio Meet Device Notification of Meeting is not available for Web");
     }
 
     private void enableInMeetingControls(String calledFrom) {
@@ -111,7 +111,7 @@ public class InAMeetingScreenWeb
             Actions actions = new Actions(innerDriver);
             actions.moveToElement(driver.waitForClickabilityOf(byMeetingInfoIconXpath))
                     .moveByOffset(25, 25).perform();
-        } catch (Exception e) {
+        } catch(Exception e) {
             String logMessage = String.format(
                     "Exception occurred : enableInMeetingControls%nException: %s",
                     e.getLocalizedMessage());
