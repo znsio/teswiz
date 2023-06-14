@@ -28,6 +28,8 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -40,6 +42,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
+import static java.util.Collections.singletonList;
 
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
@@ -130,14 +133,16 @@ public class Driver {
     }
 
     public void scroll(Point fromPoint, Point toPoint) {
-        throw new NotImplementedException("To be migrated to appium 2.0");
-        // todo - to be implemented in appium 2.0
-//        TouchAction touchAction = new TouchAction(((AppiumDriver) driver));
-//        touchAction.press(PointOption.point(fromPoint))
-//                   .waitAction(WaitOptions.waitOptions(Duration.ofMillis(1000)))
-//                   .moveTo(PointOption.point(toPoint))
-//                   .release()
-//                   .perform();
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
+        Sequence scroller = new Sequence(touch, 1);
+        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), toPoint.getX(), toPoint.getY()));
+        scroller.addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), fromPoint.getX(), fromPoint.getY()));
+        scroller.addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        LOGGER.info(String.format("fromPoint width: %s, fromPoint height: %s", fromPoint.getX(), fromPoint.getY()));
+        LOGGER.info(String.format("toPoint width: %s, toPoint height: %s", toPoint.getX(), toPoint.getY()));
+        appiumDriver.perform(singletonList(scroller));
     }
 
     public WebElement scrollToAnElementByText(String text) {

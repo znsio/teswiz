@@ -7,6 +7,7 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class VodqaBL {
     private static final Logger LOGGER = Logger.getLogger(VodqaBL.class.getName());
@@ -34,6 +35,17 @@ public class VodqaBL {
 
     public VodqaBL login() {
         VodqaScreen.get().login();
+        return this;
+    }
+
+    public VodqaBL scrollFromOneElementPointToAnother() {
+        VodqaScreen.get().scrollFromOneElementPointToAnother();
+        return this;
+    }
+
+    public VodqaBL isElementWithTextVisible() {
+        boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible();
+        assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
         return this;
     }
 }

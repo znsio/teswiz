@@ -6,7 +6,7 @@ import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.android.vodqa.VodqaScreenAndroid;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 
 public abstract class VodqaScreen {
@@ -28,4 +28,6 @@ public abstract class VodqaScreen {
     }
 
     public abstract VodqaScreen login();
+    public abstract VodqaScreen scrollFromOneElementPointToAnother();
+    public abstract boolean isElementWithTextVisible();
 }
