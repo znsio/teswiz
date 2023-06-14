@@ -294,13 +294,13 @@ public class Driver {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension screenSize = appiumDriver.manage().window().getSize();
         PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
-        Sequence scroller = new Sequence(touch, 1);
-        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), screenSize.width / 2, 0));
-        scroller.addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), screenSize.width / 2, screenSize.height));
-        scroller.addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
-        appiumDriver.perform(singletonList(scroller));
-        appiumDriver.perform(singletonList(scroller));
+        Sequence dragNotificationBar = new Sequence(touch, 1);
+        dragNotificationBar.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), screenSize.width / 2, 0));
+        dragNotificationBar.addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        dragNotificationBar.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), screenSize.width / 2, screenSize.height));
+        dragNotificationBar.addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        appiumDriver.perform(singletonList(dragNotificationBar));
+        appiumDriver.perform(singletonList(dragNotificationBar));
         waitFor(1);
 
         WebElement selectNotificationElement = driver.findElement(selectNotificationLocator);
