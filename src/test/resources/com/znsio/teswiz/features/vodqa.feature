@@ -15,5 +15,3 @@ Feature: Vodqa test
     When I enter into hacker news under webview section
     Then I am able to see hacker news login option in webview section
     And I am able to navigate back to native view section
-
-
