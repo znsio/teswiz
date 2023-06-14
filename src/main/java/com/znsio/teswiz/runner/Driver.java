@@ -292,13 +292,6 @@ public class Driver {
 
     public void selectNotificationFromNotificationDrawer(By selectNotificationLocator) {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
-//        throw new NotImplementedException("To be migrated to appium 2.0");
-        // todo - to be implemented in appium 2.0
-//        TouchAction touchAction = new TouchAction(appiumDriver);
-//        touchAction.tap(PointOption.point(notificationCoordinates))
-//                   .perform();
-//        LOGGER.info("Tapped on notification. Go back to meeting");
-//        waitFor(3);
         Dimension screenSize = appiumDriver.manage().window().getSize();
         PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
         Sequence scroller = new Sequence(touch, 1);
