@@ -22,7 +22,7 @@ public class VodQASteps {
         LOGGER.info("context: " + context.getTestName());
     }
 
-    @Given("I login to vodqa application using credentials")
+    @Given("I login to vodqa application using valid credentials")
     public void loginToApplication() {
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).login();
