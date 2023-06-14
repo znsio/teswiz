@@ -9,9 +9,9 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 
 public class VodqaScreenAndroid extends VodqaScreen {
+    private static final String SCREEN_NAME = VodqaScreenAndroid.class.getSimpleName();
     private final Driver driver;
     private final Visual visually;
-    private final String SCREEN_NAME = VodqaScreenAndroid.class.getSimpleName();
     private final By byLoginButton = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='login']/android.widget.Button");
     private final By byVerticalSwipeViewGroup = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='verticalSwipe']");
     private final By byCLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' C']");
@@ -60,9 +60,8 @@ public class VodqaScreenAndroid extends VodqaScreen {
     }
 
     @Override
-    public boolean isPageHeaderVisible(String pageHeader) {
-        visually.checkWindow(SCREEN_NAME, pageHeader);
-        WebElement pageHeaderElement = driver.waitTillElementIsPresent(By.xpath(String.format(byPageHeaderXpath, pageHeader)));
-        return pageHeaderElement.isDisplayed();
+    public boolean isPreviousPageHeaderNotVisible(String pageHeader) {
+        visually.checkWindow(SCREEN_NAME, "Page landed after tapping in the middle");
+        return driver.findElements(By.xpath(String.format(byPageHeaderXpath, pageHeader))).size() == 0;
     }
 }

@@ -32,8 +32,10 @@ public class VodqaBL {
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
         this.currentPlatform = Runner.getPlatform();
     }
-
     public VodqaBL login() {
+        LOGGER.info("login(): login into the application");
+        VodqaScreen vodqaScreen = VodqaScreen.get();
+        vodqaScreen.login();
         VodqaScreen.get().login();
         return this;
     }
@@ -55,9 +57,9 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL verifyPageHeader(String pageHeader) {
+    public VodqaBL verifyUserOnNextSection(String pageHeader) {
         LOGGER.info("performTapActionInTheMiddle(): verify the operation has been executed successfully or not");
-        assertThat(VodqaScreen.get().isPageHeaderVisible(pageHeader)).as(String.format("User is not on %s page", pageHeader)).isTrue();
+        assertThat(VodqaScreen.get().isPreviousPageHeaderNotVisible(pageHeader)).as(String.format("User is still on %s page", pageHeader)).isTrue();
         return this;
     }
 }

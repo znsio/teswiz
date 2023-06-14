@@ -40,8 +40,8 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).tapInTheMiddleOfTheScreen();
     }
 
-    @Then("I am able to view {string} page")
-    public void iAmAbleToViewElement(String pageHeader) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyPageHeader(pageHeader);
+    @Then("I am able to move from {string} page to next page")
+    public void iAmAbleToMoveFromPageToNextPage(String pageHeader) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyUserOnNextSection(pageHeader);
     }
 }
