@@ -1,0 +1,36 @@
+{
+  "android": {
+    "adbExecTimeout": 45000,
+    "app": "src/test/resources/sampleApps/VodQA.apk",
+    "appPackage": "com.vodqareactnative",
+    "appActivity": "com.vodqareactnative.MainActivity",
+    "appWaitDuration": 45000,
+    "automationName": "UiAutomator2",
+    "autoGrantPermissions": true,
+    "deviceName": "android",
+    "dontStopAppOnReset": true,
+    "enablePerformanceLogging": true,
+    "eventTimings": true,
+    "newCommandTimeout": 12000,
+    "noSign": true,
+    "platformName": "android",
+    "printPageSourceOnFindFailure": true,
+    "skipUnlock": true
+  },
+  "serverConfig" : {
+    "server": {
+      "use-plugins": ["device-farm", "appium-dashboard"],
+      "plugin": {
+        "device-farm": {
+          "platform": "android",
+          "skipChromeDownload": true
+        }
+      }
+    }
+  },
+  "hostMachines": [
+    {
+      "machineIP": "127.0.0.1"
+    }
+  ]
+}
