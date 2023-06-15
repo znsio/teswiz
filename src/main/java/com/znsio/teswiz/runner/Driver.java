@@ -250,8 +250,12 @@ public class Driver {
         return appiumDriver.manage().window().getSize().width;
     }
 
-    private boolean checkPercentagesAreValid(int... percentages) {
-        return Arrays.stream(percentages).allMatch(percentage -> percentage >= 0 && percentage <= 100);
+    private void checkPercentagesAreValid(int... percentages) {
+        boolean arePercentagesVaild = Arrays.stream(percentages).allMatch(percentage -> percentage >= 0 && percentage <= 100);
+        if (!arePercentagesVaild) {
+            throw new RuntimeException(String.format("Invalid percentage value - percentage value should be between 0 - 100. but are %s",
+                    Arrays.toString(percentages)));
+        }
     }
 
     public void swipeRight() {
@@ -271,13 +275,9 @@ public class Driver {
     }
 
     public void swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth) {
-        if (!checkPercentagesAreValid(percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth)) {
-            throw new RuntimeException(String.format("Invalid percentage value - percentage value should be between 0 - 100." +
-                            " percentScreenHeight: %s, fromPercentScreenWidth: %s, toPercentScreenWidth: %s",
-                    percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth));
-        }
         LOGGER.info(String.format("percent attributes passed to method are: percentScreenHeight: %s, fromPercentScreenWidth: %s, toPercentScreenWidth: %s",
                 percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth));
+        checkPercentagesAreValid(percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth);
         int height = getWindowHeight() * percentScreenHeight / 100;
         int fromWidth = getWindowWidth() * fromPercentScreenWidth / 100;
         int toWidth = getWindowWidth() * toPercentScreenWidth / 100;
