@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
-import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
 
 public class Driver {
@@ -284,19 +283,22 @@ public class Driver {
         waitFor(2);
     }
 
-    public void selectNotification(By selectNotificationLocator) {
+    public void selectNotificationFromNotificationDrawer(By selectNotificationLocator) {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        Dimension screenSize = appiumDriver.manage().window().getSize();
+        PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
+        Sequence dragNotificationBar = new Sequence(touch, 1);
+        dragNotificationBar.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), screenSize.width / 2, 0));
+        dragNotificationBar.addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        dragNotificationBar.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), screenSize.width / 2, screenSize.height));
+        dragNotificationBar.addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        appiumDriver.perform(singletonList(dragNotificationBar));
+        appiumDriver.perform(singletonList(dragNotificationBar));
+        waitFor(1);
+
         WebElement selectNotificationElement = driver.findElement(selectNotificationLocator);
         LOGGER.info("Notification found: " + selectNotificationElement.isDisplayed());
-        Point notificationCoordinates = selectNotificationElement.getLocation();
-
-        throw new NotImplementedException("To be migrated to appium 2.0");
-        // todo - to be implemented in appium 2.0
-//        TouchAction touchAction = new TouchAction(appiumDriver);
-//        touchAction.tap(PointOption.point(notificationCoordinates))
-//                   .perform();
-//        LOGGER.info("Tapped on notification. Go back to meeting");
-//        waitFor(3);
+        selectNotificationElement.click();
     }
 
     public void putAppInBackground(int duration) {
