@@ -35,6 +35,7 @@ public class VodQASteps {
     public void isElementWithTextVisible() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
     }
+
     @When("I tap in the middle of the screen")
     public void iTapInTheMiddleOfTheScreen() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).tapInTheMiddleOfTheScreen();
@@ -48,6 +49,26 @@ public class VodQASteps {
     @When("I scroll down by screen size on vertical swiping screen")
     public void iScrollDownByScreenSizeOnVerticalSwipingScreen() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollDownByScreenSizeOnVerticalSwipingScreen();
+    }
 
+    @When("I swipe left on {string} screen")
+    public void selectScreenAndSwipeLeft(String screenName) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectScreenAndSwipeLeft(screenName);
+    }
+
+    @When("I swipe right on {string} screen")
+    public void selectScreenAndSwipeRight(String screenName) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectScreenAndSwipeRight(screenName);
+    }
+
+    @Then("I am able to see element with text {string} on the screen")
+    public void iAmAbleToSeeElementWithTextOnTheScreen(String elementText) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifySwipe(elementText);
+    }
+
+    @When("I swipe at {int} percent height from {int} percent width to {int} percent width on {string} screen")
+    public void iSwipeAtPercentHeightFromPercentWidthToPercentWidthOnScreen(int atPercentileHeight, int fromPercentageWidth, int toPercentageWidth, String screenName) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform())
+                .selectScreenAndSwipeByPassingPercentageAttributes(atPercentileHeight, fromPercentageWidth, toPercentageWidth, screenName);
     }
 }
