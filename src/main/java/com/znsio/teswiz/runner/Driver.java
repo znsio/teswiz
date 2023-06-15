@@ -251,8 +251,8 @@ public class Driver {
     }
 
     private void checkPercentagesAreValid(int... percentages) {
-        boolean arePercentagesVaild = Arrays.stream(percentages).allMatch(percentage -> percentage >= 0 && percentage <= 100);
-        if (!arePercentagesVaild) {
+        boolean arePercentagesValid = Arrays.stream(percentages).allMatch(percentage -> percentage >= 0 && percentage <= 100);
+        if (!arePercentagesValid) {
             throw new RuntimeException(String.format("Invalid percentage value - percentage value should be between 0 - 100. but are %s",
                     Arrays.toString(percentages)));
         }
