@@ -14,6 +14,7 @@ import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.appmanagement.ApplicationState;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -295,8 +296,8 @@ class AppiumDriverManager {
                 LOGGER.info(
                         String.format("ATD will quit the driver for persona: '%s'", userPersona));
                 LOGGER.info("Close the app");
-                // todo - fix for appium 2.0
-//            appiumDriver.closeApp();
+                AndroidDriver androidDriver = (AndroidDriver) appiumDriver;
+                androidDriver.terminateApp(appPackageName);
             } else {
                 LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
                 attachDeviceLogsToReportPortal(userPersona);
@@ -318,9 +319,9 @@ class AppiumDriverManager {
                                        appPackageName, applicationState);
             LOGGER.info(logMessage);
             ReportPortalLogger.logDebugMessage(logMessage);
+            AndroidDriver androidDriver = (AndroidDriver) appiumDriver;
+            androidDriver.terminateApp(appPackageName);
             // todo - fix for appium 2.0
-//            appiumDriver.closeApp();
-//            appiumDriver.terminateApp(appPackageName);
 //            applicationState = appiumDriver.queryAppState(appPackageName);
             logMessage = String.format("App: '%s' Application state after closing app: '%s'%n",
                                        appPackageName, applicationState);
