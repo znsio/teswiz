@@ -63,4 +63,11 @@ public class VodqaScreenAndroid extends VodqaScreen {
         visually.checkWindow(SCREEN_NAME, "Page landed after tapping in the middle");
         return driver.isElementPresent(AppiumBy.xpath(String.format(byPageHeaderXpath, pageHeading)));
     }
+
+    @Override
+    public VodqaScreen validateAppWorkInBackground(int time) {
+        driver.putAppInBackground(time);
+        visually.checkWindow(SCREEN_NAME, "Home screen after putting app in background");
+        return this;
+    }
 }

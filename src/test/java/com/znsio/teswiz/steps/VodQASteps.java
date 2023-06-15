@@ -44,4 +44,9 @@ public class VodQASteps {
     public void iAmAbleToMoveFromPageToNextPage(String pageHeading) {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyUserMoveToNextPage(pageHeading);
     }
+
+    @Then("App should work in background for {int} sec")
+    public void appShouldWorkInBackgroundForDefinedTime(int time) {
+        new VodqaBL().appWorksInBackground(time);
+    }
 }
