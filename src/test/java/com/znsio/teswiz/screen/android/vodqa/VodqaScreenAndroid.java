@@ -7,7 +7,6 @@ import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import io.appium.java_client.AppiumBy;
 import org.apache.log4j.Logger;
 import io.appium.java_client.android.AndroidDriver;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 
@@ -73,12 +72,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
         visually.checkWindow(SCREEN_NAME, "Page landed after tapping in the middle");
         return driver.isElementPresent(AppiumBy.xpath(String.format(byPageHeaderXpath, pageHeading)));
     }
-
-
-
-
-
-
+    
     @Override
     public VodqaScreen openVerticalSwipingScreen() {
         driver.waitTillElementIsPresent(byVerticalSwipeViewGroup);

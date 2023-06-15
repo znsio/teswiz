@@ -41,7 +41,8 @@ Feature: Vodqa test
     When I swipe at 60 percent height from 10 percent width to 70 percent width on "carousel" screen
     Then I am able to see element with text "3" on the screen
 
-  @android
+   #  CONFIG=./configs/vodqa_local_config.properties TAG=@appInBackground PLATFORM=android ./gradlew run
+  @android @appInBackground
   Scenario: Put app in background
     Given I login to vodqa application using valid credentials
     Then App should work in background for 5 sec
