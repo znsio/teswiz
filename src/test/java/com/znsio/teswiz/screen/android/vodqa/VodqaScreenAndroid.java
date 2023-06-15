@@ -74,6 +74,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public WebViewScreen enterIntoNewsWebViewSection() {
         LOGGER.info("Enter into news web view section");
+        visually.checkWindow(SCREEN_NAME, "Sample List Screen");
         driver.waitTillElementIsVisible(byWebViewSectionOptionXpath).click();
         return WebViewScreen.get();
     }
@@ -81,6 +82,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public NativeViewScreen enterIntoNativeViewSection() {
         LOGGER.info("Enter into native view section");
+        visually.checkWindow(SCREEN_NAME, "Sample List Screen");
         driver.waitTillElementIsVisible(byNativeViewSectionXpath).click();
         return NativeViewScreen.get();
     }

@@ -47,13 +47,13 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyUserMoveToNextPage(pageHeading);
     }
 
-    @Then("I am able to interact with hacker news login option inside web view section")
-    public void iAmAbleToInteractWithHackerNewsLoginOptionInsideWebViewSection() {
+    @Then("I am able to view hacker news login button inside web view section")
+    public void iAmAbleToViewHackerNewsLoginButtonInsideWebViewSection() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).enterAndVerifyLoginOptionUnderWebViewSection();
     }
 
-    @And("I am able to interact with element by navigating inside native view section")
-    public void iAmAbleToInteractWithElementByNavigatingInsideNativeViewSection() {
+    @And("I am able to view section header by navigating inside native view section")
+    public void iAmAbleToViewSectionHeaderByNavigatingInsideNativeViewSection() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).enterIntoNativeViewSection();
     }
 }

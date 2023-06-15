@@ -34,6 +34,7 @@ public class WebViewScreenAndroid extends WebViewScreen {
     @Override
     public boolean isLoginOptionVisible() {
         LOGGER.info("Switching context to web view context and verifying login option under webView is visible");
+        visually.checkWindow(SCREEN_NAME, "Web view screen");
         return driver.setWebViewContext()
                 .findElement(byLoginOptionWebviewXpath)
                 .isDisplayed();
@@ -45,6 +46,7 @@ public class WebViewScreenAndroid extends WebViewScreen {
         driver.setNativeAppContext()
                 .findElement(byBackButtonXpath)
                 .click();
+        visually.checkWindow(SCREEN_NAME, "Sample list screen");
         return VodqaScreen.get();
     }
 }

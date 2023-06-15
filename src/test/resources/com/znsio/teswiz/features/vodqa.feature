@@ -18,5 +18,5 @@ Feature: Vodqa test
   @vodqaContextSwitch @android
   Scenario: Validate context switching between native and web view context
     Given I login to vodqa application using valid credentials
-    Then I am able to interact with hacker news login option inside web view section
-    And I am able to interact with element by navigating inside native view section
+    Then I am able to view hacker news login button inside web view section
+    And I am able to view section header by navigating inside native view section

@@ -442,7 +442,8 @@ public class Driver {
         LOGGER.info("Setting web view context");
         SupportsContextSwitching contextSwitchingDriver = (SupportsContextSwitching) driver;
         Set<String> contextHandles = contextSwitchingDriver.getContextHandles();
-        contextHandles.stream().forEach(handle -> LOGGER.info("Value of context handle " + handle));
+        LOGGER.info("List of context handles present");
+        contextHandles.stream().forEach(LOGGER::info);
         return contextSwitchingDriver.context((String) contextHandles.toArray()[contextHandles.size() - 1]);
     }
 
