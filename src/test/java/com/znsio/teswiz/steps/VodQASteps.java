@@ -36,6 +36,7 @@ public class VodQASteps {
     public void isElementWithTextVisible() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
     }
+
     @When("I tap in the middle of the screen")
     public void iTapInTheMiddleOfTheScreen() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).tapInTheMiddleOfTheScreen();
@@ -46,13 +47,13 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyUserMoveToNextPage(pageHeading);
     }
 
-    @Then("I am able to see hacker news login option inside webview section")
-    public void iAmAbleToSeeHackerNewsLoginOptionInsideWebViewSection() {
+    @Then("I am able to interact with hacker news login option inside web view section")
+    public void iAmAbleToInteractWithHackerNewsLoginOptionInsideWebViewSection() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).enterAndVerifyLoginOptionUnderWebViewSection();
     }
 
-    @And("I am able to navigate back to native view section")
-    public void iAmAbleToNavigateBackToNativeViewSection() {
+    @And("I am able to interact with element by navigating inside native view section")
+    public void iAmAbleToInteractWithElementByNavigatingInsideNativeViewSection() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).enterIntoNativeViewSection();
     }
 }

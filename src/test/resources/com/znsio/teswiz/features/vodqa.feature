@@ -14,10 +14,9 @@ Feature: Vodqa test
     When I tap in the middle of the screen
     Then I am able to move from "Samples List" page to next page
 
-
 #  CONFIG=./configs/vodqa_local_config.properties PLATFORM=android TAG=vodqaContextSwitch ./gradlew run
   @vodqaContextSwitch @android
   Scenario: Validate context switching between native and web view context
     Given I login to vodqa application using valid credentials
-    Then I am able to see hacker news login option inside webview section
-    And I am able to navigate back to native view section
+    Then I am able to interact with hacker news login option inside web view section
+    And I am able to interact with element by navigating inside native view section
