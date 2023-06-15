@@ -54,7 +54,7 @@ public class VodqaBL {
     }
 
     public VodqaBL verifySwipe(String elementText) {
-        assertThat(VodqaScreen.get().verifySwipe(elementText))
+        assertThat(VodqaScreen.get().isSwipeSuccessful(elementText))
                 .as("swipe was not successful")
                 .isTrue();
         return this;

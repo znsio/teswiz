@@ -98,15 +98,15 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public VodqaScreen swipeLeft() {
-        By bySwipeViewXpath = AppiumBy.xpath(String.format(swipeViewXpath, "1"));
-        if (driver.waitTillElementIsPresent(bySwipeViewXpath).isDisplayed()) {
-            driver.swipeLeft();
-        }
+        driver.waitTillElementIsPresent(AppiumBy.xpath(String.format(swipeViewXpath, "1")));
+        visually.check(SCREEN_NAME, "Carousel Tile before swipe left",
+                Target.region(AppiumBy.xpath(String.format(swipeViewTileXpath, "1"))));
+        driver.swipeLeft();
         return this;
     }
 
     @Override
-    public boolean verifySwipe(String elementText) {
+    public boolean isSwipeSuccessful(String elementText) {
         boolean isSwipeSuccessful = driver.findElement(AppiumBy.xpath(String.format(swipeViewXpath, elementText))).isDisplayed();
         visually.check(SCREEN_NAME, "Carousel Tile after swipe", Target.region(AppiumBy.xpath(String.format(swipeViewTileXpath, elementText))));
         return isSwipeSuccessful;
@@ -114,19 +114,19 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public VodqaScreen swipeRight() {
-        By bySwipeViewXpath = AppiumBy.xpath(String.format(swipeViewXpath, "1"));
-        if (driver.waitTillElementIsPresent(bySwipeViewXpath).isDisplayed()) {
-            driver.swipeRight();
-        }
+        driver.waitTillElementIsPresent(AppiumBy.xpath(String.format(swipeViewXpath, "1")));
+        visually.check(SCREEN_NAME, "Carousel Tile before swipe right",
+                Target.region(AppiumBy.xpath(String.format(swipeViewTileXpath, "1"))));
+        driver.swipeRight();
         return this;
     }
 
     @Override
     public VodqaScreen swipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentageWidth, int toPercentScreenWidth) {
-        By bySwipeViewXpath = AppiumBy.xpath(String.format(swipeViewXpath, "1"));
-        if (driver.waitTillElementIsPresent(bySwipeViewXpath).isDisplayed()) {
-            driver.swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentageWidth, toPercentScreenWidth);
-        }
+        driver.waitTillElementIsPresent(AppiumBy.xpath(String.format(swipeViewXpath, "1")));
+        visually.check(SCREEN_NAME, "Carousel Tile before swipe by percentage Attributes",
+                Target.region(AppiumBy.xpath(String.format(swipeViewTileXpath, "1"))));
+        driver.swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentageWidth, toPercentScreenWidth);
         return this;
     }
 }
