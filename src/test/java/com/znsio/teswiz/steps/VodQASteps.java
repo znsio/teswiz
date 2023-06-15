@@ -2,12 +2,10 @@ package com.znsio.teswiz.steps;
 
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
-import com.znsio.teswiz.businessLayer.calculator.CalculatorBL;
 import com.znsio.teswiz.businessLayer.vodqa.VodqaBL;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -37,11 +35,19 @@ public class VodQASteps {
     public void isElementWithTextVisible() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
     }
+    @When("I tap in the middle of the screen")
+    public void iTapInTheMiddleOfTheScreen() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).tapInTheMiddleOfTheScreen();
+    }
 
+    @Then("I am able to move from {string} page to next page")
+    public void iAmAbleToMoveFromPageToNextPage(String pageHeading) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyUserMoveToNextPage(pageHeading);
+    }
+  
     @When("I scroll down by screen size on vertical swiping screen")
     public void iScrollDownByScreenSizeOnVerticalSwipingScreen() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollDownByScreenSizeOnVerticalSwipingScreen();
 
     }
-
 }
