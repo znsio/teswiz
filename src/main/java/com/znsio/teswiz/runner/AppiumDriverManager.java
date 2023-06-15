@@ -253,8 +253,9 @@ class AppiumDriverManager {
             logMessage = String.format("Closing WindowsDriver for App '%s' for user '%s'",
                                        appPackageName, userPersona);
             LOGGER.info(logMessage);
-            // todo - fix for appium 2.0
-//            appiumDriver.closeApp();
+            // todo - fix for appium 2.0, test terminateApp() on windows app in windows OS
+            AndroidDriver androidDriver = (AndroidDriver) appiumDriver;
+            androidDriver.terminateApp(appPackageName);
             TestExecutionContext context = SessionContext.getTestExecutionContext(
                     Thread.currentThread().getId());
             AppiumDriver atdAppiumDriver =
