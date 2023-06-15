@@ -61,8 +61,9 @@ public class VodqaBL {
     }
 
     public VodqaBL appWorksInBackground(int time) {
-        LOGGER.info("Validating wheter app works in background or not");
-        VodqaScreen.get().validateAppWorkInBackground(time);
+        LOGGER.info("Validating app working in background");
+        boolean isAppWorkInBackground =  VodqaScreen.get().putAppInBackground(time).validateAppWorkInBackground();
+        assertThat(isAppWorkInBackground).as(String.format("App do not works in background")).isTrue();
         return this;
     }
 }

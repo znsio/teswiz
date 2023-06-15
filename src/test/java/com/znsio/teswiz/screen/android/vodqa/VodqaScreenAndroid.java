@@ -4,10 +4,14 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 
+
 public class VodqaScreenAndroid extends VodqaScreen {
+    private static final Logger LOGGER = Logger.getLogger(VodqaScreenAndroid.class.getName());
     private final Driver driver;
     private final Visual visually;
     private final String SCREEN_NAME = VodqaScreenAndroid.class.getSimpleName();
@@ -50,6 +54,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     public boolean isElementWithTextVisible() {
         return driver.isElementPresent(byJasmineLanguageTextView);
     }
+
     @Override
     public VodqaScreen tapInTheMiddle() {
         driver.waitTillElementIsVisible(byNativeViewXpath);
@@ -65,9 +70,18 @@ public class VodqaScreenAndroid extends VodqaScreen {
     }
 
     @Override
-    public VodqaScreen validateAppWorkInBackground(int time) {
+    public VodqaScreen putAppInBackground(int time) {
         driver.putAppInBackground(time);
         visually.checkWindow(SCREEN_NAME, "Home screen after putting app in background");
         return this;
     }
+
+    @Override
+    public boolean validateAppWorkInBackground() {
+        LOGGER.info("Validating current app package to know app work in background");
+        String getPackageDetails = ((AndroidDriver) driver.getInnerDriver()).getCapabilities().getCapability("appPackage").toString();
+        return getPackageDetails.equals("com.vodqareactnative");
+    }
+
+
 }
