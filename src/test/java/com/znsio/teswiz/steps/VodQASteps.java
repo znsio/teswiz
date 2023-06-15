@@ -49,6 +49,7 @@ public class VodQASteps {
     @When("I scroll down by screen size on vertical swiping screen")
     public void iScrollDownByScreenSizeOnVerticalSwipingScreen() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollDownByScreenSizeOnVerticalSwipingScreen();
+    }
 
     @When("I swipe left on {string} screen")
     public void selectScreenAndSwipeLeft(String screenName) {
