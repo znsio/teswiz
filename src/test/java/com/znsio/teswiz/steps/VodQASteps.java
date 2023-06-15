@@ -38,22 +38,22 @@ public class VodQASteps {
     }
 
     @When("I swipe left on {string} screen")
-    public void iSwipeLeftOnScreen(String screenName) {
+    public void selectScreenAndSwipeLeft(String screenName) {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectAScreenAndSwipeLeft(screenName);
     }
 
-    @Then("I see tile element {string} on the screen")
-    public void iSeeTileElementOnTheScreen(String tileNumber) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifySwipe(tileNumber);
-    }
-
     @When("I swipe right on {string} screen")
-    public void iSwipeRightOnScreen(String screenName) {
+    public void selectScreenAndSwipeRight(String screenName) {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectAScreenAndSwipeRight(screenName);
     }
 
-    @When("I swipe at percentage height {int} from percentage width {int} to percentage width {int} on {string} screen")
-    public void iSwipeAtPercentageHeightFromPercentageWidthToPercentageWidthOnScreen(int atPercentileHeight, int fromPercentageWidth, int toPercentageWidth, String screenName) {
+    @Then("I am able to see element with text {string} on the screen")
+    public void iAmAbleToSeeElementWithTextOnTheScreen(String elementText) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifySwipe(elementText);
+    }
+
+    @When("I swipe at {int} percent height from {int} percent width to {int} percent width on {string} screen")
+    public void iSwipeAtPercentHeightFromPercentWidthToPercentWidthOnScreen(int atPercentileHeight, int fromPercentageWidth, int toPercentageWidth, String screenName) {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform())
                 .selectAScreenAndSwipeByPassingPercentageAttributes(atPercentileHeight, fromPercentageWidth, toPercentageWidth, screenName);
     }

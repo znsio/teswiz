@@ -52,7 +52,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     }
 
     @Override
-    public VodqaScreen selectAScreen(String screenName) {
+    public VodqaScreen selectScreen(String screenName) {
         By byScreenNameXpath = By.xpath(String.format(screenSelectionXpath, screenName));
         driver.waitTillElementIsPresent(byScreenNameXpath);
         driver.findElement(byScreenNameXpath).click();

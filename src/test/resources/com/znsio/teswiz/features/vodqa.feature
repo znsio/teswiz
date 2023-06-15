@@ -13,19 +13,18 @@ Feature: Vodqa test
   Scenario: validating swipe left functionality
     Given I login to vodqa application using valid credentials
     When I swipe left on "carousel" screen
-    Then I see tile element "2" on the screen
-
+    Then I am able to see element with text "2" on the screen
 
   #  CONFIG=./configs/vodqa_local_config.properties TAG=@swipeRight PLATFORM=android ./gradlew run
   @android @swipeRight
   Scenario: validating swipe right functionality
     Given I login to vodqa application using valid credentials
     When I swipe right on "carousel" screen
-    Then I see tile element "3" on the screen
+    Then I am able to see element with text "3" on the screen
 
   #  CONFIG=./configs/vodqa_local_config.properties TAG=@swipeByPercentageAttributes PLATFORM=android ./gradlew run
   @android @swipeByPercentageAttributes
   Scenario: validating Swipe by percentage Attributes functionality
     Given I login to vodqa application using valid credentials
-    When I swipe at percentage height 60 from percentage width 10 to percentage width 70 on "carousel" screen
-    Then I see tile element "3" on the screen
+    When I swipe at 60 percent height from 10 percent width to 70 percent width on "carousel" screen
+    Then I am able to see element with text "3" on the screen

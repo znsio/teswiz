@@ -50,24 +50,24 @@ public class VodqaBL {
     }
 
     public VodqaBL selectAScreenAndSwipeLeft(String screenName) {
-        VodqaScreen.get().selectAScreen(screenName).swipeLeft();
+        VodqaScreen.get().selectScreen(screenName).swipeLeft();
         return this;
     }
 
-    public VodqaBL verifySwipe(String tileNumber) {
-        assertThat(VodqaScreen.get().verifySwipe(tileNumber))
+    public VodqaBL verifySwipe(String elementText) {
+        assertThat(VodqaScreen.get().verifySwipe(elementText))
                 .as("swipe was not successful")
                 .isTrue();
         return this;
     }
 
     public VodqaBL selectAScreenAndSwipeRight(String screenName) {
-        VodqaScreen.get().selectAScreen(screenName).swipeRight();
+        VodqaScreen.get().selectScreen(screenName).swipeRight();
         return this;
     }
 
     public VodqaBL selectAScreenAndSwipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth, String screenName) {
-        VodqaScreen.get().selectAScreen(screenName)
+        VodqaScreen.get().selectScreen(screenName)
                 .swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth);
         return this;
     }

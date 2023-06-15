@@ -30,7 +30,7 @@ public abstract class VodqaScreen {
     public abstract VodqaScreen login();
     public abstract VodqaScreen scrollFromOneElementPointToAnother();
     public abstract boolean isElementWithTextVisible();
-    public abstract VodqaScreen selectAScreen(String screenName);
+    public abstract VodqaScreen selectScreen(String screenName);
     public abstract VodqaScreen swipeLeft();
     public abstract boolean verifySwipe(String tileNumber);
     public abstract VodqaScreen swipeRight();
