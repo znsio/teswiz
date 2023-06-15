@@ -48,6 +48,10 @@ public class VodqaBL {
         return this;
     }
 
+    public VodqaBL scrollDownByScreenSizeOnVerticalSwipingScreen() {
+        VodqaScreen.get().openVerticalSwipingScreen().scrollDownByScreenSize();
+        return this;
+    }
     public VodqaBL tapInTheMiddleOfTheScreen() {
         LOGGER.info("performTapActionInTheMiddle(): perform tap operation in the middle of the screen");
         VodqaScreen.get().tapInTheMiddle();

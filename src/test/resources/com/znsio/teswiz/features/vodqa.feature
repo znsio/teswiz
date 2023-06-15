@@ -13,3 +13,9 @@ Feature: Vodqa test
     Given I login to vodqa application using valid credentials
     When I tap in the middle of the screen
     Then I am able to move from "Samples List" page to next page
+
+  @android
+  Scenario: Validate that user is able to scroll down by screen size
+    Given I login to vodqa application using valid credentials
+    When I scroll down by screen size on vertical swiping screen
+    Then Element text should be visible
