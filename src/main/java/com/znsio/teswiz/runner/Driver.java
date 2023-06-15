@@ -323,9 +323,16 @@ public class Driver {
     }
 
     public void putAppInBackground(int duration) {
-        throw new NotImplementedException("To be migrated to appium 2.0");
+     //   throw new NotImplementedException("To be migrated to appium 2.0");
         // todo - implement for appium2.0
 //        ((AppiumDriver) driver).runAppInBackground(Duration.ofSeconds(duration));
+        String platform = String.valueOf(Runner.getPlatform());
+        if (platform.equals("android")) {
+            ((AndroidDriver) driver).runAppInBackground(Duration.ofSeconds(duration));
+        } else {
+            throw new NotImplementedException(
+                    " Method is not implemented for " + platform);
+        }
     }
 
     public void bringAppInForeground() {

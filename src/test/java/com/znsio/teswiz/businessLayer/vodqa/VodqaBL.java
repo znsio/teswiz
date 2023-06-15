@@ -86,5 +86,11 @@ public class VodqaBL {
         assertThat(VodqaScreen.get().isPreviousPageHeadingVisible(pageHeading)).as(String.format("User is still on %s page", pageHeading)).isFalse();
         return this;
     }
+
+    public VodqaBL appWorksInBackground(int time) {
+        LOGGER.info("Validating wheter app works in background or not");
+        VodqaScreen.get().validateAppWorkInBackground(time);
+        return this;
+    }
 }
 

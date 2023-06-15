@@ -56,7 +56,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     public boolean isElementWithTextVisible() {
         return driver.isElementPresent(byJasmineLanguageTextView);
     }
-    
+
         @Override
     public VodqaScreen tapInTheMiddle() {
         driver.waitTillElementIsVisible(byNativeViewXpath);
@@ -127,6 +127,13 @@ public class VodqaScreenAndroid extends VodqaScreen {
         visually.check(SCREEN_NAME, "Carousel Tile before swipe by percentage Attributes",
                 Target.region(AppiumBy.xpath(String.format(swipeViewTileXpath, "1"))));
         driver.swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentageWidth, toPercentScreenWidth);
+        return this;
+    }
+
+    @Override
+    public VodqaScreen validateAppWorkInBackground(int time) {
+        driver.putAppInBackground(time);
+        visually.checkWindow(SCREEN_NAME, "Home screen after putting app in background");
         return this;
     }
 }
