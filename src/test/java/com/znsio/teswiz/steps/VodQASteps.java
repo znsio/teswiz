@@ -44,9 +44,4 @@ public class VodQASteps {
 
     }
 
-    @Then("Element lower in the list should be visible")
-    public void elementLowerInTheListShouldBeVisible() {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
-
-    }
 }
