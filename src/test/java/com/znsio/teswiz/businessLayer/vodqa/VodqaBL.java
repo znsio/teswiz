@@ -50,15 +50,13 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL enterIntoNewsWebViewSection() {
+    public VodqaBL enterAndVerifyLoginOptionUnderWebViewSection() {
         LOGGER.info("Entering into hacker news under webView section");
-        assertThat(VodqaScreen.get().enterIntoNewsWebViewSection().isUserOnNewsWebViewScreen())
+        assertThat(VodqaScreen.get().enterIntoNewsWebViewSection()
+                .isUserOnNewsWebViewScreen())
                 .as("User unable to navigate to news webview screen")
                 .isTrue();
-        return this;
-    }
 
-    public VodqaBL verifyLoginOptionForHackerNewsWebview() {
         LOGGER.info("Verify login option is visible for hacker news under web view");
         assertThat(WebViewScreen.get().isLoginOptionVisible())
                 .as("Login Option for hacker news under web view is not visible")

@@ -37,14 +37,9 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
     }
 
-    @When("I enter into hacker news under webview section")
-    public void iEnterIntoHackerNewsUnderWebviewSection() {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).enterIntoNewsWebViewSection();
-    }
-
-    @Then("I am able to see hacker news login option in webview section")
-    public void iAmAbleToSeeHackerNewsLoginOptionInWebViewSection() {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyLoginOptionForHackerNewsWebview();
+    @Then("I am able to see hacker news login option inside webview section")
+    public void iAmAbleToSeeHackerNewsLoginOptionInsideWebViewSection() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).enterAndVerifyLoginOptionUnderWebViewSection();
     }
 
     @And("I am able to navigate back to native view section")

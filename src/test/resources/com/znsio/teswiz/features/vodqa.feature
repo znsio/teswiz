@@ -12,6 +12,5 @@ Feature: Vodqa test
   @vodqaContextSwitch @android
   Scenario: Validate context switching between native and web view context
     Given I login to vodqa application using valid credentials
-    When I enter into hacker news under webview section
-    Then I am able to see hacker news login option in webview section
+    Then I am able to see hacker news login option inside webview section
     And I am able to navigate back to native view section
