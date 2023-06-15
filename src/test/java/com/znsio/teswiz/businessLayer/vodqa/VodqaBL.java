@@ -33,7 +33,6 @@ public class VodqaBL {
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
         this.currentPlatform = Runner.getPlatform();
     }
-
     public VodqaBL login() {
         VodqaScreen.get().login();
         return this;
@@ -47,6 +46,18 @@ public class VodqaBL {
     public VodqaBL isElementWithTextVisible() {
         boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible();
         assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
+        return this;
+    }
+
+    public VodqaBL tapInTheMiddleOfTheScreen() {
+        LOGGER.info("performTapActionInTheMiddle(): perform tap operation in the middle of the screen");
+        VodqaScreen.get().tapInTheMiddle();
+        return this;
+    }
+
+    public VodqaBL verifyUserMoveToNextPage(String pageHeading) {
+        LOGGER.info("performTapActionInTheMiddle(): verify the operation has been executed successfully or not");
+        assertThat(VodqaScreen.get().isPreviousPageHeadingVisible(pageHeading)).as(String.format("User is still on %s page", pageHeading)).isFalse();
         return this;
     }
 

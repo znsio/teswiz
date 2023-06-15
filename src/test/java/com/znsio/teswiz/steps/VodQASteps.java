@@ -36,6 +36,15 @@ public class VodQASteps {
     public void isElementWithTextVisible() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
     }
+    @When("I tap in the middle of the screen")
+    public void iTapInTheMiddleOfTheScreen() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).tapInTheMiddleOfTheScreen();
+    }
+
+    @Then("I am able to move from {string} page to next page")
+    public void iAmAbleToMoveFromPageToNextPage(String pageHeading) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyUserMoveToNextPage(pageHeading);
+    }
 
     @Then("I am able to see hacker news login option inside webview section")
     public void iAmAbleToSeeHackerNewsLoginOptionInsideWebViewSection() {
