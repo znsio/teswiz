@@ -17,9 +17,9 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byCLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' C']");
     private final By byRubyLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Ruby']");
     private final By byJasmineLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Jasmine']");
-    private String screenSelectionXpath = "//android.view.ViewGroup[@content-desc='%s']";
-    private String swipeViewXpath = "//android.widget.TextView[@text='%s']";
-    private String swipeViewTileXpath = "//android.view.ViewGroup[@content-desc='view%s']/android.view.ViewGroup";
+    private final String screenSelectionXpath = "//android.view.ViewGroup[@content-desc='%s']";
+    private final String swipeViewXpath = "//android.widget.TextView[@text='%s']";
+    private final String swipeViewTileXpath = "//android.view.ViewGroup[@content-desc='view%s']/android.view.ViewGroup";
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -55,7 +55,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public VodqaScreen selectScreen(String screenName) {
-        By byScreenNameXpath = By.xpath(String.format(screenSelectionXpath, screenName));
+        By byScreenNameXpath = AppiumBy.xpath(String.format(screenSelectionXpath, screenName));
         driver.waitTillElementIsPresent(byScreenNameXpath);
         driver.findElement(byScreenNameXpath).click();
         return this;
@@ -63,7 +63,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public VodqaScreen swipeLeft() {
-        By bySwipeViewXpath = By.xpath(String.format(swipeViewXpath, "1"));
+        By bySwipeViewXpath = AppiumBy.xpath(String.format(swipeViewXpath, "1"));
         if (driver.waitTillElementIsPresent(bySwipeViewXpath).isDisplayed()) {
             driver.swipeLeft();
         }
@@ -71,15 +71,15 @@ public class VodqaScreenAndroid extends VodqaScreen {
     }
 
     @Override
-    public boolean verifySwipe(String tileNumber) {
-        boolean isSwipeSuccessful = driver.findElement(By.xpath(String.format(swipeViewXpath, tileNumber))).isDisplayed();
-        visually.check(SCREEN_NAME, "Carousel Tile after swipe", Target.region(By.xpath(String.format(swipeViewTileXpath, tileNumber))));
+    public boolean verifySwipe(String elementText) {
+        boolean isSwipeSuccessful = driver.findElement(AppiumBy.xpath(String.format(swipeViewXpath, elementText))).isDisplayed();
+        visually.check(SCREEN_NAME, "Carousel Tile after swipe", Target.region(AppiumBy.xpath(String.format(swipeViewTileXpath, elementText))));
         return isSwipeSuccessful;
     }
 
     @Override
     public VodqaScreen swipeRight() {
-        By bySwipeViewXpath = By.xpath(String.format(swipeViewXpath, "1"));
+        By bySwipeViewXpath = AppiumBy.xpath(String.format(swipeViewXpath, "1"));
         if (driver.waitTillElementIsPresent(bySwipeViewXpath).isDisplayed()) {
             driver.swipeRight();
         }
@@ -88,7 +88,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public VodqaScreen swipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentageWidth, int toPercentScreenWidth) {
-        By bySwipeViewXpath = By.xpath(String.format(swipeViewXpath, "1"));
+        By bySwipeViewXpath = AppiumBy.xpath(String.format(swipeViewXpath, "1"));
         if (driver.waitTillElementIsPresent(bySwipeViewXpath).isDisplayed()) {
             driver.swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentageWidth, toPercentScreenWidth);
         }

@@ -49,7 +49,7 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL selectAScreenAndSwipeLeft(String screenName) {
+    public VodqaBL selectScreenAndSwipeLeft(String screenName) {
         VodqaScreen.get().selectScreen(screenName).swipeLeft();
         return this;
     }
@@ -61,12 +61,12 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL selectAScreenAndSwipeRight(String screenName) {
+    public VodqaBL selectScreenAndSwipeRight(String screenName) {
         VodqaScreen.get().selectScreen(screenName).swipeRight();
         return this;
     }
 
-    public VodqaBL selectAScreenAndSwipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth, String screenName) {
+    public VodqaBL selectScreenAndSwipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth, String screenName) {
         VodqaScreen.get().selectScreen(screenName)
                 .swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth);
         return this;

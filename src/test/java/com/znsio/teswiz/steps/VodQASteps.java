@@ -39,12 +39,12 @@ public class VodQASteps {
 
     @When("I swipe left on {string} screen")
     public void selectScreenAndSwipeLeft(String screenName) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectAScreenAndSwipeLeft(screenName);
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectScreenAndSwipeLeft(screenName);
     }
 
     @When("I swipe right on {string} screen")
     public void selectScreenAndSwipeRight(String screenName) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectAScreenAndSwipeRight(screenName);
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectScreenAndSwipeRight(screenName);
     }
 
     @Then("I am able to see element with text {string} on the screen")
@@ -55,6 +55,6 @@ public class VodQASteps {
     @When("I swipe at {int} percent height from {int} percent width to {int} percent width on {string} screen")
     public void iSwipeAtPercentHeightFromPercentWidthToPercentWidthOnScreen(int atPercentileHeight, int fromPercentageWidth, int toPercentageWidth, String screenName) {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform())
-                .selectAScreenAndSwipeByPassingPercentageAttributes(atPercentileHeight, fromPercentageWidth, toPercentageWidth, screenName);
+                .selectScreenAndSwipeByPassingPercentageAttributes(atPercentileHeight, fromPercentageWidth, toPercentageWidth, screenName);
     }
 }
