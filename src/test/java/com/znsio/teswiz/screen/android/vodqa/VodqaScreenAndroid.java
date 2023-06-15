@@ -1,5 +1,6 @@
 package com.znsio.teswiz.screen.android.vodqa;
 
+import com.applitools.eyes.appium.Target;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
@@ -18,6 +19,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byJasmineLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Jasmine']");
     private String screenSelectionXpath = "//android.view.ViewGroup[@content-desc='%s']";
     private String swipeViewXpath = "//android.widget.TextView[@text='%s']";
+    private String swipeViewTileXpath = "//android.view.ViewGroup[@content-desc='view%s']/android.view.ViewGroup";
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -70,7 +72,9 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public boolean verifySwipe(String tileNumber) {
-        return driver.findElement(By.xpath(String.format(swipeViewXpath, tileNumber))).isDisplayed();
+        boolean isSwipeSuccessful = driver.findElement(By.xpath(String.format(swipeViewXpath, tileNumber))).isDisplayed();
+        visually.check(SCREEN_NAME, "Carousel Tile after swipe", Target.region(By.xpath(String.format(swipeViewTileXpath, tileNumber))));
+        return isSwipeSuccessful;
     }
 
     @Override
