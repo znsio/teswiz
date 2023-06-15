@@ -39,4 +39,6 @@ public abstract class VodqaScreen {
     public abstract boolean isSwipeSuccessful(String tileNumber);
     public abstract VodqaScreen swipeRight();
     public abstract VodqaScreen swipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth);
+    public abstract VodqaScreen putAppInTheBackground(int time);
+    public abstract boolean validateAppWorkInBackground();
 }

@@ -5,6 +5,7 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
@@ -128,5 +129,19 @@ public class VodqaScreenAndroid extends VodqaScreen {
                 Target.region(AppiumBy.xpath(String.format(swipeViewTileXpath, "1"))));
         driver.swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentageWidth, toPercentScreenWidth);
         return this;
+    }
+
+
+    @Override
+    public VodqaScreen putAppInTheBackground(int time) {
+        driver.putAppInBackground(time);
+        visually.checkWindow(SCREEN_NAME, "Home screen after putting app in background");
+        return this;
+    }
+
+    public boolean validateAppWorkInBackground() {
+        LOGGER.info("Validating current app package to know app work in background");
+        String getPackageDetails = ((AndroidDriver) driver.getInnerDriver()).getCapabilities().getCapability("appPackage").toString();
+        return getPackageDetails.equals("com.vodqareactnative");
     }
 }
