@@ -28,6 +28,7 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
+import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
 
 public class Driver {
@@ -283,6 +285,33 @@ public class Driver {
         LOGGER.info(String.format("height: %s, from width: %s, to width: %s", height, fromWidth,
                                   toWidth));
         swipe(height, fromWidth, toWidth);
+    }
+
+    public void swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth) {
+        if (!checkPercentagesAreValid(percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth)) {
+            throw new RuntimeException(String.format("Invalid percentage value - percentage value should be between 0 - 100." +
+                            " percentScreenHeight: %s, fromPercentScreenWidth: %s, toPercentScreenWidth: %s",
+                    percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth));
+        }
+        LOGGER.info(String.format("percent attributes passed to method are: percentScreenHeight: %s, fromPercentScreenWidth: %s, toPercentScreenWidth: %s",
+                percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth));
+        int height = getWindowHeight() * percentScreenHeight / 100;
+        int fromWidth = getWindowWidth() * fromPercentScreenWidth / 100;
+        int toWidth = getWindowWidth() * toPercentScreenWidth / 100;
+        LOGGER.info(String.format("swipe gesture at height: %s, from width: %s, to width: %s", height, fromWidth, toWidth));
+        swipe(height, fromWidth, toWidth);
+    }
+
+    private void swipe(int height, int fromWidth, int toWidth) {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence sequence = new Sequence(finger, 1);
+        sequence.addAction(finger.createPointerMove(ofMillis(0), PointerInput.Origin.viewport(), fromWidth, height));
+        sequence.addAction(finger.createPointerDown(PointerInput.MouseButton.MIDDLE.asArg()));
+        sequence.addAction(new Pause(finger, ofMillis(600)));
+        sequence.addAction(finger.createPointerMove(ofMillis(600), PointerInput.Origin.viewport(), toWidth, height));
+        sequence.addAction(finger.createPointerUp(PointerInput.MouseButton.MIDDLE.asArg()));
+        appiumDriver.perform(singletonList(sequence));
     }
 
     public void openNotifications() {
