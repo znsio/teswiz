@@ -47,6 +47,32 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyUserMoveToNextPage(pageHeading);
     }
 
+    @When("I scroll down by screen size on vertical swiping screen")
+    public void iScrollDownByScreenSizeOnVerticalSwipingScreen() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollDownByScreenSizeOnVerticalSwipingScreen();
+    }
+
+    @When("I swipe left on {string} screen")
+    public void selectScreenAndSwipeLeft(String screenName) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectScreenAndSwipeLeft(screenName);
+    }
+
+    @When("I swipe right on {string} screen")
+    public void selectScreenAndSwipeRight(String screenName) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectScreenAndSwipeRight(screenName);
+    }
+
+    @Then("I am able to see element with text {string} on the screen")
+    public void iAmAbleToSeeElementWithTextOnTheScreen(String elementText) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifySwipe(elementText);
+    }
+
+    @When("I swipe at {int} percent height from {int} percent width to {int} percent width on {string} screen")
+    public void iSwipeAtPercentHeightFromPercentWidthToPercentWidthOnScreen(int atPercentileHeight, int fromPercentageWidth, int toPercentageWidth, String screenName) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform())
+                .selectScreenAndSwipeByPassingPercentageAttributes(atPercentileHeight, fromPercentageWidth, toPercentageWidth, screenName);
+    }
+
     @Then("I am able to view hacker news login button inside web view section")
     public void iAmAbleToViewHackerNewsLoginButtonInsideWebViewSection() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).enterAndVerifyLoginOptionUnderWebViewSection();

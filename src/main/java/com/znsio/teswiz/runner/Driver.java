@@ -28,6 +28,7 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -42,6 +43,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
+import static java.time.Duration.ofMillis;
+import static java.time.Duration.ofSeconds;
 import static java.util.Collections.singletonList;
 
 public class Driver {
@@ -168,17 +171,12 @@ public class Driver {
         Dimension windowSize = appiumDriver.manage().window().getSize();
         LOGGER.info(DIMENSION + windowSize.toString());
         int width = windowSize.width / 2;
-        int fromHeight = (int) (windowSize.height * 0.9);
-        int toHeight = (int) (windowSize.height * 0.5);
+        int fromHeight = (int) (windowSize.height * 0.2);
+        int toHeight = (int) (windowSize.height * 0.8);
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
-        throw new NotImplementedException("To be migrated to appium 2.0");
-        // todo - to be implemented in appium 2.0
-//        TouchAction touchAction = new TouchAction(appiumDriver);
-//        touchAction.press(PointOption.point(new Point(width, fromHeight)))
-//                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-//                   .moveTo(PointOption.point(new Point(width, toHeight)))
-//                   .release()
-//                   .perform();
+        Point from=new Point(width,fromHeight);
+        Point to=new Point(width,toHeight);
+        scroll(from,to);
     }
 
     public void scrollVertically(int fromPercentScreenHeight, int toPercentScreenHeight,
@@ -191,14 +189,9 @@ public class Driver {
         int toHeight = (windowSize.height * toPercentScreenHeight) / 100;
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
-        throw new NotImplementedException("To be migrated to appium 2.0");
-// todo - to be implemented in appium 2.0
-//        TouchAction touchAction = new TouchAction(appiumDriver);
-//        touchAction.press(PointOption.point(new Point(width, fromHeight)))
-//                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-//                   .moveTo(PointOption.point(new Point(width, toHeight)))
-//                   .release()
-//                   .perform();
+        Point from=new Point(width,fromHeight);
+        Point to=new Point(width,toHeight);
+        scroll(from,to);
     }
 
     public void tapOnMiddleOfScreen() {
@@ -245,14 +238,6 @@ public class Driver {
         waitFor(1);
     }
 
-    public void swipeRight() {
-        int height = getWindowHeight() / 2;
-        int fromWidth = (int) (getWindowWidth() * 0.5);
-        int toWidth = (int) (getWindowWidth() * 0.9);
-        LOGGER.info("height: " + height + ", from width: " + fromWidth + ", to width: " + toWidth);
-        swipe(height, fromWidth, toWidth);
-    }
-
     private int getWindowHeight() {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage().window().getSize();
@@ -265,25 +250,51 @@ public class Driver {
         return appiumDriver.manage().window().getSize().width;
     }
 
-    private void swipe(int height, int fromWidth, int toWidth) {
-        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
-        throw new NotImplementedException("To be migrated to appium 2.0");
-// todo - to be implemented in appium 2.0
-//        TouchAction touchAction = new TouchAction(appiumDriver);
-//        touchAction.press(PointOption.point(new Point(fromWidth, height)))
-//                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-//                   .moveTo(PointOption.point(new Point(toWidth, height)))
-//                   .release()
-//                   .perform();
+    private void checkPercentagesAreValid(int... percentages) {
+        boolean arePercentagesValid = Arrays.stream(percentages).allMatch(percentage -> percentage >= 0 && percentage <= 100);
+        if (!arePercentagesValid) {
+            throw new RuntimeException(String.format("Invalid percentage value - percentage value should be between 0 - 100. but are %s",
+                    Arrays.toString(percentages)));
+        }
+    }
+
+    public void swipeRight() {
+        int height = getWindowHeight() / 2;
+        int fromWidth = (int) (getWindowWidth() * 0.2);
+        int toWidth = (int) (getWindowWidth() * 0.7);
+        LOGGER.info(String.format("height: %s, from width: %s, to width: %s", height, fromWidth, toWidth));
+        swipe(height, fromWidth, toWidth);
     }
 
     public void swipeLeft() {
         int height = getWindowHeight() / 2;
-        int fromWidth = (int) (getWindowWidth() * 0.9);
-        int toWidth = (int) (getWindowWidth() * 0.5);
-        LOGGER.info(String.format("height: %s, from width: %s, to width: %s", height, fromWidth,
-                                  toWidth));
+        int fromWidth = (int) (getWindowWidth() * 0.8);
+        int toWidth = (int) (getWindowWidth() * 0.3);
+        LOGGER.info(String.format("height: %s, from width: %s, to width: %s", height, fromWidth, toWidth));
         swipe(height, fromWidth, toWidth);
+    }
+
+    public void swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth) {
+        LOGGER.info(String.format("percent attributes passed to method are: percentScreenHeight: %s, fromPercentScreenWidth: %s, toPercentScreenWidth: %s",
+                percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth));
+        checkPercentagesAreValid(percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth);
+        int height = getWindowHeight() * percentScreenHeight / 100;
+        int fromWidth = getWindowWidth() * fromPercentScreenWidth / 100;
+        int toWidth = getWindowWidth() * toPercentScreenWidth / 100;
+        LOGGER.info(String.format("swipe gesture at height: %s, from width: %s, to width: %s", height, fromWidth, toWidth));
+        swipe(height, fromWidth, toWidth);
+    }
+
+    private void swipe(int height, int fromWidth, int toWidth) {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence sequence = new Sequence(finger, 1);
+        sequence.addAction(finger.createPointerMove(ofMillis(0), PointerInput.Origin.viewport(), fromWidth, height));
+        sequence.addAction(finger.createPointerDown(PointerInput.MouseButton.MIDDLE.asArg()));
+        sequence.addAction(new Pause(finger, ofSeconds(1)));
+        sequence.addAction(finger.createPointerMove(ofSeconds(1), PointerInput.Origin.viewport(), toWidth, height));
+        sequence.addAction(finger.createPointerUp(PointerInput.MouseButton.MIDDLE.asArg()));
+        appiumDriver.perform(singletonList(sequence));
     }
 
     public void openNotifications() {
@@ -293,19 +304,22 @@ public class Driver {
         waitFor(2);
     }
 
-    public void selectNotification(By selectNotificationLocator) {
+    public void selectNotificationFromNotificationDrawer(By selectNotificationLocator) {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        Dimension screenSize = appiumDriver.manage().window().getSize();
+        PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
+        Sequence dragNotificationBar = new Sequence(touch, 1);
+        dragNotificationBar.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), screenSize.width / 2, 0));
+        dragNotificationBar.addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        dragNotificationBar.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), screenSize.width / 2, screenSize.height));
+        dragNotificationBar.addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        appiumDriver.perform(singletonList(dragNotificationBar));
+        appiumDriver.perform(singletonList(dragNotificationBar));
+        waitFor(1);
+
         WebElement selectNotificationElement = driver.findElement(selectNotificationLocator);
         LOGGER.info("Notification found: " + selectNotificationElement.isDisplayed());
-        Point notificationCoordinates = selectNotificationElement.getLocation();
-
-        throw new NotImplementedException("To be migrated to appium 2.0");
-        // todo - to be implemented in appium 2.0
-//        TouchAction touchAction = new TouchAction(appiumDriver);
-//        touchAction.tap(PointOption.point(notificationCoordinates))
-//                   .perform();
-//        LOGGER.info("Tapped on notification. Go back to meeting");
-//        waitFor(3);
+        selectNotificationElement.click();
     }
 
     public void putAppInBackground(int duration) {

@@ -37,6 +37,20 @@ public abstract class VodqaScreen {
 
     public abstract boolean isPreviousPageHeadingVisible(String pageHeading);
 
+    public abstract VodqaScreen openVerticalSwipingScreen();
+
+    public abstract VodqaScreen scrollDownByScreenSize();
+
+    public abstract VodqaScreen selectScreen(String screenName);
+
+    public abstract VodqaScreen swipeLeft();
+
+    public abstract boolean isSwipeSuccessful(String tileNumber);
+
+    public abstract VodqaScreen swipeRight();
+
+    public abstract VodqaScreen swipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth);
+
     public abstract WebViewScreen enterIntoNewsWebViewSection();
 
     public abstract NativeViewScreen enterIntoNativeViewSection();
