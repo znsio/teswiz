@@ -32,4 +32,7 @@ public abstract class VodqaScreen {
     public abstract boolean isElementWithTextVisible();
     public abstract VodqaScreen tapInTheMiddle();
     public abstract boolean isPreviousPageHeadingVisible(String pageHeading);
+    public abstract VodqaScreen openVerticalSwipingScreen();
+    public abstract VodqaScreen scrollDownByScreenSize();
+
 }

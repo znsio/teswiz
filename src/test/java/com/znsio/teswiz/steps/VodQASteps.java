@@ -44,4 +44,10 @@ public class VodQASteps {
     public void iAmAbleToMoveFromPageToNextPage(String pageHeading) {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyUserMoveToNextPage(pageHeading);
     }
+  
+    @When("I scroll down by screen size on vertical swiping screen")
+    public void iScrollDownByScreenSizeOnVerticalSwipingScreen() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollDownByScreenSizeOnVerticalSwipingScreen();
+
+    }
 }
