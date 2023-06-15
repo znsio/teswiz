@@ -246,14 +246,6 @@ public class Driver {
         waitFor(1);
     }
 
-    public void swipeRight() {
-        int height = getWindowHeight() / 2;
-        int fromWidth = (int) (getWindowWidth() * 0.5);
-        int toWidth = (int) (getWindowWidth() * 0.9);
-        LOGGER.info("height: " + height + ", from width: " + fromWidth + ", to width: " + toWidth);
-        swipe(height, fromWidth, toWidth);
-    }
-
     private int getWindowHeight() {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage().window().getSize();
@@ -266,24 +258,23 @@ public class Driver {
         return appiumDriver.manage().window().getSize().width;
     }
 
-    private void swipe(int height, int fromWidth, int toWidth) {
-        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
-        throw new NotImplementedException("To be migrated to appium 2.0");
-// todo - to be implemented in appium 2.0
-//        TouchAction touchAction = new TouchAction(appiumDriver);
-//        touchAction.press(PointOption.point(new Point(fromWidth, height)))
-//                   .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-//                   .moveTo(PointOption.point(new Point(toWidth, height)))
-//                   .release()
-//                   .perform();
+    private boolean checkPercentagesAreValid(int... percentages) {
+        return Arrays.stream(percentages).allMatch(percentage -> percentage >= 0 && percentage <= 100);
+    }
+
+    public void swipeRight() {
+        int height = getWindowHeight() / 2;
+        int fromWidth = (int) (getWindowWidth() * 0.2);
+        int toWidth = (int) (getWindowWidth() * 0.7);
+        LOGGER.info(String.format("height: %s, from width: %s, to width: %s", height, fromWidth, toWidth));
+        swipe(height, fromWidth, toWidth);
     }
 
     public void swipeLeft() {
         int height = getWindowHeight() / 2;
-        int fromWidth = (int) (getWindowWidth() * 0.9);
-        int toWidth = (int) (getWindowWidth() * 0.5);
-        LOGGER.info(String.format("height: %s, from width: %s, to width: %s", height, fromWidth,
-                                  toWidth));
+        int fromWidth = (int) (getWindowWidth() * 0.8);
+        int toWidth = (int) (getWindowWidth() * 0.3);
+        LOGGER.info(String.format("height: %s, from width: %s, to width: %s", height, fromWidth, toWidth));
         swipe(height, fromWidth, toWidth);
     }
 
