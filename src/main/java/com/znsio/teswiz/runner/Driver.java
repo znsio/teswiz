@@ -44,6 +44,7 @@ import java.util.Set;
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
 import static java.time.Duration.ofMillis;
+import static java.time.Duration.ofSeconds;
 import static java.util.Collections.singletonList;
 
 public class Driver {
@@ -299,8 +300,8 @@ public class Driver {
         Sequence sequence = new Sequence(finger, 1);
         sequence.addAction(finger.createPointerMove(ofMillis(0), PointerInput.Origin.viewport(), fromWidth, height));
         sequence.addAction(finger.createPointerDown(PointerInput.MouseButton.MIDDLE.asArg()));
-        sequence.addAction(new Pause(finger, ofMillis(600)));
-        sequence.addAction(finger.createPointerMove(ofMillis(600), PointerInput.Origin.viewport(), toWidth, height));
+        sequence.addAction(new Pause(finger, ofSeconds(1)));
+        sequence.addAction(finger.createPointerMove(ofSeconds(1), PointerInput.Origin.viewport(), toWidth, height));
         sequence.addAction(finger.createPointerUp(PointerInput.MouseButton.MIDDLE.asArg()));
         appiumDriver.perform(singletonList(sequence));
     }
