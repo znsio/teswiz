@@ -16,6 +16,8 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byCLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' C']");
     private final By byRubyLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Ruby']");
     private final By byJasmineLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Jasmine']");
+    private String screenSelectionXpath = "//android.view.ViewGroup[@content-desc='%s']";
+    private String swipeViewXpath = "//android.widget.TextView[@text='%s']";
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -47,5 +49,45 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public boolean isElementWithTextVisible() {
         return driver.isElementPresent(byJasmineLanguageTextView);
+    }
+
+    @Override
+    public VodqaScreen selectAScreen(String screenName) {
+        By byScreenNameXpath = By.xpath(String.format(screenSelectionXpath, screenName));
+        driver.waitTillElementIsPresent(byScreenNameXpath);
+        driver.findElement(byScreenNameXpath).click();
+        return this;
+    }
+
+    @Override
+    public VodqaScreen swipeLeft() {
+        By bySwipeViewXpath = By.xpath(String.format(swipeViewXpath, "1"));
+        if (driver.waitTillElementIsPresent(bySwipeViewXpath).isDisplayed()) {
+            driver.swipeLeft();
+        }
+        return this;
+    }
+
+    @Override
+    public boolean verifySwipe(String tileNumber) {
+        return driver.findElement(By.xpath(String.format(swipeViewXpath, tileNumber))).isDisplayed();
+    }
+
+    @Override
+    public VodqaScreen swipeRight() {
+        By bySwipeViewXpath = By.xpath(String.format(swipeViewXpath, "1"));
+        if (driver.waitTillElementIsPresent(bySwipeViewXpath).isDisplayed()) {
+            driver.swipeRight();
+        }
+        return this;
+    }
+
+    @Override
+    public VodqaScreen swipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentageWidth, int toPercentScreenWidth) {
+        By bySwipeViewXpath = By.xpath(String.format(swipeViewXpath, "1"));
+        if (driver.waitTillElementIsPresent(bySwipeViewXpath).isDisplayed()) {
+            driver.swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentageWidth, toPercentScreenWidth);
+        }
+        return this;
     }
 }

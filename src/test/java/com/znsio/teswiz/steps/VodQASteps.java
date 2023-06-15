@@ -2,7 +2,6 @@ package com.znsio.teswiz.steps;
 
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
-import com.znsio.teswiz.businessLayer.calculator.CalculatorBL;
 import com.znsio.teswiz.businessLayer.vodqa.VodqaBL;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
@@ -36,5 +35,26 @@ public class VodQASteps {
     @Then("Element text should be visible")
     public void isElementWithTextVisible() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
+    }
+
+    @When("I swipe left on {string} screen")
+    public void iSwipeLeftOnScreen(String screenName) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectAScreenAndSwipeLeft(screenName);
+    }
+
+    @Then("I see tile element {string} on the screen")
+    public void iSeeTileElementOnTheScreen(String tileNumber) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifySwipe(tileNumber);
+    }
+
+    @When("I swipe right on {string} screen")
+    public void iSwipeRightOnScreen(String screenName) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectAScreenAndSwipeRight(screenName);
+    }
+
+    @When("I swipe at percentage height {int} from percentage width {int} to percentage width {int} on {string} screen")
+    public void iSwipeAtPercentageHeightFromPercentageWidthToPercentageWidthOnScreen(int atPercentileHeight, int fromPercentageWidth, int toPercentageWidth, String screenName) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform())
+                .selectAScreenAndSwipeByPassingPercentageAttributes(atPercentileHeight, fromPercentageWidth, toPercentageWidth, screenName);
     }
 }

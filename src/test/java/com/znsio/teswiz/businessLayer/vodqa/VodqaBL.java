@@ -48,4 +48,27 @@ public class VodqaBL {
         assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
         return this;
     }
+
+    public VodqaBL selectAScreenAndSwipeLeft(String screenName) {
+        VodqaScreen.get().selectAScreen(screenName).swipeLeft();
+        return this;
+    }
+
+    public VodqaBL verifySwipe(String tileNumber) {
+        assertThat(VodqaScreen.get().verifySwipe(tileNumber))
+                .as("swipe was not successful")
+                .isTrue();
+        return this;
+    }
+
+    public VodqaBL selectAScreenAndSwipeRight(String screenName) {
+        VodqaScreen.get().selectAScreen(screenName).swipeRight();
+        return this;
+    }
+
+    public VodqaBL selectAScreenAndSwipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth, String screenName) {
+        VodqaScreen.get().selectAScreen(screenName)
+                .swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth);
+        return this;
+    }
 }
