@@ -111,5 +111,12 @@ public class VodqaBL {
                 .isTrue();
         return this;
     }
+
+    public VodqaBL appWorksInBackground(int time) {
+        LOGGER.info("Validating app working in background");
+        boolean isAppWorkInBackground =  VodqaScreen.get().putAppInTheBackground(time).validateAppWorkInBackground();
+        assertThat(isAppWorkInBackground).as(String.format("App do not works in background")).isTrue();
+        return this;
+    }
 }
 

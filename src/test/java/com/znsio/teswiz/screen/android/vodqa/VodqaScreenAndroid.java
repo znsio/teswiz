@@ -7,6 +7,7 @@ import com.znsio.teswiz.screen.vodqa.NativeViewScreen;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
 import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
@@ -16,7 +17,6 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final Visual visually;
     private final String SCREEN_NAME = VodqaScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(VodqaScreenAndroid.class.getName());
-
     private final By byLoginButton = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='login']/android.widget.Button");
     private final By byVerticalSwipeViewGroup = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='verticalSwipe']");
     private final By byCLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' C']");
@@ -149,5 +149,18 @@ public class VodqaScreenAndroid extends VodqaScreen {
         visually.checkWindow(SCREEN_NAME, "Sample List Screen");
         driver.waitTillElementIsVisible(byNativeViewSectionXpath).click();
         return NativeViewScreen.get();
+    }
+
+    @Override
+    public VodqaScreen putAppInTheBackground(int time) {
+        driver.putAppInBackground(time);
+        visually.checkWindow(SCREEN_NAME, "Home screen after putting app in background");
+        return this;
+    }
+
+    public boolean validateAppWorkInBackground() {
+        LOGGER.info("Validating current app package to know app work in background");
+        String getPackageDetails = ((AndroidDriver) driver.getInnerDriver()).getCapabilities().getCapability("appPackage").toString();
+        return getPackageDetails.equals("com.vodqareactnative");
     }
 }
