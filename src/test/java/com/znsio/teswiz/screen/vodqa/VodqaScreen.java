@@ -40,5 +40,5 @@ public abstract class VodqaScreen {
     public abstract VodqaScreen swipeRight();
     public abstract VodqaScreen swipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth);
     public abstract VodqaScreen putAppInTheBackground(int time);
-    public abstract boolean validateAppWorkInBackground();
+    public abstract boolean isAppWorkingInBackground();
 }

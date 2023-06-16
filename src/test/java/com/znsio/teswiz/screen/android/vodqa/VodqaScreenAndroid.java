@@ -2,10 +2,11 @@ package com.znsio.teswiz.screen.android.vodqa;
 
 import com.applitools.eyes.appium.Target;
 import com.znsio.teswiz.runner.Driver;
+import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
+import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import io.appium.java_client.AppiumBy;
-import io.appium.java_client.android.AndroidDriver;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
@@ -25,6 +26,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final String swipeViewTileXpath = "//android.view.ViewGroup[@content-desc='view%s']/android.view.ViewGroup";
     private final By byNativeViewXpath = AppiumBy.xpath("//android.widget.TextView[@content-desc=\"chainedView\"]");
     private final String byPageHeaderXpath = "//android.widget.TextView[@text='%s']";
+
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -57,8 +59,8 @@ public class VodqaScreenAndroid extends VodqaScreen {
     public boolean isElementWithTextVisible() {
         return driver.isElementPresent(byJasmineLanguageTextView);
     }
-    
-        @Override
+
+    @Override
     public VodqaScreen tapInTheMiddle() {
         driver.waitTillElementIsVisible(byNativeViewXpath);
         visually.checkWindow(SCREEN_NAME, "Sample List page");
@@ -134,14 +136,17 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public VodqaScreen putAppInTheBackground(int time) {
-        driver.putAppInBackground(time);
-        visually.checkWindow(SCREEN_NAME, "Home screen after putting app in background");
+        driver.putAppInBackgroundFor(time);
+        visually.checkWindow(SCREEN_NAME, "App screen should visible after putting app in background");
         return this;
     }
 
-    public boolean validateAppWorkInBackground() {
+    public boolean isAppWorkingInBackground() {
         LOGGER.info("Validating current app package to know app work in background");
-        String getPackageDetails = ((AndroidDriver) driver.getInnerDriver()).getCapabilities().getCapability("appPackage").toString();
-        return getPackageDetails.equals("com.vodqareactnative");
+        String adbCommand = "adb shell dumpsys window | grep -E 'mCurrentFocus'";
+        LOGGER.info(adbCommand);
+        String currentOpenApp = CommandLineExecutor.execCommand(new String[]{adbCommand}).toString();
+        String currentAppPackageName = Runner.getAppPackageName();
+        return currentOpenApp.contains(currentAppPackageName);
     }
 }
