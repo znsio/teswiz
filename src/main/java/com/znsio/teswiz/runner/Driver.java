@@ -550,10 +550,8 @@ public class Driver {
         if (direction.equalsIgnoreCase("up")) {
             Arrays.sort(height);
         }
-
-        TouchAction<?> touchAction = new TouchAction<>((PerformsTouchActions) driver);
-        touchAction.press(PointOption.point(width, height[0]))
-                .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-                .moveTo(PointOption.point(width, height[1])).release().perform();
+        Point fromPoint = new Point(width, height[0]);
+        Point toPoint = new Point(width, height[1]);
+        scroll(fromPoint, toPoint);
     }
 }
