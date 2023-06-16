@@ -5,6 +5,7 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
+import com.znsio.teswiz.screen.vodqa.WebViewScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,11 +88,34 @@ public class VodqaBL {
         return this;
     }
 
+    public VodqaBL enterAndVerifyLoginOptionUnderWebViewSection() {
+        LOGGER.info("Entering into hacker news under webView section");
+        assertThat(VodqaScreen.get().enterIntoNewsWebViewSection()
+                .isUserOnNewsWebViewScreen())
+                .as("User unable to navigate to news webview screen")
+                .isTrue();
+
+        LOGGER.info("Verify login option is visible for hacker news under web view");
+        assertThat(WebViewScreen.get().isLoginOptionVisible())
+                .as("Login Option for hacker news under web view is not visible")
+                .isTrue();
+        return this;
+    }
+
+    public VodqaBL enterIntoNativeViewSection() {
+        LOGGER.info("Navigating into Native view section");
+        assertThat(WebViewScreen.get().navigateToSamplesList()
+                .enterIntoNativeViewSection()
+                .isUserOnNativeViewScreen())
+                .as("User Unable to navigate to native view section")
+                .isTrue();
+        return this;
+    }
+
     public VodqaBL scrollInDynamicLayerOnVerticalSwipingScreen() {
         VodqaScreen.get().openVerticalSwipingScreen().scrollInDynamicLayer();
         return this;
     }
-
 
     public VodqaBL isElementWithTextVisible(String elementText) {
         boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible(elementText);
