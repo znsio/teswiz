@@ -139,9 +139,9 @@ public class Driver {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
         Sequence scroller = new Sequence(touch, 1);
-        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), toPoint.getX(), toPoint.getY()));
+        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), fromPoint.getX(), fromPoint.getY()));
         scroller.addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), fromPoint.getX(), fromPoint.getY()));
+        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), toPoint.getX(), toPoint.getY()));
         scroller.addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         LOGGER.info(String.format("fromPoint width: %s, fromPoint height: %s", fromPoint.getX(), fromPoint.getY()));
         LOGGER.info(String.format("toPoint width: %s, toPoint height: %s", toPoint.getX(), toPoint.getY()));
