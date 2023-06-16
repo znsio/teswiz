@@ -2,10 +2,12 @@ package com.znsio.teswiz.screen.android.vodqa;
 
 import com.applitools.eyes.appium.Target;
 import com.znsio.teswiz.runner.Driver;
+import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.vodqa.NativeViewScreen;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
+import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import io.appium.java_client.AppiumBy;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -149,5 +151,22 @@ public class VodqaScreenAndroid extends VodqaScreen {
         visually.checkWindow(SCREEN_NAME, "Sample List Screen");
         driver.waitTillElementIsVisible(byNativeViewSectionXpath).click();
         return NativeViewScreen.get();
+    }
+
+    @Override
+    public VodqaScreen putAppInTheBackground(int time) {
+        driver.putAppInBackgroundFor(time);
+        visually.checkWindow(SCREEN_NAME, "App screen should visible after putting app in background");
+        return this;
+    }
+
+    @Override
+    public boolean isAppWorkingInBackground() {
+        LOGGER.info("Validating current app package to know app work in background");
+        String adbCommand = "adb shell dumpsys window | grep -E 'mCurrentFocus'";
+        LOGGER.info(adbCommand);
+        String currentOpenApp = CommandLineExecutor.execCommand(new String[]{adbCommand}).toString();
+        String currentAppPackageName = Runner.getAppPackageName();
+        return currentOpenApp.contains(currentAppPackageName);
     }
 }

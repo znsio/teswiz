@@ -82,4 +82,9 @@ public class VodQASteps {
     public void iAmAbleToViewSectionHeaderByNavigatingInsideNativeViewSection() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).enterIntoNativeViewSection();
     }
+
+    @Then("App should work in background for {int} sec")
+    public void appShouldWorkInBackgroundForDefinedTime(int time) {
+        new VodqaBL().verifyAppWorksInBackground(time);
+    }
 }
