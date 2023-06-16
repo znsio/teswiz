@@ -86,5 +86,17 @@ public class VodqaBL {
         assertThat(VodqaScreen.get().isPreviousPageHeadingVisible(pageHeading)).as(String.format("User is still on %s page", pageHeading)).isFalse();
         return this;
     }
+
+    public VodqaBL scrollInDynamicLayerOnVerticalSwipingScreen() {
+        VodqaScreen.get().openVerticalSwipingScreen().scrollInDynamicLayer();
+        return this;
+    }
+
+
+    public VodqaBL isElementWithTextVisible(String elementText) {
+        boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible(elementText);
+        assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
+        return this;
+    }
 }
 

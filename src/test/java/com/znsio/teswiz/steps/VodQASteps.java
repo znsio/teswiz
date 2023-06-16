@@ -71,4 +71,14 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform())
                 .selectScreenAndSwipeByPassingPercentageAttributes(atPercentileHeight, fromPercentageWidth, toPercentageWidth, screenName);
     }
+
+    @When("I scroll in dynamic layer on vertical swiping screen")
+    public void iScrollInDynamicLayerOnVerticalSwipingScreen() {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollInDynamicLayerOnVerticalSwipingScreen();
+    }
+
+    @Then("Element text {string} should be visible")
+    public void elementTextShouldBeVisible(String elementText) {
+        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible(elementText);
+    }
 }

@@ -24,6 +24,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final String swipeViewTileXpath = "//android.view.ViewGroup[@content-desc='view%s']/android.view.ViewGroup";
     private final By byNativeViewXpath = AppiumBy.xpath("//android.widget.TextView[@content-desc=\"chainedView\"]");
     private final String byPageHeaderXpath = "//android.widget.TextView[@text='%s']";
+    private final String languageTextView = "//android.widget.TextView[@text=' %s']";
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -128,5 +129,19 @@ public class VodqaScreenAndroid extends VodqaScreen {
                 Target.region(AppiumBy.xpath(String.format(swipeViewTileXpath, "1"))));
         driver.swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentageWidth, toPercentScreenWidth);
         return this;
+    }
+
+    @Override
+    public VodqaScreen scrollInDynamicLayer() {
+        driver.waitTillElementIsPresent(byCLanguageTextView);
+        driver.scrollInDynamicLayer("down");
+        return this;
+    }
+
+    @Override
+    public boolean isElementWithTextVisible(String elementText) {
+        By byLanguageTextView = AppiumBy.xpath(String.format(this.languageTextView, elementText));
+        visually.check(SCREEN_NAME, String.format("%s language element text view", elementText), Target.region(byLanguageTextView));
+        return driver.isElementPresent(byLanguageTextView);
     }
 }
