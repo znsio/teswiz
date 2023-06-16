@@ -51,8 +51,8 @@ public class VodqaScreenAndroid extends VodqaScreen {
         driver.findElement(byVerticalSwipeViewGroup).click();
         driver.waitTillElementIsPresent(byCLanguageTextView);
         visually.checkWindow(SCREEN_NAME, "Vertical Swiping Screen Before Scroll");
-        Point fromPoint = driver.findElement(byCLanguageTextView).getLocation();
-        Point toPoint = driver.findElement(byRubyLanguageTextView).getLocation();
+        Point fromPoint = driver.findElement(byRubyLanguageTextView).getLocation();
+        Point toPoint = driver.findElement(byCLanguageTextView).getLocation();
         driver.scroll(fromPoint, toPoint);
         visually.checkWindow(SCREEN_NAME, "Vertical Swiping Screen After Scroll");
         return this;
