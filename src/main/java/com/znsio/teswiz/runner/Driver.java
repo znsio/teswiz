@@ -171,8 +171,8 @@ public class Driver {
         Dimension windowSize = appiumDriver.manage().window().getSize();
         LOGGER.info(DIMENSION + windowSize.toString());
         int width = windowSize.width / 2;
-        int fromHeight = (int) (windowSize.height * 0.2);
-        int toHeight = (int) (windowSize.height * 0.8);
+        int fromHeight = (int) (windowSize.height * 0.8);
+        int toHeight = (int) (windowSize.height * 0.2);
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
         Point from=new Point(width,fromHeight);
         Point to=new Point(width,toHeight);
