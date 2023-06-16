@@ -159,6 +159,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
         return this;
     }
 
+    @Override
     public boolean isAppWorkingInBackground() {
         LOGGER.info("Validating current app package to know app work in background");
         String adbCommand = "adb shell dumpsys window | grep -E 'mCurrentFocus'";
