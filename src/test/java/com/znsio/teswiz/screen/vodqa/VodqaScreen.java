@@ -57,5 +57,5 @@ public abstract class VodqaScreen {
 
     public abstract VodqaScreen putAppInTheBackground(int time);
 
-    public abstract boolean validateAppWorkInBackground();
+    public abstract boolean isAppWorkingInBackground();
 }

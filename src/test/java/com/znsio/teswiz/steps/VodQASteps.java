@@ -85,6 +85,6 @@ public class VodQASteps {
 
     @Then("App should work in background for {int} sec")
     public void appShouldWorkInBackgroundForDefinedTime(int time) {
-        new VodqaBL().appWorksInBackground(time);
+        new VodqaBL().verifyAppWorksInBackground(time);
     }
 }
