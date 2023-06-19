@@ -231,8 +231,10 @@ class AppiumDriverManager {
     static void closeAppiumDriver(String userPersona, Driver driver) {
         if(Runner.getPlatform().equals(Platform.windows)) {
             closeWindowsAppOnMachine(userPersona, driver);
-        } else {
+        } else if(Runner.getPlatform().equals(Platform.android)){
             closeAndroidAppOnDevice(userPersona, driver);
+        }else {
+            throw new InvalidTestDataException(String.format("No implementation for platform: %s", Runner.getPlatform()));
         }
     }
 
