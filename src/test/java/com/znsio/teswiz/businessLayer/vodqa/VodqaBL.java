@@ -1,6 +1,7 @@
 package com.znsio.teswiz.businessLayer.vodqa;
 
 import com.context.TestExecutionContext;
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
@@ -121,9 +122,19 @@ public class VodqaBL {
         return this;
     }
 
+    public VodqaBL scrollInDynamicLayerOnVerticalSwipingScreen(Direction direction) {
+        VodqaScreen.get().openVerticalSwipingScreen().scrollDownInDynamicLayer(direction);
+        return this;
+    }
+
+    public VodqaBL isElementWithTextVisible(String elementText) {
+        boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible(elementText);
+        assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
+        return this;
+    }
+  
     public VodqaBL scrollVerticallyByPercentageOnVerticalSwipingScreen(int fromPercentHeight, int toPercentHeight, int percentWidth) {
         VodqaScreen.get().openVerticalSwipingScreen().scrollVerticallyByPercentage(fromPercentHeight, toPercentHeight, percentWidth);
         return this;
     }
 }
-

@@ -1,5 +1,6 @@
 package com.znsio.teswiz.screen.vodqa;
 
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Drivers;
@@ -59,5 +60,9 @@ public abstract class VodqaScreen {
 
     public abstract boolean isAppWorkingInBackground();
 
+    public abstract VodqaScreen scrollDownInDynamicLayer(Direction direction);
+
+    public abstract boolean isElementWithTextVisible(String elementText);
+  
     public abstract VodqaScreen scrollVerticallyByPercentage(int fromPercentHeight, int toPercentHeight, int percentWidth);
 }

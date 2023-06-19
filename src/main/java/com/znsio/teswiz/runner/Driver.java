@@ -1,6 +1,7 @@
 package com.znsio.teswiz.runner;
 
 import com.google.common.collect.ImmutableMap;
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.FileNotUploadedException;
 import io.appium.java_client.AppiumBy;
@@ -17,7 +18,6 @@ import io.appium.java_client.remote.SupportsContextSwitching;
 import io.appium.java_client.touch.LongPressOptions;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
-import io.appium.java_client.touch.offset.PointOption;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -139,9 +139,9 @@ public class Driver {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
         Sequence scroller = new Sequence(touch, 1);
-        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), toPoint.getX(), toPoint.getY()));
+        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), fromPoint.getX(), fromPoint.getY()));
         scroller.addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), fromPoint.getX(), fromPoint.getY()));
+        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), toPoint.getX(), toPoint.getY()));
         scroller.addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         LOGGER.info(String.format("fromPoint width: %s, fromPoint height: %s", fromPoint.getX(), fromPoint.getY()));
         LOGGER.info(String.format("toPoint width: %s, toPoint height: %s", toPoint.getX(), toPoint.getY()));
@@ -171,8 +171,8 @@ public class Driver {
         Dimension windowSize = appiumDriver.manage().window().getSize();
         LOGGER.info(DIMENSION + windowSize.toString());
         int width = windowSize.width / 2;
-        int fromHeight = (int) (windowSize.height * 0.2);
-        int toHeight = (int) (windowSize.height * 0.8);
+        int fromHeight = (int) (windowSize.height * 0.8);
+        int toHeight = (int) (windowSize.height * 0.2);
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
         Point from=new Point(width,fromHeight);
         Point to=new Point(width,toHeight);
@@ -542,18 +542,17 @@ public class Driver {
         }
     }
 
-    public void scrollInDynamicLayer(String direction) {
+    public void scrollInDynamicLayer(Direction direction) {
         Dimension dimension = driver.manage().window().getSize();
         int width = (int) (dimension.width * 0.5);
-        int fromHeight = (int) (dimension.height * 0.7), toHeight = (int) (dimension.height * 0.6);
+        int fromHeight = (int) (dimension.height * 0.7);
+        int toHeight = (int) (dimension.height * 0.6);
         int[] height = {fromHeight, toHeight};
-        if (direction.equalsIgnoreCase("up")) {
+        if (direction.equals(Direction.UP)) {
             Arrays.sort(height);
         }
-
-        TouchAction<?> touchAction = new TouchAction<>((PerformsTouchActions) driver);
-        touchAction.press(PointOption.point(width, height[0]))
-                .waitAction(WaitOptions.waitOptions(Duration.ofSeconds(1)))
-                .moveTo(PointOption.point(width, height[1])).release().perform();
+        Point fromPoint = new Point(width, height[0]);
+        Point toPoint = new Point(width, height[1]);
+        scroll(fromPoint, toPoint);
     }
 }
