@@ -1,6 +1,7 @@
 package com.znsio.teswiz.runner;
 
 import com.google.common.collect.ImmutableMap;
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.FileNotUploadedException;
 import io.appium.java_client.AppiumBy;
@@ -17,7 +18,6 @@ import io.appium.java_client.remote.SupportsContextSwitching;
 import io.appium.java_client.touch.LongPressOptions;
 import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
-import io.appium.java_client.touch.offset.PointOption;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -547,11 +547,20 @@ public class Driver {
         int width = (int) (dimension.width * 0.5);
         int fromHeight = (int) (dimension.height * 0.7), toHeight = (int) (dimension.height * 0.6);
         int[] height = {fromHeight, toHeight};
-        if (direction.equalsIgnoreCase("up")) {
+
+        if (!checkValidDirection(direction)) {
+            throw new RuntimeException("Invalid direction. require a valid direction enum");
+        }
+
+        if (direction.equals(Direction.UP)) {
             Arrays.sort(height);
         }
         Point fromPoint = new Point(width, height[0]);
         Point toPoint = new Point(width, height[1]);
         scroll(fromPoint, toPoint);
+    }
+
+    private boolean checkValidDirection(String direction) {
+        return direction.equals(Direction.UP) || direction.equals(Direction.DOWN);
     }
 }
