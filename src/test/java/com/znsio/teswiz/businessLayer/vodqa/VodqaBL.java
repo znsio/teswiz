@@ -1,6 +1,7 @@
 package com.znsio.teswiz.businessLayer.vodqa;
 
 import com.context.TestExecutionContext;
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
@@ -121,7 +122,7 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL scrollInDynamicLayerOnVerticalSwipingScreen(String direction) {
+    public VodqaBL scrollInDynamicLayerOnVerticalSwipingScreen(Direction direction) {
         VodqaScreen.get().openVerticalSwipingScreen().scrollDownInDynamicLayer(direction);
         return this;
     }
@@ -137,4 +138,3 @@ public class VodqaBL {
         return this;
     }
 }
-
