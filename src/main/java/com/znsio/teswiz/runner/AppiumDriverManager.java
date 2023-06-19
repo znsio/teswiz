@@ -233,6 +233,8 @@ class AppiumDriverManager {
             closeWindowsAppOnMachine(userPersona, driver);
         } else if(Runner.getPlatform().equals(Platform.android)){
             closeAndroidAppOnDevice(userPersona, driver);
+        }else {
+            throw new InvalidTestDataException(String.format("No implementation for platform: %s", Runner.getPlatform()));
         }
         // todo - fix for appium 2.0, implement new method to terminate app on iOS devices
         else {
