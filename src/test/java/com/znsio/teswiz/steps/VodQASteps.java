@@ -83,6 +83,11 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).enterIntoNativeViewSection();
     }
 
+    @Then("App should work in background for {int} sec")
+    public void appShouldWorkInBackgroundForDefinedTime(int time) {
+        new VodqaBL().verifyAppWorksInBackground(time);
+    }
+
     @When("I scroll in dynamic layer on vertical swiping screen")
     public void iScrollInDynamicLayerOnVerticalSwipingScreen() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollInDynamicLayerOnVerticalSwipingScreen();

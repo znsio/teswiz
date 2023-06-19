@@ -322,10 +322,13 @@ public class Driver {
         selectNotificationElement.click();
     }
 
-    public void putAppInBackground(int duration) {
-        throw new NotImplementedException("To be migrated to appium 2.0");
-        // todo - implement for appium2.0
-//        ((AppiumDriver) driver).runAppInBackground(Duration.ofSeconds(duration));
+    public void putAppInBackgroundFor(int numberOfSeconds) {
+        if (Runner.getPlatform() == Platform.android) {
+            ((AndroidDriver) driver).runAppInBackground(Duration.ofSeconds(numberOfSeconds));
+        } else {
+            throw new NotImplementedException(
+                    "Method is not implemented for " + Runner.getPlatform());
+        }
     }
 
     public void bringAppInForeground() {

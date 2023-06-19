@@ -5,15 +5,15 @@ buildscript {
         gradleVersion = '7.3.3'
         assertJVersion = '3.24.2'
         atdVersion = '54ff762128'
-        applitoolsSeleniumVersion = '5.53.0'
-        applitoolsAppiumVersion = '5.53.0'
+        applitoolsSeleniumVersion = '5.54.0'
+        applitoolsAppiumVersion = '5.54.0'
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.14.2'
         jadbVersion = '1.2.1'
         webDriverManagerVersion = '5.3.3'
         junitVersion = '5.9.3'
         slf4jVersion = '2.0.7'
-        fasterxmlJacksonVersion = '2.15.1'
+        fasterxmlJacksonVersion = '2.15.2'
         jodaTimeVersion = '2.12.5'
         masterThoughtVersion = '5.7.5'
         browserStackLocalVersion = '1.0.7'
@@ -30,7 +30,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.75'
+version '0.0.80'
 
 repositories {
     mavenLocal()
@@ -68,11 +68,7 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion") {
-//        exclude group: 'com.epam.reportportal', module: 'agent-java-cucumber6'
-//        exclude group: 'com.epam.reportportal', module: 'agent-java-testng'
-//        exclude group: 'com.epam.reportportal', module: 'client-java'
-    }
+    implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
@@ -81,12 +77,9 @@ dependencies {
     implementation "org.slf4j:slf4j-api:$project.slf4jVersion"
     implementation "joda-time:joda-time:$project.jodaTimeVersion"
     implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
-    implementation("com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion")
-    implementation("com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion")
+    implementation "com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion"
+    implementation "com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
-//    implementation 'com.epam.reportportal:agent-java-cucumber6:5.0.6'
-//    implementation 'com.epam.reportportal:agent-java-testng:5.2.0'
-//    implementation 'com.epam.reportportal:commons-model:5.8.0'
 }
 
 shadowJar {

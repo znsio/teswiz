@@ -55,6 +55,10 @@ public abstract class VodqaScreen {
 
     public abstract NativeViewScreen enterIntoNativeViewSection();
 
+    public abstract VodqaScreen putAppInTheBackground(int time);
+
+    public abstract boolean isAppWorkingInBackground();
+
     public abstract VodqaScreen scrollInDynamicLayer();
 
     public abstract boolean isElementWithTextVisible(String elementText);
