@@ -8,8 +8,4 @@ public enum Direction {
     Direction(String direction) {
         this.direction = direction;
     }
-
-    public String toString() {
-        return this.direction;
-    }
 }
