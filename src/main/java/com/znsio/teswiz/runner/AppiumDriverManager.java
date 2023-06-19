@@ -313,17 +313,16 @@ class AppiumDriverManager {
         ApplicationState applicationState = null;
         try {
             LOGGER.info(String.format("Terminate app: %s", appPackageName));
-            // todo - fix for appium 2.0
-//            applicationState = appiumDriver.queryAppState(appPackageName);
+            AndroidDriver androidDriver = (AndroidDriver) appiumDriver;
+            applicationState = androidDriver.queryAppState(appPackageName);
 
             logMessage = String.format("App: '%s' Application state before closing app: '%s'%n",
                                        appPackageName, applicationState);
             LOGGER.info(logMessage);
             ReportPortalLogger.logDebugMessage(logMessage);
-            AndroidDriver androidDriver = (AndroidDriver) appiumDriver;
+
             androidDriver.terminateApp(appPackageName);
-            // todo - fix for appium 2.0
-//            applicationState = appiumDriver.queryAppState(appPackageName);
+            applicationState = androidDriver.queryAppState(appPackageName);
             logMessage = String.format("App: '%s' Application state after closing app: '%s'%n",
                                        appPackageName, applicationState);
             LOGGER.info(logMessage);
