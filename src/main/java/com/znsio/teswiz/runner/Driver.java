@@ -542,25 +542,17 @@ public class Driver {
         }
     }
 
-    public void scrollInDynamicLayer(String direction) {
+    public void scrollInDynamicLayer(Direction direction) {
         Dimension dimension = driver.manage().window().getSize();
         int width = (int) (dimension.width * 0.5);
-        int fromHeight = (int) (dimension.height * 0.7), toHeight = (int) (dimension.height * 0.6);
+        int fromHeight = (int) (dimension.height * 0.7);
+        int toHeight = (int) (dimension.height * 0.6);
         int[] height = {fromHeight, toHeight};
-
-        if (!checkValidDirection(direction)) {
-            throw new RuntimeException("Invalid direction. require a valid direction enum");
-        }
-
         if (direction.equals(Direction.UP)) {
             Arrays.sort(height);
         }
         Point fromPoint = new Point(width, height[0]);
         Point toPoint = new Point(width, height[1]);
         scroll(fromPoint, toPoint);
-    }
-
-    private boolean checkValidDirection(String direction) {
-        return direction.equals(Direction.UP) || direction.equals(Direction.DOWN);
     }
 }
