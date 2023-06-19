@@ -119,8 +119,8 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL scrollInDynamicLayerOnVerticalSwipingScreen() {
-        VodqaScreen.get().openVerticalSwipingScreen().scrollInDynamicLayer();
+    public VodqaBL scrollInDynamicLayerOnVerticalSwipingScreen(String direction) {
+        VodqaScreen.get().openVerticalSwipingScreen().scrollDownInDynamicLayer(direction);
         return this;
     }
 

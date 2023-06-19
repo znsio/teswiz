@@ -59,7 +59,7 @@ public abstract class VodqaScreen {
 
     public abstract boolean isAppWorkingInBackground();
 
-    public abstract VodqaScreen scrollInDynamicLayer();
+    public abstract VodqaScreen scrollDownInDynamicLayer(String direction);
 
     public abstract boolean isElementWithTextVisible(String elementText);
 }

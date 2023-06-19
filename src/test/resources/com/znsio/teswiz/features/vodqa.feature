@@ -58,5 +58,5 @@ Feature: Vodqa test
   @android @scrollInDynamicLayer
   Scenario: Validating scroll in dynamic layer functionality
     Given I login to vodqa application using valid credentials
-    When I scroll in dynamic layer on vertical swiping screen
+    When I scroll "down" in dynamic layer on vertical swiping screen
     Then Element text ".net" should be visible
