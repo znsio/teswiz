@@ -33,6 +33,7 @@ public class VodqaBL {
         this.currentUserPersona = SAMPLE_TEST_CONTEXT.ME;
         this.currentPlatform = Runner.getPlatform();
     }
+
     public VodqaBL login() {
         VodqaScreen.get().login();
         return this;
@@ -44,7 +45,7 @@ public class VodqaBL {
     }
 
     public VodqaBL isElementWithTextVisible() {
-        boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible();
+        boolean isScrollSuccessful = VodqaScreen.get().isElementWithTextVisible();
         assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
         return this;
     }
@@ -76,6 +77,7 @@ public class VodqaBL {
         VodqaScreen.get().openVerticalSwipingScreen().scrollDownByScreenSize();
         return this;
     }
+
     public VodqaBL tapInTheMiddleOfTheScreen() {
         LOGGER.info("performTapActionInTheMiddle(): perform tap operation in the middle of the screen");
         VodqaScreen.get().tapInTheMiddle();
@@ -114,8 +116,13 @@ public class VodqaBL {
 
     public VodqaBL verifyAppWorksInBackground(int time) {
         LOGGER.info("Validating app working in background");
-        boolean isAppWorkInBackground =  VodqaScreen.get().putAppInTheBackground(time).isAppWorkingInBackground();
+        boolean isAppWorkInBackground = VodqaScreen.get().putAppInTheBackground(time).isAppWorkingInBackground();
         assertThat(isAppWorkInBackground).as(String.format("App do not works in background")).isTrue();
+        return this;
+    }
+
+    public VodqaBL scrollVerticallyByPercentageOnVerticalSwipingScreen(int fromPercentHeight, int toPercentHeight, int percentWidth) {
+        VodqaScreen.get().openVerticalSwipingScreen().scrollVerticallyByPercentage(fromPercentHeight, toPercentHeight, percentWidth);
         return this;
     }
 }

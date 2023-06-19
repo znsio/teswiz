@@ -64,7 +64,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
         return driver.isElementPresent(byJasmineLanguageTextView);
     }
 
-        @Override
+    @Override
     public VodqaScreen tapInTheMiddle() {
         driver.waitTillElementIsVisible(byNativeViewXpath);
         visually.checkWindow(SCREEN_NAME, "Sample List page");
@@ -168,5 +168,13 @@ public class VodqaScreenAndroid extends VodqaScreen {
         String currentOpenApp = CommandLineExecutor.execCommand(new String[]{adbCommand}).toString();
         String currentAppPackageName = Runner.getAppPackageName();
         return currentOpenApp.contains(currentAppPackageName);
+    }
+
+    @Override
+    public VodqaScreen scrollVerticallyByPercentage(int fromPercentHeight, int toPercentHeight, int percentWidth) {
+        driver.waitTillElementIsPresent(byCLanguageTextView);
+        driver.scrollVertically(fromPercentHeight, toPercentHeight, percentWidth);
+        visually.checkWindow(SCREEN_NAME, "Screen scrolled down");
+        return this;
     }
 }
