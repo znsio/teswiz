@@ -19,7 +19,7 @@ public abstract class VodqaScreen {
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
 
-        switch(platform) {
+        switch (platform) {
             case android:
                 return new VodqaScreenAndroid(driver, visually);
         }
@@ -58,4 +58,6 @@ public abstract class VodqaScreen {
     public abstract VodqaScreen putAppInTheBackground(int time);
 
     public abstract boolean isAppWorkingInBackground();
+
+    public abstract VodqaScreen scrollVerticallyByPercentage(int fromPercentHeight, int toPercentHeight, int percentWidth);
 }
