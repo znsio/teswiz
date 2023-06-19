@@ -1,6 +1,15 @@
 package com.znsio.teswiz.entities;
 
-public class Direction {
-    public static final String UP = "up";
-    public static final String DOWN = "down";
+public enum Direction {
+    UP("up"),
+    DOWN("down");
+    private final String direction;
+
+    Direction(String direction) {
+        this.direction = direction;
+    }
+
+    public String toString() {
+        return this.direction;
+    }
 }
