@@ -33,11 +33,6 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollFromOneElementPointToAnother();
     }
 
-    @Then("Element text should be visible")
-    public void isElementWithTextVisible() {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
-    }
-
     @When("I tap in the middle of the screen")
     public void iTapInTheMiddleOfTheScreen() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).tapInTheMiddleOfTheScreen();

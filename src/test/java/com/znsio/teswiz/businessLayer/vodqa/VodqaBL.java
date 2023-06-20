@@ -45,12 +45,6 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL isElementWithTextVisible() {
-        boolean isScrollSuccessful = VodqaScreen.get().isElementWithTextVisible();
-        assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
-        return this;
-    }
-
     public VodqaBL selectScreenAndSwipeLeft(String screenName) {
         VodqaScreen.get().selectScreen(screenName).swipeLeft();
         return this;
