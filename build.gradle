@@ -5,8 +5,9 @@ buildscript {
         gradleVersion = '7.3.3'
         assertJVersion = '3.24.2'
         atdVersion = '54ff762128'
-        applitoolsSeleniumVersion = '5.54.0'
-        applitoolsAppiumVersion = '5.54.0'
+        applitoolsSeleniumVersion = '5.55.0'
+        applitoolsAppiumVersion = '5.55.0'
+        applitoolsUniversalCoreVersion = '5.55.0'
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.14.2'
         jadbVersion = '1.2.1'
@@ -79,6 +80,7 @@ dependencies {
     implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
     implementation "com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion"
     implementation "com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion"
+    implementation "com.applitools:eyes-universal-core-mac:$project.applitoolsUniversalCoreVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
 }
 
