@@ -24,7 +24,6 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byVerticalSwipeViewGroup = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='verticalSwipe']");
     private final By byCLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' C']");
     private final By byRubyLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Ruby']");
-    private final By byJasmineLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' Jasmine']");
     private final String screenSelectionXpath = "//android.view.ViewGroup[@content-desc='%s']";
     private final String swipeViewXpath = "//android.widget.TextView[@text='%s']";
     private final String swipeViewTileXpath = "//android.view.ViewGroup[@content-desc='view%s']/android.view.ViewGroup";
@@ -59,11 +58,6 @@ public class VodqaScreenAndroid extends VodqaScreen {
         driver.scroll(fromPoint, toPoint);
         visually.checkWindow(SCREEN_NAME, "Vertical Swiping Screen After Scroll");
         return this;
-    }
-
-    @Override
-    public boolean isElementWithTextVisible() {
-        return driver.isElementPresent(byJasmineLanguageTextView);
     }
 
     @Override

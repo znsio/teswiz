@@ -7,7 +7,7 @@ Feature: Vodqa test
   Scenario: Validating scroll functionality using 2 points
     Given I login to vodqa application using valid credentials
     When I scroll from one to another element point on vertical swiping screen
-    Then Element text should be visible
+    Then Element text "Jasmine" should be visible
 
   #  CONFIG=./configs/vodqa_local_config.properties PLATFORM=android TAG=tapInMiddleOfScreen ./gradlew run
   @android @tapInMiddleOfScreen
@@ -21,7 +21,7 @@ Feature: Vodqa test
   Scenario: Validate that user is able to scroll down by screen size
     Given I login to vodqa application using valid credentials
     When I scroll down by screen size on vertical swiping screen
-    Then Element text should be visible
+    Then Element text "Jasmine" should be visible
 
   #  CONFIG=./configs/vodqa_local_config.properties TAG=@swipeLeft PLATFORM=android ./gradlew run
   @android @swipeLeft
@@ -69,4 +69,4 @@ Feature: Vodqa test
   Scenario: Validate that user is able to scroll vertically by screen percentage
     Given I login to vodqa application using valid credentials
     When I scroll vertically from 60 percent height to 20 percent height and 50 percent width
-    Then Element text should be visible
+    Then Element text "Jasmine" should be visible
