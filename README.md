@@ -19,7 +19,7 @@ There are some method name and implementation changes as listed below:
 
 ## New Additions
 
-There are some new methods added:
+There is a new method added:
 
 | Purpose                                                                                            | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
 |:---------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
