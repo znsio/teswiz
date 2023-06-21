@@ -1,7 +1,7 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": "src/test/resources/sampleApps/VodQA.apk",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/VodQA.apk",
     "appPackage": "com.vodqareactnative",
     "appActivity": "com.vodqareactnative.MainActivity",
     "appWaitDuration": 45000,
