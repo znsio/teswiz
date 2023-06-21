@@ -19,6 +19,8 @@ public class InAMeetingScreenAndroid
     private static final By byMeetingId = By.id("com.jio.rilconferences:id/caller_number");
     private static final By byMeetingPasswordId = By.id(
             "com.jio.rilconferences:id/caller_password");
+
+    private static final By byMeetingNotificationXpath = By.xpath("//android.widget.TextView[@text='JioMeet Video call']");
     private static final By byTopHeaderControlsPanelId = By.id("videoTopLayout1");
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
     private final Driver driver;
@@ -53,9 +55,15 @@ public class InAMeetingScreenAndroid
     public String getMeetingPassword() {
         enableInMeetingControls("getMeetingPassword");
         return driver.waitTillElementIsPresent(byMeetingPasswordId).getText()
-                     .replace("Password: ", "");
+                .replace("Password: ", "");
     }
 
+    @Override
+    public InAMeetingScreen openJioMeetNotification() {
+        LOGGER.info("Opening Jio Meeting notification from notification bar ");
+        driver.selectNotificationFromNotificationDrawer(byMeetingNotificationXpath);
+        return this;
+    }
     @Override
     public InAMeetingScreen unmute() {
         enableInMeetingControls("unmute");
@@ -106,7 +114,7 @@ public class InAMeetingScreenAndroid
                 int seconds = 1;
                 LOGGER.info(String.format(
                         "enableInMeetingControls: Called from: '%s', ': headers not displayed. " +
-                        "Wait for '%d' sec and try again",
+                                "Wait for '%d' sec and try again",
                         calledFrom, seconds));
                 waitFor(seconds);
                 retryAttempt++;
@@ -114,7 +122,7 @@ public class InAMeetingScreenAndroid
                 isTopHeaderDisplayed = areInMeetingControlsDisplayed();
                 LOGGER.info(String.format(
                         "enableInMeetingControls: Called from: '%s': retryAttempt: '%d' : are " +
-                        "headers displayed now: '%s'",
+                                "headers displayed now: '%s'",
                         calledFrom, retryAttempt, isTopHeaderDisplayed));
             } while(!isTopHeaderDisplayed && retryAttempt < 8);
             if(!isTopHeaderDisplayed) {

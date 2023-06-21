@@ -112,4 +112,14 @@ public class JioMeetSteps {
         String meetingPassword = context.getTestStateAsString(SAMPLE_TEST_CONTEXT.MEETING_PASSWORD);
         new JoinAMeetingBL(userPersona, onPlatform).joinMeeting(meetingId, meetingPassword);
     }
+
+    @When("I open the JioMeet meeting notification from notification bar")
+    public void iOpenTheNotificationFromNotificationBar() {
+        new InAMeetingBL().openNotificationFromNotificationBar();
+    }
+
+    @Then("I should be able to go back to Meeting")
+    public void iShouldBeAbleToGoBackToMeeting() {
+        new InAMeetingBL().verifyMeetingOpenedInJioMeetApplication();
+    }
 }

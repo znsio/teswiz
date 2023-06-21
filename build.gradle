@@ -4,24 +4,21 @@ buildscript {
     ext {
         gradleVersion = '7.3.3'
         assertJVersion = '3.24.2'
-        atdVersion = 'dbef9be'
-        applitoolsSeleniumVersion = '3.213.0'
-        applitoolsAppiumVersion = '3.213.0'
+        atdVersion = '13.1.0'
+        applitoolsSeleniumVersion = '5.55.0'
+        applitoolsAppiumVersion = '5.55.0'
+        applitoolsUniversalCoreVersion = '5.55.0'
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.14.2'
         jadbVersion = '1.2.1'
-        webDriverManagerVersion = '5.3.2'
-        googleCodeJsonSimpleVersion = '1.1.1'
+        webDriverManagerVersion = '5.3.3'
         junitVersion = '5.9.3'
         slf4jVersion = '2.0.7'
-        reportportalAgentCucumberVersion = '5.0.6'
-        reportportalAgentTestNGVersion = '5.0.11'
-        fasterxmlJacksonVersion = '2.14.2'
-        jsonPathVersion = '2.8.0'
-        everitSchemaValidatorVersion = '1.5.1'
-        jodaTimeVersion = '2.12.4'
+        fasterxmlJacksonVersion = '2.15.2'
+        jodaTimeVersion = '2.12.5'
         masterThoughtVersion = '5.7.5'
         browserStackLocalVersion = '1.0.7'
+        jetbrainsAnnotationsVersion = '24.0.0'
     }
 }
 
@@ -34,7 +31,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.73'
+version '0.0.80'
 
 repositories {
     mavenLocal()
@@ -57,6 +54,7 @@ compileJava {
     options.encoding = "UTF-8"
 }
 
+
 idea {
     module {
         downloadJavadoc = true
@@ -68,35 +66,21 @@ dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
     implementation files("$buildDir/classes/main")
     implementation files("$buildDir/classes/test")
-    implementation "com.googlecode.json-simple:json-simple:$project.googleCodeJsonSimpleVersion"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
     implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
-    implementation "com.jayway.jsonpath:json-path:$project.jsonPathVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
+    implementation "org.jetbrains:annotations:$project.jetbrainsAnnotationsVersion"
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
-    implementation "com.epam.reportportal:agent-java-cucumber6:$project.reportportalAgentCucumberVersion"
     implementation "org.slf4j:slf4j-api:$project.slf4jVersion"
     implementation "joda-time:joda-time:$project.jodaTimeVersion"
     implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
-    implementation("com.epam.reportportal:agent-java-testng:$project.reportportalAgentTestNGVersion") {
-        exclude group: 'com.fasterxml.jackson.core'
-    }
-    implementation("com.applitools:eyes-appium-java3:$project.applitoolsAppiumVersion") {
-        exclude group: 'java-client'
-        exclude group: 'selenium-java'
-        exclude group: 'eyes-connectivity-java5-jersey2x'
-    }
-    implementation("com.applitools:eyes-selenium-java3:$project.applitoolsSeleniumVersion") {
-        exclude group: 'java-client'
-        exclude group: 'selenium-java'
-        exclude group: 'eyes-connectivity-java5-jersey2x'
-    }
-    implementation "com.applitools:eyes-connectivity-java3-jersey1x:$project.applitoolsSeleniumVersion"
-    implementation "org.everit.json:org.everit.json.schema:$project.everitSchemaValidatorVersion"
+    implementation "com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion"
+    implementation "com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion"
+    implementation "com.applitools:eyes-universal-core-mac:$project.applitoolsUniversalCoreVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
 }
 
@@ -177,9 +161,12 @@ task run(type: JavaExec) {
         ]
         args = runnerArgs
 
+        println("Debug mode: " + System.getProperty('debug', 'false'))
         // attach debugger
         if (System.getProperty('debug', 'false') == 'true') {
-            jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
+            println("In debug mode")
+            jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,' +
+                    'address=*:5005'
         }
     }
     mainClass = "com.znsio.teswiz.runner.Runner"

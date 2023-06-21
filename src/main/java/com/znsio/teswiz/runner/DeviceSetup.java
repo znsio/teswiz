@@ -19,7 +19,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
-import static com.znsio.teswiz.runner.Setup.*;
+import static com.znsio.teswiz.runner.Setup.APP_PATH;
+import static com.znsio.teswiz.runner.Setup.APP_VERSION;
+import static com.znsio.teswiz.runner.Setup.CAPS;
+import static com.znsio.teswiz.runner.Setup.EXECUTED_ON;
+import static com.znsio.teswiz.runner.Setup.LOG_DIR;
+import static com.znsio.teswiz.runner.Setup.PARALLEL;
+import static com.znsio.teswiz.runner.Setup.PLUGIN;
+import static com.znsio.teswiz.runner.Setup.RUN_IN_CI;
 
 class DeviceSetup {
     private static final Logger LOGGER = Logger.getLogger(DeviceSetup.class.getName());
@@ -138,8 +145,7 @@ class DeviceSetup {
     private static String getAppPathFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
-                                                         new String[]{Setup.getPlatform().name(),
-                                                                      "app", "local"});
+                                                         new String[]{Setup.getPlatform().name(), "app"});
     }
 
     private static void checkIfAppExistsAtTheMentionedPath(String appPath,

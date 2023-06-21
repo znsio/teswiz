@@ -34,3 +34,4 @@ libs
 *.plantuml
 reportportal.lock
 reportportal.sync
+.vscode/*

@@ -1,40 +1,41 @@
 package com.znsio.teswiz.runner;
 
-import com.appium.manager.AppiumDevice;
-import com.appium.manager.DeviceAllocationManager;
+import com.appium.capabilities.DriverSession;
+import com.appium.filelocations.FileLocations;
+import com.appium.manager.AppiumDeviceManager;
+import com.appium.plugin.PluginClI;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
-import com.github.device.Device;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
-import com.znsio.teswiz.exceptions.DriverCreationException;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.appmanagement.ApplicationState;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.NoSuchSessionException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.logging.LogEntries;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
-import static com.znsio.teswiz.runner.Runner.DEBUG;
+import static com.cucumber.listener.CucumberScenarioListener.createFile;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
 class AppiumDriverManager {
     private static final int MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
-    private static final List<AppiumDevice> additionalDevices = new ArrayList<>();
+    private static final List<DriverSession> additionalDevices = new ArrayList<>();
     private static final Logger LOGGER = Logger.getLogger(AppiumDriverManager.class.getName());
     private static final String CAPABILITIES = "CAPABILITIES: ";
     private static int numberOfAppiumDriversUsed = 0;
@@ -109,8 +110,15 @@ class AppiumDriverManager {
                                                 File capabilityFileToUseForDriverCreation) {
         Driver currentDriver;
         try {
-            AppiumDriver appiumDriver = allocateNewDeviceAndStartAppiumDriver(userPersona, context,
-                                                                              capabilityFileToUseForDriverCreation.getAbsolutePath());
+            AppiumDriver appiumDriver = new com.appium.manager.AppiumDriverManager().startAppiumDriverInstance(userPersona,
+                    capabilityFileToUseForDriverCreation.getAbsolutePath());
+
+
+            String scenarioDirectory = context.getTestStateAsString("scenarioDirectory");
+            Integer scenarioRunCount = (Integer) context.getTestState("scenarioRunCount");
+            String deviceLogFileName = startDataCapture(scenarioRunCount, scenarioDirectory);
+            addDeviceLogFileNameFor(userPersona, forPlatform.name(), deviceLogFileName);
+
             currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform,
                                        userPersona, appName, appiumDriver);
             Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
@@ -127,17 +135,46 @@ class AppiumDriverManager {
         return currentDriver;
     }
 
+    private static String startDataCapture(Integer scenarioRunCount,
+                                    String deviceLogFileDirectory) {
+        String fileName = String.format("/run-%s", scenarioRunCount);
+        if (AppiumDeviceManager.getAppiumDevice().getPlatformName().equalsIgnoreCase("android")) {
+            try {
+                fileName = String.format("/%s-run-%s",
+                        AppiumDeviceManager.getAppiumDevice().getUdid(), scenarioRunCount);
+                File logFile = createFile(deviceLogFileDirectory
+                                                  + FileLocations.DEVICE_LOGS_DIRECTORY,
+                        fileName);
+                fileName = logFile.getAbsolutePath();
+                LOGGER.debug("Capturing device logs here: " + fileName);
+                PrintStream logFileStream = null;
+                logFileStream = new PrintStream(logFile);
+                LogEntries logcatOutput = com.appium.manager.AppiumDriverManager.getDriver()
+                                                  .manage().logs().get("logcat");
+                StreamSupport.stream(logcatOutput.spliterator(), false)
+                        .forEach(logFileStream::println);
+            } catch (FileNotFoundException e) {
+                LOGGER.warn("ERROR in getting logcat. Skipping logcat capture");
+            }
+        }
+        return fileName;
+    }
+
     @NotNull
     private static Driver setupFirstAppiumDriver(String userPersona, Platform forPlatform,
                                                  TestExecutionContext context, String appName) {
         Driver currentDriver;
-        AppiumDriver<WebElement> appiumDriver = (AppiumDriver<WebElement>) context.getTestState(
+        AppiumDriver appiumDriver = (AppiumDriver) context.getTestState(
                 TEST_CONTEXT.APPIUM_DRIVER);
-        AppiumDevice deviceInfo = (AppiumDevice) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
+        DriverSession deviceInfo = (DriverSession) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
         // Do not add the device info to additionalDevices for the driver created by ATD
         // additionalDevices.add(deviceInfo);
         Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
-        context.addTestState(TEST_CONTEXT.DEVICE_ON, deviceInfo.getDeviceOn());
+        if (PluginClI.getInstance().isCloudExecution()) {
+            context.addTestState(TEST_CONTEXT.DEVICE_ON, PluginClI.getInstance().isCloudExecution());
+        } else {
+            context.addTestState(TEST_CONTEXT.DEVICE_ON, "localDevice");
+        }
         LOGGER.info(CAPABILITIES + appiumDriverCapabilities);
         Drivers.addUserPersonaDriverCapabilities(userPersona, appiumDriverCapabilities);
         Drivers.addUserPersonaDeviceLogFileName(userPersona,
@@ -146,51 +183,6 @@ class AppiumDriverManager {
         currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform,
                                    userPersona, appName, appiumDriver);
         return currentDriver;
-    }
-
-    private static AppiumDriver allocateNewDeviceAndStartAppiumDriver(String userPersona,
-                                                                      TestExecutionContext context,
-                                                                      String capabilityFile) {
-        String testName = context.getTestName();
-        try {
-            String normalisedScenarioName = context.getTestStateAsString(
-                    TEST_CONTEXT.NORMALISED_SCENARIO_NAME);
-            Integer scenarioRunCount = (Integer) context.getTestState(
-                    TEST_CONTEXT.SCENARIO_RUN_COUNT);
-            DeviceAllocationManager deviceAllocationManager = DeviceAllocationManager.getInstance();
-            AppiumDevice availableDevice = deviceAllocationManager.getNextAvailableDevice();
-            deviceAllocationManager.allocateDevice(availableDevice);
-            AppiumDriver driver =
-                    new com.appium.manager.AppiumDriverManager().startAppiumDriverInstance(
-                    testName, capabilityFile);
-            additionalDevices.add(availableDevice);
-            updateAvailableDeviceInformation(availableDevice);
-            startDataCaptureFromDevice(userPersona, normalisedScenarioName, scenarioRunCount,
-                                       availableDevice);
-            ReportPortalLogger.logDebugMessage(
-                    String.format("allocateNewDeviceAndStartAppiumDriver: Device Info%n%s",
-                                  availableDevice));
-            return driver;
-        } catch(Exception e) {
-            LOGGER.info(ExceptionUtils.getStackTrace(e));
-            throw new DriverCreationException(
-                    String.format("Unable to create/allocate driver for test: '%s'", testName), e);
-        }
-    }
-
-    private static void startDataCaptureFromDevice(String userPersona,
-                                                   String normalisedScenarioName,
-                                                   Integer scenarioRunCount,
-                                                   AppiumDevice availableDevice) {
-        try {
-            String deviceLogFileName = availableDevice.startDataCapture(normalisedScenarioName,
-                                                                        scenarioRunCount);
-            addDeviceLogFileNameFor(userPersona, Platform.android.name(), deviceLogFileName);
-            LOGGER.info(String.format("Started device log capture in file: %s", deviceLogFileName));
-        } catch(IOException | InterruptedException e) {
-            LOGGER.info(String.format("Error in starting data capture: %s", e.getMessage()));
-            e.printStackTrace();
-        }
     }
 
     private static void disableNotificationsAndToastsOnDevice(Driver currentDriver, String deviceOn,
@@ -223,45 +215,28 @@ class AppiumDriverManager {
     private static void disableNotificationsForDeviceInDeviceFarm(Driver currentDriver,
                                                                   String deviceOn) {
         if(deviceOn.equalsIgnoreCase("pCloudy")) {
-            Object disableToasts = ((AppiumDriver<?>) currentDriver.getInnerDriver()).executeScript(
+            Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript(
                     "pCloudy_executeAdbCommand",
                     "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW " +
                     "deny");
             LOGGER.info(String.format("@disableToastsCommandResponse: %s", disableToasts));
             Object disableNotifications =
-                    ((AppiumDriver<?>) currentDriver.getInnerDriver()).executeScript(
+                    ((AppiumDriver) currentDriver.getInnerDriver()).executeScript(
                     "pCloudy_executeAdbCommand",
                     "adb shell settings put global heads_up_notifications_enabled 0");
             LOGGER.info("@disableNotificationsCommandResponse: " + disableNotifications);
         }
     }
 
-    private static AppiumDevice updateAvailableDeviceInformation(AppiumDevice availableDevice) {
-        Capabilities capabilities = com.appium.manager.AppiumDriverManager.getDriver()
-                                                                          .getCapabilities();
-        LOGGER.info(String.format("allocateDeviceAndStartDriver: %s", capabilities));
-
-        String udid = capabilities.is("udid") ? Drivers.getCapabilityFor(capabilities, "udid")
-                                              : Drivers.getCapabilityFor(capabilities,
-                                                                         "deviceUDID");
-        Device device = availableDevice.getDevice();
-        device.setUdid(udid);
-        device.setDeviceManufacturer(Drivers.getCapabilityFor(capabilities, "deviceManufacturer"));
-        device.setDeviceModel(Drivers.getCapabilityFor(capabilities, "deviceModel"));
-        device.setName(Drivers.getCapabilityFor(capabilities,
-                                                "deviceName") + " " + Drivers.getCapabilityFor(
-                capabilities, "deviceModel"));
-        device.setApiLevel(Drivers.getCapabilityFor(capabilities, "deviceApiLevel"));
-        device.setDeviceType(Drivers.getCapabilityFor(capabilities, "platformName"));
-        device.setScreenSize(Drivers.getCapabilityFor(capabilities, "deviceScreenSize"));
-        return availableDevice;
-    }
-
     static void closeAppiumDriver(String userPersona, Driver driver) {
         if(Runner.getPlatform().equals(Platform.windows)) {
             closeWindowsAppOnMachine(userPersona, driver);
-        } else {
+        } else if(Runner.getPlatform().equals(Platform.android)){
             closeAndroidAppOnDevice(userPersona, driver);
+        }
+        // todo - fix for appium 2.0, implement new method to terminate app on iOS devices
+        else {
+            throw new InvalidTestDataException(String.format("No implementation for platform: %s", Runner.getPlatform()));
         }
     }
 
@@ -282,11 +257,13 @@ class AppiumDriverManager {
             logMessage = String.format("Closing WindowsDriver for App '%s' for user '%s'",
                                        appPackageName, userPersona);
             LOGGER.info(logMessage);
-            appiumDriver.closeApp();
+            // todo - fix for appium 2.0, test terminateApp() on windows app in windows OS
+            AndroidDriver androidDriver = (AndroidDriver) appiumDriver;
+            androidDriver.terminateApp(appPackageName);
             TestExecutionContext context = SessionContext.getTestExecutionContext(
                     Thread.currentThread().getId());
-            AppiumDriver<WebElement> atdAppiumDriver =
-                    (AppiumDriver<WebElement>) context.getTestState(
+            AppiumDriver atdAppiumDriver =
+                    (AppiumDriver) context.getTestState(
                     TEST_CONTEXT.APPIUM_DRIVER);
             if(appiumDriver.equals(atdAppiumDriver)) {
                 LOGGER.info(
@@ -317,15 +294,15 @@ class AppiumDriverManager {
         } else {
             TestExecutionContext context = SessionContext.getTestExecutionContext(
                     Thread.currentThread().getId());
-            AppiumDriver<WebElement> atdAppiumDriver =
-                    (AppiumDriver<WebElement>) context.getTestState(
+            AppiumDriver atdAppiumDriver =
+                    (AppiumDriver) context.getTestState(
                     TEST_CONTEXT.APPIUM_DRIVER);
             if(appiumDriver.equals(atdAppiumDriver)) {
                 LOGGER.info(
                         String.format("ATD will quit the driver for persona: '%s'", userPersona));
                 LOGGER.info("Close the app");
-                appiumDriver.closeApp();
-
+                AndroidDriver androidDriver = (AndroidDriver) appiumDriver;
+                androidDriver.terminateApp(appPackageName);
             } else {
                 LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
                 attachDeviceLogsToReportPortal(userPersona);
@@ -340,15 +317,16 @@ class AppiumDriverManager {
         ApplicationState applicationState = null;
         try {
             LOGGER.info(String.format("Terminate app: %s", appPackageName));
-            applicationState = appiumDriver.queryAppState(appPackageName);
+            AndroidDriver androidDriver = (AndroidDriver) appiumDriver;
+            applicationState = androidDriver.queryAppState(appPackageName);
 
             logMessage = String.format("App: '%s' Application state before closing app: '%s'%n",
                                        appPackageName, applicationState);
             LOGGER.info(logMessage);
             ReportPortalLogger.logDebugMessage(logMessage);
-            appiumDriver.closeApp();
-            appiumDriver.terminateApp(appPackageName);
-            applicationState = appiumDriver.queryAppState(appPackageName);
+
+            androidDriver.terminateApp(appPackageName);
+            applicationState = androidDriver.queryAppState(appPackageName);
             logMessage = String.format("App: '%s' Application state after closing app: '%s'%n",
                                        appPackageName, applicationState);
             LOGGER.info(logMessage);
@@ -361,11 +339,13 @@ class AppiumDriverManager {
 
     private static void attachDeviceLogsToReportPortal(String userPersona) {
         String deviceLogFileName = getDeviceLogFileNameFor(userPersona, Platform.android.name());
+        File destinationFile = new File(deviceLogFileName);
 
         String adbLogMessage = String.format("ADB Logs for %s, file name: %s",
                                              Drivers.getNameOfDeviceUsedByUser(userPersona),
-                                             deviceLogFileName);
-        ReportPortalLogger.attachFileInReportPortal(adbLogMessage, new File(deviceLogFileName));
+                                             destinationFile.getName());
+        LOGGER.info(adbLogMessage);
+        ReportPortalLogger.attachFileInReportPortal(adbLogMessage, destinationFile);
     }
 
     private static String getDeviceLogFileNameFor(String userPersona, String forPlatform) {
@@ -382,12 +362,11 @@ class AppiumDriverManager {
     }
 
     static void freeDevices() {
-        for(AppiumDevice additionalDevice : additionalDevices) {
+        for(DriverSession additionalDevice : additionalDevices) {
             LOGGER.info(
-                    String.format("Freeing device: %s", additionalDevice.getDevice().getName()));
-            additionalDevice.freeDevice();
-            additionalDevice.setChromeDriverPort(0);
+                    String.format("Freeing device: %s", additionalDevice.getDeviceName()));
         }
+        additionalDevices.clear();
     }
 
     @NotNull
@@ -412,8 +391,8 @@ class AppiumDriverManager {
                                               TestExecutionContext context) {
         Driver currentDriver;
         if(numberOfAppiumDriversUsed < MAX_NUMBER_OF_APPIUM_DRIVERS) {
-            AppiumDriver<WebElement> windowsDriver =
-                    (AppiumDriver<WebElement>) context.getTestState(
+            AppiumDriver windowsDriver =
+                    (AppiumDriver) context.getTestState(
                     TEST_CONTEXT.APPIUM_DRIVER);
             String appName = Drivers.getAppNamefor(userPersona);
 

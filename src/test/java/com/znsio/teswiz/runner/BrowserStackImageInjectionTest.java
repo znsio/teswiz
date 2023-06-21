@@ -1,7 +1,6 @@
 package com.znsio.teswiz.runner;
 
 import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.AndroidElement;
 import org.apache.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,7 @@ class BrowserStackImageInjectionTest {
     private static final Logger LOGGER = Logger.getLogger(
             BrowserStackImageInjectionTest.class.getName());
 
-    static AndroidDriver<AndroidElement> driver;
+    static AndroidDriver driver;
     static String authenticationUser = null;
     static String authenticationKey = null;
     static String cloudName = null;

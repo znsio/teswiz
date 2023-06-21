@@ -4,9 +4,12 @@ import com.appium.filelocations.FileLocations;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
-import com.znsio.teswiz.runner.Runner;
 import io.cucumber.plugin.ConcurrentEventListener;
-import io.cucumber.plugin.event.*;
+import io.cucumber.plugin.event.EventPublisher;
+import io.cucumber.plugin.event.TestCaseFinished;
+import io.cucumber.plugin.event.TestCaseStarted;
+import io.cucumber.plugin.event.TestRunFinished;
+import io.cucumber.plugin.event.TestRunStarted;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -78,6 +81,7 @@ public class CucumberWebScenarioListener
 
     private void webRunFinishedHandler(TestRunFinished event) {
         LOGGER.info("webRunFinishedHandler: " + event.getResult().toString());
+        LOGGER.debug("webRunFinishedHandler: rp.launch.id: " + System.getProperty("rp.launch.id"));
         SessionContext.setReportPortalLaunchURL();
         LOGGER.info(String.format("ThreadId: %d: afterSuite: %n", Thread.currentThread().getId()));
     }

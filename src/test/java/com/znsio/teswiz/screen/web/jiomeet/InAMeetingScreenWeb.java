@@ -7,6 +7,7 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiomeet.InAMeetingScreen;
 import com.znsio.teswiz.tools.ReportPortalLogger;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -56,7 +57,7 @@ public class InAMeetingScreenWeb
         meetingId = meetingId.replaceAll("\\s", "");
         String pin = driver.waitForClickabilityOf(byCurrentMeetingPinXpath).getText();
         String invitationLink = driver.waitForClickabilityOf(byCurrentMeetingInvitationLinkXpath)
-                                      .getText();
+                .getText();
         js.executeScript("arguments[0].click()", infoIcon);//to close the meeting info frame
         visually.takeScreenshot(SCREEN_NAME, "After closing meeting info icon");
         LOGGER.info("On Web the meeting id: " + meetingId + " Password: " + pin);
@@ -99,12 +100,17 @@ public class InAMeetingScreenWeb
         return micLabelText;
     }
 
+    @Override
+    public InAMeetingScreen openJioMeetNotification() {
+        throw new NotImplementedException("Jio Meet Device Notification of Meeting is not available for Web");
+    }
+
     private void enableInMeetingControls(String calledFrom) {
         try {
             LOGGER.info(String.format("enableInMeetingControls: Called from: '%s'%n", calledFrom));
             Actions actions = new Actions(innerDriver);
             actions.moveToElement(driver.waitForClickabilityOf(byMeetingInfoIconXpath))
-                   .moveByOffset(25, 25).perform();
+                    .moveByOffset(25, 25).perform();
         } catch(Exception e) {
             String logMessage = String.format(
                     "Exception occurred : enableInMeetingControls%nException: %s",
