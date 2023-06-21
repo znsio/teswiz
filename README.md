@@ -7,9 +7,9 @@
 
 Below is the list of the breaking changes, and the corresponding new implementation starting from teswiz latest teswiz.
 
-## Method name changes
+## Method name and implementation changes
 
-There are some method name changes as listed below:
+There are some method name and implementation changes as listed below:
 
 | Purpose                                                                                            | ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Old ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
 |:---------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
