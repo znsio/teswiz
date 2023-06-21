@@ -1,7 +1,7 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": "src/test/resources/sampleApps/com.jio.rilconferences_v4.21.6.7-421607_Android-5.0.apk",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/com.jio.rilconferences_v4.21.6.7-421607_Android-5.0.apk",
     "appActivity": "org.jio.meet.introduction.views.SplashActivity",
     "appPackage": "com.jio.rilconferences",
     "appWaitDuration": 45000,
