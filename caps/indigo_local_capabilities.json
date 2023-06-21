@@ -1,9 +1,7 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": {
-      "local": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/IndiGoFlight-App_5.0.85.apk"
-    },
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/IndiGoFlight-App_5.0.85.apk",
     "appActivity": "in.goindigo.android.ui.modules.splash.SplashActivity",
     "appPackage": "in.goindigo.android",
     "appWaitDuration": 45000,

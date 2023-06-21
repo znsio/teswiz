@@ -17,9 +17,7 @@
     "unicodeKeyboard": true,
     "resetKeyboard": true,
     "noReset": false,
-    "app": {
-      "local": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk"
-    }
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk"
   },
   "serverConfig" : {
     "server": {
