@@ -1,9 +1,9 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk",
-    "appPackage": "com.android2.calculator3",
-    "appActivity": "com.android2.calculator3.Calculator",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/VodQA.apk",
+    "appPackage": "com.vodqareactnative",
+    "appActivity": "com.vodqareactnative.MainActivity",
     "appWaitDuration": 45000,
     "automationName": "UiAutomator2",
     "autoGrantPermissions": true,

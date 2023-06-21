@@ -26,13 +26,12 @@ public class ConfEngineLandingScreenAndroid
     @Override
     public ConfEngineLandingScreen getListOfConferences() {
         visually.checkWindow(SCREEN_NAME, "Landing screen");
-        Set<String> contextNames = ((AppiumDriver) driver.getInnerDriver()).getContextHandles();
+        Set<String> contextNames = ((AppiumDriver) driver.getInnerDriver()).getWindowHandles();
         for(String contextName : contextNames) {
             System.out.println(contextName); //prints out something like NATIVE_APP \n WEBVIEW_1
         }
-        ((AppiumDriver) driver.getInnerDriver()).context(String.valueOf(contextNames.toArray()[1]));
-        driver.waitTillElementIsPresent(By.xpath("//li[@conference-id='selenium-conf-2022']"))
-              .click();
+        ((AppiumDriver) driver.getInnerDriver()).switchTo().window(String.valueOf(contextNames.toArray()[1]));
+        driver.waitTillElementIsPresent(By.xpath("//li[@conference-id='selenium-conf-2022']")).click();
         visually.checkWindow(SCREEN_NAME, "Selected Selenium Conf 2022");
         return this;
     }

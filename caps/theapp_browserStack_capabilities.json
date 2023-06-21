@@ -21,9 +21,7 @@
     "browserstack.gpsLocation": "22,75",
     "browserstack.locale": "IN",
     "project": "teswiz",
-    "app": {
-      "local": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk"
-    }
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk"
   },
   "web": {
     "browserName": "chrome",
@@ -34,6 +32,21 @@
       "seleniumVersion": "3.14.0",
       "debug": "true",
       "networkLogs": "true"
+    }
+  },
+  "serverConfig": {
+    "server": {
+      "port": 31337,
+      "use-plugins": [
+        "device-farm",
+        "appium-dashboard"
+      ],
+      "plugin": {
+        "device-farm": {
+          "platform": "android",
+          "skipChromeDownload": true
+        }
+      }
     }
   },
   "cloud": {

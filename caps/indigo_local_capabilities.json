@@ -1,9 +1,7 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": {
-      "local": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/IndiGoFlight-App_5.0.85.apk"
-    },
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/IndiGoFlight-App_5.0.85.apk",
     "appActivity": "in.goindigo.android.ui.modules.splash.SplashActivity",
     "appPackage": "in.goindigo.android",
     "appWaitDuration": 45000,
@@ -20,6 +18,18 @@
     "printPageSourceOnFindFailure": true,
     "skipUnlock": true,
     "noReset": false
+  },
+  "serverConfig" : {
+    "server": {
+      "port": 31337,
+      "use-plugins": ["device-farm", "appium-dashboard"],
+      "plugin": {
+        "device-farm": {
+          "platform": "android",
+          "skipChromeDownload": true
+        }
+      }
+    }
   },
   "hostMachines": [
     {

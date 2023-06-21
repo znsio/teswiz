@@ -1,9 +1,7 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": {
-      "local": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk"
-    },
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk",
     "appPackage": "com.android2.calculator3",
     "appActivity": "com.android2.calculator3.Calculator",
     "appWaitDuration": 45000,
@@ -16,9 +14,20 @@
     "newCommandTimeout": 12000,
     "noSign": true,
     "platformName": "android",
-    "platformVersion": "11.0",
     "printPageSourceOnFindFailure": true,
     "skipUnlock": true
+  },
+  "serverConfig" : {
+    "server": {
+      "port": 31337,
+      "use-plugins": ["device-farm", "appium-dashboard"],
+      "plugin": {
+        "device-farm": {
+          "platform": "android",
+          "skipChromeDownload": true
+        }
+      }
+    }
   },
   "hostMachines": [
     {
