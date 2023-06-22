@@ -27,6 +27,12 @@ plugins {
     id "idea"
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'maven-publish'
+    id "jacoco"
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+    reportsDirectory = layout.buildDirectory.dir('jacoco')
 }
 
 group = 'com.github.znsio'
@@ -173,7 +179,6 @@ task run(type: JavaExec) {
 
 test {
     useJUnitPlatform()
-
     outputs.upToDateWhen { false }
 
     testLogging {
