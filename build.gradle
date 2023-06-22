@@ -137,6 +137,7 @@ static def getCurrentTimestamp() {
 
 task run(type: JavaExec) {
     doFirst {
+   //     finalizedBy jacocoTestReport
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
@@ -173,11 +174,17 @@ task run(type: JavaExec) {
                     'address=*:5005'
         }
     }
+
     mainClass = "com.znsio.teswiz.runner.Runner"
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+
+  //  doLast {
+  //      finalizedBy jacocoTestReport
+   // }
 }
 
 test {
+    finalizedBy jacocoTestReport
     useJUnitPlatform()
     outputs.upToDateWhen { false }
 
@@ -201,5 +208,9 @@ test {
         junitXml.enabled(true)
         html.destination(file("$buildDir/unit-test-results"))
         junitXml.destination(file("$buildDir/unit-test-results"))
+    }
+
+    jacocoTestReport {
+        dependsOn test // tests are required to run before generating the report
     }
 }
