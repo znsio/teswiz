@@ -68,6 +68,7 @@ public class AppLaunchSteps {
         String browser = details[0];
         String mobileEmulation = details[1];
 
+        //Fetching deviceName from Browser Config json file based on 'mobileEmulation' variable
         String deviceName = new JSONObject(Runner.getBrowserConfigFileContents()).getString(mobileEmulation);
         LOGGER.info("Device name from browser config file :" + deviceName);
         context.addTestState(TEST_CONTEXT.MOBILE_EMULATION_DEVICE, deviceName);
