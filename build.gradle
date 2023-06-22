@@ -7,7 +7,7 @@ buildscript {
         atdVersion = '13.1.0'
         applitoolsSeleniumVersion = '5.55.0'
         applitoolsAppiumVersion = '5.55.0'
-        applitoolsUniversalCoreVersion = '5.55.0'
+        applitoolsUniversalCoreVersion = '5.56.0'
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.14.2'
         jadbVersion = '1.2.1'
