@@ -29,7 +29,11 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -201,6 +205,29 @@ class BrowserDriverManager {
                 webDriverManagerProxyUrl, browserType));
 
         // TODO - get browser version from local or container. What about cloud?
+
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.setBinary(getChromeBinaryPath());
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command(getChromeBinaryPath(), "--version");
+
+        try {
+            Process process = processBuilder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("Google Chrome")) {
+                    String[] split = line.split(" ");
+                    String version = split[split.length - 1];
+                    LOGGER.info("Browser Version : " + version);
+                    break;
+                }
+            }
+            process.destroy();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
                                                             .proxy(webDriverManagerProxyUrl);
         webDriverManager.setup();
@@ -213,6 +240,17 @@ class BrowserDriverManager {
         return driverManagerType;
     }
 
+    private static String getChromeBinaryPath () {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            return "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+        } else if (os.contains("mac")) {
+            return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+        } else if (os.contains("nix") || os.contains("nux") || os.contains("linux")) {
+            return "/usr/bin/google-chrome";
+        }
+        throw new IllegalStateException("Unsupported operating system: " + os);
+    }
     @NotNull
     private static WebDriver createChromeDriver(String forUserPersona,
                                                 TestExecutionContext testExecutionContext,
