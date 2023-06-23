@@ -1,0 +1,39 @@
+{
+  "android": {
+    "adbExecTimeout": 45000,
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/jiocinema.apk",
+    "appPackage": "com.jio.media.ondemand",
+    "appActivity": "com.v18.voot.features.home.ui.JVHomeActivity",
+    "appWaitDuration": 45000,
+    "automationName": "UiAutomator2",
+    "autoGrantPermissions": true,
+    "deviceName": "android",
+    "dontStopAppOnReset": true,
+    "enablePerformanceLogging": true,
+    "eventTimings": true,
+    "newCommandTimeout": 12000,
+    "noSign": true,
+    "platformName": "android",
+    "printPageSourceOnFindFailure": true,
+    "skipUnlock": true
+  },
+  "serverConfig": {
+    "server": {
+      "use-plugins": [
+        "device-farm",
+        "appium-dashboard"
+      ],
+      "plugin": {
+        "device-farm": {
+          "platform": "android",
+          "skipChromeDownload": true
+        }
+      }
+    }
+  },
+  "hostMachines": [
+    {
+      "machineIP": "127.0.0.1"
+    }
+  ]
+}
