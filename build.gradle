@@ -18,6 +18,8 @@ buildscript {
         masterThoughtVersion = '5.7.5'
         browserStackLocalVersion = '1.0.7'
         jetbrainsAnnotationsVersion = '24.0.0'
+        aspectJVersion = '1.9.6'
+        aspectWeaverVersion = '1.9.6'
     }
 }
 
@@ -27,7 +29,12 @@ plugins {
     id "idea"
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'maven-publish'
+    id "io.freefair.aspectj" version "5.3.3.3"
 }
+
+sourceSets.main.aspectj.srcDir "src/main/java"
+sourceSets.main.java.srcDirs = files()
+//sourceSets { test { java { srcDirs = ['src/test/java'] } } }
 
 group = 'com.github.znsio'
 version '0.0.80'
@@ -80,6 +87,8 @@ dependencies {
     implementation "com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion"
     implementation "com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
+    implementation "org.aspectj:aspectjrt:$project.aspectJVersion"
+    implementation "org.aspectj:aspectjweaver:$project.aspectWeaverVersion"
 }
 
 shadowJar {
@@ -141,7 +150,7 @@ task run(type: JavaExec) {
             println("Run the test by providing the CONFIG file not provided, or does not exist")
             assert file(configFile).exists()
         }
-
+        environment "APPLITOOLS_API_KEY", "aWfX0b26105wzwQu778WdAiyS94vOkCQL48ZGspUNli1k110"
 //      You can also specify which config file to use based on the value of RUN_IN_CI as shown below
 //
 //        def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
@@ -150,7 +159,6 @@ task run(type: JavaExec) {
 //                ? "./configs/theapp_pcloudy_config.properties"
 //                : "./configs/theapp_local_config.properties"
 //        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
-
         systemProperties = System.properties
         def runnerArgs = [
                 "${configFile}",
