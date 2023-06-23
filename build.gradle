@@ -8,7 +8,7 @@ buildscript {
         applitoolsSeleniumVersion = '5.56.0'
         applitoolsAppiumVersion = '5.56.0'
         commonsLang3Version = '3.12.0'
-        unirestVersion = '3.14.2'
+        unirestVersion = '3.14.4'
         jadbVersion = '1.2.1'
         webDriverManagerVersion = '5.3.3'
         junitVersion = '5.9.3'
