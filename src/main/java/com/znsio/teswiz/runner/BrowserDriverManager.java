@@ -24,8 +24,6 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
@@ -198,49 +196,60 @@ class BrowserDriverManager {
                                                         String browserType) {
         DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
         String webDriverManagerProxyUrl = (null == Runner.getWebDriverManagerProxyURL()) ? ""
-                                                                                         :
-                                          Runner.getWebDriverManagerProxyURL();
+                :
+                Runner.getWebDriverManagerProxyURL();
         LOGGER.info(String.format(
                 "Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'",
                 webDriverManagerProxyUrl, browserType));
 
         // TODO - get browser version from local or container. What about cloud?
 
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.setBinary(getChromeBinaryPath());
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command(getChromeBinaryPath(), "--version");
-
-        try {
-            Process process = processBuilder.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("Google Chrome")) {
-                    String[] split = line.split(" ");
-                    String version = split[split.length - 1];
-                    LOGGER.info("Browser Version : " + version);
-                    break;
-                }
-            }
-            process.destroy();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String browserVersion = getBrowserVersionFor(browserType);
 
         WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
-                                                            .proxy(webDriverManagerProxyUrl);
+                .proxy(webDriverManagerProxyUrl);
         webDriverManager.setup();
         String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
 
         String message = String.format("Using %s browser version: %s", driverManagerType,
-                                       downloadedDriverVersion);
+                downloadedDriverVersion);
         LOGGER.info(message);
         ReportPortalLogger.logInfoMessage(message);
         return driverManagerType;
     }
 
-    private static String getChromeBinaryPath () {
+    private static String getBrowserVersionFor(String browserType) {
+        String binaryPath = "";
+        switch (browserType) {
+            case "chrome":
+                binaryPath = getChromeBinaryPath();
+                break;
+            case "firefox":
+                binaryPath = getFirefoxBinaryPath();
+                break;
+            default:
+                throw new InvalidTestDataException("Invalid browser : " + browserType);
+        }
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.setBinary(binaryPath);
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command(binaryPath, "--version");
+        String version = "";
+        try {
+            Process process = processBuilder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = reader.readLine();
+            String[] split = line.split(" ");
+            version = split[split.length - 1];
+            LOGGER.info("Browser Version : " + version);
+            process.destroy();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return version;
+    }
+
+    private static String getChromeBinaryPath() {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
             return "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
@@ -251,6 +260,18 @@ class BrowserDriverManager {
         }
         throw new IllegalStateException("Unsupported operating system: " + os);
     }
+    private static String getFirefoxBinaryPath() {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            return "C:\\Program Files\\Firefox\\Application\\firefox.exe";
+        } else if (os.contains("mac")) {
+            return "/Applications/Firefox.app/Contents/MacOS/Firefox";
+        } else if (os.contains("nix") || os.contains("nux") || os.contains("linux")) {
+            return "/usr/bin/firefox";
+        }
+        throw new IllegalStateException("Unsupported operating system: " + os);
+    }
+
     @NotNull
     private static WebDriver createChromeDriver(String forUserPersona,
                                                 TestExecutionContext testExecutionContext,
