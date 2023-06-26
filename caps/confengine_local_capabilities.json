@@ -1,9 +1,7 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": {
-      "local": "./src/test/resources/sampleApps/confEngine-devApi-debug.apk"
-    },
+    "app": "./src/test/resources/sampleApps/confEngine-devApi-debug.apk",
     "appActivity": "com.confengine.confengine.activity.Html5Activity",
     "appPackage": "com.confengine.confengine",
     "appWaitDuration": 45000,

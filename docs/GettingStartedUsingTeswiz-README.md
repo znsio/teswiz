@@ -22,8 +22,7 @@ Follow these steps:
 2. Update the **run** task in build.gradle with appropriate values for config.properties, pathToStepDef, pathToFeaturesDir, pathToLogProperties
 1. Refer to the **[Running the tests](SampleTests-README.md)** section
 
-## Prerequisites
-
+## Pre Requisites
 * JDK
     * **Minimum JDK version: 11**
     * **Set JAVA_HOME environment variable**
@@ -33,7 +32,11 @@ Follow these steps:
     * **Refer to this post for instructions how to automatically setup your environment - https://applitools.com/blog/automatic-appium-setup/**
     * Additional References:
         * Setup Android Command-line tools and SDK - https://developer.android.com/studio#command-tools
-        * Install appium - https://appium.io
+        * Install appium 2.0 - http://appium.io/docs/en/2.0/quickstart/install/
+        * Install appium-device-farm and appium-dashboard:
+            * appium plugin install --source=npm appium-device-farm
+            * appium plugin install --source=npm appium-dashboard
+            * For additional information refer - https://github.com/AppiumTestDistribution/appium-device-farm
 * Appium Desktop App is a great way to identify locators, and the recorder is quite helpful to quickly identify multiple
   locators for your tests - https://github.com/appium/appium-desktop/releases/tag/v1.20.2. You can also use Katalon
   Studio for locator identification (especially helpful for Windows platform)

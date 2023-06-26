@@ -32,8 +32,6 @@ public abstract class VodqaScreen {
 
     public abstract VodqaScreen scrollFromOneElementPointToAnother();
 
-    public abstract boolean isElementWithTextVisible();
-
     public abstract VodqaScreen tapInTheMiddle();
 
     public abstract boolean isPreviousPageHeadingVisible(String pageHeading);
@@ -44,11 +42,7 @@ public abstract class VodqaScreen {
 
     public abstract VodqaScreen selectScreen(String screenName);
 
-    public abstract VodqaScreen swipeLeft();
-
     public abstract boolean isSwipeSuccessful(String tileNumber);
-
-    public abstract VodqaScreen swipeRight();
 
     public abstract VodqaScreen swipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth);
 

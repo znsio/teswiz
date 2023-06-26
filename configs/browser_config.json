@@ -57,5 +57,9 @@
     "maximize": true,
     "acceptInsecureCerts": true,
     "setUseTechnologyPreview": false
-  }
+  },
+  "tab1": "iPad mini",
+  "tab2": "iPad Pro",
+  "mobile1": "iPhone SE",
+  "mobile2": "iPhone 8"
 }

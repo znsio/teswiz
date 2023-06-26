@@ -1,9 +1,9 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk",
-    "appPackage": "com.android2.calculator3",
-    "appActivity": "com.android2.calculator3.Calculator",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/jiocinema.apk",
+    "appPackage": "com.jio.media.ondemand",
+    "appActivity": "com.v18.voot.features.home.ui.JVHomeActivity",
     "appWaitDuration": 45000,
     "automationName": "UiAutomator2",
     "autoGrantPermissions": true,
@@ -17,9 +17,12 @@
     "printPageSourceOnFindFailure": true,
     "skipUnlock": true
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm", "appium-dashboard"],
+      "use-plugins": [
+        "device-farm",
+        "appium-dashboard"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "android",

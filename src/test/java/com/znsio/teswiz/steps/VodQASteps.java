@@ -33,11 +33,6 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollFromOneElementPointToAnother();
     }
 
-    @Then("Element text should be visible")
-    public void isElementWithTextVisible() {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible();
-    }
-
     @When("I tap in the middle of the screen")
     public void iTapInTheMiddleOfTheScreen() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).tapInTheMiddleOfTheScreen();
@@ -51,16 +46,6 @@ public class VodQASteps {
     @When("I scroll down by screen size on vertical swiping screen")
     public void iScrollDownByScreenSizeOnVerticalSwipingScreen() {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollDownByScreenSizeOnVerticalSwipingScreen();
-    }
-
-    @When("I swipe left on {string} screen")
-    public void selectScreenAndSwipeLeft(String screenName) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectScreenAndSwipeLeft(screenName);
-    }
-
-    @When("I swipe right on {string} screen")
-    public void selectScreenAndSwipeRight(String screenName) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectScreenAndSwipeRight(screenName);
     }
 
     @Then("I am able to see element with text {string} on the screen")
