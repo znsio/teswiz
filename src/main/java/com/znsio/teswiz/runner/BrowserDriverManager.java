@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverLogLevel;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
@@ -243,9 +244,13 @@ class BrowserDriverManager {
         LoggingPreferences logPrefs = new LoggingPreferences();
         if(enableVerboseLogging) {
             System.setProperty("webdriver.chrome.verboseLogging", "true");
+            chromeOptions.setLogLevel(ChromeDriverLogLevel.DEBUG);
+            logPrefs.enable(LogType.BROWSER, Level.ALL);
             logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
         } else {
-            logPrefs.enable(LogType.BROWSER, Level.ALL);
+            chromeOptions.setLogLevel(ChromeDriverLogLevel.INFO);
+            logPrefs.enable(LogType.BROWSER, Level.INFO);
+            logPrefs.enable(LogType.PERFORMANCE, Level.INFO);
         }
         chromeOptions.setCapability(ChromeOptions.LOGGING_PREFS, logPrefs);
 
@@ -336,13 +341,14 @@ class BrowserDriverManager {
         LoggingPreferences logPrefs = new LoggingPreferences();
         if(enableVerboseLogging) {
             firefoxOptions.setLogLevel(FirefoxDriverLogLevel.DEBUG);
+            logPrefs.enable(LogType.BROWSER, Level.ALL);
             logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
         } else {
             firefoxOptions.setLogLevel(FirefoxDriverLogLevel.INFO);
-            logPrefs.enable(LogType.BROWSER, Level.ALL);
+            logPrefs.enable(LogType.BROWSER, Level.INFO);
+            logPrefs.enable(LogType.PERFORMANCE, Level.INFO);
         }
-        // todo - fix
-//        firefoxOptions.setCapability(FirefoxOptions.LOGGING_PREFS, logPrefs);
+        firefoxOptions.setCapability("moz:firefoxOptions",logPrefs);
 
         if(null != proxyUrl) {
             LOGGER.info(SETTING_PROXY_FOR_BROWSER + proxyUrl);
