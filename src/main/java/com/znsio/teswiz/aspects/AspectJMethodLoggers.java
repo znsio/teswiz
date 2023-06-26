@@ -14,7 +14,7 @@ public class AspectJMethodLoggers {
         context = SessionContext.getTestExecutionContext(threadId);
     }
 
-    public void beforeAnyMethod(JoinPoint joinPoint) {
+    public static void beforeAnyMethod(JoinPoint joinPoint) {
         LOGGER.info(String.format("Entering method: %s ", joinPoint.getSignature().getName()));
 
         StringBuilder loggerMessage = new StringBuilder();
@@ -32,7 +32,7 @@ public class AspectJMethodLoggers {
         }
     }
 
-    public void afterAnyMethod(JoinPoint joinPoint) {
+    public static void afterAnyMethod(JoinPoint joinPoint) {
         LOGGER.info(String.format("Exit method: %s", joinPoint.getSignature().getName()));
     }
 }
