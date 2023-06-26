@@ -29,31 +29,8 @@ plugins {
     id "idea"
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'maven-publish'
-//    id "io.freefair.aspectj" version "5.3.3.3"
-//    id 'io.freefair.aspectj.post-compile-weaving' version '4.1.6'
     id("io.freefair.aspectj.post-compile-weaving") version "8.0.1"
 }
-
-//task compileTestJava (overwrite: true){
-//    ajc {
-//        options {
-//            compilerArgs = ["-Xlint:ignore"]
-//        }
-//    }
-//}
-//sourceSets.main.aspectj.srcDir "src/main/java"
-//sourceSets.main.java.srcDirs = files()
-//sourceSets { test { java { srcDirs = ['src/test/java'] } } }
-// Main source set configuration sourceSets
-//sourceSets {
-//    {
-//        main { java { srcDirs = ['src/main/java', 'src/aspectj/main'] } }
-//    }
-//    {
-//        test { java { srcDirs = ['src/test/java', 'src/aspectj/test'] } }
-//    }
-//}
-//compileJava.ajc.options.compilerArgs = ["-sourceroots", "./src/main/aspect"]
 
 group = 'com.github.znsio'
 version '0.0.80'
@@ -107,7 +84,6 @@ dependencies {
     implementation "com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
     implementation "org.aspectj:aspectjrt:$project.aspectJVersion"
-//    implementation "org.aspectj:aspectjweaver:$project.aspectWeaverVersion"
 }
 
 shadowJar {
