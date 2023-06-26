@@ -20,15 +20,16 @@ public class AspectJMethodLoggers {
         StringBuilder loggerMessage = new StringBuilder();
         Object[] arguments = joinPoint.getArgs();
 
-        if (arguments.length != 0)
+        if (arguments.length != 0) {
             loggerMessage.append(String.format("With arguments- ", joinPoint.getSignature().getName()));
 
-        for (Object argument : arguments) {
-            if (argument != null) {
-                loggerMessage.append(String.format("type %s : value \"%s\", ", argument.getClass().getSimpleName(), argument));
+            for (Object argument : arguments) {
+                if (argument != null) {
+                    loggerMessage.append(String.format("type %s : value \"%s\", ", argument.getClass().getSimpleName(), argument));
+                }
             }
+            LOGGER.info(loggerMessage);
         }
-        LOGGER.info(loggerMessage);
     }
 
     public void afterAnyMethod(JoinPoint joinPoint) {
