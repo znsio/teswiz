@@ -37,14 +37,7 @@ class BrowserStackSetup {
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser,
                                                                 authenticationKey, appPath);
-
-        ArrayList hostMachinesList = (ArrayList) loadedCapabilityFile.get("hostMachines");
-        Map hostMachines = (Map) hostMachinesList.get(0);
-        String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
-        hostMachines.put("machineIP", remoteServerURL);
-        Map app = (Map) loadedPlatformCapability.get("app");
-        app.put("local", appPath);
-        app.put("cloud", appIdFromBrowserStack);
+        LOGGER.info(String.format("app Id retreived from browser stack is: %s", appIdFromBrowserStack));
         loadedPlatformCapability.put("browserstack.user", authenticationUser);
         loadedPlatformCapability.put("browserstack.key", authenticationKey);
         setupLocalTesting(authenticationKey, loadedPlatformCapability);
@@ -160,8 +153,9 @@ class BrowserStackSetup {
         ArrayList listOfAndroidDevices = new ArrayList();
 
         String platformVersion = String.valueOf(
-                loadedCapabilityFile.get(platformName).get("platformVersion"));
-        String deviceName = String.valueOf(loadedCapabilityFile.get(platformName).get(DEVICE));
+                loadedCapabilityFile.get(platformName).getOrDefault("platformVersion", ""));
+        String deviceName =
+                String.valueOf(loadedCapabilityFile.get(platformName).getOrDefault(DEVICE, ""));
         loadedCapabilityFile.get(platformName).remove(DEVICE);
 
         Map<String, String> filters = new LinkedHashMap<>();
@@ -180,9 +174,9 @@ class BrowserStackSetup {
                                   deviceCount));
         for(int numDevices = 0; numDevices < deviceCount; numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
-            deviceInfo.put("osVersion", availableDevices.get(numDevices).getOs_version());
+            deviceInfo.put("platform", platformName);
+            deviceInfo.put("os_version", availableDevices.get(numDevices).getOs_version());
             deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
-            deviceInfo.put(DEVICE, availableDevices.get(numDevices).getDevice());
             listOfAndroidDevices.add(deviceInfo);
         }
         DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,

@@ -1,5 +1,6 @@
 package com.znsio.teswiz.runner;
 
+import com.google.gson.internal.LinkedTreeMap;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
@@ -38,8 +39,11 @@ class DeviceSetup {
     static void saveNewCapabilitiesFile(String platformName, String capabilityFile,
                                         Map<String, Map> loadedCapabilityFile,
                                         ArrayList listOfAndroidDevices) {
-        Map loadedCloudCapability = loadedCapabilityFile.get("cloud");
-        loadedCloudCapability.put(platformName, listOfAndroidDevices);
+        Object pluginConfig = ((LinkedTreeMap) loadedCapabilityFile.get("serverConfig").get("server")).get(
+                "plugin");
+        Map cloudConfig = (Map) ((LinkedTreeMap) ((LinkedTreeMap) pluginConfig).get("device-farm")).get(
+                "cloud");
+        cloudConfig.put("devices", listOfAndroidDevices);
 
         LOGGER.info(
                 String.format("Updated Device Lab Capabilities file: %n%s", loadedCapabilityFile));
@@ -185,9 +189,9 @@ class DeviceSetup {
 
     private static String getCloudNameFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
-        ArrayList<Map> hostMachines = JsonFile.getNodeValueAsArrayListFromJsonFile(capabilityFile,
-                                                                                   "hostMachines");
-        return String.valueOf(hostMachines.get(0).get("cloudName"));
+        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
+                new String[]{"serverConfig", "server", "plugin",
+                        "device-farm", "cloud", "cloudName"});
     }
 
     static ArrayList<String> setupWindowsExecution() {
