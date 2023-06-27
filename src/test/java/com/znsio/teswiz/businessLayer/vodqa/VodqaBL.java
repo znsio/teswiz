@@ -45,20 +45,10 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL selectScreenAndSwipeLeft(String screenName) {
-        VodqaScreen.get().selectScreen(screenName).swipeLeft();
-        return this;
-    }
-
     public VodqaBL verifySwipe(String elementText) {
         assertThat(VodqaScreen.get().isSwipeSuccessful(elementText))
                 .as("swipe was not successful")
                 .isTrue();
-        return this;
-    }
-
-    public VodqaBL selectScreenAndSwipeRight(String screenName) {
-        VodqaScreen.get().selectScreen(screenName).swipeRight();
         return this;
     }
 
