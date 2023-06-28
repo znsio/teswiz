@@ -3,7 +3,7 @@
     "automationName": "UiAutomator2",
     "appPackage": "com.appiumpro.the_app",
     "appActivity": "com.appiumpro.the_app.MainActivity",
-    "platformVersion": "10",
+    "os_version": "12",
     "platformName": "Android",
     "device": "Samsung",
     "autoGrantPermissions": true,

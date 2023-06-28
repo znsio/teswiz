@@ -1,11 +1,11 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": "temp/com.jio.rilconferences_v4.21.6.7-421607_Android-5.0.apk",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/com.jio.rilconferences_v4.21.6.7-421607_Android-5.0.apk",
     "appActivity": "org.jio.meet.introduction.views.SplashActivity",
     "appPackage": "com.jio.rilconferences",
-    "automationName": "UiAutomator2",
-    "platformVersion": "12",
+    "automationName": "UIAutomator2",
+    "os_version": "12",
     "platformName": "Android",
     "device": "Samsung",
     "autoGrantPermissions": true,
@@ -14,6 +14,7 @@
     "unicodeKeyboard": true,
     "resetKeyboard": true,
     "noReset": false,
+    "noSign": true,
     "autoAcceptAlerts": true,
     "browserstack.enableCameraImageInjection": true,
     "browserstack.geoLocation": "IN",
@@ -23,13 +24,12 @@
     "browserstack.acceptInsecureCerts": "true",
     "browserstack.locale": "IN",
     "browserstack.appium_version": "2.0.0",
-    "browserstack.debug": "true",
     "project": "teswiz"
   },
   "serverConfig" : {
     "server": {
       "port": 31337,
-      "use-plugins": ["device-farm", "appium-dashboard"],
+      "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
           "platform": "android",
@@ -37,6 +37,7 @@
           "cloud": {
             "cloudName": "browserstack",
             "url": "http://hub-cloud.browserstack.com",
+            "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
             "devices": [
             ]
           }

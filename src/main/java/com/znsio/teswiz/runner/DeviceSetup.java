@@ -127,15 +127,17 @@ class DeviceSetup {
 
     static void setupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
+        String deviceLabURL = getCloudUrlFromCapabilities();
         switch(cloudName.toLowerCase()) {
             case "headspin":
-                HeadSpinSetup.updateHeadspinCapabilities();
+                HeadSpinSetup.updateHeadspinCapabilities(deviceLabURL);
                 break;
             case "pcloudy":
-                PCloudySetup.updatePCloudyCapabilities();
+                PCloudySetup.updatePCloudyCapabilities(deviceLabURL);
                 break;
             case "browserstack":
-                BrowserStackSetup.updateBrowserStackCapabilities();
+                deviceLabURL = getCloudApiUrlFromCapabilities();
+                BrowserStackSetup.updateBrowserStackCapabilities(deviceLabURL);
                 break;
             case "saucelabs":
                 break;
@@ -192,6 +194,20 @@ class DeviceSetup {
         return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
                 new String[]{"serverConfig", "server", "plugin",
                         "device-farm", "cloud", "cloudName"});
+    }
+
+    private static String getCloudUrlFromCapabilities() {
+        String capabilityFile = Setup.getFromConfigs(CAPS);
+        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
+                new String[]{"serverConfig", "server", "plugin",
+                        "device-farm", "cloud", "url"});
+    }
+
+    private static String getCloudApiUrlFromCapabilities() {
+        String capabilityFile = Setup.getFromConfigs(CAPS);
+        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
+                new String[]{"serverConfig", "server", "plugin",
+                        "device-farm", "cloud", "apiUrl"});
     }
 
     static ArrayList<String> setupWindowsExecution() {
