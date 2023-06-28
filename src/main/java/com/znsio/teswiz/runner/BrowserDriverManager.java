@@ -1,6 +1,13 @@
 package com.znsio.teswiz.runner;
 
 import com.context.TestExecutionContext;
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.ExecCreateCmdResponse;
+import com.github.dockerjava.api.model.Container;
+import com.github.dockerjava.api.model.Frame;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
+import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
@@ -28,15 +35,16 @@ import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static com.znsio.teswiz.runner.Runner.*;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
@@ -49,6 +57,7 @@ class BrowserDriverManager {
     private static final String MAXIMIZE = "maximize";
     private static final String EXCLUDE_SWITCHES = "excludeSwitches";
     private static final String SETTING_PROXY_FOR_BROWSER = "Setting Proxy for browser: ";
+    private static final String FETCH_CONTAINER_BROWSER_VERSION_COMMAND = "google-chrome-stable --version";
     private static int numberOfWebDriversUsed = 0;
     private static boolean shouldBrowserBeMaximized = false;
     private static boolean isRunInHeadlessMode = false;
@@ -205,7 +214,8 @@ class BrowserDriverManager {
 
         // TODO - get browser version from local or container. What about cloud?
 
-        String browserVersion = getBrowserVersionFor(browserType);
+        String localBrowserVersion = getLocalBrowserVersionFor(browserType);
+        String containerBrowserVersion = getContainerBrowserVersion();
 
         WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
                 .proxy(webDriverManagerProxyUrl);
@@ -219,7 +229,69 @@ class BrowserDriverManager {
         return driverManagerType;
     }
 
-    private static String getBrowserVersionFor(String browserType) {
+    private static String getContainerBrowserVersion() {
+        DefaultDockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
+        DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
+
+        String imageName = "";
+        String containerId = "";
+
+        try {
+            Yaml yaml = new Yaml();
+            FileInputStream fis = new FileInputStream("docker-compose.yml");
+            Map<String, Object> data = yaml.load(fis);
+
+            Map<String, Object> services = (Map<String, Object>) data.get("services");
+            Map<String, Object> selenium = (Map<String, Object>) services.get("chrome");
+            imageName = (String) selenium.get("image");
+            LOGGER.info("Selenium image: " + imageName);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        List<Container> containers = dockerClient.listContainersCmd()
+                .withShowAll(true)
+                .exec();
+        for (Container container : containers) {
+            if (container.getImage().equals(imageName)) {
+                containerId = container.getId();
+            }
+        }
+
+        assert containerId != null;
+        ExecCreateCmdResponse execCreateCmdResponse = dockerClient.execCreateCmd(containerId)
+                .withCmd("sh", "-c", FETCH_CONTAINER_BROWSER_VERSION_COMMAND)
+                .withAttachStdout(true)
+                .withAttachStderr(true)
+                .exec();
+
+        String browserVersion = executeAndGetBrowserVersion(dockerClient, execCreateCmdResponse.getId());
+        LOGGER.info("Browser Version in container: " + browserVersion);
+        return browserVersion;
+    }
+
+    private static String executeAndGetBrowserVersion(DockerClient dockerClient, String execId) {
+        StringBuilder logOutput = new StringBuilder();
+        Pattern versionPattern = Pattern.compile("Google Chrome (\\d+\\.\\d+\\.\\d+\\.\\d+)");
+        try {
+            dockerClient.execStartCmd(execId)
+                    .exec(new ExecStartResultCallback() {
+                        @Override
+                        public void onNext(Frame frame) {
+                            logOutput.append(frame.toString());
+                        }
+                    }).awaitCompletion();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Matcher matcher = versionPattern.matcher(logOutput.toString());
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    private static String getLocalBrowserVersionFor(String browserType) {
         String binaryPath = "";
         switch (browserType) {
             case "chrome":
@@ -228,6 +300,8 @@ class BrowserDriverManager {
             case "firefox":
                 binaryPath = getFirefoxBinaryPath();
                 break;
+            case "safari":
+                return getSafariVersion();
             default:
                 throw new InvalidTestDataException("Invalid browser : " + browserType);
         }
@@ -242,7 +316,7 @@ class BrowserDriverManager {
             String line = reader.readLine();
             String[] split = line.split(" ");
             version = split[split.length - 1];
-            LOGGER.info("Browser Version : " + version);
+            LOGGER.info("Browser Version in system : " + version);
             process.destroy();
         } catch (IOException e) {
             e.printStackTrace();
@@ -252,25 +326,49 @@ class BrowserDriverManager {
 
     private static String getChromeBinaryPath() {
         String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("win")) {
-            return "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-        } else if (os.contains("mac")) {
-            return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-        } else if (os.contains("nix") || os.contains("nux") || os.contains("linux")) {
-            return "/usr/bin/google-chrome";
+        switch (os) {
+            case "win":
+                return System.getenv("ProgramFiles") + "\\Google\\Chrome\\Application\\chrome.exe";
+            case "mac os x":
+                return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+            case "nix":
+            case "nux":
+            case "linux":
+                return "/usr/bin/google-chrome";
+            default:
+                throw new IllegalStateException("Unsupported operating system: " + os);
         }
-        throw new IllegalStateException("Unsupported operating system: " + os);
     }
+
     private static String getFirefoxBinaryPath() {
         String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("win")) {
-            return "C:\\Program Files\\Firefox\\Application\\firefox.exe";
-        } else if (os.contains("mac")) {
-            return "/Applications/Firefox.app/Contents/MacOS/Firefox";
-        } else if (os.contains("nix") || os.contains("nux") || os.contains("linux")) {
-            return "/usr/bin/firefox";
+        switch (os) {
+            case "win":
+                return System.getenv("ProgramFiles") + "\\Firefox\\Application\\firefox.exe";
+            case "mac":
+                return "/Applications/Firefox.app/Contents/MacOS/firefox";
+            case "nix":
+            case "nux":
+            case "linux":
+                return "/usr/bin/firefox";
+            default:
+                throw new IllegalStateException("Unsupported operating system: " + os);
         }
-        throw new IllegalStateException("Unsupported operating system: " + os);
+    }
+
+    private static String getSafariVersion() {
+        String safariVersion = "";
+        try {
+            Process process = Runtime.getRuntime()
+                    .exec(new String[]{"defaults", "read", "/Applications/Safari.app/Contents/Info.plist", "CFBundleShortVersionString"});
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            safariVersion = reader.readLine();
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        LOGGER.info("Safari version in system = " + safariVersion);
+        return safariVersion;
     }
 
     @NotNull
