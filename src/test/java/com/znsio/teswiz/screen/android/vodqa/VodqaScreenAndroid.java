@@ -100,28 +100,10 @@ public class VodqaScreenAndroid extends VodqaScreen {
     }
 
     @Override
-    public VodqaScreen swipeLeft() {
-        driver.waitTillElementIsPresent(AppiumBy.xpath(String.format(swipeViewXpath, "1")));
-        visually.check(SCREEN_NAME, "Carousel Tile before swipe left",
-                Target.region(AppiumBy.xpath(String.format(swipeViewTileXpath, "1"))));
-        driver.swipeLeft();
-        return this;
-    }
-
-    @Override
     public boolean isSwipeSuccessful(String elementText) {
         boolean isSwipeSuccessful = driver.findElement(AppiumBy.xpath(String.format(swipeViewXpath, elementText))).isDisplayed();
         visually.check(SCREEN_NAME, "Carousel Tile after swipe", Target.region(AppiumBy.xpath(String.format(swipeViewTileXpath, elementText))));
         return isSwipeSuccessful;
-    }
-
-    @Override
-    public VodqaScreen swipeRight() {
-        driver.waitTillElementIsPresent(AppiumBy.xpath(String.format(swipeViewXpath, "1")));
-        visually.check(SCREEN_NAME, "Carousel Tile before swipe right",
-                Target.region(AppiumBy.xpath(String.format(swipeViewTileXpath, "1"))));
-        driver.swipeRight();
-        return this;
     }
 
     @Override

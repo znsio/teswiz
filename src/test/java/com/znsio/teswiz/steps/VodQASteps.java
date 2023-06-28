@@ -48,16 +48,6 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).scrollDownByScreenSizeOnVerticalSwipingScreen();
     }
 
-    @When("I swipe left on {string} screen")
-    public void selectScreenAndSwipeLeft(String screenName) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectScreenAndSwipeLeft(screenName);
-    }
-
-    @When("I swipe right on {string} screen")
-    public void selectScreenAndSwipeRight(String screenName) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectScreenAndSwipeRight(screenName);
-    }
-
     @Then("I am able to see element with text {string} on the screen")
     public void iAmAbleToSeeElementWithTextOnTheScreen(String elementText) {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifySwipe(elementText);
