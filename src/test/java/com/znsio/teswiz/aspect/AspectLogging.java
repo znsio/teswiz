@@ -22,12 +22,12 @@ public class AspectLogging {
 
     @Before("executionScope()")
     public void beforeAnyMethod(JoinPoint joinPoint) {
-        new AspectJMethodLoggers().beforeAnyMethod(joinPoint);
+        AspectJMethodLoggers.beforeAnyMethod(joinPoint);
     }
 
     @After("executionScope()")
     public void afterAnyMethod(JoinPoint joinPoint) {
-        new AspectJMethodLoggers().afterAnyMethod(joinPoint);
+        AspectJMethodLoggers.afterAnyMethod(joinPoint);
     }
 
 }
