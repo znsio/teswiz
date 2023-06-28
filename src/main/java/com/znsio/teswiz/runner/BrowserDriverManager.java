@@ -36,7 +36,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import org.yaml.snakeyaml.Yaml;
-
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -58,6 +57,10 @@ class BrowserDriverManager {
     private static final String EXCLUDE_SWITCHES = "excludeSwitches";
     private static final String SETTING_PROXY_FOR_BROWSER = "Setting Proxy for browser: ";
     private static final String FETCH_CONTAINER_BROWSER_VERSION_COMMAND = "google-chrome-stable --version";
+    private static final String CHROME_PATH_FOR_MAC = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+    private static final String CHROME_PATH_FOR_WINDOWS = "\\Google\\Chrome\\Application\\chrome.exe";
+    public static final String FIREFOX_PATH_FOR_MAC = "/Applications/Firefox.app/Contents/MacOS/firefox";
+    public static final String FIREFOX_PATH_FOR_WINDOWS = "\\Firefox\\Application\\firefox.exe";
     private static int numberOfWebDriversUsed = 0;
     private static boolean shouldBrowserBeMaximized = false;
     private static boolean isRunInHeadlessMode = false;
@@ -211,9 +214,6 @@ class BrowserDriverManager {
         LOGGER.info(String.format(
                 "Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'",
                 webDriverManagerProxyUrl, browserType));
-
-        // TODO - get browser version from local or container. What about cloud?
-
         String localBrowserVersion = getLocalBrowserVersionFor(browserType);
         String containerBrowserVersion = getContainerBrowserVersion();
 
@@ -240,7 +240,6 @@ class BrowserDriverManager {
             Yaml yaml = new Yaml();
             FileInputStream fis = new FileInputStream("docker-compose.yml");
             Map<String, Object> data = yaml.load(fis);
-
             Map<String, Object> services = (Map<String, Object>) data.get("services");
             Map<String, Object> selenium = (Map<String, Object>) services.get("chrome");
             imageName = (String) selenium.get("image");
@@ -274,13 +273,12 @@ class BrowserDriverManager {
         StringBuilder logOutput = new StringBuilder();
         Pattern versionPattern = Pattern.compile("Google Chrome (\\d+\\.\\d+\\.\\d+\\.\\d+)");
         try {
-            dockerClient.execStartCmd(execId)
-                    .exec(new ExecStartResultCallback() {
-                        @Override
-                        public void onNext(Frame frame) {
-                            logOutput.append(frame.toString());
-                        }
-                    }).awaitCompletion();
+            dockerClient.execStartCmd(execId).exec(new ExecStartResultCallback() {
+                @Override
+                public void onNext(Frame frame) {
+                    logOutput.append(frame.toString());
+                }
+            }).awaitCompletion();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -293,12 +291,13 @@ class BrowserDriverManager {
 
     private static String getLocalBrowserVersionFor(String browserType) {
         String binaryPath = "";
+        String os = System.getProperty("os.name").toLowerCase();
         switch (browserType) {
             case "chrome":
-                binaryPath = getChromeBinaryPath();
+                binaryPath = getChromeBinaryPath(os);
                 break;
             case "firefox":
-                binaryPath = getFirefoxBinaryPath();
+                binaryPath = getFirefoxBinaryPath(os);
                 break;
             case "safari":
                 return getSafariVersion();
@@ -324,35 +323,33 @@ class BrowserDriverManager {
         return version;
     }
 
-    private static String getChromeBinaryPath() {
-        String os = System.getProperty("os.name").toLowerCase();
+    private static String getChromeBinaryPath(String os) {
         switch (os) {
             case "win":
-                return System.getenv("ProgramFiles") + "\\Google\\Chrome\\Application\\chrome.exe";
+                return System.getenv("ProgramFiles") + CHROME_PATH_FOR_WINDOWS;
             case "mac os x":
-                return "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+                return CHROME_PATH_FOR_MAC;
             case "nix":
             case "nux":
             case "linux":
                 return "/usr/bin/google-chrome";
             default:
-                throw new IllegalStateException("Unsupported operating system: " + os);
+                throw new IllegalStateException("Unsupported operating system for chrome: " + os);
         }
     }
 
-    private static String getFirefoxBinaryPath() {
-        String os = System.getProperty("os.name").toLowerCase();
+    private static String getFirefoxBinaryPath(String os) {
         switch (os) {
             case "win":
-                return System.getenv("ProgramFiles") + "\\Firefox\\Application\\firefox.exe";
+                return System.getenv("ProgramFiles") + FIREFOX_PATH_FOR_WINDOWS;
             case "mac":
-                return "/Applications/Firefox.app/Contents/MacOS/firefox";
+                return FIREFOX_PATH_FOR_MAC;
             case "nix":
             case "nux":
             case "linux":
                 return "/usr/bin/firefox";
             default:
-                throw new IllegalStateException("Unsupported operating system: " + os);
+                throw new IllegalStateException("Unsupported operating system for firefox: " + os);
         }
     }
 
