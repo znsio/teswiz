@@ -32,7 +32,7 @@ plugins {
 
 jacoco {
     toolVersion = "0.8.8"
-    reportsDirectory = layout.buildDirectory.dir('jacoco')
+//    reportsDirectory = layout.buildDirectory.dir('jacoco')
 }
 
 group = 'com.github.znsio'
@@ -137,7 +137,6 @@ static def getCurrentTimestamp() {
 
 task run(type: JavaExec) {
     doFirst {
-   //     finalizedBy jacocoTestReport
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
@@ -177,14 +176,9 @@ task run(type: JavaExec) {
 
     mainClass = "com.znsio.teswiz.runner.Runner"
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
-
-  //  doLast {
-  //      finalizedBy jacocoTestReport
-   // }
 }
 
 test {
-    finalizedBy jacocoTestReport
     useJUnitPlatform()
     outputs.upToDateWhen { false }
 
@@ -203,6 +197,7 @@ test {
     if (System.getProperty('debug', 'false') == 'true') {
         jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
     }
+
     reports {
         html.enabled(true)
         junitXml.enabled(true)
@@ -210,7 +205,5 @@ test {
         junitXml.destination(file("$buildDir/unit-test-results"))
     }
 
-    jacocoTestReport {
-        dependsOn test // tests are required to run before generating the report
-    }
+    finalizedBy jacocoTestReport
 }
