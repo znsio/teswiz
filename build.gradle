@@ -18,7 +18,7 @@ buildscript {
         masterThoughtVersion = '5.7.5'
         browserStackLocalVersion = '1.1.0'
         jetbrainsAnnotationsVersion = '24.0.1'
-
+        dockerJavaVersion = '3.2.9'
     }
 }
 
@@ -81,7 +81,7 @@ dependencies {
     implementation "com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion"
     implementation "com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
-    implementation 'com.github.docker-java:docker-java:3.2.9'
+    implementation "com.github.docker-java:docker-java:$dockerJavaVersion"
 }
 
 shadowJar {
