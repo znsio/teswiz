@@ -19,11 +19,18 @@ public class AspectJMethodLoggers {
         context = SessionContext.getTestExecutionContext(threadId);
     }
 
-    public static String beforeAnyMethod(JoinPoint proceedingJoinPoint) {
-        StringBuilder loggerMessage = new StringBuilder();
-        loggerMessage.append(String.format("Entering method: %s with parameters:\n", proceedingJoinPoint.getSignature().getName()));
+    public static void beforeAnyMethod(JoinPoint joinPoint) {
+        LOGGER.info(generateBeforeMethodAspectJLogger(joinPoint.getSignature().getName(), joinPoint.getArgs()));
+    }
 
-        Object[] arguments = proceedingJoinPoint.getArgs();
+    public static void afterAnyMethod(JoinPoint joinPoint) {
+        LOGGER.info(generateAfterMethodAspectJLogger(joinPoint.getSignature().getName()));
+    }
+
+    public static String generateBeforeMethodAspectJLogger(String methodName, Object[] arguments) {
+        StringBuilder loggerMessage = new StringBuilder();
+        loggerMessage.append(String.format("Entering method: %s with parameters:\n", methodName));
+
         int currentIndex = 0;
         for (Object argument : arguments) {
             if (argument == null)
@@ -37,7 +44,7 @@ public class AspectJMethodLoggers {
                     arrayMessage.append(String.format("%s, ", Array.get(argument, arrayIndex)));
                 }
 
-                arrayMessage.replace(arrayMessage.length()-2, arrayMessage.length(), "]");
+                arrayMessage.replace(arrayMessage.length() - 2, arrayMessage.length(), "]");
                 loggerMessage.append(String.format("Param%s: type %s : value \"%s\"\n", currentIndex++,
                         argument.getClass().getSimpleName(), arrayMessage));
 
@@ -45,12 +52,10 @@ public class AspectJMethodLoggers {
                 loggerMessage.append(String.format("Param%s: type %s : value \"%s\"\n", currentIndex++,
                         argument.getClass().getSimpleName(), argument));
         }
-        LOGGER.info(loggerMessage.toString().trim());
-        return loggerMessage.toString();
+        return loggerMessage.toString().trim();
     }
 
-    public static void afterAnyMethod(JoinPoint joinPoint) {
-        exitLogger = String.format("Exit method: %s", joinPoint.getSignature().getName());
-        LOGGER.info(exitLogger);
+    public static String generateAfterMethodAspectJLogger(String methodName) {
+        return String.format("Exit method: %s", methodName);
     }
 }
