@@ -16,7 +16,7 @@ public class AspectLogging {
         long threadId = Thread.currentThread().getId();
         context = SessionContext.getTestExecutionContext(threadId);
     }
-    @Pointcut("execution(public * com.znsio.teswiz.businessLayer.*.*.*(..)) || execution(public * com.znsio.teswiz.screen.*.*.*.*(..))")
+    @Pointcut("execution(public * *.*.*.businessLayer.*.*.*(..)) || execution(public * *.*.*.screen.*.*.*.*(..))")
     public void executionScope(){
     }
 
