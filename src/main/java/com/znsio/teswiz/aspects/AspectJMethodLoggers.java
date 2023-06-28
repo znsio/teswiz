@@ -5,34 +5,52 @@ import com.context.TestExecutionContext;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 
+import java.lang.reflect.Array;
+
 public class AspectJMethodLoggers {
     private static final Logger LOGGER = Logger.getLogger(AspectJMethodLoggers.class.getName());
     private final TestExecutionContext context;
+
+    private static String enteringLogger;
+    private static String exitLogger;
 
     public AspectJMethodLoggers() {
         long threadId = Thread.currentThread().getId();
         context = SessionContext.getTestExecutionContext(threadId);
     }
 
-    public static void beforeAnyMethod(JoinPoint joinPoint) {
-        LOGGER.info(String.format("Entering method: %s ", joinPoint.getSignature().getName()));
-
+    public static String beforeAnyMethod(JoinPoint proceedingJoinPoint) {
         StringBuilder loggerMessage = new StringBuilder();
-        Object[] arguments = joinPoint.getArgs();
+        loggerMessage.append(String.format("Entering method: %s with parameters:\n", proceedingJoinPoint.getSignature().getName()));
 
-        if (arguments.length != 0) {
-            loggerMessage.append(String.format("With arguments- ", joinPoint.getSignature().getName()));
+        Object[] arguments = proceedingJoinPoint.getArgs();
+        int currentIndex = 0;
+        for (Object argument : arguments) {
+            if (argument == null)
+                loggerMessage.append(String.format("Param%s: value \"null\"\n", currentIndex++));
 
-            for (Object argument : arguments) {
-                if (argument != null) {
-                    loggerMessage.append(String.format("type %s : value \"%s\", ", argument.getClass().getSimpleName(), argument));
+            else if (argument.getClass().isArray()) {
+                StringBuilder arrayMessage = new StringBuilder();
+                arrayMessage.append("[");
+
+                for (int arrayIndex = 0; arrayIndex < Array.getLength(argument); arrayIndex++) {
+                    arrayMessage.append(String.format("%s, ", Array.get(argument, arrayIndex)));
                 }
-            }
-            LOGGER.info(loggerMessage);
+
+                arrayMessage.replace(arrayMessage.length()-2, arrayMessage.length(), "]");
+                loggerMessage.append(String.format("Param%s: type %s : value \"%s\"\n", currentIndex++,
+                        argument.getClass().getSimpleName(), arrayMessage));
+
+            } else
+                loggerMessage.append(String.format("Param%s: type %s : value \"%s\"\n", currentIndex++,
+                        argument.getClass().getSimpleName(), argument));
         }
+        LOGGER.info(loggerMessage.toString().trim());
+        return loggerMessage.toString();
     }
 
     public static void afterAnyMethod(JoinPoint joinPoint) {
-        LOGGER.info(String.format("Exit method: %s", joinPoint.getSignature().getName()));
+        exitLogger = String.format("Exit method: %s", joinPoint.getSignature().getName());
+        LOGGER.info(exitLogger);
     }
 }
