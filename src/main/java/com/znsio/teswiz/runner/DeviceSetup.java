@@ -8,11 +8,11 @@ import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -83,62 +83,49 @@ class DeviceSetup {
     static void verifyAppExistsAtMentionedPath() {
         String appPath = Setup.getFromConfigs(APP_PATH);
         LOGGER.info(String.format("Update path to Apk: %s", appPath));
-        if(appPath.equals(NOT_SET)) {
+        if (appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
             String directoryPath = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "sampleApps";
             String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
             String filePath = directoryPath + File.separator + fileName;
-            if((new File(filePath)).exists()){
-                LOGGER.info("File already exist at "+filePath);
+
+            if ((new File(filePath)).exists()) {
+                LOGGER.info("File already exist at " + filePath);
                 appPath = filePath;
-            }
-            else if (isURLValid(appPath)) {
+            } else if (isAppPathAUrl(appPath)) {
                 LOGGER.info("URL present instead of file path");
-                File file = new File(fileName);
-                try {
-                    LOGGER.info("Creating repositories if doesn't exist");
-                    Files.createDirectories(Path.of(directoryPath));
-                    if (!file.exists()) {
-                        LOGGER.info("File doesn't exist, need to download it");
-                        downloadFile(appPath, filePath);
-                    }
-                    appPath = filePath;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                createDirectoryIfNotExist(directoryPath);
+                downloadFileIfNotExist(appPath, filePath);
+                appPath = filePath;
             }
             Setup.addToConfigs(APP_PATH, appPath);
         } else {
             LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s",
-                                      appPath));
+                    appPath));
         }
     }
 
-    private static boolean isURLValid(String urlString) {
+    private static void createDirectoryIfNotExist(String directoryPath){
         try {
-            new URL(urlString);
-            return true;
-        } catch (MalformedURLException e) {
-            return false;
+            LOGGER.info("Creating repositories, if doesn't exist");
+            Files.createDirectories(Path.of(directoryPath));
+        } catch (IOException e) {
+        throw new RuntimeException("Failed to create directory: "+ directoryPath + ", error occurred" + e);
         }
     }
 
-    private static void downloadFile(String url, String filePath) throws IOException {
-        LOGGER.info("Starting to download file");
-        URL fileUrl = new URL(url);
-        try (InputStream in = fileUrl.openStream();
-             FileOutputStream out = new FileOutputStream(filePath)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
+    private static void downloadFileIfNotExist(String url, String filePath) {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            LOGGER.info("File doesn't exist, need to download it");
+            try {
+                URL fileUrl = new URL(url);
+                InputStream in = fileUrl.openStream();
+                    Files.copy(in, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
+                    LOGGER.info("File downloaded at path: "+filePath);
+            } catch (IOException e) {
+                LOGGER.error("An error occurred while opening the URL/downloading file: " + e.getMessage());
             }
-            LOGGER.info("Completed file download");
-        } catch (FileNotFoundException e) {
-            LOGGER.error("File was not found at the given URL, please recheck URL");
-            throw new FileNotFoundException();
-        } catch (IOException e) {
-            throw new IOException();
         }
     }
 
