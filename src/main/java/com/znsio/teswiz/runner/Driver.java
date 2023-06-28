@@ -555,4 +555,9 @@ public class Driver {
         Point toPoint = new Point(width, height[1]);
         scroll(fromPoint, toPoint);
     }
+
+    public void setAttributeValue(WebElement element, String attribute, String value){
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].setAttribute(arguments[1],arguments[2])", element, attribute, value);
+    }
 }
