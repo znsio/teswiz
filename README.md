@@ -3,6 +3,9 @@
 [![CI](https://github.com/znsio/teswiz/actions/workflows/CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/CI.yml)
 [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)
 
+# To Build
+`./gradlew clean build`
+
 # ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Breaking changes in Latest teswiz v0.0.80![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png)
 
 Below is the list of the breaking changes, and the corresponding new implementation starting from teswiz latest teswiz.
