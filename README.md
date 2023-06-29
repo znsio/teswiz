@@ -6,9 +6,23 @@
 # To Build
 `./gradlew clean build`
 
-# ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Breaking changes in Latest teswiz v0.0.80![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png)
+# ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Breaking changes in Latest teswiz v0.0.81![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png)
 
 Below is the list of the breaking changes, and the corresponding new implementation starting from teswiz latest teswiz.
+
+## Cloud Changes
+
+In Config properties files, which are related to cloud execution platforms such as browserStack, HeadSpin, Lamda Tests, Pcloudy etc make the following change: 
+**CLOUD_USER** config will now be replaced with **CLOUD_USERNAME**.
+
+## Browser Stack and Lambda Test changes
+1. It is **Mandatory** to pass **BS_USERNAME** & **BS_PASSWORD** as Environment variables when running on browser Stack from local
+2. Similarly, All the pipelines using browser Stack will need to be updated, **BS_USERNAME** & **BS_PASSWORD** needs to be added
+
+**Note**: BS_USERNAME & BS_PASSWORD will be the browser stack credentials which are configured in config file as CLOUD_USERNAME & CLOUD_KEY respectively
+
+**Please Refer:** 
+[Browser Stack Local File](https://github.com/znsio/teswiz/blob/main/docs/BrowserStackLocal_README.md)
 
 ## Method name and implementation changes
 
