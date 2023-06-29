@@ -34,7 +34,7 @@ public class AspectJMethodLoggers {
         int currentIndex = 0;
         for (Object argument : arguments) {
             if (argument == null)
-                loggerMessage.append(String.format("Param%s: value \"null\"\n", currentIndex++));
+                loggerMessage.append(String.format("\tParam%s: value \"null\"\n", currentIndex++));
 
             else if (argument.getClass().isArray()) {
                 StringBuilder arrayMessage = new StringBuilder();
@@ -45,11 +45,11 @@ public class AspectJMethodLoggers {
                 }
 
                 arrayMessage.replace(arrayMessage.length() - 2, arrayMessage.length(), "]");
-                loggerMessage.append(String.format("Param%s: type %s : value \"%s\"\n", currentIndex++,
+                loggerMessage.append(String.format("\tParam%s: type %s : value \"%s\"\n", currentIndex++,
                         argument.getClass().getSimpleName(), arrayMessage));
 
             } else
-                loggerMessage.append(String.format("Param%s: type %s : value \"%s\"\n", currentIndex++,
+                loggerMessage.append(String.format("\tParam%s: type %s : value \"%s\"\n", currentIndex++,
                         argument.getClass().getSimpleName(), argument));
         }
         return loggerMessage.toString().trim();
