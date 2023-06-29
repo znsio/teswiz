@@ -304,8 +304,6 @@ class BrowserDriverManager {
             default:
                 throw new InvalidTestDataException("Invalid browser : " + browserType);
         }
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.setBinary(binaryPath);
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.command(binaryPath, "--version");
         String version = "";
