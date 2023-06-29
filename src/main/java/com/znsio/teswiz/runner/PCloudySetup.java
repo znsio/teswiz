@@ -80,10 +80,12 @@ class PCloudySetup {
             numDevices < Setup.getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS);
             numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
-            deviceInfo.put("osVersion", String.valueOf(
-                    loadedCapabilityFile.get(platformName).get("platformVersion")));
-            deviceInfo.put("deviceName", String.valueOf(
-                    loadedCapabilityFile.get(platformName).get("platformName")));
+            deviceInfo.put("pCloudy_DeviceManufacturer",
+                    loadedCapabilityFile.get(platformName).get("device").toString().toUpperCase());
+            deviceInfo.put("pCloudy_DeviceVersion", String.valueOf(
+                    loadedCapabilityFile.get(platformName).get("os_version")));
+            deviceInfo.put("platform",
+                    loadedCapabilityFile.get(platformName).get("platformName").toString().toLowerCase());
             listOfAndroidDevices.add(deviceInfo);
         }
         DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,

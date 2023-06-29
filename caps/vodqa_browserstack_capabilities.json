@@ -9,7 +9,7 @@
   },
   "serverConfig" : {
     "server": {
-      "use-plugins": ["device-farm", "appium-dashboard"],
+      "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
           "platform": "android",
@@ -24,10 +24,5 @@
         }
       }
     }
-  },
-  "hostMachines": [
-    {
-      "machineIP": "127.0.0.1"
-    }
-  ]
+  }
 }

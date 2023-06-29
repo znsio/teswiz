@@ -127,12 +127,14 @@ class DeviceSetup {
 
     static void setupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
-        String deviceLabURL = getCloudUrlFromCapabilities();
+        String deviceLabURL = NOT_SET;
         switch(cloudName.toLowerCase()) {
             case "headspin":
+                deviceLabURL = getCloudUrlFromCapabilities();
                 HeadSpinSetup.updateHeadspinCapabilities(deviceLabURL);
                 break;
             case "pcloudy":
+                deviceLabURL = getCloudApiUrlFromCapabilities();
                 PCloudySetup.updatePCloudyCapabilities(deviceLabURL);
                 break;
             case "browserstack":
