@@ -85,30 +85,43 @@ class DeviceSetup {
         LOGGER.info(String.format("Update path to Apk: %s", appPath));
         if (appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
-            String directoryPath = "src" + File.separator + "test" + File.separator + "resources" + File.separator + "sampleApps";
-            String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
-            String filePath = directoryPath + File.separator + fileName;
-
-            if ((new File(filePath)).exists()) {
-                LOGGER.info("File already exist at " + filePath);
-                appPath = filePath;
-            } else if (isAppPathAUrl(appPath)) {
-                LOGGER.info("URL present instead of file path");
-                createDirectoryIfNotExist(directoryPath);
-                downloadFileIfNotExist(appPath, filePath);
-                appPath = filePath;
-            }
+            appPath = convertAppPathToFilePathIfNeeded(appPath);
             Setup.addToConfigs(APP_PATH, appPath);
         } else {
+            appPath = convertAppPathToFilePathIfNeeded(appPath);
             LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s",
                     appPath));
         }
     }
 
+    private static String convertAppPathToFilePathIfNeeded(String appPath){
+        if (isAppPathAUrl(appPath)) {
+            String directoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "sampleApps";
+            String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
+            String filePath = directoryPath + File.separator + fileName;
+            createDirectoryIfNotExist(directoryPath);
+            downloadFileIfNotExist(appPath, filePath);
+            LOGGER.info("Changing value of appPath from URL to file path");
+            LOGGER.info("Before change, appPath value: "+ appPath);
+            appPath = filePath;
+            LOGGER.info("After change, appPath value: "+ filePath);
+        }
+        try{
+            new FileInputStream(appPath);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("File not found: " + appPath, e);
+        }
+        return appPath;
+    }
     private static void createDirectoryIfNotExist(String directoryPath){
         try {
-            LOGGER.info("Creating repositories, if doesn't exist");
-            Files.createDirectories(Path.of(directoryPath));
+            Path pathForDirectory = Path.of(directoryPath);
+            if(Files.exists(pathForDirectory))
+                LOGGER.info("Directory already exist");
+            else{
+                Files.createDirectories(pathForDirectory);
+                LOGGER.info("Creating directory");
+            }
         } catch (IOException e) {
         throw new RuntimeException("Failed to create directory: "+ directoryPath + ", error occurred" + e);
         }
@@ -124,8 +137,10 @@ class DeviceSetup {
                     Files.copy(in, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
                     LOGGER.info("File downloaded at path: "+filePath);
             } catch (IOException e) {
-                LOGGER.error("An error occurred while opening the URL/downloading file: " + e.getMessage());
+                throw new RuntimeException("An error occurred while opening the URL/downloading file: " + e.getMessage());
             }
+        }else{
+            LOGGER.info("File already exists, no need to download");
         }
     }
 
@@ -201,7 +216,10 @@ class DeviceSetup {
 
     private static boolean isAppPathAUrl(String appPath) {
         boolean isUrl = appPath.toLowerCase().startsWith("http");
-        LOGGER.info(String.format("\tAppPath refers to a url: %s", appPath));
+        if(isUrl)
+            LOGGER.info(String.format("\tAppPath refers to a url: %s", appPath));
+        else
+            LOGGER.info(String.format("\tAppPath refers to a file path: %s", appPath));
         return isUrl;
     }
 
