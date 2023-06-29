@@ -26,9 +26,7 @@ Change the config file path in build.gradle file to get the configuration proper
 * Run the command from local:
 Sample command
 
-    ```PLATFORM=android RUN_IN_CI=true CLOUD_USE_PROXY=false CLOUD_USERNAME=<browserstackUsername> CLOUD_KEY=<browserstackaccessKey>  BS_USERNAME=<browserstackUsername> BS_PASSWORD=<browserstackaccessKey> ./gradlew run```  
-  
-    ```PLATFORM=android RUN_IN_CI=true BS_USERNAME=<browserstackUsername> BS_PASSWORD=<browserstackaccessKey> ./gradlew run```
+    ```PLATFORM=android RUN_IN_CI=true CLOUD_USE_PROXY=false CLOUD_USERNAME=<browserstackUsername> CLOUD_KEY=<browserstackaccessKey> ./gradlew run```  
 
 #### Running from the pipeline (this is specifically for Azure), but similar changes can be done for any other CI tool as well.
   * Set the variable in azure-pipelines.yml
@@ -44,7 +42,5 @@ Sample command
      * `CLOUD_USERNAME`: browserStackUserName
      * `CLOUD_KEY`: BrowserStack Key
      * `CLOUD_USE_PROXY` = true
-     * `BS_USERNAME` = browserStackUserName
-     * `BS_PASSWORD` = BrowserStack Key
 
  #### * Note: Check the necessary proxy settings if required 

@@ -16,10 +16,10 @@ In Config properties files, which are related to cloud execution platforms such 
 **CLOUD_USER** config will now be replaced with **CLOUD_USERNAME**.
 
 ## Browser Stack and Lambda Test changes
-1. It is **Mandatory** to pass **BS_USERNAME** & **BS_PASSWORD** as Environment variables when running on browser Stack from local
-2. Similarly, All the pipelines using browser Stack will need to be updated, **BS_USERNAME** & **BS_PASSWORD** needs to be added
+1. It is **Mandatory** to pass **CLOUD_USERNAME** & **CLOUD_KEY** as Environment variables when running on browser Stack from local
+2. Similarly, All the pipelines using browser Stack will need to be updated, **CLOUD_USERNAME** & **CLOUD_KEY** needs to be added
 
-**Note**: BS_USERNAME & BS_PASSWORD will be the browser stack credentials which are configured in config file as CLOUD_USERNAME & CLOUD_KEY respectively
+**Note**: appium-device-farm plugin's version should be >= v8.1.0. minimum requirement is v8.1.0
 
 **Please Refer:** 
 [Browser Stack Local File](https://github.com/znsio/teswiz/blob/main/docs/BrowserStackLocal_README.md)
