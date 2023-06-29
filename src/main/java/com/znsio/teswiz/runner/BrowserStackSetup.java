@@ -26,8 +26,8 @@ class BrowserStackSetup {
         LOGGER.debug("BrowserStackSetup - private constructor");
     }
 
-    static void updateBrowserStackCapabilities() {
-        String authenticationUser = Setup.getFromConfigs(Setup.CLOUD_USER);
+    static void updateBrowserStackCapabilities(String deviceLabURL) {
+        String authenticationUser = Setup.getFromConfigs(Setup.CLOUD_USERNAME);
         String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
         String platformName = Setup.getPlatform().name();
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
@@ -36,15 +36,9 @@ class BrowserStackSetup {
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser,
-                                                                authenticationKey, appPath);
-
-        ArrayList hostMachinesList = (ArrayList) loadedCapabilityFile.get("hostMachines");
-        Map hostMachines = (Map) hostMachinesList.get(0);
-        String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
-        hostMachines.put("machineIP", remoteServerURL);
-        Map app = (Map) loadedPlatformCapability.get("app");
-        app.put("local", appPath);
-        app.put("cloud", appIdFromBrowserStack);
+                                                                authenticationKey, appPath, deviceLabURL);
+        LOGGER.info(String.format("app Id retreived from browser stack is: %s", appIdFromBrowserStack));
+        loadedPlatformCapability.put("app", appIdFromBrowserStack);
         loadedPlatformCapability.put("browserstack.user", authenticationUser);
         loadedPlatformCapability.put("browserstack.key", authenticationKey);
         setupLocalTesting(authenticationKey, loadedPlatformCapability);
@@ -105,16 +99,17 @@ class BrowserStackSetup {
     }
 
     private static String getAppIdFromBrowserStack(String authenticationUser,
-                                                   String authenticationKey, String appPath) {
+                                                   String authenticationKey, String appPath,
+                                                   String apiUrl) {
         LOGGER.info(String.format("getAppIdFromBrowserStack: for %s", appPath));
         String appIdFromBrowserStack;
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_UPLOAD_APP)) {
             appIdFromBrowserStack = uploadAPKToBrowserStack(
-                    authenticationUser + ":" + authenticationKey, appPath);
+                    authenticationUser + ":" + authenticationKey, appPath, apiUrl);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
             appIdFromBrowserStack = getAppIdFromBrowserStack(
-                    authenticationUser + ":" + authenticationKey, appPath);
+                    authenticationUser + ":" + authenticationKey, appPath, apiUrl);
         }
         LOGGER.info("Using appId: " + appIdFromBrowserStack);
         return appIdFromBrowserStack;
@@ -160,8 +155,9 @@ class BrowserStackSetup {
         ArrayList listOfAndroidDevices = new ArrayList();
 
         String platformVersion = String.valueOf(
-                loadedCapabilityFile.get(platformName).get("platformVersion"));
-        String deviceName = String.valueOf(loadedCapabilityFile.get(platformName).get(DEVICE));
+                loadedCapabilityFile.get(platformName).getOrDefault("platformVersion", ""));
+        String deviceName =
+                String.valueOf(loadedCapabilityFile.get(platformName).getOrDefault(DEVICE, ""));
         loadedCapabilityFile.get(platformName).remove(DEVICE);
 
         Map<String, String> filters = new LinkedHashMap<>();
@@ -180,21 +176,22 @@ class BrowserStackSetup {
                                   deviceCount));
         for(int numDevices = 0; numDevices < deviceCount; numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
-            deviceInfo.put("osVersion", availableDevices.get(numDevices).getOs_version());
+            deviceInfo.put("platform", platformName);
+            deviceInfo.put("os_version", availableDevices.get(numDevices).getOs_version());
             deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
-            deviceInfo.put(DEVICE, availableDevices.get(numDevices).getDevice());
             listOfAndroidDevices.add(deviceInfo);
         }
         DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
                                             listOfAndroidDevices);
     }
 
-    private static String uploadAPKToBrowserStack(String authenticationKey, String appPath) {
+    private static String uploadAPKToBrowserStack(String authenticationKey, String appPath,
+                                                  String uploadUrl) {
         LOGGER.info(String.format("uploadAPKToBrowserStack for: '%s'%n", authenticationKey));
 
         String[] curlCommand = new String[]{
                 "curl --insecure " + Setup.getCurlProxyCommand() + " -u \"" + authenticationKey + "\"",
-                "-X POST \"https://api-cloud.browserstack.com/app-automate/upload\"",
+                "-X POST \"" + uploadUrl + "upload\"",
                 "-F \"file=@" + appPath + "\"", "-F \"custom_id=" + getAppName(appPath) + "\""};
         CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(
                 curlCommand);
@@ -208,13 +205,14 @@ class BrowserStackSetup {
         return uploadedApkId;
     }
 
-    private static String getAppIdFromBrowserStack(String authenticationKey, String appPath) {
+    private static String getAppIdFromBrowserStack(String authenticationKey, String appPath,
+                                                   String apiUrl) {
         String appName = getAppName(appPath);
         LOGGER.info(String.format("getAppIdFromBrowserStack for: '%s' and appName: '%s'%n",
                                   authenticationKey, appName));
         String[] curlCommand = new String[]{
                 "curl --insecure " + Setup.getCurlProxyCommand() + " -u \"" + authenticationKey + "\"",
-                "-X GET \"https://api-cloud.browserstack.com/app-automate/recent_apps/" + appName + "\""};
+                "-X GET \"" + apiUrl + "recent_apps/" + appName + "\""};
         String uploadedAppIdFromBrowserStack;
         try {
             CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(

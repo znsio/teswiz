@@ -28,7 +28,7 @@ class BrowserStackImageInjectionTest {
         System.setProperty("LOG_DIR", LOG_DIR);
         new File(LOG_DIR).mkdirs();
 
-        authenticationUser = System.getenv("CLOUD_USER");
+        authenticationUser = System.getenv("CLOUD_USERNAME");
         authenticationKey = System.getenv("CLOUD_KEY");
         cloudName = System.getenv("CLOUD_NAME");
         DesiredCapabilities caps = new DesiredCapabilities();

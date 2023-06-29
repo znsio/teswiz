@@ -23,7 +23,7 @@ class HeadSpinSetup {
         LOGGER.debug("HeadSpinSetup - private constructor");
     }
     
-    static void updateHeadspinCapabilities() {
+    static void updateHeadspinCapabilities(String deviceLabURL) {
         String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
         String platformName = Setup.getPlatform().name();
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
@@ -34,11 +34,12 @@ class HeadSpinSetup {
         String osVersion = String.valueOf(loadedPlatformCapability.get(PLATFORM_VERSION));
         String appIdFromHeadspin;
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_UPLOAD_APP)) {
-            appIdFromHeadspin = uploadAPKToHeadspin(authenticationKey, appPath);
+            appIdFromHeadspin = uploadAPKToHeadspin(authenticationKey, appPath, deviceLabURL);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
             appIdFromHeadspin = getAppIdFromHeadspin(authenticationKey,
-                                                     Setup.getFromConfigs(Setup.APP_PACKAGE_NAME));
+                                                     Setup.getFromConfigs(Setup.APP_PACKAGE_NAME),
+                                                     deviceLabURL);
         }
         LOGGER.info("Using appId: " + appIdFromHeadspin);
         loadedPlatformCapability.put("headspin:appId", appIdFromHeadspin);
@@ -58,10 +59,8 @@ class HeadSpinSetup {
         updateCapabilities(loadedCapabilityFile);
     }
 
-    private static String uploadAPKToHeadspin(String authenticationKey, String appPath) {
+    private static String uploadAPKToHeadspin(String authenticationKey, String appPath, String deviceLabURL) {
         LOGGER.info(String.format("uploadAPKToHeadspin for: '%s'%n", authenticationKey));
-        String deviceLabURL = Setup.getFromConfigs(Setup.DEVICE_LAB_URL);
-
         String[] curlCommand = new String[]{
                 "curl --insecure " + Setup.getCurlProxyCommand() + " -X POST ",
                 "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apk/upload " +
@@ -75,18 +74,20 @@ class HeadSpinSetup {
         LOGGER.info(String.format("App: '%s' uploaded to Headspin. Response: '%s'", appPath,
                                   uploadResponse));
 
-        JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey);
+        JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey, deviceLabURL);
         JsonObject uploadedAppDetails = listOfAppPackages.getAsJsonObject(uploadedApkId);
         String uploadedAppName = uploadedAppDetails.get("app_name").getAsString();
         Setup.addToConfigs(Setup.APP_PATH, uploadedAppName);
         return uploadedApkId;
     }
 
-    private static String getAppIdFromHeadspin(String authenticationKey, String appPackageName) {
+    private static String getAppIdFromHeadspin(String authenticationKey, String appPackageName,
+                                               String deviceLabURL) {
         LOGGER.info("getAppIdFromHeadspin for package: " + appPackageName);
 
         AtomicReference<String> uploadedAppId = new AtomicReference<>(NOT_SET);
-        JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey);
+        JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey,
+                deviceLabURL);
         if(!listOfAppPackages.keySet().isEmpty()) {
             getAppIdFromAvailableAppsFromHeadspin(appPackageName, listOfAppPackages, uploadedAppId);
         }
@@ -118,8 +119,8 @@ class HeadSpinSetup {
                                             listOfAndroidDevices);
     }
 
-    private static JsonObject getListOfAppPackagesFromHeadSpin(String authenticationKey) {
-        String deviceLabURL = Setup.getFromConfigs(Setup.DEVICE_LAB_URL);
+    private static JsonObject getListOfAppPackagesFromHeadSpin(String authenticationKey,
+                                                               String deviceLabURL) {
         String[] curlCommand = new String[]{"curl --insecure", Setup.getCurlProxyCommand(),
                                             "https://" + authenticationKey + "@" + deviceLabURL + "/v0/apps/apks"};
         CommandLineResponse listOfUploadedFilesInHeadspinResponse = CommandLineExecutor.execCommand(

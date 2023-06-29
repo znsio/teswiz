@@ -78,7 +78,7 @@ public class Runner {
     }
 
     public static String getCloudUser() {
-        return Setup.getFromConfigs(Setup.CLOUD_USER);
+        return Setup.getFromConfigs(Setup.CLOUD_USERNAME);
     }
 
     public static String getCloudKey() {
