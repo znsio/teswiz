@@ -20,7 +20,7 @@ public class AspectJMethodLoggers {
     }
 
     public static void beforeAnyMethod(JoinPoint joinPoint) {
-        LOGGER.info(generateBeforeMethodAspectJLogger(joinPoint.getSignature().getName(), joinPoint.getArgs()));
+        LOGGER.info(String.format("\n%s",generateBeforeMethodAspectJLogger(joinPoint.getSignature().getName(), joinPoint.getArgs())));
     }
 
     public static void afterAnyMethod(JoinPoint joinPoint) {
