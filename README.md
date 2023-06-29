@@ -116,6 +116,8 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 * Build tool: gradle 7.3.3
 * cucumber-reporting (https://github.com/damianszczepanik/cucumber-reporting)
 
+## [Prerequisites](docs/Prerequisites-README.md)
+
 ## [Getting started using teswiz](docs/GettingStartedUsingTeswiz-README.md)
 
 ## [Configuring the test execution](docs/ConfiguringTestExecution-README.md)
