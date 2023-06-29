@@ -73,4 +73,9 @@ public class AspectJMethodLoggerTest {
                         "\tParam5: type  : value \"{Hash=1, Map=2}\"",
                 AspectJMethodLoggers.generateBeforeMethodAspectJLogger(methodName, params));
     }
+    @Test
+    void exitMethodLoggerValidation(){
+        assertEquals("Exit method: unitTestMethodName",
+                AspectJMethodLoggers.generateAfterMethodAspectJLogger(methodName));
+    }
 }
