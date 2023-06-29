@@ -1,27 +1,29 @@
 {
   "android": {
-    "automationName": "UiAutomator2",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
     "appPackage": "com.appiumpro.the_app",
     "appActivity": "com.appiumpro.the_app.MainActivity",
-    "platformVersion": "10",
+    "autoAcceptAlerts": true,
+    "automationName": "UIAutomator2",
+    "os_version": "12",
     "platformName": "Android",
     "device": "Samsung",
     "autoGrantPermissions": true,
     "newCommandTimeout": 300,
+    "noSign": true,
     "launchTimeout": 90000,
     "unicodeKeyboard": true,
     "resetKeyboard": true,
     "noReset": true,
-    "autoAcceptAlerts": true,
+    "project": "teswiz",
+    "browserstack.appium_version": "2.0.0",
     "browserstack.enableCameraImageInjection": true,
+    "browserstack.debug": true,
     "browserstack.geoLocation": "IN",
     "browserstack.timezone": "Kolkata",
-    "browserstack.debug": "false",
     "browserstack.networkLogs": "true",
     "browserstack.gpsLocation": "22,75",
-    "browserstack.locale": "IN",
-    "project": "teswiz",
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk"
+    "browserstack.locale": "IN"
   },
   "web": {
     "browserName": "chrome",
@@ -34,30 +36,22 @@
       "networkLogs": "true"
     }
   },
-  "serverConfig": {
+  "serverConfig" : {
     "server": {
-      "port": 31337,
-      "use-plugins": [
-        "device-farm",
-        "appium-dashboard"
-      ],
+      "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
           "platform": "android",
-          "skipChromeDownload": true
+          "skipChromeDownload": true,
+          "cloud": {
+            "cloudName": "browserstack",
+            "url": "http://hub-cloud.browserstack.com",
+            "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
+            "devices": [
+            ]
+          }
         }
       }
     }
-  },
-  "cloud": {
-    "android": [
-    ]
-  },
-  "hostMachines": [
-    {
-      "machineIP": "hub.browserstack.com",
-      "isCloud": true,
-      "cloudName": "browserstack"
-    }
-  ]
+  }
 }
