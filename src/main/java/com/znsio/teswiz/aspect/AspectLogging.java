@@ -15,11 +15,10 @@ public class AspectLogging {
         long threadId = Thread.currentThread().getId();
         context = SessionContext.getTestExecutionContext(threadId);
     }
-    @Pointcut("execution(public * *.*.*.businessLayer.*.*.*(..))" +
-            "|| execution(public * *.*.*.screen.*.*.*.*(..))" +
-            "|| execution(public * *.*.*.entities.*.*(..))" +
-            "|| execution(public * *.*.*.runner.*.*(..))" +
-            "|| execution(public * *.*.*.steps.*Steps.*(..))")
+    @Pointcut("execution(public * *.*.*.entities.*.*(..)) " +
+            "|| execution(public * *.*.*.listener.*.*(..)) " +
+            "|| execution(public * *.*.*.runner.*.*(..)) " +
+            "|| execution(public * *.*.*.tools.*.*.*(..))")
     public void executionScope(){
     }
 

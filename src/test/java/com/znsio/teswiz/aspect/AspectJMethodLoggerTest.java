@@ -1,6 +1,5 @@
 package com.znsio.teswiz.aspect;
 
-import com.znsio.teswiz.aspects.AspectJMethodLoggers;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

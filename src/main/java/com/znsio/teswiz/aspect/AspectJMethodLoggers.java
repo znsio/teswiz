@@ -1,4 +1,4 @@
-package com.znsio.teswiz.aspects;
+package com.znsio.teswiz.aspect;
 
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
@@ -24,7 +24,7 @@ public class AspectJMethodLoggers {
     }
 
     public static void afterAnyMethod(JoinPoint joinPoint) {
-        LOGGER.info(generateAfterMethodAspectJLogger(joinPoint.getSignature().getName()));
+        LOGGER.info(String.format("\n%s",generateAfterMethodAspectJLogger(joinPoint.getSignature().getName())));
     }
 
     public static String generateBeforeMethodAspectJLogger(String methodName, Object[] arguments) {
