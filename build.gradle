@@ -92,7 +92,8 @@ shadowJar {
     }
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
+tasks.register('sourcesJar', Jar) {
+    dependsOn classes
     archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
@@ -115,7 +116,7 @@ publishing {
     }
 }
 
-task install(dependsOn: publishToMavenLocal)
+tasks.register('install') { dependsOn publishToMavenLocal }
 
 static def getCurrentDatestamp() {
     Date today = new Date()
@@ -129,7 +130,7 @@ static def getCurrentTimestamp() {
     return df.format(today)
 }
 
-task run(type: JavaExec) {
+tasks.register('run', JavaExec) {
     doFirst {
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
@@ -151,7 +152,7 @@ task run(type: JavaExec) {
 //                : "./configs/theapp_local_config.properties"
 //        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
 
-        systemProperties = System.properties
+        systemProperties = System.properties as Map<String, ?>
         def runnerArgs = [
                 "${configFile}",
                 "com/znsio/teswiz/steps",
@@ -198,3 +199,5 @@ test {
         junitXml.destination(file("$buildDir/unit-test-results"))
     }
 }
+
+shadowJar.finalizedBy sourcesJar
