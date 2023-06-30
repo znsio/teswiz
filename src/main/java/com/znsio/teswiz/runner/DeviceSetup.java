@@ -62,10 +62,10 @@ class DeviceSetup {
 
     static ArrayList<String> setupAndroidExecution() {
         ArrayList<String> androidCukeArgs = new ArrayList<>();
-        if(Setup.getPlatform().equals(Platform.android)) {
+        if (Setup.getPlatform().equals(Platform.android)) {
             verifyAppExistsAtMentionedPath();
             fetchAndroidAppVersion();
-            if(Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
+            if (Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
                 LocalDevicesSetup.setupLocalExecution();
@@ -94,62 +94,64 @@ class DeviceSetup {
         }
     }
 
-    private static String convertAppPathToFilePathIfNeeded(String appPath){
+    private static String convertAppPathToFilePathIfNeeded(String appPath) {
         if (isAppPathAUrl(appPath)) {
             String directoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "sampleApps";
             String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
             String filePath = directoryPath + File.separator + fileName;
-            createDirectoryIfNotExist(directoryPath);
-            downloadFileIfNotExist(appPath, filePath);
+            if (!Files.exists(Path.of(directoryPath)))
+                createDirectory(directoryPath);
+            if (!(new File(filePath).exists()))
+                downloadFile(appPath, filePath);
             LOGGER.info("Changing value of appPath from URL to file path");
-            LOGGER.info("Before change, appPath value: "+ appPath);
+            LOGGER.info("Before change, appPath value: " + appPath);
             appPath = filePath;
-            LOGGER.info("After change, appPath value: "+ filePath);
+            LOGGER.info("After change, appPath value: " + filePath);
         }
-        try{
+        try {
             new FileInputStream(appPath);
         } catch (FileNotFoundException e) {
             throw new RuntimeException("File not found: " + appPath, e);
         }
         return appPath;
     }
-    private static void createDirectoryIfNotExist(String directoryPath){
+
+    private static void createDirectory(String directoryPath) {
         try {
-            Path pathForDirectory = Path.of(directoryPath);
-            if(Files.exists(pathForDirectory))
-                LOGGER.info("Directory already exist");
-            else{
-                Files.createDirectories(pathForDirectory);
-                LOGGER.info("Creating directory");
-            }
+            LOGGER.info("Directory doesn't exist, Creating directory");
+            Files.createDirectories(Path.of(directoryPath));
         } catch (IOException e) {
-        throw new RuntimeException("Failed to create directory: "+ directoryPath + ", error occurred" + e);
+            throw new RuntimeException("Failed to create directory: " + directoryPath + ", error occurred" + e);
         }
     }
 
-    private static void downloadFileIfNotExist(String url, String filePath) {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            LOGGER.info("File doesn't exist, need to download it");
-            try {
-                URL fileUrl = new URL(url);
-                InputStream in = fileUrl.openStream();
-                    Files.copy(in, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
-                    LOGGER.info("File downloaded at path: "+filePath);
-            } catch (IOException e) {
-                throw new RuntimeException("An error occurred while opening the URL/downloading file: " + e.getMessage());
+    private static void downloadFile(String url, String filePath) {
+        LOGGER.info("File doesn't exist, need to download it");
+        InputStream inputStream = null;
+        try {
+            URL fileUrl = new URL(url);
+            inputStream = fileUrl.openStream();
+            Files.copy(inputStream, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
+            LOGGER.info("File downloaded at path: " + filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("An error occurred while opening the URL/downloading file: " + e.getMessage());
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to close inputStream" + e);
+                }
             }
-        }else{
-            LOGGER.info("File already exists, no need to download");
         }
     }
 
 
     private static void fetchAndroidAppVersion() {
         Pattern versionNamePattern = Pattern.compile("versionName='(\\d+(\\.\\d+)+)'",
-                                                     Pattern.MULTILINE);
+                Pattern.MULTILINE);
         String searchPattern = "grep";
-        if(Runner.IS_WINDOWS) {
+        if (Runner.IS_WINDOWS) {
             searchPattern = "findstr";
         }
 
@@ -163,11 +165,11 @@ class DeviceSetup {
                 File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
 
                 String[] commandToGetAppVersion = new String[]{aaptExecutable.toString(), "dump",
-                                                               "badging", appFilePath, "|",
-                                                               searchPattern, "versionName"};
+                        "badging", appFilePath, "|",
+                        searchPattern, "versionName"};
                 fetchAppVersion(commandToGetAppVersion, versionNamePattern);
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             LOGGER.info(
                     String.format("fetchAndroidAppVersion: Exception: %s", e.getLocalizedMessage()));
         }
@@ -175,7 +177,7 @@ class DeviceSetup {
 
     static void setupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
-        switch(cloudName.toLowerCase()) {
+        switch (cloudName.toLowerCase()) {
             case "headspin":
                 HeadSpinSetup.updateHeadspinCapabilities();
                 break;
@@ -197,15 +199,15 @@ class DeviceSetup {
     private static String getAppPathFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
-                                                         new String[]{Setup.getPlatform().name(), "app"});
+                new String[]{Setup.getPlatform().name(), "app"});
     }
 
     private static void checkIfAppExistsAtTheMentionedPath(String appPath,
                                                            String capabilitiesFileName) {
-        if(!isAppPathAUrl(appPath)) {
-            if(Files.exists(Paths.get(appPath))) {
+        if (!isAppPathAUrl(appPath)) {
+            if (Files.exists(Paths.get(appPath))) {
                 LOGGER.info(String.format("\tUsing AppPath: %s in file: %s:: %s", appPath,
-                                          capabilitiesFileName, Setup.getPlatform()));
+                        capabilitiesFileName, Setup.getPlatform()));
             } else {
                 LOGGER.info(String.format("\tAppPath: %s not found!", appPath));
                 throw new InvalidTestDataException(
@@ -216,7 +218,7 @@ class DeviceSetup {
 
     private static boolean isAppPathAUrl(String appPath) {
         boolean isUrl = appPath.toLowerCase().startsWith("http");
-        if(isUrl)
+        if (isUrl)
             LOGGER.info(String.format("\tAppPath refers to a url: %s", appPath));
         else
             LOGGER.info(String.format("\tAppPath refers to a file path: %s", appPath));
@@ -227,9 +229,9 @@ class DeviceSetup {
         CommandLineResponse commandResponse = CommandLineExecutor.execCommand(
                 commandToGetAppVersion);
         String commandOutput = commandResponse.getStdOut();
-        if(!(null == commandOutput || commandOutput.isEmpty())) {
+        if (!(null == commandOutput || commandOutput.isEmpty())) {
             Matcher matcher = pattern.matcher(commandOutput);
-            if(matcher.find()) {
+            if (matcher.find()) {
                 Setup.addToConfigs(APP_VERSION, matcher.group(1));
                 LOGGER.info(String.format("APP_VERSION: %s", matcher.group(1)));
             }
@@ -241,13 +243,13 @@ class DeviceSetup {
     private static String getCloudNameFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         ArrayList<Map> hostMachines = JsonFile.getNodeValueAsArrayListFromJsonFile(capabilityFile,
-                                                                                   "hostMachines");
+                "hostMachines");
         return String.valueOf(hostMachines.get(0).get("cloudName"));
     }
 
     static ArrayList<String> setupWindowsExecution() {
         ArrayList<String> windowsCukeArgs = new ArrayList<>();
-        if(Setup.getPlatform().equals(Platform.windows)) {
+        if (Setup.getPlatform().equals(Platform.windows)) {
             verifyAppExistsAtMentionedPath();
             fetchWindowsAppVersion();
             windowsCukeArgs.add(PLUGIN);
@@ -264,12 +266,12 @@ class DeviceSetup {
         try {
             File appFile = new File(Setup.getFromConfigs(APP_PATH));
             String nameVariable = "name=\"" + appFile.getCanonicalPath()
-                                                     .replace("\\", "\\\\") + "\"";
+                    .replace("\\", "\\\\") + "\"";
             String[] commandToGetAppVersion = new String[]{"wmic", "datafile", "where",
-                                                           nameVariable, "get", "Version",
-                                                           "/value"};
+                    nameVariable, "get", "Version",
+                    "/value"};
             fetchAppVersion(commandToGetAppVersion, versionNamePattern);
-        } catch(IOException e) {
+        } catch (IOException e) {
             LOGGER.info(
                     String.format("fetchWindowsAppVersion: Exception: %s", e.getLocalizedMessage()));
         }
@@ -277,7 +279,7 @@ class DeviceSetup {
 
     static void cleanupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
-        switch(cloudName.toLowerCase()) {
+        switch (cloudName.toLowerCase()) {
             case "browserstack":
                 BrowserStackSetup.cleanUp();
                 break;
