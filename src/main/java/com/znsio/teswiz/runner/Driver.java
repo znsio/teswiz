@@ -325,6 +325,8 @@ public class Driver {
     public void putAppInBackgroundFor(int numberOfSeconds) {
         if (Runner.getPlatform() == Platform.android) {
             ((AndroidDriver) driver).runAppInBackground(Duration.ofSeconds(numberOfSeconds));
+        } else if (Runner.getPlatform() == Platform.iOS) {
+            ((IOSDriver) driver).runAppInBackground(Duration.ofSeconds(numberOfSeconds));
         } else {
             throw new NotImplementedException(
                     "Method is not implemented for " + Runner.getPlatform());

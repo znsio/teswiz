@@ -236,4 +236,53 @@ class DeviceSetup {
                         String.format("Provided cloudName: '%s' is not supported", cloudName));
         }
     }
+
+    static ArrayList<String> setupIOSExecution() {
+        ArrayList<String> iOSCukeArgs = new ArrayList<>();
+        if (Setup.getPlatform().equals(Platform.iOS)) {
+            verifyAppExistsAtMentionedPath();
+            fetchIOSAppVersion();
+            if (Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
+                setupCloudExecution();
+            } else {
+                LocalDevicesSetup.setupLocalExecution();
+            }
+            iOSCukeArgs.add("--threads");
+            iOSCukeArgs.add(Setup.getIntegerValueAsStringFromConfigs(PARALLEL));
+            iOSCukeArgs.add(PLUGIN);
+            iOSCukeArgs.add("com.cucumber.listener.CucumberScenarioListener");
+            iOSCukeArgs.add(PLUGIN);
+            iOSCukeArgs.add("com.cucumber.listener.CucumberScenarioReporterListener");
+        }
+        return iOSCukeArgs;
+    }
+
+    private static void fetchIOSAppVersion() {
+        Pattern versionNamePattern = Pattern.compile("versionName='(\\d+(\\.\\d+)+)'",
+                Pattern.MULTILINE);
+        String searchPattern = "grep";
+        if (Runner.IS_WINDOWS) {
+            searchPattern = "findstr";
+        }
+
+        try {
+            File appFile = new File(Setup.getFromConfigs(APP_PATH));
+            if (!isAppPathAUrl(appFile.getPath())) {
+                String appFilePath = appFile.getCanonicalPath();
+//  TODO : Fix/Removal required for androidHomePath, buildToolsFolder,buildVersionFolder and aaptExecutable
+                String androidHomePath = System.getenv("ANDROID_HOME");
+                File buildToolsFolder = new File(androidHomePath, "build-tools");
+                File buildVersionFolder = Objects.requireNonNull(buildToolsFolder.listFiles())[0];
+                File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
+
+                String[] commandToGetAppVersion = new String[]{aaptExecutable.toString(), "dump",
+                        "badging", appFilePath, "|",
+                        searchPattern, "versionName"};
+                fetchAppVersion(commandToGetAppVersion, versionNamePattern);
+            }
+        } catch (Exception e) {
+            LOGGER.info(
+                    String.format("fetchIOSAppVersion: Exception: %s", e.getLocalizedMessage()));
+        }
+    }
 }

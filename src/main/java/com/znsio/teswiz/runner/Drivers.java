@@ -107,6 +107,11 @@ public class Drivers {
                                                                                forPlatform,
                                                                                context);
                 break;
+            case iOS:
+                currentDriver = AppiumDriverManager.createIOSDriverForUser(userPersona,
+                        forPlatform,
+                        context);
+                break;
             default:
                 throw new InvalidTestDataException(String.format(
                         "Unexpected platform value: '%s' provided to assign Driver for user: " +
