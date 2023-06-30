@@ -20,12 +20,12 @@ will run the tests in parallel
 **To enable running the tests on pCloudy's Device Farm, the following additional environment variables need to be provided:**
 
 * `RUN_IN_CI=true` - Default is `false`
-* `CLOUD_USER` - pCloudy username
+* `CLOUD_USERNAME` - pCloudy username
 * `CLOUD_KEY` - pCloudy password
 
 Sample command:
 
-    PLATFORM=android RUN_IN_CI=true CLOUD_USER=myusername CLOUD_KEY=abcd1234abcd ./gradlew run
+    PLATFORM=android RUN_IN_CI=true CLOUD_USERNAME=myusername CLOUD_KEY=abcd1234abcd ./gradlew run
 
 For other cloud configurations, refer here: https://github.com/AppiumTestDistribution/AppiumTestDistribution
 

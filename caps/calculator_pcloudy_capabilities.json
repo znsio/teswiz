@@ -1,45 +1,42 @@
 {
   "android": {
-    "automationName": "UiAutomator2",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk",
     "appPackage": "com.android2.calculator3",
     "appActivity": "com.android2.calculator3.Calculator",
+    "automationName": "UIAutomator2",
     "autoGrantPermissions": true,
+    "device": "Samsung",
     "launchTimeout": 90000,
     "newCommandTimeout": 600,
+    "noReset": false,
+    "os_version": "13",
     "pCloudy_DurationInMinutes": 10,
     "pCloudy_DeviceVersion": "10.0.0",
     "pCloudy_WildNet": "false",
     "pCloudy_EnableVideo": "true",
     "pCloudy_EnablePerformanceData": "true",
     "pCloudy_EnableDeviceLogs": "true",
-    "platformVersion": "10.0.0",
-    "platformName": "Android",
-    "unicodeKeyboard": true,
+    "platformName": "android",
     "resetKeyboard": true,
-    "noReset": false,
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk"
+    "unicodeKeyboard": true
   },
   "serverConfig" : {
     "server": {
       "port": 31337,
-      "use-plugins": ["device-farm", "appium-dashboard"],
+      "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
           "platform": "android",
-          "skipChromeDownload": true
+          "skipChromeDownload": true,
+          "cloud": {
+            "cloudName": "pCloudy",
+            "apiUrl": "https://device.pcloudy.com",
+            "url": "https://device.pcloudy.com/appiumcloud/wd/hub",
+            "devices": [
+            ]
+          }
         }
       }
     }
-  },
-  "cloud": {
-    "android": [
-    ]
-  },
-  "hostMachines": [
-    {
-      "machineIP": "device.pcloudy.com/appiumcloud",
-      "isCloud": true,
-      "cloudName": "pCloudy"
-    }
-  ]
+  }
 }
