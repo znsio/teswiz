@@ -214,7 +214,6 @@ class BrowserDriverManager {
         LOGGER.info(String.format(
                 "Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'",
                 webDriverManagerProxyUrl, browserType));
-        String localBrowserVersion = getLocalBrowserVersionFor(browserType);
         String containerBrowserVersion = getContainerBrowserVersion();
 
         WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
@@ -287,83 +286,6 @@ class BrowserDriverManager {
             return matcher.group(1);
         }
         return null;
-    }
-
-    private static String getLocalBrowserVersionFor(String browserType) {
-        String binaryPath = "";
-        String os = System.getProperty("os.name").toLowerCase();
-        switch (browserType) {
-            case "chrome":
-                binaryPath = getChromeBinaryPath(os);
-                break;
-            case "firefox":
-                binaryPath = getFirefoxBinaryPath(os);
-                break;
-            case "safari":
-                return getSafariVersion();
-            default:
-                throw new InvalidTestDataException("Invalid browser : " + browserType);
-        }
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command(binaryPath, "--version");
-        String version = "";
-        try {
-            Process process = processBuilder.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = reader.readLine();
-            String[] split = line.split(" ");
-            version = split[split.length - 1];
-            LOGGER.info("Browser Version in system : " + version);
-            process.destroy();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return version;
-    }
-
-    private static String getChromeBinaryPath(String os) {
-        switch (os) {
-            case "win":
-                return System.getenv("ProgramFiles") + CHROME_PATH_FOR_WINDOWS;
-            case "mac os x":
-                return CHROME_PATH_FOR_MAC;
-            case "nix":
-            case "nux":
-            case "linux":
-                return "/usr/bin/google-chrome";
-            default:
-                throw new IllegalStateException("Unsupported operating system for chrome: " + os);
-        }
-    }
-
-    private static String getFirefoxBinaryPath(String os) {
-        switch (os) {
-            case "win":
-                return System.getenv("ProgramFiles") + FIREFOX_PATH_FOR_WINDOWS;
-            case "mac":
-                return FIREFOX_PATH_FOR_MAC;
-            case "nix":
-            case "nux":
-            case "linux":
-                return "/usr/bin/firefox";
-            default:
-                throw new IllegalStateException("Unsupported operating system for firefox: " + os);
-        }
-    }
-
-    private static String getSafariVersion() {
-        String safariVersion = "";
-        try {
-            Process process = Runtime.getRuntime()
-                    .exec(new String[]{"defaults", "read", "/Applications/Safari.app/Contents/Info.plist", "CFBundleShortVersionString"});
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            safariVersion = reader.readLine();
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        LOGGER.info("Safari version in system = " + safariVersion);
-        return safariVersion;
     }
 
     @NotNull
