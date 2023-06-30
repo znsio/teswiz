@@ -9,6 +9,7 @@ import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
+import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;
 import org.apache.log4j.Logger;
@@ -35,6 +36,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
+
+import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Runner.*;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
@@ -202,8 +205,23 @@ class BrowserDriverManager {
                 webDriverManagerProxyUrl, browserType));
 
         // TODO - get browser version from local or container. What about cloud?
+        String browserVersion = NOT_SET;
+        if (Runner.isRunningInCI() && getCloudNameFromCapabilities().equalsIgnoreCase("docker")) {
+            LOGGER.info("Running in docker. Get driver for browser in docker");
+            String[] getBrowserVersionFromDockerCommand = new String[] {"cURL -s --request GET " +
+                                                        "'http://localhost:" + Runner.getRemoteDriverGridPort() + "/status'" +
+                                                       " | jq -r -M  '.value" +
+                               ".nodes[].slots[].stereotype | select(.browserName == \"" + browserType + "\") " +
+                                                                "| .browserVersion '"};
+            CommandLineResponse commandLineResponse = CommandLineExecutor.execCommand(getBrowserVersionFromDockerCommand);
+            browserVersion = commandLineResponse.getStdOut().split("\n")[0];
+            LOGGER.info(String.format("%s browser version in docker container: %s", browserType, browserVersion));
+        }
         WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
                                                             .proxy(webDriverManagerProxyUrl);
+        if (!browserVersion.equalsIgnoreCase(NOT_SET)) {
+            webDriverManager.browserVersion(browserVersion);
+        }
         webDriverManager.setup();
         String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
 
@@ -226,6 +244,7 @@ class BrowserDriverManager {
 
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("--disable-gpu");
+//        chromeOptions.addArguments("--disable-dev-shm-usage");
 
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
 
