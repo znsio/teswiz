@@ -140,7 +140,7 @@ class DeviceSetup {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    throw new RuntimeException("Failed to close inputStream" + e);
+                    throw new RuntimeException("Failed to close input stream" + e);
                 }
             }
         }
