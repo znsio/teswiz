@@ -149,7 +149,7 @@ tasks.register('run', JavaExec) {
 //        println "isRunningInCI: $isRunInCI"
 //        def configFile = isRunInCI
 //                ? "./configs/theapp_pcloudy_config.properties"
-//                : "./configs/theapp_local_config.properties"
+//                : "./configs/theapp_local_android_config.properties"
 //        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
 
         systemProperties = System.properties as Map<String, ?>
