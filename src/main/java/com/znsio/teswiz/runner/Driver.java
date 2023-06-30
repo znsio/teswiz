@@ -557,7 +557,6 @@ public class Driver {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         int x = element.getLocation().getX();
         int y = element.getLocation().getY();
-        LOGGER.info("x = " + x + " y = " + y);
         PointerInput touch = new PointerInput(PointerInput.Kind.MOUSE, "touch");
         Sequence clickPosition = new Sequence(touch, 1);
         clickPosition.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x, y))
