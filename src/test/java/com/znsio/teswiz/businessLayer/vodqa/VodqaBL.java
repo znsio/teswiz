@@ -121,4 +121,12 @@ public class VodqaBL {
         VodqaScreen.get().openVerticalSwipingScreen().scrollVerticallyByPercentage(fromPercentHeight, toPercentHeight, percentWidth);
         return this;
     }
+
+    public VodqaBL doubleTapOnAnElement() {
+        assertThat(VodqaScreen.get().doubleTapOnElement()
+                .isDoubleTapSuccessful())
+                .as("Double tap on element failed")
+                .isTrue();
+        return this;
+    }
 }

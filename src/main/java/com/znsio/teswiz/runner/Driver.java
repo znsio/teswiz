@@ -16,24 +16,16 @@ import io.appium.java_client.android.StartsActivity;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.remote.SupportsContextSwitching;
 import io.appium.java_client.touch.LongPressOptions;
-import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
@@ -559,5 +551,21 @@ public class Driver {
     public void setAttributeValue(WebElement element, String attribute, String value){
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].setAttribute(arguments[1],arguments[2])", element, attribute, value);
+    }
+
+    public void doubleTap(WebElement element) {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        int x = element.getLocation().getX();
+        int y = element.getLocation().getY();
+        LOGGER.info("x = " + x + " y = " + y);
+        PointerInput touch = new PointerInput(PointerInput.Kind.MOUSE, "touch");
+        Sequence clickPosition = new Sequence(touch, 1);
+        clickPosition.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x, y))
+                .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(new Pause(touch, ofMillis(10)))
+                .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        appiumDriver.perform(Arrays.asList(clickPosition));
     }
 }

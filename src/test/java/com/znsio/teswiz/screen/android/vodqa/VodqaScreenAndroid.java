@@ -32,6 +32,10 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byWebViewSectionOptionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='webView']");
     private final By byNativeViewSectionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='chainedView']");
     private final String languageTextView = "//android.widget.TextView[@text=' %s']";
+    private final By byDoubleTapElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='doubleTapMe']");
+    private final By byDoubleTapScreenXpath = AppiumBy.xpath("//android.widget.TextView[@text='Double Tap']");
+    private final By byDoubleTapSuccessfulXpath = AppiumBy.xpath("//android.widget.TextView[@text='Double tap successful!']");
+
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -168,5 +172,19 @@ public class VodqaScreenAndroid extends VodqaScreen {
         driver.scrollVertically(fromPercentHeight, toPercentHeight, percentWidth);
         visually.checkWindow(SCREEN_NAME, "Screen scrolled down");
         return this;
+    }
+
+    @Override
+    public VodqaScreen doubleTapOnElement() {
+        LOGGER.info("Performing Double tap on element in Double tap screen");
+        driver.waitTillElementIsVisible(byDoubleTapScreenXpath).click();
+        driver.doubleTap(driver.waitTillElementIsVisible(byDoubleTapElementXpath));
+        return this;
+    }
+
+    @Override
+    public boolean isDoubleTapSuccessful() {
+        LOGGER.info("Checking if double tap on element is successful");
+        return driver.isElementPresent(byDoubleTapSuccessfulXpath);
     }
 }

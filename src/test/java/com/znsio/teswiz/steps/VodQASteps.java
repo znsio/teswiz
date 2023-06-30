@@ -89,4 +89,9 @@ public class VodQASteps {
     public void iScrollVerticallyFromPercentHeightToPercentHeightAndPercentWidth(int fromPercentHeight, int toPercentHeight, int percentWidth) {
         new VodqaBL().scrollVerticallyByPercentageOnVerticalSwipingScreen(fromPercentHeight, toPercentHeight, percentWidth);
     }
+
+    @Then("I should be able to double tap on an element")
+    public void iShouldBeAbleToDoubleTapOnAnElement() {
+        new VodqaBL().doubleTapOnAnElement();
+    }
 }
