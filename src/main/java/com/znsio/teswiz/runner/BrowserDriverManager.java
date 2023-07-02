@@ -1,13 +1,6 @@
 package com.znsio.teswiz.runner;
 
 import com.context.TestExecutionContext;
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.ExecCreateCmdResponse;
-import com.github.dockerjava.api.model.Container;
-import com.github.dockerjava.api.model.Frame;
-import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
@@ -35,14 +28,11 @@ import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
-import org.yaml.snakeyaml.Yaml;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.znsio.teswiz.runner.Runner.*;
 import static com.znsio.teswiz.runner.Setup.CAPS;
@@ -56,11 +46,6 @@ class BrowserDriverManager {
     private static final String MAXIMIZE = "maximize";
     private static final String EXCLUDE_SWITCHES = "excludeSwitches";
     private static final String SETTING_PROXY_FOR_BROWSER = "Setting Proxy for browser: ";
-    private static final String FETCH_CONTAINER_BROWSER_VERSION_COMMAND = "google-chrome-stable --version";
-    private static final String CHROME_PATH_FOR_MAC = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-    private static final String CHROME_PATH_FOR_WINDOWS = "\\Google\\Chrome\\Application\\chrome.exe";
-    public static final String FIREFOX_PATH_FOR_MAC = "/Applications/Firefox.app/Contents/MacOS/firefox";
-    public static final String FIREFOX_PATH_FOR_WINDOWS = "\\Firefox\\Application\\firefox.exe";
     private static int numberOfWebDriversUsed = 0;
     private static boolean shouldBrowserBeMaximized = false;
     private static boolean isRunInHeadlessMode = false;
