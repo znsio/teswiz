@@ -2,6 +2,7 @@ package com.znsio.teswiz.steps;
 
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
+import com.znsio.teswiz.businessLayer.ajio.HomeBL;
 import com.znsio.teswiz.businessLayer.ajio.SearchBL;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Drivers;
@@ -23,7 +24,7 @@ public class AjioSteps {
     @Given("I search for products using {string}")
     public void iSearchForProductsUsing(String searchtype) {
         LOGGER.info(System.out.printf("iSearchForProductsUsing:'%s' - Persona:'%s'", searchtype,
-                                      SAMPLE_TEST_CONTEXT.ME));
+                SAMPLE_TEST_CONTEXT.ME));
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         new SearchBL().searchProduct(Runner.getTestDataAsMap(searchtype));
     }
@@ -31,14 +32,28 @@ public class AjioSteps {
     @When("I add the product to the cart")
     public void iAddTheProductToTheCart() {
         LOGGER.info(System.out.printf("iAddTheProductToTheCart:- Persona:'%s'",
-                                      SAMPLE_TEST_CONTEXT.ME));
+                SAMPLE_TEST_CONTEXT.ME));
         new SearchBL().prepareCart();
     }
 
     @Then("I should see the product in the cart")
     public void iShouldSeeTheProductInTheCart() {
         LOGGER.info(System.out.printf("iShouldSeeTheProductInTheCart:- Persona:'%s'",
-                                      SAMPLE_TEST_CONTEXT.ME));
+                SAMPLE_TEST_CONTEXT.ME));
         new SearchBL().verifyCart();
+    }
+
+    @Given("I open {string} section for {string}")
+    public void iOpebShirtsSectionForMen(String product, String gender) {
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
+        new HomeBL().openProduct(product, gender);
+    }
+
+    @When("I select the first result")
+    public void iSelectTheFirstResult() {
+    }
+
+    @Then("I should be able to swipe and view images")
+    public void iShouldBeAbleToSwipeAndViewImages() {
     }
 }
