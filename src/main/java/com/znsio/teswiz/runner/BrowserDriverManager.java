@@ -214,7 +214,6 @@ class BrowserDriverManager {
         LOGGER.info(String.format(
                 "Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'",
                 webDriverManagerProxyUrl, browserType));
-        String containerBrowserVersion = getContainerBrowserVersion();
 
         WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
                 .proxy(webDriverManagerProxyUrl);
@@ -228,65 +227,6 @@ class BrowserDriverManager {
         return driverManagerType;
     }
 
-    private static String getContainerBrowserVersion() {
-        DefaultDockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
-        DockerClient dockerClient = DockerClientBuilder.getInstance(config).build();
-
-        String imageName = "";
-        String containerId = "";
-
-        try {
-            Yaml yaml = new Yaml();
-            FileInputStream fis = new FileInputStream("docker-compose.yml");
-            Map<String, Object> data = yaml.load(fis);
-            Map<String, Object> services = (Map<String, Object>) data.get("services");
-            Map<String, Object> selenium = (Map<String, Object>) services.get("chrome");
-            imageName = (String) selenium.get("image");
-            LOGGER.info("Selenium image: " + imageName);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        List<Container> containers = dockerClient.listContainersCmd()
-                .withShowAll(true)
-                .exec();
-        for (Container container : containers) {
-            if (container.getImage().equals(imageName)) {
-                containerId = container.getId();
-            }
-        }
-
-        assert containerId != null;
-        ExecCreateCmdResponse execCreateCmdResponse = dockerClient.execCreateCmd(containerId)
-                .withCmd("sh", "-c", FETCH_CONTAINER_BROWSER_VERSION_COMMAND)
-                .withAttachStdout(true)
-                .withAttachStderr(true)
-                .exec();
-
-        String browserVersion = executeAndGetBrowserVersion(dockerClient, execCreateCmdResponse.getId());
-        LOGGER.info("Browser Version in container: " + browserVersion);
-        return browserVersion;
-    }
-
-    private static String executeAndGetBrowserVersion(DockerClient dockerClient, String execId) {
-        StringBuilder logOutput = new StringBuilder();
-        Pattern versionPattern = Pattern.compile("Google Chrome (\\d+\\.\\d+\\.\\d+\\.\\d+)");
-        try {
-            dockerClient.execStartCmd(execId).exec(new ExecStartResultCallback() {
-                @Override
-                public void onNext(Frame frame) {
-                    logOutput.append(frame.toString());
-                }
-            }).awaitCompletion();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Matcher matcher = versionPattern.matcher(logOutput.toString());
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return null;
-    }
 
     @NotNull
     private static WebDriver createChromeDriver(String forUserPersona,
