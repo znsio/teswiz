@@ -35,6 +35,6 @@ public class DragAndDropScreenAndroid extends DragAndDropScreen {
         driver.waitTillElementIsVisible(byDraggableObjectAccessibilityId);
         visually.checkWindow(SCREEN_NAME, "Drag and Drop screen");
         driver.dragAndDrop(byDraggableObjectAccessibilityId, byDropZoneAccessibilityId);
-        return null;
+        return this;
     }
 }

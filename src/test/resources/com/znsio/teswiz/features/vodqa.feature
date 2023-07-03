@@ -61,5 +61,5 @@ Feature: Vodqa test
   @android @dragAndDrop
   Scenario: Validate that user is able to drag and drop
     Given I login to vodqa application using valid credentials
-    When I drag the drag me circle object to drop here target
+    When I drag the circle object to the drop target
     Then I am able to view "Circle dropped" message

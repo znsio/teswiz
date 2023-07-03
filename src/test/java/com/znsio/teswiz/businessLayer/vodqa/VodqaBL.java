@@ -128,7 +128,7 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL verifyMessageOnScreen(String displayedMessage) {
+    public VodqaBL isMessageDisplayedOnTheScreen(String displayedMessage) {
         assertThat(DragAndDropScreen.get().isMessageVisible())
                 .as(String.format("The \"%s\" message is not displayed", displayedMessage)).isTrue();
         return this;
