@@ -1,45 +1,41 @@
 {
   "android": {
-    "automationName": "UiAutomator2",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
     "appPackage": "com.appiumpro.the_app",
     "appActivity": "com.appiumpro.the_app.MainActivity",
+    "automationName": "UIAutomator2",
     "autoGrantPermissions": true,
     "launchTimeout": 90000,
     "newCommandTimeout": 600,
     "pCloudy_DurationInMinutes": 10,
-    "pCloudy_DeviceVersion": "10.0.0",
+    "platformName": "android",
+    "os_version": "13",
+    "device": "Samsung",
     "pCloudy_WildNet": "false",
     "pCloudy_EnableVideo": "true",
     "pCloudy_EnablePerformanceData": "true",
     "pCloudy_EnableDeviceLogs": "true",
-    "platformVersion": "10.0.0",
-    "platformName": "Android",
     "unicodeKeyboard": true,
     "resetKeyboard": true,
-    "noReset": false,
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk"
+    "noReset": false
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
+      "use-plugins": ["device-farm"],
       "port": 31337,
-      "use-plugins": ["device-farm", "appium-dashboard"],
       "plugin": {
         "device-farm": {
           "platform": "android",
-          "skipChromeDownload": true
+          "cloud":
+          {
+            "cloudName": "pCloudy",
+            "apiUrl": "https://device.pcloudy.com",
+            "url": "https://device.pcloudy.com/appiumcloud/wd/hub",
+            "devices": [
+            ]
+          }
         }
       }
     }
-  },
-  "cloud": {
-    "android": [
-    ]
-  },
-  "hostMachines": [
-    {
-      "machineIP": "device.pcloudy.com/appiumcloud",
-      "isCloud": true,
-      "cloudName": "pCloudy"
-    }
-  ]
+  }
 }

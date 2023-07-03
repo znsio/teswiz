@@ -89,4 +89,18 @@ public class VodQASteps {
     public void iScrollVerticallyFromPercentHeightToPercentHeightAndPercentWidth(int fromPercentHeight, int toPercentHeight, int percentWidth) {
         new VodqaBL().scrollVerticallyByPercentageOnVerticalSwipingScreen(fromPercentHeight, toPercentHeight, percentWidth);
     }
+    @When("I drag the circle object to the drop target")
+    public void iDragTheCircleObjectToDropTarget() {
+        new VodqaBL().dragAndDropElement();
+    }
+
+    @Then("I am able to view {string} message")
+    public void iAmAbleToViewMessage(String displayedMessage) {
+        new VodqaBL().isMessageDisplayedOnTheScreen(displayedMessage);
+    }
+
+    @Then("I should be able to double tap on an element")
+    public void iShouldBeAbleToDoubleTapOnAnElement() {
+        new VodqaBL().doubleTapOnAnElement();
+    }
 }
