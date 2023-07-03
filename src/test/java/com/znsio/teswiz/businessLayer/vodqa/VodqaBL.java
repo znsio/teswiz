@@ -5,6 +5,7 @@ import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.screen.vodqa.DragAndDropScreen;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
 import org.apache.log4j.Logger;
@@ -122,6 +123,7 @@ public class VodqaBL {
         return this;
     }
 
+
     public VodqaBL longPressOnElement() {
         VodqaScreen.get().longPressOnElement();
         return this;
@@ -129,6 +131,15 @@ public class VodqaBL {
 
     public VodqaBL verifyLongPressedPopup() {
         assertThat(VodqaScreen.get().isLongPressedPopupVisible()).as("Long Pressed Popup is not visible").isTrue();
+
+    public VodqaBL dragAndDropElement() {
+        VodqaScreen.get().openDragAndDropScreen().dragAndDropCircleObject();
+        return this;
+    }
+
+    public VodqaBL isMessageDisplayedOnTheScreen(String displayedMessage) {
+        assertThat(DragAndDropScreen.get().isMessageVisible())
+                .as(String.format("The %s message is not displayed", displayedMessage)).isTrue();
         return this;
     }
 }

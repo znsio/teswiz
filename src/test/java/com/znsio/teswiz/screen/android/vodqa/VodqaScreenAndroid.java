@@ -5,6 +5,7 @@ import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
+import com.znsio.teswiz.screen.vodqa.DragAndDropScreen;
 import com.znsio.teswiz.screen.vodqa.NativeViewScreen;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
@@ -34,6 +35,8 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byLongPressOptionXpath = AppiumBy.xpath("//android.widget.TextView[@content-desc='longPress']");
     private final By byLongPressButtonAccessibilityId = AppiumBy.accessibilityId("longpress");
     private final By byLongPressedPopupId = AppiumBy.id("android:id/alertTitle");
+    private final By byDragAndDropTextView = AppiumBy.xpath("//android.widget.TextView[@content-desc='dragAndDrop']");
+
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -182,8 +185,16 @@ public class VodqaScreenAndroid extends VodqaScreen {
     }
 
     @Override
-    public boolean isLongPressedPopupVisible() {
+     public boolean isLongPressedPopupVisible() {
         visually.checkWindow(SCREEN_NAME, "Long pressed popup");
         return driver.isElementPresent(byLongPressedPopupId);
+    }
+  
+    @Override 
+    public DragAndDropScreen openDragAndDropScreen() {
+        driver.waitTillElementIsPresent(byDragAndDropTextView);
+        visually.checkWindow(SCREEN_NAME, "Home Screen");
+        driver.findElement(byDragAndDropTextView).click();
+        return DragAndDropScreen.get();
     }
 }

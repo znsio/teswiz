@@ -63,4 +63,6 @@ public abstract class VodqaScreen {
     public abstract VodqaScreen longPressOnElement();
 
     public abstract boolean isLongPressedPopupVisible();
+  
+    public abstract DragAndDropScreen openDragAndDropScreen();
 }

@@ -99,4 +99,14 @@ public class VodQASteps {
     public void longPressedPopupShouldBeVisible() {
         new VodqaBL().verifyLongPressedPopup();
     }
+
+    @When("I drag the circle object to the drop target")
+    public void iDragTheCircleObjectToDropTarget() {
+        new VodqaBL().dragAndDropElement();
+    }
+
+    @Then("I am able to view {string} message")
+    public void iAmAbleToViewMessage(String displayedMessage) {
+        new VodqaBL().isMessageDisplayedOnTheScreen(displayedMessage);
+    }
 }
