@@ -545,7 +545,7 @@ public class Driver {
     }
 
     public void scrollInDynamicLayer(Direction direction) {
-        Dimension dimension = driver.manage().window().getSize(); driver.findElement(By.id("")).getSize();
+        Dimension dimension = driver.manage().window().getSize();
         int width = (int) (dimension.width * 0.5);
         int fromHeight = (int) (dimension.height * 0.7);
         int toHeight = (int) (dimension.height * 0.6);
