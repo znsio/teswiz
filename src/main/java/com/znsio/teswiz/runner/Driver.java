@@ -565,16 +565,14 @@ public class Driver {
         PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
         Sequence sequence = new Sequence(touch, 1);
 
+        WebElement dragElement = findElement(draggableLocator);
+        WebElement dropZoneElement = findElement(dropZoneLocator);
 
-        int middleXCoordinate_dragElement = findElement(draggableLocator).getLocation().x
-                + findElement(draggableLocator).getSize().width/2;
-        int middleYCoordinate_dragElement = findElement(draggableLocator).getLocation().y
-                + findElement(draggableLocator).getSize().height/2;
+        int middleXCoordinate_dragElement = dragElement.getLocation().x + dragElement.getSize().width/2;
+        int middleYCoordinate_dragElement = dragElement.getLocation().y + dragElement.getSize().height/2;
 
-        int middleXCoordinate_dropZone = findElement(dropZoneLocator).getLocation().x
-                + findElement(dropZoneLocator).getSize().width/2;
-        int middleYCoordinate_dropZone = findElement(dropZoneLocator).getLocation().y
-                + findElement(dropZoneLocator).getSize().height/2;
+        int middleXCoordinate_dropZone = dropZoneElement.getLocation().x + dropZoneElement.getSize().width/2;
+        int middleYCoordinate_dropZone = dropZoneElement.getLocation().y + dropZoneElement.getSize().height/2;
 
         sequence.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(),
                 middleXCoordinate_dragElement, middleYCoordinate_dragElement))
