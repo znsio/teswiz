@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 
 buildscript {
     ext {
-        gradleVersion = '7.3.3'
+        gradleVersion = '8.1.1'
         assertJVersion = '3.24.2'
         atdVersion = '13.1.0'
         applitoolsSeleniumVersion = '5.56.0'
@@ -178,6 +178,19 @@ task run(type: JavaExec) {
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
 }
 
+task jacocoRun(type: JacocoReport, dependsOn: ['run']) {
+    // Set the appropriate source directories for your project
+    sourceDirectories.from = files('src/test/java')
+    classDirectories.from = files('build/classes/java/test')
+    executionData.from = fileTree(dir: 'build/jacoco', includes: ['*.exec'])
+    reports {
+   //     html.enabled = true
+        html.required = true
+ //       xml.enabled = true
+        xml.required = true
+    }
+}
+
 test {
     useJUnitPlatform()
     outputs.upToDateWhen { false }
@@ -199,11 +212,16 @@ test {
     }
 
     reports {
-        html.enabled(true)
-        junitXml.enabled(true)
+    //    html.enabled(true)
+        html.required = true
+     //   junitXml.enabled(true)
+        junitXml.required = true
         html.destination(file("$buildDir/unit-test-results"))
         junitXml.destination(file("$buildDir/unit-test-results"))
     }
 
+
     finalizedBy jacocoTestReport
 }
+
+jacocoTestReport.dependsOn jacocoRun
