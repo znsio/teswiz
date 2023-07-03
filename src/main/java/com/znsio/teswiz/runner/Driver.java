@@ -16,7 +16,6 @@ import io.appium.java_client.android.StartsActivity;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.remote.SupportsContextSwitching;
 import io.appium.java_client.touch.LongPressOptions;
-import io.appium.java_client.touch.WaitOptions;
 import io.appium.java_client.touch.offset.ElementOption;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
@@ -559,5 +558,30 @@ public class Driver {
     public void setAttributeValue(WebElement element, String attribute, String value){
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].setAttribute(arguments[1],arguments[2])", element, attribute, value);
+    }
+
+    public void dragAndDrop(By draggableLocator, By dropZoneLocator) {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
+        Sequence sequence = new Sequence(touch, 1);
+
+
+        int middleXCoordinate_dragElement = findElement(draggableLocator).getLocation().x
+                + findElement(draggableLocator).getSize().width/2;
+        int middleYCoordinate_dragElement = findElement(draggableLocator).getLocation().y
+                + findElement(draggableLocator).getSize().height/2;
+
+        int middleXCoordinate_dropZone = findElement(dropZoneLocator).getLocation().x
+                + findElement(dropZoneLocator).getSize().width/2;
+        int middleYCoordinate_dropZone = findElement(dropZoneLocator).getLocation().y
+                + findElement(dropZoneLocator).getSize().height/2;
+
+        sequence.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(),
+                middleXCoordinate_dragElement, middleYCoordinate_dragElement))
+                .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), middleXCoordinate_dropZone, middleYCoordinate_dropZone))
+                .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+        appiumDriver.perform(List.of(sequence));
     }
 }

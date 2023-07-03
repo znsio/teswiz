@@ -5,6 +5,7 @@ import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
+import com.znsio.teswiz.screen.vodqa.DragAndDropScreen;
 import com.znsio.teswiz.screen.vodqa.NativeViewScreen;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
@@ -32,6 +33,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byWebViewSectionOptionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='webView']");
     private final By byNativeViewSectionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='chainedView']");
     private final String languageTextView = "//android.widget.TextView[@text=' %s']";
+    private final By byDragAndDropTextView = AppiumBy.xpath("//android.widget.TextView[@content-desc=\"dragAndDrop\"]");
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -168,5 +170,13 @@ public class VodqaScreenAndroid extends VodqaScreen {
         driver.scrollVertically(fromPercentHeight, toPercentHeight, percentWidth);
         visually.checkWindow(SCREEN_NAME, "Screen scrolled down");
         return this;
+    }
+
+    @Override
+    public DragAndDropScreen openDragAndDropScreen() {
+        driver.waitTillElementIsPresent(byDragAndDropTextView);
+        visually.checkWindow(SCREEN_NAME, "Home Screen");
+        driver.findElement(byDragAndDropTextView).click();
+        return DragAndDropScreen.get();
     }
 }
