@@ -2,6 +2,7 @@ import java.text.SimpleDateFormat
 
 buildscript {
     ext {
+    // Tried jacoco implementation with gradle version 8.1.1
         gradleVersion = '7.3.3'
         assertJVersion = '3.24.2'
         atdVersion = '5b23b2273f'
@@ -27,6 +28,13 @@ plugins {
     id "idea"
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'maven-publish'
+    id "jacoco"
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+// If need to create the reports only in this directory - rather than on report folder in build.gradle
+//    reportsDirectory = layout.buildDirectory.dir('jacoco')
 }
 
 group = 'com.github.znsio'
@@ -172,6 +180,20 @@ tasks.register('run', JavaExec) {
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
 }
 
+// This code is created to trigger the jacoco test on the basis of run tag - currently it executes only on test and build
+//task jacocoRun(type: JacocoReport, dependsOn: ['run']) {
+//    // Set the appropriate source directories for your project
+//    sourceDirectories.from = files('src/test/java')
+//    classDirectories.from = files('build/classes/java/test')
+//    executionData.from = fileTree(dir: 'build/jacoco', includes: ['*.exec'])
+//    reports {
+//        //     html.enabled = true
+//        html.required = true
+//        //       xml.enabled = true
+//        xml.required = true
+//    }
+//}
+
 test {
     useJUnitPlatform()
 
@@ -198,6 +220,45 @@ test {
         html.destination(file("$buildDir/unit-test-results"))
         junitXml.destination(file("$buildDir/unit-test-results"))
     }
+
+ // Here we are manually updating the report portal as true
+//    jacoco {
+//        enabled = true
+//    }
+
+    finalizedBy jacocoTestReport
 }
+
+// Defined jacoco in this manner as well
+//jacoco {
+//    toolVersion = "0.8.8"
+//    applyTo run
+//    reportsDirectory = layout.buildDirectory.dir('jacoco')
+//}
+
+
+
+//jacocoTestReport {
+//    dependsOn test // tests are required to run before generating the report
+//}
+//
+//
+//jacocoTestReport {
+//    dependsOn run // tests are required to run before generating the report
+//    reports {
+//        xml.required = false
+//        csv.required = false
+//        html.outputLocation = layout.buildDirectory.dir('jacoco')
+//    }
+//}
+//
+//
+//tasks.register('applicationCodeCoverageReport', JacocoReport) {
+//    executionData run
+//    sourceSets sourceSets.main
+
+
+// It is just indirectly calling jacoco - so it get trigger on hitting ./gradlew run
+// jacocoTestReport.dependsOn jacocoRun
 
 shadowJar.finalizedBy sourcesJar
