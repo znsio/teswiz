@@ -32,6 +32,7 @@ import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
@@ -557,6 +558,29 @@ public class Driver {
     public void setAttributeValue(WebElement element, String attribute, String value){
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].setAttribute(arguments[1],arguments[2])", element, attribute, value);
+    }
+
+    public void dragAndDrop(By draggableLocator, By dropZoneLocator) {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
+        Sequence sequence = new Sequence(touch, 1);
+
+        WebElement dragElement = findElement(draggableLocator);
+        WebElement dropZoneElement = findElement(dropZoneLocator);
+
+        int middleXCoordinate_dragElement = dragElement.getLocation().x + dragElement.getSize().width/2;
+        int middleYCoordinate_dragElement = dragElement.getLocation().y + dragElement.getSize().height/2;
+
+        int middleXCoordinate_dropZone = dropZoneElement.getLocation().x + dropZoneElement.getSize().width/2;
+        int middleYCoordinate_dropZone = dropZoneElement.getLocation().y + dropZoneElement.getSize().height/2;
+
+        sequence.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(),
+                middleXCoordinate_dragElement, middleYCoordinate_dragElement))
+                .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), middleXCoordinate_dropZone, middleYCoordinate_dropZone))
+                .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+        appiumDriver.perform(List.of(sequence));
     }
 
     public void doubleTap(WebElement element) {
