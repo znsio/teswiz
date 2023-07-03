@@ -47,4 +47,22 @@ public class ProductScreenAndroid
         return productName;
     }
 
+    @Override
+    public boolean isProductDetailsLoaded() {
+        LOGGER.info("Verifying if Product Details page is loaded");
+        return false;
+    }
+
+    @Override
+    public ProductScreen swipeAndViewImage() {
+        LOGGER.info("Performing swipe to view the product image");
+        return this;
+    }
+
+    @Override
+    public boolean isSecondImageVisible() {
+        LOGGER.info("Verifying if second image of product is visible ");
+        return false;
+    }
+
 }

@@ -46,14 +46,14 @@ public class HomeScreenAndroid
         String destinationFileLocation = (String) imageData.get("UPLOAD_IMAGE_LOCATION");
         LOGGER.info("searchByImage");
 
-        if(driver.isElementPresent(byDismissButtonId)) {
+        if (driver.isElementPresent(byDismissButtonId)) {
             driver.findElement(byDismissButtonId).click();
         }
 
         driver.waitTillElementIsPresent(byStartSearchBoxId).click();
         visually.checkWindow(SCREEN_NAME, "Upload a Photo");
         driver.waitTillElementIsPresent(byUploadPhotoButtonId).click();
-        if(driver.isElementPresent(bySystemPermissionMessageId)) {
+        if (driver.isElementPresent(bySystemPermissionMessageId)) {
             driver.waitTillElementIsPresent(byAllowButtonId).click();
         }
 
@@ -62,4 +62,20 @@ public class HomeScreenAndroid
         return this;
     }
 
+    @Override
+    public HomeScreen goToMenu() {
+        LOGGER.info("Opening Side Drawer Menu");
+
+        return this;
+    }
+
+    @Override
+    public HomeScreen selectProductFromCategory(String product, String gender) {
+        return this;
+    }
+
+    @Override
+    public boolean isProductListLoaded() {
+        return false;
+    }
 }

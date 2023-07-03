@@ -7,7 +7,7 @@ Feature: Ajio tests
     When I add the product to the cart
     Then I should see the product in the cart
 
-  @android @horizontalSwipingWithGestureTest
+  @android @horizontalSwipingWithGesturePluginTest
     Scenario: As a guest user, I should be able to swipe and see images in product details
     Given I open "shirts" section for "men"
     When I select the first result

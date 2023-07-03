@@ -4,19 +4,20 @@ import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.screen.ajio.HomeScreen;
+import com.znsio.teswiz.screen.ajio.ProductScreen;
+import com.znsio.teswiz.screen.ajio.SearchScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class HomeBL {
-    private static final Logger LOGGER = Logger.getLogger(HomeBL.class.getName());
+public class ProductBL {
+    private static final Logger LOGGER = Logger.getLogger(ProductBL.class.getName());
     private final TestExecutionContext context;
     private final SoftAssertions softly;
     private final String currentUserPersona;
     private final Platform currentPlatform;
 
-    public HomeBL(String userPersona, Platform forPlatform) {
+    public ProductBL(String userPersona, Platform forPlatform) {
         long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
@@ -25,7 +26,7 @@ public class HomeBL {
         Runner.setCurrentDriverForUser(userPersona, forPlatform, context);
     }
 
-    public HomeBL() {
+    public ProductBL() {
         long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
@@ -33,15 +34,21 @@ public class HomeBL {
         this.currentPlatform = Runner.getPlatform();
     }
 
-
-    public HomeBL openProduct(String product, String gender) {
-        assertThat(HomeScreen.get()
-                .goToMenu()
-                .selectProductFromCategory(product,gender)
-                .isProductListLoaded())
-                .as("Selected Product list is not loaded")
+    public ProductBL selectTheFirstResultFromList() {
+        assertThat(SearchScreen.get()
+                .selectProduct()
+                .isProductDetailsLoaded())
+                .as("Product Details is not loaded")
                 .isTrue();
         return this;
+    }
 
+    public ProductBL swipeAndViewImage() {
+        assertThat(ProductScreen.get()
+                .swipeAndViewImage()
+                .isSecondImageVisible())
+                .as("Unable to swipe and view second image of product")
+                .isTrue();
+        return this;
     }
 }

@@ -32,4 +32,10 @@ public abstract class HomeScreen {
     public abstract SearchScreen searchByImage();
 
     public abstract HomeScreen attachFileToDevice(Map imageData);
+
+    public abstract HomeScreen goToMenu();
+
+    public abstract HomeScreen selectProductFromCategory(String product, String gender);
+
+    public abstract boolean isProductListLoaded();
 }
