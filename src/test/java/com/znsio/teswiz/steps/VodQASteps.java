@@ -109,4 +109,9 @@ public class VodQASteps {
     public void iAmAbleToViewMessage(String displayedMessage) {
         new VodqaBL().isMessageDisplayedOnTheScreen(displayedMessage);
     }
+
+    @Then("I should be able to double tap on an element")
+    public void iShouldBeAbleToDoubleTapOnAnElement() {
+        new VodqaBL().doubleTapOnAnElement();
+    }
 }

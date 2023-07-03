@@ -584,4 +584,19 @@ public class Driver {
 
         appiumDriver.perform(List.of(sequence));
     }
+
+    public void doubleTap(WebElement element) {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        int x = element.getLocation().getX();
+        int y = element.getLocation().getY();
+        PointerInput touch = new PointerInput(PointerInput.Kind.MOUSE, "touch");
+        Sequence clickPosition = new Sequence(touch, 1);
+        clickPosition.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x, y))
+                .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(new Pause(touch, ofMillis(10)))
+                .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        appiumDriver.perform(Arrays.asList(clickPosition));
+    }
 }

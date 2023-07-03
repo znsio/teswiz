@@ -142,4 +142,12 @@ public class VodqaBL {
                 .as(String.format("The %s message is not displayed", displayedMessage)).isTrue();
         return this;
     }
+
+    public VodqaBL doubleTapOnAnElement() {
+        assertThat(VodqaScreen.get().doubleTapOnElement()
+                .isDoubleTapSuccessful())
+                .as("Double tap on element failed")
+                .isTrue();
+        return this;
+    }
 }
