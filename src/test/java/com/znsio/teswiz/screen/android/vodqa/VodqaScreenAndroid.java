@@ -33,7 +33,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byWebViewSectionOptionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='webView']");
     private final By byNativeViewSectionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='chainedView']");
     private final String languageTextView = "//android.widget.TextView[@text=' %s']";
-    private final By byDragAndDropTextView = AppiumBy.xpath("//android.widget.TextView[@content-desc=\"dragAndDrop\"]");
+    private final By byDragAndDropTextView = AppiumBy.xpath("//android.widget.TextView[@content-desc='dragAndDrop']");
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;

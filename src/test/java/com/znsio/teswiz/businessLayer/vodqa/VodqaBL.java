@@ -130,7 +130,7 @@ public class VodqaBL {
 
     public VodqaBL isMessageDisplayedOnTheScreen(String displayedMessage) {
         assertThat(DragAndDropScreen.get().isMessageVisible())
-                .as(String.format("The \"%s\" message is not displayed", displayedMessage)).isTrue();
+                .as(String.format("The %s message is not displayed", displayedMessage)).isTrue();
         return this;
     }
 }
