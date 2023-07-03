@@ -178,6 +178,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     public VodqaScreen doubleTapOnElement() {
         LOGGER.info("Performing Double tap on element in Double tap screen");
         driver.waitTillElementIsVisible(byDoubleTapScreenXpath).click();
+        visually.check(SCREEN_NAME,"Double Tap Element Screen",Target.window());
         driver.doubleTap(driver.waitTillElementIsVisible(byDoubleTapElementXpath));
         return this;
     }
@@ -185,6 +186,8 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public boolean isDoubleTapSuccessful() {
         LOGGER.info("Checking if double tap on element is successful");
+        driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
+        visually.check(SCREEN_NAME,"Double Tap Successful Message", Target.region(byDoubleTapSuccessfulXpath));
         return driver.isElementPresent(byDoubleTapSuccessfulXpath);
     }
 }
