@@ -43,10 +43,14 @@ public class SearchScreenAndroid
         list.get(0).click();
         return ProductScreen.get();
     }
+
     @Override
     public boolean isProductListLoaded(String product) {
-        LOGGER.info(String.format("Verifying if %s list is loaded",product));
+        LOGGER.info(String.format("Verifying if %s list is loaded", product));
+        if (!(driver.isElementPresent(byProductListTitleId)))
+            driver.tapOnMiddleOfScreen();
         String productLoaded = driver.waitTillElementIsVisible(byProductListTitleId).getText();
-        return productLoaded.equalsIgnoreCase(product);
+        LOGGER.info("title === " + productLoaded);
+        return productLoaded.equalsIgnoreCase(product.replaceAll("-",""));
     }
 }

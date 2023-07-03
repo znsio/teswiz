@@ -50,6 +50,7 @@ public class ProductScreenAndroid
     @Override
     public boolean isProductDetailsLoaded() {
         LOGGER.info("Verifying if Product Details page is loaded");
+
         return false;
     }
 
