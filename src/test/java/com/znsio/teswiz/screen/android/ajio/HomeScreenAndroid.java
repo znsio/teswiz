@@ -75,11 +75,9 @@ public class HomeScreenAndroid
     public SearchScreen selectProductFromCategory(String product, String category, String gender) {
         LOGGER.info(String.format("Selecting %s for %s", product, gender));
         driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, gender))).click();
-        By byCategoryXpath = By.xpath(String.format(byFilterProductXpath, category));
-        driver.scrollTillElementIntoView(byCategoryXpath);
-        driver.waitTillElementIsVisible(byCategoryXpath).click();
+        driver.scrollVertically(20,60,50);
+        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, category))).click();
         driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, product))).click();
         return SearchScreen.get();
     }
-
 }
