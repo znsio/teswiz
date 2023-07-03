@@ -37,15 +37,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
 import static java.util.Collections.singletonList;
+import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
@@ -354,13 +352,17 @@ public class Driver {
     }
 
     public void longPress(By elementId) {
-        WebElement elementToBeLongTapped =
-                new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(elementId));
-
-        TouchAction action = new TouchAction((PerformsTouchActions) driver);
-        action.longPress(LongPressOptions.longPressOptions()
-                                         .withElement(ElementOption.element(elementToBeLongTapped)))
-              .release().perform();
+       WebElement elementToBeLongTapped =
+               new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(elementId));
+        final Point location = elementToBeLongTapped.getLocation();
+        final PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        final Sequence sequence = new Sequence(finger, 1);
+        sequence.addAction(finger.
+                        createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), location.x, location.y)).
+                addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg())).
+                addAction(new Pause(finger, Duration.ofSeconds(1))).
+                addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        ((AppiumDriver) driver).perform(Collections.singletonList(sequence));
     }
 
     public void pushFileToDevice(String filePathToPush, String devicePath) {
@@ -543,7 +545,7 @@ public class Driver {
     }
 
     public void scrollInDynamicLayer(Direction direction) {
-        Dimension dimension = driver.manage().window().getSize();
+        Dimension dimension = driver.manage().window().getSize(); driver.findElement(By.id("")).getSize();
         int width = (int) (dimension.width * 0.5);
         int fromHeight = (int) (dimension.height * 0.7);
         int toHeight = (int) (dimension.height * 0.6);

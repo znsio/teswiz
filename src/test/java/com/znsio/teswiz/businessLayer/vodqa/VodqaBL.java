@@ -121,4 +121,14 @@ public class VodqaBL {
         VodqaScreen.get().openVerticalSwipingScreen().scrollVerticallyByPercentage(fromPercentHeight, toPercentHeight, percentWidth);
         return this;
     }
+
+    public VodqaBL longPressOnElement() {
+        VodqaScreen.get().longPressOnElement();
+        return this;
+    }
+
+    public VodqaBL verifyLongPressedPopup() {
+        assertThat(VodqaScreen.get().isLongPressedPopupVisible()).as("Long Pressed Popup is not visible").isTrue();
+        return this;
+    }
 }
