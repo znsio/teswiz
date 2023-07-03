@@ -59,4 +59,6 @@ public abstract class VodqaScreen {
     public abstract boolean isElementWithTextVisible(String elementText);
   
     public abstract VodqaScreen scrollVerticallyByPercentage(int fromPercentHeight, int toPercentHeight, int percentWidth);
+
+    public abstract DragAndDropScreen openDragAndDropScreen();
 }

@@ -5,6 +5,7 @@ import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.screen.vodqa.DragAndDropScreen;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
 import org.apache.log4j.Logger;
@@ -119,6 +120,17 @@ public class VodqaBL {
   
     public VodqaBL scrollVerticallyByPercentageOnVerticalSwipingScreen(int fromPercentHeight, int toPercentHeight, int percentWidth) {
         VodqaScreen.get().openVerticalSwipingScreen().scrollVerticallyByPercentage(fromPercentHeight, toPercentHeight, percentWidth);
+        return this;
+    }
+
+    public VodqaBL dragAndDropElement() {
+        VodqaScreen.get().openDragAndDropScreen().dragAndDropCircleObject();
+        return this;
+    }
+
+    public VodqaBL isMessageDisplayedOnTheScreen(String displayedMessage) {
+        assertThat(DragAndDropScreen.get().isMessageVisible())
+                .as(String.format("The %s message is not displayed", displayedMessage)).isTrue();
         return this;
     }
 }

@@ -2,7 +2,7 @@
 Feature: Search for flight options
 
 #  CONFIG=./configs/indigo_local_config.properties PLATFORM=web TAG=searchFlights ./gradlew run
-  @web @searchFlights
+  @web @searchFlights @browserVersionTest
   Scenario: Search for one way ticket from Pune to Delhi for single passenger
     Given I search for a "one-way" ticket from "Pune" to "Delhi" for "1" adult passenger
 

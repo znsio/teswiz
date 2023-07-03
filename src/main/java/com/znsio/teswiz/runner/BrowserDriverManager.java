@@ -25,16 +25,15 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
-import java.io.File;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
+
 import static com.znsio.teswiz.runner.Runner.*;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
@@ -195,24 +194,24 @@ class BrowserDriverManager {
                                                         String browserType) {
         DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
         String webDriverManagerProxyUrl = (null == Runner.getWebDriverManagerProxyURL()) ? ""
-                                                                                         :
-                                          Runner.getWebDriverManagerProxyURL();
+                :
+                Runner.getWebDriverManagerProxyURL();
         LOGGER.info(String.format(
                 "Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'",
                 webDriverManagerProxyUrl, browserType));
 
-        // TODO - get browser version from local or container. What about cloud?
         WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
-                                                            .proxy(webDriverManagerProxyUrl);
+                .proxy(webDriverManagerProxyUrl);
         webDriverManager.setup();
         String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
 
         String message = String.format("Using %s browser version: %s", driverManagerType,
-                                       downloadedDriverVersion);
+                downloadedDriverVersion);
         LOGGER.info(message);
         ReportPortalLogger.logInfoMessage(message);
         return driverManagerType;
     }
+
 
     @NotNull
     private static WebDriver createChromeDriver(String forUserPersona,
