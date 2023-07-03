@@ -35,7 +35,5 @@ public abstract class HomeScreen {
 
     public abstract HomeScreen goToMenu();
 
-    public abstract HomeScreen selectProductFromCategory(String product, String gender);
-
-    public abstract boolean isProductListLoaded();
+    public abstract SearchScreen selectProductFromCategory(String product, String category, String gender);
 }

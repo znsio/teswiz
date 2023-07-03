@@ -24,6 +24,8 @@ public class HomeScreenAndroid
             "com.android.permissioncontroller:id/permission_message");
     private static final By byAllowButtonId = By.id(
             "com.android.permissioncontroller:id/permission_allow_button");
+    private static final By bySideMenuId = By.id("com.ril.ajio:id/fahIvMenu");
+    private static final String byFilterProductXpath = "//android.widget.TextView[@text='%s']";
     private final Driver driver;
     private final Visual visually;
 
@@ -65,17 +67,19 @@ public class HomeScreenAndroid
     @Override
     public HomeScreen goToMenu() {
         LOGGER.info("Opening Side Drawer Menu");
-
+        driver.waitTillElementIsVisible(bySideMenuId).click();
         return this;
     }
 
     @Override
-    public HomeScreen selectProductFromCategory(String product, String gender) {
-        return this;
+    public SearchScreen selectProductFromCategory(String product, String category, String gender) {
+        LOGGER.info(String.format("Selecting %s for %s", product, gender));
+        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, gender))).click();
+        By byCategoryXpath = By.xpath(String.format(byFilterProductXpath, category));
+        driver.scrollTillElementIntoView(byCategoryXpath);
+        driver.waitTillElementIsVisible(byCategoryXpath).click();
+        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, product))).click();
+        return SearchScreen.get();
     }
 
-    @Override
-    public boolean isProductListLoaded() {
-        return false;
-    }
 }

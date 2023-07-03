@@ -34,11 +34,11 @@ public class HomeBL {
     }
 
 
-    public HomeBL openProduct(String product, String gender) {
+    public HomeBL openProduct(String product,String category, String gender) {
         assertThat(HomeScreen.get()
                 .goToMenu()
-                .selectProductFromCategory(product,gender)
-                .isProductListLoaded())
+                .selectProductFromCategory(product,category,gender)
+                .isProductListLoaded(product))
                 .as("Selected Product list is not loaded")
                 .isTrue();
         return this;

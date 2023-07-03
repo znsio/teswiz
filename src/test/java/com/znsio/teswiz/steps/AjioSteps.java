@@ -44,10 +44,10 @@ public class AjioSteps {
         new SearchBL().verifyCart();
     }
 
-    @Given("I open {string} section for {string}")
-    public void iOpebShirtsSectionForMen(String product, String gender) {
+    @Given("I open {string} from {string} section for {string}")
+    public void iOpebShirtsSectionForMen(String product, String category, String gender) {
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
-        new HomeBL().openProduct(product, gender);
+        new HomeBL().openProduct(product,category, gender);
     }
 
     @When("I select the first result")

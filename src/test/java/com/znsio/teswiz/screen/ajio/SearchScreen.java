@@ -30,4 +30,6 @@ public abstract class SearchScreen {
     public abstract int numberOfProductFound();
 
     public abstract ProductScreen selectProduct();
+
+    public abstract boolean isProductListLoaded(String product);
 }
