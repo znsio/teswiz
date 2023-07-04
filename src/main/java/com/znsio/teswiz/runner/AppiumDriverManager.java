@@ -32,6 +32,7 @@ import java.util.stream.StreamSupport;
 
 import static com.cucumber.listener.CucumberScenarioListener.createFile;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
+import static com.znsio.teswiz.runner.Runner.getCloudName;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
 class AppiumDriverManager {
@@ -172,7 +173,7 @@ class AppiumDriverManager {
         // additionalDevices.add(deviceInfo);
         Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
         if (PluginClI.getInstance().isCloudExecution()) {
-            context.addTestState(TEST_CONTEXT.DEVICE_ON, PluginClI.getInstance().isCloudExecution());
+            context.addTestState(TEST_CONTEXT.DEVICE_ON, getCloudName());
         } else {
             context.addTestState(TEST_CONTEXT.DEVICE_ON, "localDevice");
         }
