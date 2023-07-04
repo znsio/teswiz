@@ -603,4 +603,28 @@ public class Driver {
                 .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         appiumDriver.perform(Arrays.asList(clickPosition));
     }
+
+    public void multiTouchOnElements(By byFirstSliderElementId, By bySecondSliderElementId) {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+
+        WebElement sliderElement1 = findElement(byFirstSliderElementId);
+        WebElement sliderElement2 = findElement(bySecondSliderElementId);
+
+        int middleXCoordinate_slider1 = sliderElement1.getLocation().x + sliderElement1.getSize().width/2;
+        int middleYCoordinate_slider1 = sliderElement1.getLocation().y + sliderElement1.getSize().height/2;
+
+        int middleXCoordinate_slider2 = sliderElement2.getLocation().x + sliderElement2.getSize().width/2;
+        int middleYCoordinate_slider2 = sliderElement2.getLocation().y + sliderElement2.getSize().height/2;
+
+        Dimension sizeSlider = sliderElement1.getSize();
+        Dimension sizeSlider1 = sliderElement2.getSize();
+
+        PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
+        Sequence sequence = new Sequence(touch, 1);
+
+        MultiTouchAction
+
+        sequence.addAction()
+
+    }
 }
