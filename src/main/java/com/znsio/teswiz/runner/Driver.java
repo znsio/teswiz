@@ -351,20 +351,10 @@ public class Driver {
     }
 
     public void longPress(By elementId) {
-       WebElement elementToBeLongTapped =
-               new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(elementId));
-        final Point location = elementToBeLongTapped.getLocation();
-        final PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
-        final Sequence sequence = new Sequence(finger, 1);
-        sequence.addAction(finger.
-                        createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), location.x, location.y)).
-                addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg())).
-                addAction(new Pause(finger, Duration.ofSeconds(1))).
-                addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
-        ((AppiumDriver) driver).perform(Collections.singletonList(sequence));
+        longPress(elementId,1);
     }
 
-    public void longPress(By elementId,long durationInSeconds) {
+    public void longPress(By elementId,long durationInSeconds){
         WebElement elementToBeLongTapped =
                 new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(elementId));
         final Point location = elementToBeLongTapped.getLocation();
