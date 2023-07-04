@@ -26,15 +26,17 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
@@ -197,9 +199,7 @@ class BrowserDriverManager {
     private static DriverManagerType setupBrowserDriver(TestExecutionContext testExecutionContext,
                                                         String browserType) {
         DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
-        String webDriverManagerProxyUrl = (null == Runner.getWebDriverManagerProxyURL()) ? ""
-                                                                                         :
-                                          Runner.getWebDriverManagerProxyURL();
+        String webDriverManagerProxyUrl = (null == Runner.getWebDriverManagerProxyURL()) ? "" : Runner.getWebDriverManagerProxyURL();
         LOGGER.info(String.format(
                 "Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'",
                 webDriverManagerProxyUrl, browserType));
@@ -225,8 +225,7 @@ class BrowserDriverManager {
         webDriverManager.setup();
         String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
 
-        String message = String.format("Using %s browser version: %s", driverManagerType,
-                                       downloadedDriverVersion);
+        String message = String.format("Using %s browser version: %s", driverManagerType, downloadedDriverVersion);
         LOGGER.info(message);
         ReportPortalLogger.logInfoMessage(message);
         return driverManagerType;
