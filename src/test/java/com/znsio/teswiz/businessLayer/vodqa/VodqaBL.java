@@ -114,7 +114,7 @@ public class VodqaBL {
     }
 
     public VodqaBL isElementWithTextVisible(String elementText) {
-        boolean isScrollSuccessful = VodqaScreen.get().isElementWithTextVisible(elementText);
+        boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible(elementText);
         assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
         return this;
     }
@@ -150,6 +150,14 @@ public class VodqaBL {
 
     public VodqaBL verifyLongPressedPopup() {
         assertThat(VodqaScreen.get().isLongPressedPopupVisible()).as("Long Pressed Popup is not visible").isTrue();
+        return this;
+    }
+
+    public VodqaBL multiTouchOnElement() {
+        assertThat(VodqaScreen.get().multiTouchOnElements()
+                .isMultiTouchSuccessful())
+                .as("Multi touch action failed")
+                .isTrue();
         return this;
     }
 }
