@@ -77,3 +77,8 @@ Feature: Vodqa test
   Scenario: Validate that user is able to double tap on an element
     Given I login to vodqa application using valid credentials
     Then I should be able to double tap on an element
+
+  @android @multiTouch
+  Scenario: Validate that user is able to multi touch on an element
+    Given I login to vodqa application using valid credentials
+    Then I should be able to perform multi touch on an element
