@@ -184,7 +184,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
         driver.waitForClickabilityOf(byLongPressOptionXpath).click();
         LOGGER.info("Performing long press on element");
         visually.checkWindow(SCREEN_NAME, "Long press screen");
-        driver.longPress(byLongPressButtonAccessibilityId);
+        driver.longPress(byLongPressButtonAccessibilityId,3);
         return this;
     }
 
