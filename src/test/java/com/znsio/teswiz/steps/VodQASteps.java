@@ -114,4 +114,9 @@ public class VodQASteps {
     public void iShouldBeAbleToDoubleTapOnAnElement() {
         new VodqaBL().doubleTapOnAnElement();
     }
+
+    @Then("I should be able to perform multi touch on an element")
+    public void iShouldBeAbleToPerformMultiTouchOnAnElement() {
+        new VodqaBL().multiTouchOnElement();
+    }
 }
