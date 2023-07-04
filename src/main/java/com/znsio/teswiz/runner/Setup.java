@@ -527,9 +527,10 @@ class Setup {
             webCukeArgs.add("--threads");
             webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
             webCukeArgs.add(PLUGIN);
-            webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioListener");
+            webCukeArgs.add("com.znsio.teswiz.listener.CucumberApiScenarioListener");
             webCukeArgs.add(PLUGIN);
             webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioReporterListener");
+            configs.put(EXECUTED_ON, "API");
         }
         return webCukeArgs;
     }
