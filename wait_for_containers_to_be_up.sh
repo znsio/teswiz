@@ -3,13 +3,14 @@
 set -e
 
 cmd="$@"
-attempt=0
+attempt=1
 while ! curl -sSL "http://localhost:${GRID_PORT}/wd/hub/status" 2>&1 \
         | jq -r '.value.ready' 2>&1 | grep "true" >/dev/null; do
-    echo "Waiting for the Grid to be available on: http://localhost:${GRID_PORT}/wd/hub/status"
+    echo "Attempt: $attempt - Waiting for the Grid to be available on:
+    http://localhost:${GRID_PORT}/wd/hub/status"
     sleep 3
-    attempt+=1
-    if [ $attempt -gt 10 ]; then
+    ((attempt=attempt+1))
+    if [ $attempt -gt 15 ]; then
         echo "Grid not started after $attempt attempts. Abort"
         exit 1;
     fi
