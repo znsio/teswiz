@@ -98,7 +98,7 @@ class DeviceSetup {
         }
     }
 
-    private static String convertAppPathToFilePathIfNeeded(String appPath) {
+    public static String convertAppPathToFilePathIfNeeded(String appPath) {
         if (isAppPathAUrl(appPath)) {
             String directoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "sampleApps";
             String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
