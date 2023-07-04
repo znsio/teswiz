@@ -236,6 +236,7 @@ class Setup {
         addCucumberPlugsToArgs();
         CUKE_ARGS.addAll(DeviceSetup.setupAndroidExecution());
         CUKE_ARGS.addAll(setupWebExecution());
+        CUKE_ARGS.addAll(setupApiExecution());
         CUKE_ARGS.addAll(DeviceSetup.setupWindowsExecution());
         initialiseApplitoolsConfiguration();
 
@@ -516,6 +517,19 @@ class Setup {
             webCukeArgs.add(PLUGIN);
             webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioReporterListener");
             configs.put(EXECUTED_ON, "Local Browsers");
+        }
+        return webCukeArgs;
+    }
+
+    private static ArrayList<String> setupApiExecution() {
+        ArrayList<String> webCukeArgs = new ArrayList<>();
+        if(currentPlatform.equals(Platform.api)) {
+            webCukeArgs.add("--threads");
+            webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
+            webCukeArgs.add(PLUGIN);
+            webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioListener");
+            webCukeArgs.add(PLUGIN);
+            webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioReporterListener");
         }
         return webCukeArgs;
     }
