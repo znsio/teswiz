@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WeatherAPIBL {
-    private static final Logger LOGGER = Logger.getLogger(IndigoBL.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(WeatherAPIBL.class.getName());
     private final String base_URL="https://api.open-meteo.com/v1/forecast?";
 
     public JSONObject getCurrentWeatherJSON(String latitude, String longitude) {
