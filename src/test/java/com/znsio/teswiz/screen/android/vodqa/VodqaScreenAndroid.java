@@ -39,6 +39,10 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byDoubleTapElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='doubleTapMe']");
     private final By byDoubleTapScreenXpath = AppiumBy.xpath("//android.widget.TextView[@text='Double Tap']");
     private final By byDoubleTapSuccessfulXpath = AppiumBy.xpath("//android.widget.TextView[@text='Double tap successful!']");
+    private final By bySliderSectionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='slider1']/android.view.ViewGroup");
+    private final By byFirstSliderElementId = AppiumBy.accessibilityId("slider");
+    private final By bySecondSliderElementId = AppiumBy.accessibilityId("slider1");
+
 
 
 
@@ -217,5 +221,18 @@ public class VodqaScreenAndroid extends VodqaScreen {
         driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
         visually.check(SCREEN_NAME,"Double Tap Successful Message", Target.region(byDoubleTapSuccessfulXpath));
         return driver.isElementPresent(byDoubleTapSuccessfulXpath);
+    }
+
+    @Override
+    public VodqaScreen multiTouchOnElements() {
+        LOGGER.info("Performing multi touch action in Slider Screen");
+        driver.waitTillElementIsVisible(bySliderSectionXpath).click();
+        visually.check(SCREEN_NAME,"Slider Section Screen",Target.window());
+        driver.multiTouchOnElements(byFirstSliderElementId, bySecondSliderElementId);
+    }
+
+    @Override
+    public boolean isMultiTouchSuccessful() {
+        return false;
     }
 }
