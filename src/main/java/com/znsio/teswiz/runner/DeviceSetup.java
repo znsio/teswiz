@@ -83,21 +83,21 @@ class DeviceSetup {
 
     static void verifyAppExistsAtMentionedPath() {
         String appPath = Setup.getFromConfigs(APP_PATH);
+        String directoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "sampleApps";
         LOGGER.info(String.format("Update path to Apk: %s", appPath));
         if (appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
-            appPath = convertAppPathToFilePathIfNeeded(appPath);
+            appPath = convertAppPathToFilePathIfNeeded(appPath, directoryPath);
             Setup.addToConfigs(APP_PATH, appPath);
         } else {
-            appPath = convertAppPathToFilePathIfNeeded(appPath);
+            appPath = convertAppPathToFilePathIfNeeded(appPath, directoryPath);
             LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s",
                     appPath));
         }
     }
 
-    public static String convertAppPathToFilePathIfNeeded(String appPath) {
+    public static String convertAppPathToFilePathIfNeeded(String appPath, String directoryPath) {
         if (isAppPathAUrl(appPath)) {
-            String directoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "sampleApps";
             String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
             String filePath = directoryPath + File.separator + fileName;
             if (!Files.exists(Path.of(directoryPath))) {
