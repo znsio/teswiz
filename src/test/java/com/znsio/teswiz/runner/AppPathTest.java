@@ -45,8 +45,8 @@ public class AppPathTest {
     }
 
     @Test
-    void validateAppPathAsIncorrectUrlGivesError() {
-        deleteDirectorySubDirectoryAndFiles(tempFolderPath);
+    void validateAppPathAsIncorrectUrlGivesIOException() {
+        deleteFile(expectedAppPath);
         assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectUrl));
     }
 
@@ -59,15 +59,15 @@ public class AppPathTest {
     }
 
     @Test
-    void validateAppPathAsIncorrectFilePathGivesError() {
+    void validateAppPathAsIncorrectFilePathGivesFileNotFoundException() {
         DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl);
         assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectFilePath));
     }
 
     @Test
-    void validateAppPathAsFilePathButFileNotPresentGivesError() {
+    void validateAppPathAsFilePathButFileNotPresentGivesFileNotFoundException() {
         deleteFile(expectedAppPath);
-        assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectFilePath));
+        assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(expectedAppPath));
     }
 
     private void deleteFile(String filePath) {
