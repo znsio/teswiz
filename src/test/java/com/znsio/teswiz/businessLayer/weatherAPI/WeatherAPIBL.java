@@ -1,19 +1,23 @@
 package com.znsio.teswiz.businessLayer.weatherAPI;
 
-import com.znsio.teswiz.businessLayer.indigo.IndigoBL;
+import com.znsio.teswiz.runner.Runner;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 import org.apache.log4j.Logger;
+import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WeatherAPIBL {
     private static final Logger LOGGER = Logger.getLogger(WeatherAPIBL.class.getName());
-    private final String base_URL="https://api.open-meteo.com/v1/forecast?";
+    private final Map<String, Object> testData = Runner.getTestDataAsMap("API");
+    private final String base_URL = testData.get("url").toString();
 
-    public JSONObject getCurrentWeatherJSON(String latitude, String longitude) {
+    public JSONObject getCurrentWeatherJSON() {
         LOGGER.info("Getting current weather data for given location coordinates");
+        String latitude = testData.get("latitude").toString();
+        String longitude = testData.get("longitude").toString();
         HttpResponse<JsonNode> jsonResponse
                 = Unirest.get(base_URL)
                 .header("accept", "application/json")

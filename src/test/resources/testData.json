@@ -11,6 +11,11 @@
     "image": {
       "IMAGE_FILE_LOCATION": "/src/test/resources/images/handbag.jpg",
       "UPLOAD_IMAGE_LOCATION": "/sdcard/Images/handbag.jpg"
+    },
+    "API":{
+      "url": "https://api.open-meteo.com/v1/forecast?",
+      "latitude": "28.6139",
+      "longitude": "77.2090"
     }
   },
   "dev": {},
