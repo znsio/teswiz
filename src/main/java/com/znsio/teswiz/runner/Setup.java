@@ -530,7 +530,7 @@ class Setup {
             webCukeArgs.add("com.znsio.teswiz.listener.CucumberApiScenarioListener");
             webCukeArgs.add(PLUGIN);
             webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioReporterListener");
-            configs.put(EXECUTED_ON, "API");
+            configs.put(EXECUTED_ON, "uniREST");
         }
         return webCukeArgs;
     }
