@@ -7,11 +7,11 @@ import io.cucumber.java.en.Then;
 import kong.unirest.json.JSONObject;
 import org.apache.log4j.Logger;
 
-public class ApiTestSteps {
+public class WeatherAPISteps {
     private JSONObject jsonResponse;
-    private static final Logger LOGGER = Logger.getLogger(ApiTestSteps.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(WeatherAPISteps.class.getName());
     private final TestExecutionContext context;
-    public ApiTestSteps() {
+    public WeatherAPISteps() {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
         LOGGER.info("context: " + context.getTestName());
     }
