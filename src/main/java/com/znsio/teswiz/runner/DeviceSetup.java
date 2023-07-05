@@ -10,10 +10,7 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -103,20 +100,18 @@ class DeviceSetup {
             String directoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "sampleApps";
             String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
             String filePath = directoryPath + File.separator + fileName;
-            if (!Files.exists(Path.of(directoryPath)))
+            if (!Files.exists(Path.of(directoryPath))) {
                 createDirectory(directoryPath);
-            if (!(new File(filePath).exists()))
+            }
+            if (!(new File(filePath).exists())) {
                 downloadFile(appPath, filePath);
+            }
             LOGGER.info("Changing value of appPath from URL to file path");
             LOGGER.info("Before change, appPath value: " + appPath);
             appPath = filePath;
             LOGGER.info("After change, appPath value: " + filePath);
         }
-        try {
-            new FileInputStream(appPath);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("File not found: " + appPath, e);
-        }
+        openFile(appPath);
         return appPath;
     }
 
@@ -150,6 +145,22 @@ class DeviceSetup {
         }
     }
 
+    private static void openFile(String appPath) {
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(appPath);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("File not found: " + appPath, e);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to close input stream" + e);
+                }
+            }
+        }
+    }
 
     private static void fetchAndroidAppVersion() {
         Pattern versionNamePattern = Pattern.compile("versionName='(\\d+(\\.\\d+)+)'",
@@ -182,7 +193,7 @@ class DeviceSetup {
     static void setupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
         String deviceLabURL = NOT_SET;
-        switch(cloudName.toLowerCase()) {
+        switch (cloudName.toLowerCase()) {
             case "headspin":
                 deviceLabURL = getCloudUrlFromCapabilities();
                 HeadSpinSetup.updateHeadspinCapabilities(deviceLabURL);
