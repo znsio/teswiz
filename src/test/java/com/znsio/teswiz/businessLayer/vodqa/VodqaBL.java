@@ -121,4 +121,9 @@ public class VodqaBL {
         VodqaScreen.get().openVerticalSwipingScreen().scrollVerticallyByPercentage(fromPercentHeight, toPercentHeight, percentWidth);
         return this;
     }
+
+    public VodqaBL pinchAndZoomOnAndElement() {
+        assertThat(VodqaScreen.get().pinchAndZoomOnAnElement().isPinchAndZoomSuccessful()).as("pinch and zoom on an element failed").isTrue();
+        return this;
+    }
 }
