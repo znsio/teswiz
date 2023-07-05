@@ -56,3 +56,9 @@ Feature: Vodqa test
     Given I login to vodqa application using valid credentials
     When I scroll vertically from 60 percent height to 20 percent height and 50 percent width
     Then Element text "Jasmine" should be visible
+
+  #  CONFIG=./configs/vodqa_local_config.properties TAG=@scrollVertically PLATFORM=android ./gradlew run
+  @android @pinchAndZoom
+  Scenario: Validate that user is able to pinch and zoom on particular element
+    Given I login to vodqa application using valid credentials
+    Then I should be able to pinch and zoom on an element
