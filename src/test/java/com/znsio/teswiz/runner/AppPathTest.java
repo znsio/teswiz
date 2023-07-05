@@ -2,41 +2,39 @@ package com.znsio.teswiz.runner;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.*;
+import java.nio.file.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AppPathTest {
-    private static final String tempFolderPath = System.getProperty("user.dir") + File.separator + "temp";
-    private static final String expectedDirectoryPath = tempFolderPath + File.separator + "sampleApps";
+    private static final String expectedDirectoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "sampleApps";
     private static final String fileName = "VodQA.apk";
     private static final String expectedAppPath = expectedDirectoryPath + File.separator + fileName;
     private static final String appPathAsUrl = "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/VodQA.apk";
     private static final String appPathAsIncorrectUrl = "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/ra/main/VodQA.apk";
     private static final String appPathAsFilePath = expectedAppPath;
-    private static final String appPathAsIncorrectFilePath = tempFolderPath + File.separator + "smleApps" + File.separator + fileName;
+    private static final String appPathAsIncorrectFilePath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "smleApps" + File.separator + fileName;
 
     @Test
-    void validateAppPathAsCorrectUrlCreateRepoAndDownloadFileWhenBothDoNotExist() {
-        deleteDirectorySubDirectoryAndFiles(tempFolderPath);
+    void givenCorrectUrl_WhenRepoAndFileDoNotExist_ThenCreateRepoAndDownloadFile() {
+        deleteDirectorySubDirectoryAndFiles(expectedDirectoryPath);
         String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl);
         assertEquals(expectedAppPath, actualAppPath);
         assertTrue(Files.exists(Paths.get(actualAppPath)));
     }
 
     @Test
-    void validateAppPathAsCorrectUrlDoNotDownloadFileWhenRepoAndFileAlreadyExist() {
+    void givenCorrectUrl_WhenRepoAndFileAlreadyExist_ThenDoNotDownloadFile() {
+        createDirectory(expectedDirectoryPath);
+        DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl);
         String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl);
         assertEquals(expectedAppPath, actualAppPath);
         assertTrue(Files.exists(Paths.get(actualAppPath)));
     }
 
     @Test
-    void validateAppPathAsCorrectUrlOnlyDownloadFileWhenRepoExist() {
+    void givenCorrectUrl_WhenRepoExistButFileDoNotExist_ThenDownloadFile() {
         deleteFile(expectedAppPath);
         createDirectory(expectedDirectoryPath);
         String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl);
@@ -45,27 +43,29 @@ public class AppPathTest {
     }
 
     @Test
-    void validateAppPathAsIncorrectUrlGivesIOException() {
+    void givenIncorrectUrl_WhenRepoAndFileDoNotExist_ThenIOExceptionOccurWhileTryingToDownloadFile() {
         deleteFile(expectedAppPath);
         assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectUrl));
     }
 
     @Test
-    void validateAppPathAsCorrectFilePathLoadsFileWhenAlreadyExist() {
+    void givenCorrectFilePath_WhenRepoAndFileAlreadyExist_ThenFileLoadsSuccessfully() {
         DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl);
         String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsFilePath);
         assertEquals(expectedAppPath, actualAppPath);
         assertTrue(Files.exists(Paths.get(actualAppPath)));
+        assertDoesNotThrow(()-> new FileInputStream(actualAppPath));
     }
 
     @Test
-    void validateAppPathAsIncorrectFilePathGivesFileNotFoundException() {
+    void givenIncorrectFilePath_WhenRepoAndFileExist_ThenFileNotFoundExceptionOccursWhileTryingToOpenFile() {
+        createDirectory(expectedDirectoryPath);
         DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl);
         assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectFilePath));
     }
 
     @Test
-    void validateAppPathAsFilePathButFileNotPresentGivesFileNotFoundException() {
+    void givenCorrectFilePath_WhenRepoExistButFileDoNotExist_ThenFileNotFoundExceptionOccursWhileTryingToOpenFile() {
         deleteFile(expectedAppPath);
         assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(expectedAppPath));
     }
