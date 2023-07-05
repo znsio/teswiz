@@ -10,6 +10,7 @@ import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VodqaBL {
@@ -113,11 +114,11 @@ public class VodqaBL {
     }
 
     public VodqaBL isElementWithTextVisible(String elementText) {
-        boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible(elementText);
+        boolean isScrollSuccessful = VodqaScreen.get().isElementWithTextVisible(elementText);
         assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
         return this;
     }
-  
+
     public VodqaBL scrollVerticallyByPercentageOnVerticalSwipingScreen(int fromPercentHeight, int toPercentHeight, int percentWidth) {
         VodqaScreen.get().openVerticalSwipingScreen().scrollVerticallyByPercentage(fromPercentHeight, toPercentHeight, percentWidth);
         return this;
@@ -131,6 +132,24 @@ public class VodqaBL {
     public VodqaBL isMessageDisplayedOnTheScreen(String displayedMessage) {
         assertThat(DragAndDropScreen.get().isMessageVisible())
                 .as(String.format("The %s message is not displayed", displayedMessage)).isTrue();
+        return this;
+    }
+
+    public VodqaBL doubleTapOnAnElement() {
+        assertThat(VodqaScreen.get().doubleTapOnElement()
+                .isDoubleTapSuccessful())
+                .as("Double tap on element failed")
+                .isTrue();
+        return this;
+    }
+
+    public VodqaBL longPressOnElement() {
+        VodqaScreen.get().longPressOnElement();
+        return this;
+    }
+
+    public VodqaBL verifyLongPressedPopup() {
+        assertThat(VodqaScreen.get().isLongPressedPopupVisible()).as("Long Pressed Popup is not visible").isTrue();
         return this;
     }
 }
