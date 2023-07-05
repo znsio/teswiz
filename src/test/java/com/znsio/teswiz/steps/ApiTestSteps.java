@@ -16,9 +16,9 @@ public class ApiTestSteps {
         LOGGER.info("context: " + context.getTestName());
     }
 
-    @Given("GET request is sent to the weather API with valid latitude {string} and longitude {string}")
-    public void getRequestIsSentToTheWeatherAPIWithValidLatitudeAndLongitude(String latitude, String longitude) {
-        jsonResponse = new WeatherAPIBL().getCurrentWeatherJSON(latitude, longitude);
+    @Given("GET request is sent to the weather API with valid location coordinates")
+    public void getRequestIsSentToTheWeatherAPIWithValidLatitudeAndLongitude() {
+        jsonResponse = new WeatherAPIBL().getCurrentWeatherJSON();
     }
     @Then("we verify weather of that location in response")
     public void weVerifyWeatherOfThatLocationInResponse() {
