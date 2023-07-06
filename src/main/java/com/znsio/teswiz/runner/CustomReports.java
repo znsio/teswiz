@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Setup.*;
 
 class CustomReports {
@@ -80,9 +81,9 @@ class CustomReports {
         config.addClassifications("Platform", Setup.getFromConfigs(PLATFORM));
         config.addClassifications("Tags", Setup.getFromConfigs(TAG));
         config.addClassifications("RUN_IN_CI", Setup.getBooleanValueAsStringFromConfigs(RUN_IN_CI));
-        config.addClassifications("IS_VISUAL", Setup.getBooleanValueAsStringFromConfigs(IS_VISUAL));
-        config.addClassifications("CLOUD_NAME", Setup.getFromConfigs(CLOUD_NAME));
+        config.addClassifications("CLOUD_NAME", getCloudNameFromCapabilities());
         config.addClassifications("EXECUTED_ON", Setup.getFromConfigs(EXECUTED_ON));
+        config.addClassifications("IS_VISUAL", Setup.getBooleanValueAsStringFromConfigs(IS_VISUAL));
         return config;
     }
 }

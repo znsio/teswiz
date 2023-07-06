@@ -259,7 +259,7 @@ class DeviceSetup {
         }
     }
 
-    private static String getCloudNameFromCapabilities() {
+    static String getCloudNameFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
                 new String[]{"serverConfig", "server", "plugin",
