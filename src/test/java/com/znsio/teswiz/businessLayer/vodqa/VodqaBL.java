@@ -9,6 +9,8 @@ import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
+import org.openqa.selenium.Dimension;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VodqaBL {
@@ -123,7 +125,10 @@ public class VodqaBL {
     }
 
     public VodqaBL pinchAndZoomOnAndElement() {
-        assertThat(VodqaScreen.get().pinchAndZoomOnAnElement().isPinchAndZoomSuccessful()).as("pinch and zoom on an element failed").isTrue();
+        VodqaScreen vodqaScreen = VodqaScreen.get();
+        Dimension elementDimension = vodqaScreen.navigateToPhotoView().getImageElementDimension();
+        softly.assertThat(vodqaScreen.pinchAndZoomInOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom In on an element failed").isTrue();
+        softly.assertThat(vodqaScreen.pinchAndZoomOutOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom Out on an element failed").isTrue();
         return this;
     }
 }

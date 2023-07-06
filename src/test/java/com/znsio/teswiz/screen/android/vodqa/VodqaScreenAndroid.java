@@ -12,7 +12,9 @@ import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import io.appium.java_client.AppiumBy;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.WebElement;
 
 public class VodqaScreenAndroid extends VodqaScreen {
     private final Driver driver;
@@ -173,15 +175,48 @@ public class VodqaScreenAndroid extends VodqaScreen {
     }
 
     @Override
-    public VodqaScreen pinchAndZoomOnAnElement() {
+    public VodqaScreen navigateToPhotoView() {
         driver.waitTillElementIsVisible(byPhotoViewElementXpath).click();
+        return this;
+    }
+
+    @Override
+    public VodqaScreen pinchAndZoomInOnAnElement() {
         driver.waitTillElementIsVisible(byImageElementXpath).click();
         driver.pinchAndZoomIn(driver.waitTillElementIsVisible(byImageElementXpath));
         return this;
     }
 
     @Override
-    public boolean isPinchAndZoomSuccessful() {
+    public VodqaScreen pinchAndZoomOutOnAnElement() {
+        driver.waitTillElementIsVisible(byPhotoViewElementXpath).click();
+        driver.waitTillElementIsVisible(byImageElementXpath).click();
+        driver.pinchAndZoomOut(driver.waitTillElementIsVisible(byImageElementXpath));
+        return this;
+    }
+
+    @Override
+    public boolean isPinchAndZoomInSuccessful(Dimension initialElementDimension) {
+
+        Dimension actualElementDimension = driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
+        if ((initialElementDimension.width * initialElementDimension.height) > (actualElementDimension.width * actualElementDimension.height)) {
+            return true;
+        }
         return false;
+    }
+
+    @Override
+    public boolean isPinchAndZoomOutSuccessful(Dimension initialElementDimension) {
+
+        Dimension actualElementDimension = driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
+        if ((initialElementDimension.width * initialElementDimension.height) < (actualElementDimension.width * actualElementDimension.height)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Dimension getImageElementDimension() {
+        return driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
     }
 }
