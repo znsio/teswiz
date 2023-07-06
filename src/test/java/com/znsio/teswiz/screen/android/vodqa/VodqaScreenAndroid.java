@@ -224,20 +224,26 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public VodqaScreen navigateToPhotoView() {
+        LOGGER.info("Navigate to Photo View Section");
+        driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
         driver.waitTillElementIsVisible(byPhotoViewElementXpath).click();
         return this;
     }
 
     @Override
     public VodqaScreen pinchAndZoomInOnAnElement() {
-        driver.waitTillElementIsVisible(byImageElementXpath).click();
+        LOGGER.info("Zoomed In Image element");
+        visually.check(SCREEN_NAME,"Zoomed In Image element",Target.window());
+        driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
         driver.pinchAndZoomIn(driver.waitTillElementIsVisible(byImageElementXpath));
         return this;
     }
 
     @Override
     public VodqaScreen pinchAndZoomOutOnAnElement() {
-        driver.waitTillElementIsVisible(byImageElementXpath).click();
+        LOGGER.info("Zoomed Out Image element");
+        visually.check(SCREEN_NAME,"Zoomed Out Image element",Target.window());
+        driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
         driver.pinchAndZoomOut(driver.waitTillElementIsVisible(byImageElementXpath));
         return this;
     }
@@ -245,6 +251,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public boolean isPinchAndZoomInSuccessful(Dimension initialElementDimension) {
 
+        LOGGER.info("Validate pinch and zoom in on element is successful");
         Dimension actualElementDimension = driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
         if ((initialElementDimension.width * initialElementDimension.height) > (actualElementDimension.width * actualElementDimension.height)) {
             return true;
@@ -255,6 +262,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public boolean isPinchAndZoomOutSuccessful(Dimension initialElementDimension) {
 
+        LOGGER.info("Validate pinch and zoom out on element is successful");
         Dimension actualElementDimension = driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
         if ((initialElementDimension.width * initialElementDimension.height) < (actualElementDimension.width * actualElementDimension.height)) {
             return true;
