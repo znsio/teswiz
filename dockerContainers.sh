@@ -31,11 +31,11 @@ echo "Using the containers from DOCKER_REGISTRY: $DOCKER_REGISTRY for architectu
 
 export DOCKER_REGISTRY=$DOCKER_REGISTRY
 
-if [[ -z "${GRID_PORT}" ]]; then
+if [[ -z "${REMOTE_WEBDRIVER_GRID_PORT}" ]]; then
   echo "GRID_PORT is not set. Use default: 4444"
   GRID_PORT=4444
 else
-  GRID_PORT=$GRID_PORT
+  GRID_PORT=$REMOTE_WEBDRIVER_GRID_PORT
 fi
 echo "Using GRID_PORT: $GRID_PORT"
 
