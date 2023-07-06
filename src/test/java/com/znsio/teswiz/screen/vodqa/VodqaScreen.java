@@ -60,6 +60,10 @@ public abstract class VodqaScreen {
   
     public abstract VodqaScreen scrollVerticallyByPercentage(int fromPercentHeight, int toPercentHeight, int percentWidth);
 
+    public abstract VodqaScreen longPressOnElement();
+
+    public abstract boolean isLongPressedPopupVisible();
+  
     public abstract DragAndDropScreen openDragAndDropScreen();
 
     public abstract VodqaScreen doubleTapOnElement();

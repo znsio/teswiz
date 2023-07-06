@@ -89,6 +89,17 @@ public class VodQASteps {
     public void iScrollVerticallyFromPercentHeightToPercentHeightAndPercentWidth(int fromPercentHeight, int toPercentHeight, int percentWidth) {
         new VodqaBL().scrollVerticallyByPercentageOnVerticalSwipingScreen(fromPercentHeight, toPercentHeight, percentWidth);
     }
+
+    @When("I long press on element")
+    public void iLongPressOnElement() {
+        new VodqaBL().longPressOnElement();
+    }
+
+    @Then("long pressed popup should be visible")
+    public void longPressedPopupShouldBeVisible() {
+        new VodqaBL().verifyLongPressedPopup();
+    }
+
     @When("I drag the circle object to the drop target")
     public void iDragTheCircleObjectToDropTarget() {
         new VodqaBL().dragAndDropElement();

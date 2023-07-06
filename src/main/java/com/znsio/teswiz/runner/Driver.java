@@ -8,15 +8,11 @@ import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.HidesKeyboard;
 import io.appium.java_client.MobileBy;
-import io.appium.java_client.PerformsTouchActions;
-import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.HasNotifications;
 import io.appium.java_client.android.StartsActivity;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.remote.SupportsContextSwitching;
-import io.appium.java_client.touch.LongPressOptions;
-import io.appium.java_client.touch.offset.ElementOption;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -36,10 +32,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
 import static java.time.Duration.ofMillis;
@@ -353,13 +351,21 @@ public class Driver {
     }
 
     public void longPress(By elementId) {
+        longPress(elementId,1);
+    }
+
+    public void longPress(By elementId,long durationInSeconds){
         WebElement elementToBeLongTapped =
                 new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(elementId));
-
-        TouchAction action = new TouchAction((PerformsTouchActions) driver);
-        action.longPress(LongPressOptions.longPressOptions()
-                                         .withElement(ElementOption.element(elementToBeLongTapped)))
-              .release().perform();
+        final Point location = elementToBeLongTapped.getLocation();
+        final PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        final Sequence sequence = new Sequence(finger, 1);
+        sequence.addAction(finger.
+                        createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), location.x, location.y)).
+                addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg())).
+                addAction(new Pause(finger, Duration.ofSeconds(durationInSeconds))).
+                addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        ((AppiumDriver) driver).perform(Collections.singletonList(sequence));
     }
 
     public void pushFileToDevice(String filePathToPush, String devicePath) {
