@@ -12,6 +12,8 @@ SELENIUM_HUB_REPO="hub"
 if [[ "$arch" = x86_64* ]]; then
     if [[ "$(uname -a)" = *ARM64* ]]; then
         echo 'a64'
+        DOCKER_REGISTRY="seleniarm"
+        CHROME_REPO="node-chromium"
     else
         echo 'x64'
     fi
@@ -23,6 +25,8 @@ elif [[ "$arch" = arm* ]]; then
     CHROME_REPO="node-chromium"
 elif test "$arch" = aarch64; then
     echo 'a64'
+    DOCKER_REGISTRY="seleniarm"
+    CHROME_REPO="node-chromium"
 else
     exit 1
 fi
