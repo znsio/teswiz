@@ -95,16 +95,16 @@ class DeviceSetup {
         LOGGER.info(String.format("Update path to Apk: %s", appPath));
         if (appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
-            appPath = convertAppPathToFilePathIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
+            appPath = downloadAppAndGetFilePath(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
             Setup.addToConfigs(APP_PATH, appPath);
         } else {
-            appPath = convertAppPathToFilePathIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
+            appPath = downloadAppAndGetFilePath(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
             LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s",
                     appPath));
         }
     }
 
-    public static String convertAppPathToFilePathIfNeeded(String appPath, String directoryPath) {
+    public static String downloadAppAndGetFilePath(String appPath, String directoryPath) {
         if (isAppPathAUrl(appPath)) {
             LOGGER.info(String.format("App url '%s' is provided in capabilities. Download it.", appPath));
             String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];

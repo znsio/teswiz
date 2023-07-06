@@ -30,7 +30,7 @@ public class AppPathTest {
     @Test
     void givenCorrectUrl_WhenRepoAndFileDoNotExist_ThenCreateRepoAndDownloadFile() {
         deleteDirectorySubDirectoryAndFiles(expectedDirectoryPath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl, expectedDirectoryPath);
+        String actualAppPath = DeviceSetup.downloadAppAndGetFilePath(appPathAsUrl, expectedDirectoryPath);
         assertEquals(expectedAppPath, actualAppPath);
         assertTrue(Files.exists(Paths.get(actualAppPath)));
     }
@@ -38,8 +38,8 @@ public class AppPathTest {
     @Test
     void givenCorrectUrl_WhenRepoAndFileAlreadyExist_ThenDoNotDownloadFile() {
         createDirectory(expectedDirectoryPath);
-        DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl, expectedDirectoryPath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl, expectedDirectoryPath);
+        DeviceSetup.downloadAppAndGetFilePath(appPathAsUrl, expectedDirectoryPath);
+        String actualAppPath = DeviceSetup.downloadAppAndGetFilePath(appPathAsUrl, expectedDirectoryPath);
         assertEquals(expectedAppPath, actualAppPath);
         assertTrue(Files.exists(Paths.get(actualAppPath)));
     }
@@ -48,7 +48,7 @@ public class AppPathTest {
     void givenCorrectUrl_WhenRepoExistButFileDoNotExist_ThenDownloadFile() {
         deleteFile(expectedAppPath);
         createDirectory(expectedDirectoryPath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl, expectedDirectoryPath);
+        String actualAppPath = DeviceSetup.downloadAppAndGetFilePath(appPathAsUrl, expectedDirectoryPath);
         assertEquals(expectedAppPath, actualAppPath);
         assertTrue(Files.exists(Paths.get(actualAppPath)));
     }
@@ -56,13 +56,13 @@ public class AppPathTest {
     @Test
     void givenIncorrectUrl_WhenRepoAndFileDoNotExist_ThenIOExceptionOccurWhileTryingToDownloadFile() {
         deleteFile(expectedAppPath);
-        assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectUrl, expectedDirectoryPath));
+        assertThrows(RuntimeException.class, () -> DeviceSetup.downloadAppAndGetFilePath(appPathAsIncorrectUrl, expectedDirectoryPath));
     }
 
     @Test
     void givenCorrectFilePath_WhenRepoAndFileAlreadyExist_ThenFileLoadsSuccessfully() {
-        DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl, expectedDirectoryPath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsFilePath, expectedDirectoryPath);
+        DeviceSetup.downloadAppAndGetFilePath(appPathAsUrl, expectedDirectoryPath);
+        String actualAppPath = DeviceSetup.downloadAppAndGetFilePath(appPathAsFilePath, expectedDirectoryPath);
         assertEquals(expectedAppPath, actualAppPath);
         assertTrue(Files.exists(Paths.get(actualAppPath)));
         assertDoesNotThrow(() -> new FileInputStream(actualAppPath));
@@ -71,14 +71,14 @@ public class AppPathTest {
     @Test
     void givenIncorrectFilePath_WhenRepoAndFileExist_ThenFileNotFoundExceptionOccursWhileTryingToOpenFile() {
         createDirectory(expectedDirectoryPath);
-        DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsUrl, expectedDirectoryPath);
-        assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectFilePath, expectedDirectoryPath));
+        DeviceSetup.downloadAppAndGetFilePath(appPathAsUrl, expectedDirectoryPath);
+        assertThrows(RuntimeException.class, () -> DeviceSetup.downloadAppAndGetFilePath(appPathAsIncorrectFilePath, expectedDirectoryPath));
     }
 
     @Test
     void givenCorrectFilePath_WhenRepoExistButFileDoNotExist_ThenFileNotFoundExceptionOccursWhileTryingToOpenFile() {
         deleteFile(expectedAppPath);
-        assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(expectedAppPath, expectedDirectoryPath));
+        assertThrows(RuntimeException.class, () -> DeviceSetup.downloadAppAndGetFilePath(expectedAppPath, expectedDirectoryPath));
     }
 
     private void deleteFile(String filePath) {
