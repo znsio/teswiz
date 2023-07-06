@@ -3,6 +3,7 @@ package com.znsio.teswiz.steps;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.businessLayer.autoscroll.AutoScrollBL;
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
@@ -19,14 +20,15 @@ public class AutoScrollSteps {
         LOGGER.info("context: " + context.getTestName());
     }
 
-    @Then("I should be able to scroll in inner dropdown")
-    public void iShouldBeAbleToScrollInInnerDropdown() {
-        new AutoScrollBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).verifyScrollInDynamicLayerFunctionality();
-    }
-
     @Given("on landing page, I see the list of available apps in a dropdown list")
     public void onLandingPageISeeTheListOfAvailableAppsInADropdownList() {
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         new AutoScrollBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).goToDropdownWindow();
+    }
+
+    @Then("I should be able to scroll {string} in dynamic layer")
+    public void iShouldBeAbleToScrollInDynamicLayer(String direction) {
+        new AutoScrollBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform())
+                .verifyScrollInDynamicLayerFunctionality(Direction.valueOf(direction.toUpperCase()));
     }
 }

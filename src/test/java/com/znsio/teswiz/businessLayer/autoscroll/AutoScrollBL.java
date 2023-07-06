@@ -1,6 +1,7 @@
 package com.znsio.teswiz.businessLayer.autoscroll;
 
 import com.context.TestExecutionContext;
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.autoscroll.AutoScrollScreen;
@@ -29,9 +30,9 @@ public class AutoScrollBL {
         return this;
     }
 
-    public AutoScrollBL verifyScrollInDynamicLayerFunctionality() {
+    public AutoScrollBL verifyScrollInDynamicLayerFunctionality(Direction direction) {
         LOGGER.info("verifying scroll in dynamic layer functionality");
-        assertThat(AutoScrollScreen.get().scrollInDynamicLayer().isScrollSuccessful())
+        assertThat(AutoScrollScreen.get().scrollInDynamicLayer(direction).isScrollSuccessful())
                 .as("scroll did not happen in inner dropdown")
                 .isTrue();
         return this;

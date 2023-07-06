@@ -1,5 +1,6 @@
 package com.znsio.teswiz.screen.autoscroll;
 
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Drivers;
@@ -30,7 +31,7 @@ public abstract class AutoScrollScreen {
 
     public abstract AutoScrollScreen goToDropdownWindow();
 
-    public abstract AutoScrollScreen scrollInDynamicLayer();
+    public abstract AutoScrollScreen scrollInDynamicLayer(Direction direction);
 
     public abstract boolean isScrollSuccessful();
 }

@@ -6,4 +6,4 @@ Feature: Automatic scroll app test
   @android @scrollInDynamicLayer
   Scenario: validating Scroll In Dynamic Layer functionality
     Given on landing page, I see the list of available apps in a dropdown list
-    Then I should be able to scroll in inner dropdown
+    Then I should be able to scroll "down" in dynamic layer

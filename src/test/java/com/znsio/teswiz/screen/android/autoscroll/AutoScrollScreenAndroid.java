@@ -34,13 +34,13 @@ public class AutoScrollScreenAndroid extends AutoScrollScreen {
     }
 
     @Override
-    public AutoScrollScreen scrollInDynamicLayer() {
+    public AutoScrollScreen scrollInDynamicLayer(Direction direction) {
         LOGGER.info("starting: scrollInDynamicLayer()");
         WebElement dropdownElement = driver.waitTillElementIsPresent(byInnerDropdownElement);
         LOGGER.info(String.format("full screen size is: %s", driver.getInnerDriver().manage().window().getSize()));
         LOGGER.info(String.format("inner dropdown size is: %s", dropdownElement.getSize()));
         visually.checkWindow(SCREEN_NAME, "Full screen view including dropdown");
-        driver.scrollInDynamicLayer(Direction.DOWN, dropdownElement);
+        driver.scrollInDynamicLayer(direction, dropdownElement);
         return this;
     }
 
