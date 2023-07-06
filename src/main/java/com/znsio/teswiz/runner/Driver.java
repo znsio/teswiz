@@ -612,28 +612,24 @@ public class Driver {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, fingerName);
         Sequence fingerPath = new Sequence(finger, 0);
 
-        int fingerStartXPoint = (int)Math.floor(locus.x + startRadius * Math.cos(angle));
+        int fingerStartXPoint = (int)Math.floor(locus.x + startRadius * Math.cos(angle)); //converting from polar coordinates to cartesian
         int fingerStartYPoint = (int)Math.floor(locus.y - startRadius * Math.sin(angle));
 
         int fingerEndXPoint = (int)Math.floor(locus.x + endRadius * Math.cos(angle));
         int fingerEndYPoint = (int)Math.floor(locus.y - endRadius * Math.sin(angle));
 
-        fingerPath.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), fingerStartXPoint, fingerStartYPoint));
-
-        fingerPath.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-
-        fingerPath.addAction(new Pause(finger, Duration.ofMillis(10)));
-
-        fingerPath.addAction(finger.createPointerMove(duration, PointerInput.Origin.viewport(), fingerEndXPoint, fingerEndYPoint));
-
-        fingerPath.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        fingerPath.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), fingerStartXPoint, fingerStartYPoint))
+                .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(new Pause(finger, Duration.ofMillis(10)))
+                .addAction(finger.createPointerMove(duration, PointerInput.Origin.viewport(), fingerEndXPoint, fingerEndYPoint))
+                .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         return fingerPath;
     }
 
     private Collection<Sequence> pinchAndZoom(Point locus, int startRadius, int endRadius, int pinchAngle, Duration duration) {
 
-        double angle = Math.PI / 2 - (2 * Math.PI / 360 * pinchAngle);
+        double angle = Math.PI / 2 - (2 * Math.PI / 360 * pinchAngle); // convert degree angle into radians
 
         Sequence finger1Path = fingerAction("finger1", locus, startRadius, endRadius, angle, duration);
 
