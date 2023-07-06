@@ -141,6 +141,8 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 
 ## [Running the sample tests](docs/SampleTests-README.md)
 
+## [Setting up docker containers](docs/dockerSetup-README.md)
+
 ## Additional configurations
 
 ### [Running Visual Tests using Applitools Visual AI](docs/RunningVisualTests-README.md)
