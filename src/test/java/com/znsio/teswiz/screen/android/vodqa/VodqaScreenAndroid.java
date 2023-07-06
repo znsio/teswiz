@@ -5,6 +5,7 @@ import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
+import com.znsio.teswiz.screen.vodqa.DragAndDropScreen;
 import com.znsio.teswiz.screen.vodqa.NativeViewScreen;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
@@ -21,7 +22,6 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final Visual visually;
     private final String SCREEN_NAME = VodqaScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(VodqaScreenAndroid.class.getName());
-
     private final By byLoginButton = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='login']/android.widget.Button");
     private final By byVerticalSwipeViewGroup = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='verticalSwipe']");
     private final By byCLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' C']");
@@ -34,8 +34,6 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byWebViewSectionOptionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='webView']");
     private final By byNativeViewSectionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='chainedView']");
     private final String languageTextView = "//android.widget.TextView[@text=' %s']";
-    private final By byPhotoViewElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='photoView']");
-    private final By byImageElementXpath = AppiumBy.className("android.widget.ImageView");
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -172,6 +170,46 @@ public class VodqaScreenAndroid extends VodqaScreen {
         driver.scrollVertically(fromPercentHeight, toPercentHeight, percentWidth);
         visually.checkWindow(SCREEN_NAME, "Screen scrolled down");
         return this;
+    }
+
+    @Override
+    public VodqaScreen longPressOnElement() {
+        driver.waitForClickabilityOf(byLongPressOptionXpath).click();
+        LOGGER.info("Performing long press on element");
+        visually.checkWindow(SCREEN_NAME, "Long press screen");
+        driver.longPress(byLongPressButtonAccessibilityId,3);
+        return this;
+    }
+
+    @Override
+     public boolean isLongPressedPopupVisible() {
+        visually.checkWindow(SCREEN_NAME, "Long pressed popup");
+        return driver.isElementPresent(byLongPressedPopupId);
+    }
+
+    @Override
+    public DragAndDropScreen openDragAndDropScreen() {
+        driver.waitTillElementIsPresent(byDragAndDropTextView);
+        visually.checkWindow(SCREEN_NAME, "Home Screen");
+        driver.findElement(byDragAndDropTextView).click();
+        return DragAndDropScreen.get();
+    }
+
+    @Override
+    public VodqaScreen doubleTapOnElement() {
+        LOGGER.info("Performing Double tap on element in Double tap screen");
+        driver.waitTillElementIsVisible(byDoubleTapScreenXpath).click();
+        visually.check(SCREEN_NAME,"Double Tap Element Screen",Target.window());
+        driver.doubleTap(driver.waitTillElementIsVisible(byDoubleTapElementXpath));
+        return this;
+    }
+
+    @Override
+    public boolean isDoubleTapSuccessful() {
+        LOGGER.info("Checking if double tap on element is successful");
+        driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
+        visually.check(SCREEN_NAME,"Double Tap Successful Message", Target.region(byDoubleTapSuccessfulXpath));
+        return driver.isElementPresent(byDoubleTapSuccessfulXpath);
     }
 
     @Override

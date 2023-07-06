@@ -90,6 +90,31 @@ public class VodQASteps {
         new VodqaBL().scrollVerticallyByPercentageOnVerticalSwipingScreen(fromPercentHeight, toPercentHeight, percentWidth);
     }
 
+    @When("I long press on element")
+    public void iLongPressOnElement() {
+        new VodqaBL().longPressOnElement();
+    }
+
+    @Then("long pressed popup should be visible")
+    public void longPressedPopupShouldBeVisible() {
+        new VodqaBL().verifyLongPressedPopup();
+    }
+
+    @When("I drag the circle object to the drop target")
+    public void iDragTheCircleObjectToDropTarget() {
+        new VodqaBL().dragAndDropElement();
+    }
+
+    @Then("I am able to view {string} message")
+    public void iAmAbleToViewMessage(String displayedMessage) {
+        new VodqaBL().isMessageDisplayedOnTheScreen(displayedMessage);
+    }
+
+    @Then("I should be able to double tap on an element")
+    public void iShouldBeAbleToDoubleTapOnAnElement() {
+        new VodqaBL().doubleTapOnAnElement();
+    }
+
     @Then("I should be able to pinch and zoom on an element")
     public void iShouldBeAbleToPinchAndZoomOnAnElement() {
         new VodqaBL().pinchAndZoomOnAndElement();
