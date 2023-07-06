@@ -3,7 +3,7 @@
     "platformName": "android",
     "automationName": "UiAutomator2",
     "autoGrantPermissions": true,
-    "app": "src/test/resources/sampleApps/AutomaticScroll.apk",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AutomaticScroll.apk",
     "appPackage": "com.tafayor.autoscroll2",
     "uiautomator2ServerInstallTimeout": 10000,
     "adbExecTimeout": 45000,
