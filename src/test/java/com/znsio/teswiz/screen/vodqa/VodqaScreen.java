@@ -80,4 +80,7 @@ public abstract class VodqaScreen {
 
     public abstract Dimension getImageElementDimension();
 
+    public abstract VodqaScreen doubleTapOnElement();
+
+    public abstract boolean isDoubleTapSuccessful();
 }

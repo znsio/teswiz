@@ -35,6 +35,16 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byNativeViewSectionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='chainedView']");
     private final String languageTextView = "//android.widget.TextView[@text=' %s']";
 
+    private final By byLongPressOptionXpath = AppiumBy.xpath("//android.widget.TextView[@content-desc='longPress']");
+    private final By byLongPressButtonAccessibilityId = AppiumBy.accessibilityId("longpress");
+    private final By byLongPressedPopupId = AppiumBy.id("android:id/alertTitle");
+    private final By byDragAndDropTextView = AppiumBy.xpath("//android.widget.TextView[@content-desc='dragAndDrop']");
+    private final By byDoubleTapElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='doubleTapMe']");
+    private final By byDoubleTapScreenXpath = AppiumBy.xpath("//android.widget.TextView[@text='Double Tap']");
+    private final By byDoubleTapSuccessfulXpath = AppiumBy.xpath("//android.widget.TextView[@text='Double tap successful!']");
+    private final By byPhotoViewElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='photoView']");
+    private final By byImageElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='photo']/android.widget.ImageView");;
+
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
