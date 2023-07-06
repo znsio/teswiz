@@ -4,11 +4,11 @@
 version: "3"
 services:
   chrome:
-    image: selenium/node-chrome:4.10.0-20230607
+    image: ${DOCKER_REGISTRY}/${CHROME_REPO}:latest
+    shm_size: 2gb
     volumes:
       - /dev/shm:/dev/shm
       - ./src:/tmp/src/
-    shm_size: 2gb
     depends_on:
       - selenium-hub
     environment:
@@ -18,7 +18,7 @@ services:
       - SE_NODE_MAX_SESSIONS=2
 
   firefox:
-    image: selenium/node-firefox:4.10.0-20230607
+    image: ${DOCKER_REGISTRY}/${FIREFOX_REPO}:latest
     shm_size: 2gb
     volumes:
       - /dev/shm:/dev/shm
@@ -32,9 +32,9 @@ services:
       - SE_NODE_MAX_SESSIONS=2
 
   selenium-hub:
-    image: selenium/hub:4.10.0-20230607
+    image: ${DOCKER_REGISTRY}/${SELENIUM_HUB_REPO}:latest
     container_name: selenium-hub
     ports:
-      - ${GRID_PORT_1}:4442
-      - ${GRID_PORT_2}:4443
-      - ${GRID_PORT}:4444
+      - "${GRID_PORT_1}:4442"
+      - "${GRID_PORT_2}:4443"
+      - "${GRID_PORT}:4444"

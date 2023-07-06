@@ -242,9 +242,6 @@ class BrowserDriverManager {
         String proxyUrl = Runner.getProxyURL();
 
         ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.addArguments("--disable-gpu");
-//        chromeOptions.addArguments("--disable-dev-shm-usage");
-
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
 
         JSONArray excludeSwitches = chromeConfiguration.getJSONArray(EXCLUDE_SWITCHES);
@@ -478,7 +475,7 @@ class BrowserDriverManager {
                 capabilities = BrowserStackSetup.updateBrowserStackCapabilities(capabilities);
             }
             
-            LOGGER.info(String.format("Starting RemoteWebDriver using url: %s", remoteUrl));
+            LOGGER.info(String.format("Starting RemoteWebDriver using url: %s with capabilities: '%s'", remoteUrl, capabilities));
             RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(remoteUrl),
                     capabilities);
             LOGGER.info(String.format("RemoteWebDriver created using url: %s", remoteUrl));
