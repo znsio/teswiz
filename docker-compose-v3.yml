@@ -16,10 +16,10 @@ services:
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=2
-      - HTTP_PROXY=${HTTP_PROXY}
-      - HTTPS_PROXY=${HTTP_PROXY}
-      - http_proxy=${HTTP_PROXY}
-      - https_proxy=${HTTP_PROXY}
+      - HTTP_PROXY=${PROXY_KEY}
+      - HTTPS_PROXY=${PROXY_KEY}
+      - http_proxy=${PROXY_KEY}
+      - https_proxy=${PROXY_KEY}
 
   firefox:
     image: ${DOCKER_REGISTRY}/${FIREFOX_REPO}:latest
@@ -34,10 +34,10 @@ services:
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=2
-      - HTTP_PROXY=${HTTP_PROXY}
-      - HTTPS_PROXY=${HTTP_PROXY}
-      - http_proxy=${HTTP_PROXY}
-      - https_proxy=${HTTP_PROXY}
+      - HTTP_PROXY=${PROXY_KEY}
+      - HTTPS_PROXY=${PROXY_KEY}
+      - http_proxy=${PROXY_KEY}
+      - https_proxy=${PROXY_KEY}
 
   selenium-hub:
     image: ${DOCKER_REGISTRY}/${SELENIUM_HUB_REPO}:latest
@@ -47,7 +47,7 @@ services:
       - "${GRID_PORT_2}:4443"
       - "${GRID_PORT}:4444"
     environment:
-      - HTTP_PROXY=${HTTP_PROXY}
-      - HTTPS_PROXY=${HTTP_PROXY}
-      - http_proxy=${HTTP_PROXY}
-      - https_proxy=${HTTP_PROXY}
+      - HTTP_PROXY=${PROXY_KEY}
+      - HTTPS_PROXY=${PROXY_KEY}
+      - http_proxy=${PROXY_KEY}
+      - https_proxy=${PROXY_KEY}
