@@ -31,9 +31,4 @@ public abstract class ProductScreen {
 
     public abstract String getProductName();
 
-    public abstract boolean isProductDetailsLoaded();
-
-    public abstract ProductScreen swipeAndViewImage();
-
-    public abstract boolean isSecondImageVisible();
 }

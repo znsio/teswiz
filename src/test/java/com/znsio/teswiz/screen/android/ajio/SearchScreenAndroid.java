@@ -10,6 +10,8 @@ import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
+import static com.znsio.teswiz.tools.Wait.waitFor;
+
 public class SearchScreenAndroid
         extends SearchScreen {
     private static final String SCREEN_NAME = SearchScreenAndroid.class.getSimpleName();
@@ -38,9 +40,11 @@ public class SearchScreenAndroid
     @Override
     public ProductScreen selectProduct() {
         LOGGER.info("selection of Product in the result page");
-        driver.waitTillElementIsPresent(By.id("com.ril.ajio:id/layout_category_container")).click();
+        if(!(driver.isElementPresent(byProductId)))
+            driver.waitTillElementIsPresent(By.id("com.ril.ajio:id/layout_category_container")).click();
         List<WebElement> list = driver.waitTillPresenceOfAllElements(byProductId);
         list.get(0).click();
+        waitFor(5);
         return ProductScreen.get();
     }
 

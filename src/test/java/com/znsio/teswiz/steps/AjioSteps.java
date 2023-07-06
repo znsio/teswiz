@@ -2,8 +2,6 @@ package com.znsio.teswiz.steps;
 
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
-import com.znsio.teswiz.businessLayer.ajio.HomeBL;
-import com.znsio.teswiz.businessLayer.ajio.ProductBL;
 import com.znsio.teswiz.businessLayer.ajio.SearchBL;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Drivers;
@@ -42,21 +40,5 @@ public class AjioSteps {
         LOGGER.info(System.out.printf("iShouldSeeTheProductInTheCart:- Persona:'%s'",
                 SAMPLE_TEST_CONTEXT.ME));
         new SearchBL().verifyCart();
-    }
-
-    @Given("I open {string} from {string} section for {string}")
-    public void iOpebShirtsSectionForMen(String product, String category, String gender) {
-        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
-        new HomeBL().openProduct(product,category, gender);
-    }
-
-    @When("I select the first result")
-    public void iSelectTheFirstResult() {
-        new ProductBL().selectTheFirstResultFromList();
-    }
-
-    @Then("I should be able to swipe and view images")
-    public void iShouldBeAbleToSwipeAndViewImages() {
-        new ProductBL().swipeAndViewImage();
     }
 }

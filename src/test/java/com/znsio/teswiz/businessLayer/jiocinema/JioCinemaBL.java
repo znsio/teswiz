@@ -40,6 +40,11 @@ public class JioCinemaBL {
         return this;
     }
 
+    public JioCinemaBL swipeMovieInTrendingInIndiaSection(String direction, int movieNumberOnScreen) {
+        JioCinemaScreen.get().swipeTrendingItem(direction,movieNumberOnScreen);
+        return this;
+    }
+
     public JioCinemaBL verifyMovieNumberVisibleOnScreen(int movieNumberOnScreen) {
         LOGGER.info("verifying movie number visible on trending in india screen after swipe");
         assertThat(JioCinemaScreen.get().isMovieNumberVisibleOnScreen(movieNumberOnScreen))

@@ -64,20 +64,4 @@ public class HomeScreenAndroid
         return this;
     }
 
-    @Override
-    public HomeScreen goToMenu() {
-        LOGGER.info("Opening Side Drawer Menu");
-        driver.waitTillElementIsVisible(bySideMenuId).click();
-        return this;
-    }
-
-    @Override
-    public SearchScreen selectProductFromCategory(String product, String category, String gender) {
-        LOGGER.info(String.format("Selecting %s for %s", product, gender));
-        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, gender))).click();
-        driver.scrollVertically(20,60,50);
-        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, category))).click();
-        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, product))).click();
-        return SearchScreen.get();
-    }
 }
