@@ -57,11 +57,11 @@ echo "GRID_PORT_2: $GRID_PORT_2"
 
 if [[ ( $1 == "up" ) || ( $1 == "start" ) ]]; then
     echo "Start docker containers"
-    $(docker-compose -f docker-compose-v3.yml up -d)
+    docker-compose -f docker-compose-v3.yml up -d
     ./wait_for_containers_to_be_up.sh
 elif [[ ( $1 == "down" ) || ( $1 == "stop" ) ]]; then
     echo "Stop docker containers"
-    $(docker-compose -f docker-compose-v3.yml down)
+    docker-compose -f docker-compose-v3.yml down
 else
     echo "Invalid command provided. Pass either 'up/start' or 'down/stop' as a parameter"
     exit 1
