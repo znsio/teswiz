@@ -552,17 +552,6 @@ public class Driver {
                 "arguments[0].setAttribute(arguments[1],arguments[2])", element, attribute, value);
     }
 
-    public void pinchAndZoomIn(WebElement element) {
-
-        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
-        Dimension size = element.getSize();
-        int centerX = size.getWidth() / 2;
-        int centerY = size.getHeight() / 2;
-
-        Point locus = new Point(centerX, centerY);
-        appiumDriver.perform(zoomIn(locus, 5));
-    }
-
     private Sequence fingerAction(String fingerName, Point locus, int startRadius, int endRadius, double angle, Duration duration) {
 
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, fingerName);
@@ -599,11 +588,37 @@ public class Driver {
         return Arrays.asList(finger1Path, finger2Path);
     }
 
-    private Collection<Sequence> zoomIn(Point locus, int distance) {
+    private Collection<Sequence> pinchAndZoomIn(Point locus, int distance) {
         return pinchAndZoom(locus, 200, 200 + distance, 45, Duration.ofMillis(100));
     }
 
-    private Collection<Sequence> zoomOut(Point locus, int distance) {
+    private Collection<Sequence> pinchAndZoomOut(Point locus, int distance) {
         return pinchAndZoom(locus, 200 + distance, 200, 45, Duration.ofMillis(100));
+    }
+
+    public void pinchAndZoomIn(WebElement element) {
+
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        Dimension size = element.getSize();
+        int centerX = size.getWidth() / 2;
+        int centerY = size.getHeight() / 2;
+
+        Point locus = new Point(centerX, centerY);
+        appiumDriver.perform(pinchAndZoomIn(locus, 5));
+    }
+
+    public void pinchAndZoomOut(WebElement element) {
+
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        Dimension size = getDimension(element);
+        int centerX = size.getWidth() / 2;
+        int centerY = size.getHeight() / 2;
+
+        Point locus = new Point(centerX, centerY);
+        appiumDriver.perform(pinchAndZoomOut(locus, 5));
+    }
+
+    public Dimension getDimension(WebElement element) {
+        return element.getSize();
     }
 }
