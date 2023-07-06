@@ -237,7 +237,6 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public VodqaScreen pinchAndZoomOutOnAnElement() {
-        driver.waitTillElementIsVisible(byPhotoViewElementXpath).click();
         driver.waitTillElementIsVisible(byImageElementXpath).click();
         driver.pinchAndZoomOut(driver.waitTillElementIsVisible(byImageElementXpath));
         return this;
