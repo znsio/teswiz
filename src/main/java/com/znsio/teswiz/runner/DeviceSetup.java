@@ -8,9 +8,15 @@ import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.log4j.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +35,9 @@ import static com.znsio.teswiz.runner.Setup.RUN_IN_CI;
 
 class DeviceSetup {
     private static final Logger LOGGER = Logger.getLogger(DeviceSetup.class.getName());
+    private static final String DEFAULT_TEMP_SAMPLE_APP_DIRECTORY =
+            System.getProperty("user.dir") + File.separator +
+                                                    "temp" + File.separator + "sampleApps";
 
     private DeviceSetup() {
         LOGGER.debug("DeviceSetup - private constructor");
@@ -83,14 +92,13 @@ class DeviceSetup {
 
     static void verifyAppExistsAtMentionedPath() {
         String appPath = Setup.getFromConfigs(APP_PATH);
-        String directoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "sampleApps";
         LOGGER.info(String.format("Update path to Apk: %s", appPath));
         if (appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
-            appPath = convertAppPathToFilePathIfNeeded(appPath, directoryPath);
+            appPath = convertAppPathToFilePathIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
             Setup.addToConfigs(APP_PATH, appPath);
         } else {
-            appPath = convertAppPathToFilePathIfNeeded(appPath, directoryPath);
+            appPath = convertAppPathToFilePathIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
             LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s",
                     appPath));
         }
@@ -98,6 +106,7 @@ class DeviceSetup {
 
     public static String convertAppPathToFilePathIfNeeded(String appPath, String directoryPath) {
         if (isAppPathAUrl(appPath)) {
+            LOGGER.info(String.format("App url '%s' is provided in capabilities. Download it.", appPath));
             String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
             String filePath = directoryPath + File.separator + fileName;
             if (!Files.exists(Path.of(directoryPath))) {
@@ -107,11 +116,10 @@ class DeviceSetup {
                 downloadFile(appPath, filePath);
             }
             LOGGER.info("Changing value of appPath from URL to file path");
-            LOGGER.info("Before change, appPath value: " + appPath);
+            LOGGER.info(String.format("Before change, appPath value: %s", appPath));
             appPath = filePath;
-            LOGGER.info("After change, appPath value: " + filePath);
+            LOGGER.info(String.format("After change, appPath value: %s", filePath));
         }
-        openFile(appPath);
         return appPath;
     }
 
@@ -120,7 +128,7 @@ class DeviceSetup {
             LOGGER.info("Directory doesn't exist, Creating directory");
             Files.createDirectories(Path.of(directoryPath));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to create directory: " + directoryPath + ", error occurred" + e);
+            throw new RuntimeException(String.format("Failed to create directory: %s, error occurred%s", directoryPath, e));
         }
     }
 
@@ -133,30 +141,13 @@ class DeviceSetup {
             Files.copy(inputStream, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
             LOGGER.info("File downloaded at path: " + filePath);
         } catch (IOException e) {
-            throw new RuntimeException("An error occurred while opening the URL/downloading file: " + e.getMessage());
+            throw new InvalidTestDataException("An error occurred while opening the URL/downloading file: " + e.getMessage());
         } finally {
             if (inputStream != null) {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    throw new RuntimeException("Failed to close input stream" + e);
-                }
-            }
-        }
-    }
-
-    private static void openFile(String appPath) {
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(appPath);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("File not found: " + appPath, e);
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to close input stream" + e);
+                    throw new RuntimeException("Failed to close input stream after downloading file" + e);
                 }
             }
         }
@@ -236,12 +227,14 @@ class DeviceSetup {
     }
 
     private static boolean isAppPathAUrl(String appPath) {
-        boolean isUrl = appPath.toLowerCase().startsWith("http");
-        if (isUrl)
-            LOGGER.info(String.format("\tAppPath refers to a url: %s", appPath));
-        else
-            LOGGER.info(String.format("\tAppPath refers to a file path: %s", appPath));
-        return isUrl;
+        try {
+            URL url = new URL(appPath);
+            LOGGER.info(String.format("'%s' is a valid URL.", appPath));
+            return true;
+        } catch (MalformedURLException e) {
+            LOGGER.info(String.format("'%s' is not a valid URL.", appPath));
+            return false;
+        }
     }
 
     private static void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {

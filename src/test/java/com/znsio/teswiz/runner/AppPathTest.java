@@ -1,13 +1,18 @@
 package com.znsio.teswiz.runner;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AppPathTest {
+    private static final String LOG_DIR = "./target/testLogs";
     private static final String expectedDirectoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "unitTests" + File.separator + "sampleApps";
     private static final String fileName = "VodQA.apk";
     private static final String expectedAppPath = expectedDirectoryPath + File.separator + fileName;
@@ -15,6 +20,12 @@ public class AppPathTest {
     private static final String appPathAsIncorrectUrl = "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/ra/main/VodQA.apk";
     private static final String appPathAsFilePath = expectedAppPath;
     private static final String appPathAsIncorrectFilePath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "unitTests" + File.separator + "smleApps" + File.separator + fileName;
+
+    @BeforeAll
+    public static void setupBefore() {
+        System.setProperty("LOG_DIR", LOG_DIR);
+        new File(LOG_DIR).mkdirs();
+    }
 
     @Test
     void givenCorrectUrl_WhenRepoAndFileDoNotExist_ThenCreateRepoAndDownloadFile() {
