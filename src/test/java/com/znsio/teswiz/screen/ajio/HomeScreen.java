@@ -32,5 +32,4 @@ public abstract class HomeScreen {
     public abstract SearchScreen searchByImage();
 
     public abstract HomeScreen attachFileToDevice(Map imageData);
-
 }

@@ -30,5 +30,4 @@ public abstract class ProductScreen {
     public abstract CartScreen addProductToCart();
 
     public abstract String getProductName();
-
 }

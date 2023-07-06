@@ -23,7 +23,7 @@ public class AjioSteps {
     @Given("I search for products using {string}")
     public void iSearchForProductsUsing(String searchtype) {
         LOGGER.info(System.out.printf("iSearchForProductsUsing:'%s' - Persona:'%s'", searchtype,
-                SAMPLE_TEST_CONTEXT.ME));
+                                      SAMPLE_TEST_CONTEXT.ME));
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         new SearchBL().searchProduct(Runner.getTestDataAsMap(searchtype));
     }
@@ -31,14 +31,14 @@ public class AjioSteps {
     @When("I add the product to the cart")
     public void iAddTheProductToTheCart() {
         LOGGER.info(System.out.printf("iAddTheProductToTheCart:- Persona:'%s'",
-                SAMPLE_TEST_CONTEXT.ME));
+                                      SAMPLE_TEST_CONTEXT.ME));
         new SearchBL().prepareCart();
     }
 
     @Then("I should see the product in the cart")
     public void iShouldSeeTheProductInTheCart() {
         LOGGER.info(System.out.printf("iShouldSeeTheProductInTheCart:- Persona:'%s'",
-                SAMPLE_TEST_CONTEXT.ME));
+                                      SAMPLE_TEST_CONTEXT.ME));
         new SearchBL().verifyCart();
     }
 }

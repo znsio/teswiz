@@ -2,7 +2,6 @@ package com.znsio.teswiz.screen.android.ajio;
 
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
-import com.znsio.teswiz.screen.ajio.ProductScreen;
 import com.znsio.teswiz.screen.ajio.SearchScreen;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -10,16 +9,12 @@ import org.openqa.selenium.WebElement;
 
 import java.util.List;
 
-import static com.znsio.teswiz.tools.Wait.waitFor;
-
 public class SearchScreenAndroid
         extends SearchScreen {
     private static final String SCREEN_NAME = SearchScreenAndroid.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final By byResultsId = By.id("com.ril.ajio:id/tv_count_plp_header_is");
     private static final By byProductId = By.id("com.ril.ajio:id/plp_row_product_iv");
-    private static final By byProductListTitleId = By.id("com.ril.ajio:id/toolbar_title_tv");
-
     private final Driver driver;
     private final Visual visually;
 
@@ -38,23 +33,10 @@ public class SearchScreenAndroid
     }
 
     @Override
-    public ProductScreen selectProduct() {
+    public void selectProduct() {
         LOGGER.info("selection of Product in the result page");
-        if(!(driver.isElementPresent(byProductId)))
-            driver.waitTillElementIsPresent(By.id("com.ril.ajio:id/layout_category_container")).click();
+        driver.waitTillElementIsPresent(By.id("com.ril.ajio:id/layout_category_container")).click();
         List<WebElement> list = driver.waitTillPresenceOfAllElements(byProductId);
         list.get(0).click();
-        waitFor(5);
-        return ProductScreen.get();
-    }
-
-    @Override
-    public boolean isProductListLoaded(String product) {
-        LOGGER.info(String.format("Verifying if %s list is loaded", product));
-        if (!(driver.isElementPresent(byProductListTitleId)))
-            driver.tapOnMiddleOfScreen();
-        String productLoaded = driver.waitTillElementIsVisible(byProductListTitleId).getText();
-        LOGGER.info("title === " + productLoaded);
-        return productLoaded.equalsIgnoreCase(product.replaceAll("-",""));
     }
 }
