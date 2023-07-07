@@ -111,7 +111,6 @@ class DeviceSetup {
             appPath = filePath;
             LOGGER.info("After change, appPath value: " + filePath);
         }
-        openFile(appPath);
         return appPath;
     }
 
@@ -134,23 +133,6 @@ class DeviceSetup {
             LOGGER.info("File downloaded at path: " + filePath);
         } catch (IOException e) {
             throw new RuntimeException("An error occurred while opening the URL/downloading file: " + e.getMessage());
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to close input stream" + e);
-                }
-            }
-        }
-    }
-
-    private static void openFile(String appPath) {
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(appPath);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("File not found: " + appPath, e);
         } finally {
             if (inputStream != null) {
                 try {
