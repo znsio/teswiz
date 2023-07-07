@@ -609,7 +609,7 @@ public class Driver {
 
     public void horizontalSwipeWithGesture(WebElement element, String direction) {
         RemoteWebElement remoteWebElement = (RemoteWebElement) element;
-        if (direction.equalsIgnoreCase("left") || direction.equalsIgnoreCase("right")) {
+        if (direction.equalsIgnoreCase(Direction.LEFT.toString()) || direction.equalsIgnoreCase(Direction.RIGHT.toString())) {
             ((JavascriptExecutor) driver).executeScript("mobile: swipeGesture", Map.of("elementId", remoteWebElement.getId(),
                     "direction", direction.toLowerCase(),
                     "percent", 1,
