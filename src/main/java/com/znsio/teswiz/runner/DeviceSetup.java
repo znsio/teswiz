@@ -35,6 +35,9 @@ import static com.znsio.teswiz.runner.Setup.RUN_IN_CI;
 
 class DeviceSetup {
     private static final Logger LOGGER = Logger.getLogger(DeviceSetup.class.getName());
+    private static final String DEFAULT_TEMP_SAMPLE_APP_DIRECTORY =
+            System.getProperty("user.dir") + File.separator +
+                                                    "temp" + File.separator + "sampleApps";
 
     private DeviceSetup() {
         LOGGER.debug("DeviceSetup - private constructor");
