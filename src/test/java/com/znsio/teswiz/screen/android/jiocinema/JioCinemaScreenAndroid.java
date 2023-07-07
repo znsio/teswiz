@@ -55,9 +55,10 @@ public class JioCinemaScreenAndroid extends JioCinemaScreen {
 
     @Override
     public JioCinemaScreen swipeTrendingItem(String direction, int movieNumberOnScreen) {
-        LOGGER.info("Swiping right movie number : " + movieNumberOnScreen);
-        WebElement movieTrending = driver.waitTillElementIsVisible(By.xpath(String.format(movieXpath, movieNumberOnScreen)));
-        driver.horizontalSwipeWithGesturesPlugin(movieTrending,direction);
+        LOGGER.info(String.format("Swiping %s movie number : %s ", direction, movieNumberOnScreen));
+        WebElement movieTrending = driver.waitTillElementIsVisible(
+                By.xpath(String.format(movieXpath, movieNumberOnScreen)));
+        driver.horizontalSwipeWithGesture(movieTrending, direction);
         return this;
     }
 }

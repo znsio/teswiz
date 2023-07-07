@@ -607,7 +607,7 @@ public class Driver {
         appiumDriver.perform(Arrays.asList(clickPosition));
     }
 
-    public void horizontalSwipeWithGesturesPlugin(WebElement element, String direction) {
+    public void horizontalSwipeWithGesture(WebElement element, String direction) {
         RemoteWebElement remoteWebElement = (RemoteWebElement) element;
         if (direction.equalsIgnoreCase("left") || direction.equalsIgnoreCase("right")) {
             ((JavascriptExecutor) driver).executeScript("mobile: swipeGesture", Map.of("elementId", remoteWebElement.getId(),
