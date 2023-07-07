@@ -223,9 +223,8 @@ public class VodqaScreenAndroid extends VodqaScreen {
     }
 
     @Override
-    public VodqaScreen navigateToPhotoView() {
+    public VodqaScreen navigateToUImageView() {
         LOGGER.info("Navigate to Photo View Section");
-        driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
         driver.waitTillElementIsVisible(byPhotoViewElementXpath).click();
         return this;
     }
@@ -253,10 +252,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
         LOGGER.info("Validate pinch and zoom in on element is successful");
         Dimension actualElementDimension = driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
-        if ((initialElementDimension.width * initialElementDimension.height) > (actualElementDimension.width * actualElementDimension.height)) {
-            return true;
-        }
-        return false;
+        return (initialElementDimension.width * initialElementDimension.height) > (actualElementDimension.width * actualElementDimension.height);
     }
 
     @Override
@@ -264,10 +260,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
         LOGGER.info("Validate pinch and zoom out on element is successful");
         Dimension actualElementDimension = driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
-        if ((initialElementDimension.width * initialElementDimension.height) < (actualElementDimension.width * actualElementDimension.height)) {
-            return true;
-        }
-        return false;
+        return (initialElementDimension.width * initialElementDimension.height) < (actualElementDimension.width * actualElementDimension.height);
     }
 
     @Override
