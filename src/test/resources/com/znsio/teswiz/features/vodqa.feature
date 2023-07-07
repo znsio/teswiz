@@ -82,4 +82,5 @@ Feature: Vodqa test
   @android @pinchAndZoom
   Scenario: Validate that user is able to pinch and zoom on particular element
     Given I login to vodqa application using valid credentials
-    Then I should be able to pinch and zoom on an element
+    Then I should be able to pinch and zoom in on an element
+    And I should be able to pinch and zoom out on an element
