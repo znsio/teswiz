@@ -2,6 +2,7 @@ package com.znsio.teswiz.screen.android.jiocinema;
 
 import com.applitools.eyes.MatchLevel;
 import com.applitools.eyes.appium.Target;
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiocinema.JioCinemaScreen;
@@ -54,7 +55,7 @@ public class JioCinemaScreenAndroid extends JioCinemaScreen {
     }
 
     @Override
-    public JioCinemaScreen swipeTrendingItem(String direction, int movieNumberOnScreen) {
+    public JioCinemaScreen swipeTrendingItem(Direction direction, int movieNumberOnScreen) {
         LOGGER.info(String.format("Swiping %s movie number : %s ", direction, movieNumberOnScreen));
         WebElement movieTrending = driver.waitTillElementIsVisible(
                 By.xpath(String.format(movieXpath, movieNumberOnScreen)));

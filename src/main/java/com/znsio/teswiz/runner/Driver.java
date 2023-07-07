@@ -628,11 +628,11 @@ public class Driver {
         appiumDriver.perform(Arrays.asList(flick));
     }
 
-    public void horizontalSwipeWithGesture(WebElement element, String direction) {
+    public void horizontalSwipeWithGesture(WebElement element, Direction direction) {
         RemoteWebElement remoteWebElement = (RemoteWebElement) element;
-        if (direction.equalsIgnoreCase(Direction.LEFT.toString()) || direction.equalsIgnoreCase(Direction.RIGHT.toString())) {
+        if ((direction.equals(Direction.LEFT)) || direction.equals(Direction.RIGHT)) {
             ((JavascriptExecutor) driver).executeScript("mobile: swipeGesture", Map.of("elementId", remoteWebElement.getId(),
-                    "direction", direction.toLowerCase(),
+                    "direction", direction.toString(),
                     "percent", 1,
                     "speed", 80
             ));
