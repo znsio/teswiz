@@ -56,3 +56,24 @@ Feature: Vodqa test
     Given I login to vodqa application using valid credentials
     When I scroll vertically from 60 percent height to 20 percent height and 50 percent width
     Then Element text "Jasmine" should be visible
+
+
+  #  CONFIG=./configs/vodqa_local_config.properties TAG=@longPress PLATFORM=android ./gradlew run
+  @android @longPress
+  Scenario: Validate that user is able to long press on an element
+    Given I login to vodqa application using valid credentials
+    When I long press on element
+    Then long pressed popup should be visible
+
+  #  CONFIG=./configs/vodqa_local_config.properties TAG=@dragAndDrop PLATFORM=android ./gradlew run
+  @android @dragAndDrop
+  Scenario: Validate that user is able to drag and drop
+    Given I login to vodqa application using valid credentials
+    When I drag the circle object to the drop target
+    Then I am able to view "Circle dropped" message
+
+    #  CONFIG=./configs/vodqa_local_config.properties TAG=@doubleTap PLATFORM=android ./gradlew run
+  @android @doubleTap
+  Scenario: Validate that user is able to double tap on an element
+    Given I login to vodqa application using valid credentials
+    Then I should be able to double tap on an element
