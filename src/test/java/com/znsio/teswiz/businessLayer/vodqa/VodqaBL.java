@@ -154,11 +154,17 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL pinchAndZoomOnAndElement() {
+    public VodqaBL pinchAndZoomInOnAnElement() {
         VodqaScreen vodqaScreen = VodqaScreen.get();
-        Dimension elementDimension = vodqaScreen.navigateToPhotoView().getImageElementDimension();
-        softly.assertThat(vodqaScreen.pinchAndZoomInOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom In on an element failed").isTrue();
-        softly.assertThat(vodqaScreen.pinchAndZoomOutOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom Out on an element failed").isTrue();
+        Dimension elementDimension = vodqaScreen.navigateToUImageView().getImageElementDimension();
+        assertThat(vodqaScreen.pinchAndZoomOutOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom Out on an element failed").isTrue();
+        return this;
+    }
+
+    public VodqaBL pinchAndZoomOutOnAnElement() {
+        VodqaScreen vodqaScreen = VodqaScreen.get();
+        Dimension elementDimension = vodqaScreen.navigateToUImageView().getImageElementDimension();
+        assertThat(vodqaScreen.pinchAndZoomOutOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom Out on an element failed").isTrue();
         return this;
     }
 }
