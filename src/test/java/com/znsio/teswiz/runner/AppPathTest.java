@@ -2,119 +2,121 @@ package com.znsio.teswiz.runner;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AppPathTest {
-    private static final String expectedDirectoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "unitTests" + File.separator + "sampleApps";
-    private static final String appPathAsCorrectDirectoryPath = expectedDirectoryPath;
+    private static final String directoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "unitTests" + File.separator + "sampleApps";
     private static final String fileName = "VodQA.apk";
-    private static final String expectedAppPath = expectedDirectoryPath + File.separator + fileName;
+    private static final String expectedAppPath = directoryPath + File.separator + fileName;
     private static final String appPathAsCorrectUrl = "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/VodQA.apk";
     private static final String appPathAsIncorrectUrl = "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/ra/main/VodQA.apk";
     private static final String appPathAsCorrectFilePath = expectedAppPath;
     private static final String appPathAsIncorrectFilePath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "unitTests" + File.separator + "smleApps" + File.separator + fileName;
 
     @Test
-    void givenIncorrectUrl_WhenRepoAndFileDoNotExist_ThenIOExceptionOccurWhileTryingToDownloadFile() {
-        deleteDirectorySubDirectoryAndFiles(appPathAsCorrectDirectoryPath);
-        assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectUrl, appPathAsCorrectDirectoryPath));
+    void givenIncorrectUrl_WhenDirectoryAndFileDoNotExist_ThenIOExceptionOccurWhileTryingToDownloadFile() {
+        deleteDirectorySubDirectoryAndFiles(directoryPath);
+        assertThrows(RuntimeException.class, () -> DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectUrl, directoryPath));
     }
 
     @Test
-    void givenIncorrectUrl_WhenRepoExistAndFileDoNotExist_ThenIOExceptionOccurWhileTryingToDownloadFile() {
-        createDirectory(appPathAsCorrectDirectoryPath);
+    void givenIncorrectUrl_WhenDirectoryExistAndFileDoNotExist_ThenIOExceptionOccurWhileTryingToDownloadFile() {
+        createDirectory(directoryPath);
         deleteFile(appPathAsCorrectFilePath);
-        assertThrows(RuntimeException.class, () -> DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectUrl, appPathAsCorrectDirectoryPath));
+        assertThrows(RuntimeException.class, () -> DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectUrl, directoryPath));
     }
 
     @Test
-    void givenIncorrectUrl_WhenRepoAndFileBothExist_ThenFileIsReadable() {
-        createDirectory(appPathAsCorrectDirectoryPath);
-        DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectUrl, appPathAsCorrectDirectoryPath);
+    void givenIncorrectUrl_WhenDirectoryAndFileBothExist_ThenFileIsReadable() {
+        createDirectory(directoryPath);
+        DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectUrl, directoryPath);
         assertTrue(new File(expectedAppPath).canRead());
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectUrl, appPathAsCorrectDirectoryPath);
+        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectUrl, directoryPath);
         assertTrue(new File(actualAppPath).canRead());
         assertEquals(expectedAppPath, actualAppPath);
     }
 
     @Test
-    void givenCorrectUrl_WhenRepoAndFileDoNotExist_ThenCreateRepoAndDownloadFile() {
-        deleteDirectorySubDirectoryAndFiles(appPathAsCorrectDirectoryPath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectUrl, appPathAsCorrectDirectoryPath);
+    void givenCorrectUrl_WhenDirectoryAndFileDoNotExist_ThenCreateDirectoryAndDownloadFile() {
+        deleteDirectorySubDirectoryAndFiles(directoryPath);
+        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectUrl, directoryPath);
         assertEquals(expectedAppPath, actualAppPath);
         assertTrue(new File(actualAppPath).canRead());
     }
 
     @Test
-    void givenCorrectUrl_WhenRepoExistButFileDoNotExist_ThenDownloadFile() {
-        createDirectory(appPathAsCorrectDirectoryPath);
+    void givenCorrectUrl_WhenDirectoryExistButFileDoNotExist_ThenDownloadFile() {
+        createDirectory(directoryPath);
         deleteFile(appPathAsCorrectFilePath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectUrl, appPathAsCorrectDirectoryPath);
+        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectUrl, directoryPath);
         assertEquals(expectedAppPath, actualAppPath);
         assertTrue(new File(actualAppPath).canRead());
     }
 
     @Test
-    void givenCorrectUrl_WhenRepoAndFileAlreadyExist_ThenDoNotDownloadFile() {
-        createDirectory(appPathAsCorrectDirectoryPath);
-        DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectUrl, appPathAsCorrectDirectoryPath);
+    void givenCorrectUrl_WhenDirectoryAndFileAlreadyExist_ThenDoNotDownloadFile() {
+        createDirectory(directoryPath);
+        DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectUrl, directoryPath);
         assertTrue(new File(expectedAppPath).canRead());
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectUrl, expectedDirectoryPath);
+        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectUrl, directoryPath);
         assertTrue(new File(actualAppPath).canRead());
         assertEquals(expectedAppPath, actualAppPath);
     }
 
     @Test
-    void givenIncorrectFilePath_WhenRepoAndFileDoNotExist_ThenFileIsNotReadable() {
-        deleteDirectorySubDirectoryAndFiles(appPathAsCorrectDirectoryPath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectFilePath, appPathAsCorrectDirectoryPath);
+    void givenIncorrectFilePath_WhenDirectoryAndFileDoNotExist_ThenFileIsNotReadable() {
+        deleteDirectorySubDirectoryAndFiles(directoryPath);
+        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectFilePath, directoryPath);
         assertFalse(new File(actualAppPath).canRead());
         assertNotEquals(expectedAppPath, actualAppPath);
     }
 
     @Test
-    void givenIncorrectFilePath_WhenRepoExistButFileDoNotExist_ThenFileIsNotReadable() {
-        createDirectory(appPathAsCorrectDirectoryPath);
+    void givenIncorrectFilePath_WhenDirectoryExistButFileDoNotExist_ThenFileIsNotReadable() {
+        createDirectory(directoryPath);
         deleteFile(appPathAsCorrectFilePath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectFilePath, appPathAsCorrectDirectoryPath);
+        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectFilePath, directoryPath);
         assertFalse(new File(actualAppPath).canRead());
         assertNotEquals(expectedAppPath, actualAppPath);
     }
 
     @Test
-    void givenIncorrectFilePath_WhenRepoAndFileExist_ThenFileIsNotReadable() {
-        createDirectory(expectedDirectoryPath);
-        DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectUrl, appPathAsCorrectDirectoryPath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsIncorrectFilePath, appPathAsCorrectDirectoryPath);
+    void givenIncorrectFilePath_WhenDirectoryAndFileExist_ThenFileIsNotReadable() {
+        createDirectory(directoryPath);
+        DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectUrl, directoryPath);
+        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectFilePath, directoryPath);
         assertFalse(new File(actualAppPath).canRead());
         assertNotEquals(expectedAppPath, actualAppPath);
     }
 
     @Test
-    void givenCorrectFilePath_WhenRepoAndFileDoNotExist_ThenFileIsNotReadable() {
-        deleteDirectorySubDirectoryAndFiles(appPathAsCorrectDirectoryPath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectFilePath, appPathAsCorrectDirectoryPath);
+    void givenCorrectFilePath_WhenDirectoryAndFileDoNotExist_ThenFileIsNotReadable() {
+        deleteDirectorySubDirectoryAndFiles(directoryPath);
+        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectFilePath, directoryPath);
         assertFalse(new File(actualAppPath).canRead());
         assertEquals(expectedAppPath, actualAppPath);
     }
 
     @Test
-    void givenCorrectFilePath_WhenRepoExistButFileDoNotExist_ThenFileIsNotReadable() {
-        createDirectory(appPathAsCorrectDirectoryPath);
+    void givenCorrectFilePath_WhenDirectoryExistButFileDoNotExist_ThenFileIsNotReadable() {
+        createDirectory(directoryPath);
         deleteFile(appPathAsCorrectFilePath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectFilePath, appPathAsCorrectDirectoryPath);
+        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectFilePath, directoryPath);
         assertFalse(new File(actualAppPath).canRead());
         assertEquals(expectedAppPath, actualAppPath);
     }
 
     @Test
-    void givenCorrectFilePath_WhenRepoAndFileAlreadyExist_ThenFileIsReadable() {
-        createDirectory(appPathAsCorrectDirectoryPath);
-        DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectUrl, appPathAsCorrectDirectoryPath);
-        String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectFilePath, appPathAsCorrectDirectoryPath);
+    void givenCorrectFilePath_WhenDirectoryAndFileAlreadyExist_ThenFileIsReadable() {
+        createDirectory(directoryPath);
+        DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectUrl, directoryPath);
+        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectFilePath, directoryPath);
         assertTrue(new File(actualAppPath).canRead());
         assertEquals(expectedAppPath, actualAppPath);
     }
@@ -147,7 +149,7 @@ public class AppPathTest {
             try {
                 Files.createDirectories(Paths.get(directoryPath));
             } catch (IOException e) {
-                System.err.println("Failed to create directory: " + expectedDirectoryPath + " for unit test, error occurred" + e);
+                System.err.println("Failed to create directory: " + directoryPath + " for unit test, error occurred" + e);
             }
         }
     }
