@@ -1,7 +1,7 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": "src/test/resources/sampleApps/JioCinema_5.0.7.apk",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/jiocinema.apk",
     "appPackage": "com.jio.media.ondemand",
     "appActivity": "com.v18.voot.features.home.ui.JVHomeActivity",
     "appWaitDuration": 45000,
