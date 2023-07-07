@@ -45,7 +45,6 @@ class Setup {
     static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
     static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
     static final String CLOUD_USERNAME = "CLOUD_USERNAME";
-    static final String CLOUD_NAME = "CLOUD_NAME";
     static final String PROXY_URL = "PROXY_URL";
     static final String REMOTE_WEBDRIVER_GRID_PORT = "REMOTE_WEBDRIVER_GRID_PORT";
     static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
@@ -347,9 +346,6 @@ class Setup {
         configs.put(CLOUD_USERNAME, getOverriddenStringValue(CLOUD_USERNAME,
                                                          getStringValueFromPropertiesIfAvailable(
                                                                  CLOUD_USERNAME, NOT_SET)));
-        configs.put(CLOUD_NAME, getOverriddenStringValue(CLOUD_NAME,
-                                                         getStringValueFromPropertiesIfAvailable(
-                                                                 CLOUD_NAME, LOCAL)));
         configsBoolean.put(CLOUD_UPLOAD_APP, getOverriddenBooleanValue(CLOUD_UPLOAD_APP,
                                                                        getBooleanValueFromPropertiesIfAvailable(
                                                                                CLOUD_UPLOAD_APP,
