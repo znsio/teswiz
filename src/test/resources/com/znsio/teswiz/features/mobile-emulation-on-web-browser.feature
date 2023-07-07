@@ -8,3 +8,9 @@ Feature: Mobile Emulation on Web browser
     And "someone-else" starts "bing-web" on "firefox-tab2"
     When "someone" searches for "bear"
     Then "someone-else" searches for "tiger"
+
+    #  CONFIG=./configs/android_emulator_config.properties TAG="@mobileEmulation and @android-chrome" ./gradlew run
+  @android-chrome @android
+  Scenario: Sample test to launch chrome on android emulator
+    Given "I" starts "chrome-android" on "chrome"
+    When "I" searches for "bear"
