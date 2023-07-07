@@ -111,7 +111,7 @@ public class AppPathTest {
     }
 
     @Test
-    void givenCorrectFilePath_WhenRepoAndFileAlreadyExist_ThenFileLoadsSuccessfully() {
+    void givenCorrectFilePath_WhenRepoAndFileAlreadyExist_ThenFileIsReadable() {
         createDirectory(appPathAsCorrectDirectoryPath);
         DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectUrl, appPathAsCorrectDirectoryPath);
         String actualAppPath = DeviceSetup.convertAppPathToFilePathIfNeeded(appPathAsCorrectFilePath, appPathAsCorrectDirectoryPath);
