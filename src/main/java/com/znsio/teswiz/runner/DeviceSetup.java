@@ -85,15 +85,25 @@ class DeviceSetup {
 
     static void verifyAppExistsAtMentionedPath() {
         String appPath = Setup.getFromConfigs(APP_PATH);
-        LOGGER.info(String.format("Update path to Apk: %s", appPath));
-        if(appPath.equals(NOT_SET)) {
-            appPath = getAppPathFromCapabilities();
-            Setup.addToConfigs(APP_PATH, appPath);
-            String capabilitiesFileName = Setup.getFromConfigs(CAPS);
-            checkIfAppExistsAtTheMentionedPath(appPath, capabilitiesFileName);
+        if (Platform.android.equals(Runner.getPlatform())) {
+            LOGGER.info(String.format("Update path to Apk: %s", appPath));
+            if (appPath.equals(NOT_SET)) {
+                appPath = getAppPathFromCapabilities();
+                Setup.addToConfigs(APP_PATH, appPath);
+                String capabilitiesFileName = Setup.getFromConfigs(CAPS);
+                checkIfAppExistsAtTheMentionedPath(appPath, capabilitiesFileName);
+            }
+        } else if (Platform.iOS.equals(Runner.getPlatform())) {
+            LOGGER.info(String.format("Update path to APP: %s", appPath));
+            if (appPath.equals(NOT_SET)) {
+                appPath = getAppPathFromCapabilities();
+                Setup.addToConfigs(APP_PATH, appPath);
+                String capabilitiesFileName = Setup.getFromConfigs(CAPS);
+                checkIfAppExistsAtTheMentionedPath(appPath, capabilitiesFileName);
+            }
         } else {
             LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s",
-                                      appPath));
+                    appPath));
         }
     }
 
@@ -119,7 +129,7 @@ class DeviceSetup {
                                                                searchPattern, "versionName"};
                 fetchAppVersion(commandToGetAppVersion, versionNamePattern);
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             LOGGER.info(
                     String.format("fetchAndroidAppVersion: Exception: %s", e.getLocalizedMessage()));
         }
@@ -128,7 +138,7 @@ class DeviceSetup {
     static void setupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
         String deviceLabURL = NOT_SET;
-        switch(cloudName.toLowerCase()) {
+        switch (cloudName.toLowerCase()) {
             case "headspin":
                 deviceLabURL = getCloudUrlFromCapabilities();
                 HeadSpinSetup.updateHeadspinCapabilities(deviceLabURL);
@@ -261,4 +271,26 @@ class DeviceSetup {
                         String.format("Provided cloudName: '%s' is not supported", cloudName));
         }
     }
+
+    static ArrayList<String> setupIOSExecution() {
+        ArrayList<String> iOSCukeArgs = new ArrayList<>();
+        if (Setup.getPlatform().equals(Platform.iOS)) {
+            verifyAppExistsAtMentionedPath();
+//            TODO
+//            fetchIOSAppVersion();
+            if (Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
+                setupCloudExecution();
+            } else {
+                LocalDevicesSetup.setupLocalExecution();
+            }
+            iOSCukeArgs.add("--threads");
+            iOSCukeArgs.add(Setup.getIntegerValueAsStringFromConfigs(PARALLEL));
+            iOSCukeArgs.add(PLUGIN);
+            iOSCukeArgs.add("com.cucumber.listener.CucumberScenarioListener");
+            iOSCukeArgs.add(PLUGIN);
+            iOSCukeArgs.add("com.cucumber.listener.CucumberScenarioReporterListener");
+        }
+        return iOSCukeArgs;
+    }
+
 }

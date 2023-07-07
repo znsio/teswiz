@@ -43,7 +43,7 @@ public class SearchBL {
         LOGGER.info("searchProduct" + searchData);
         SearchScreen searchScreen = HomeScreen.get().attachFileToDevice(searchData).searchByImage();
         assertThat(searchScreen.numberOfProductFound()).as("Number of results found for product")
-                                                       .isGreaterThan(0);
+                .isGreaterThan(0);
         searchScreen.selectProduct();
         return this;
     }
@@ -60,9 +60,7 @@ public class SearchBL {
         String actualProductName = CartScreen.get().getActualProductName();
         LOGGER.info("Actual product name in the cart" + actualProductName);
         assertThat(actualProductName).as("Product in the Cart")
-                                     .isEqualTo(context.getTestState("productName"));
+                .isEqualTo(context.getTestState("productName"));
         return this;
     }
-
-
 }

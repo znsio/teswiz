@@ -14,10 +14,9 @@
     "newCommandTimeout": 12000,
     "noSign": true,
     "platformName": "android",
-    "platformVersion": "11.0",
     "printPageSourceOnFindFailure": true,
     "skipUnlock": true,
-    "noReset": false
+    "noReset": true
   },
   "serverConfig" : {
     "server": {

@@ -16,6 +16,7 @@ import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.appmanagement.ApplicationState;
+import io.appium.java_client.ios.IOSDriver;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
@@ -234,6 +235,8 @@ class AppiumDriverManager {
             closeWindowsAppOnMachine(userPersona, driver);
         } else if(Runner.getPlatform().equals(Platform.android)){
             closeAndroidAppOnDevice(userPersona, driver);
+        } else if(Runner.getPlatform().equals(Platform.iOS)){
+            closeIOSAppOnDevice(userPersona, driver);
         }
         // todo - fix for appium 2.0, implement new method to terminate app on iOS devices
         else {
@@ -421,5 +424,103 @@ class AppiumDriverManager {
                 "createWindowsDriverForUser: done: userPersona: '%s', Platform: '%s', Number of " + "windowsDrivers: '%d'",
                 userPersona, forPlatform.name(), numberOfAppiumDriversUsed));
         return currentDriver;
+    }
+
+    public static Driver createIOSDriverForUser(String userPersona, Platform forPlatform, TestExecutionContext context) {
+        LOGGER.info(String.format(
+                "createIOSDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of "
+                        + "appiumDrivers: '%d'%n",
+                userPersona, forPlatform.name(), numberOfAppiumDriversUsed));
+        Driver currentDriver;
+        if (numberOfAppiumDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
+            throw new InvalidTestDataException(String.format(
+                    "Unable to create more than '%d' drivers for user persona: '%s' on platform: "
+                            + "'%s'",
+                    numberOfAppiumDriversUsed, userPersona, forPlatform.name()));
+        }
+
+        currentDriver = setupOrCreateIOSDriver(userPersona, forPlatform, context);
+        LOGGER.info(String.format(
+                "createIOSDriverForUser: done: userPersona: '%s', Platform: '%s', Number of " + "appiumDrivers: '%d'%n",
+                userPersona, forPlatform.name(), numberOfAppiumDriversUsed));
+        disableNotificationsAndToastsOnDevice(currentDriver,
+                context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON),
+                (String) Drivers.getCapabilitiesFor(userPersona)
+                        .getCapability("udid"));
+        return currentDriver;
+    }
+
+    private static Driver setupOrCreateIOSDriver(String userPersona, Platform forPlatform, TestExecutionContext context) {
+        String appName = Drivers.getAppNamefor(userPersona);
+        File capabilityFileToUseForDriverCreation = getCapabilityFileToUseForDriverCreation(
+                appName);
+        Driver currentDriver;
+        if (numberOfAppiumDriversUsed == 0) {
+            currentDriver = setupFirstAppiumDriver(userPersona, forPlatform, context, appName);
+        } else {
+            currentDriver = createNewAppiumDriver(userPersona, forPlatform, context, appName,
+                    capabilityFileToUseForDriverCreation);
+        }
+        numberOfAppiumDriversUsed++;
+        return currentDriver;
+    }
+
+    static void closeIOSAppOnDevice(String userPersona,
+                                    @NotNull
+                                    Driver driver) {
+        String appPackageName = Runner.getAppPackageName();
+        String logMessage;
+        --numberOfAppiumDriversUsed;
+        LOGGER.info(String.format("numberOfAppiumDriversUsed: %d", numberOfAppiumDriversUsed));
+        AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
+        if (null == appiumDriver) {
+            logMessage = String.format("Strange. But AppiumDriver for user '%s' already closed",
+                    userPersona);
+            LOGGER.info(logMessage);
+            ReportPortalLogger.logDebugMessage(logMessage);
+        } else {
+            TestExecutionContext context = SessionContext.getTestExecutionContext(
+                    Thread.currentThread().getId());
+            AppiumDriver atdAppiumDriver =
+                    (AppiumDriver) context.getTestState(
+                            TEST_CONTEXT.APPIUM_DRIVER);
+            if (appiumDriver.equals(atdAppiumDriver)) {
+                LOGGER.info(
+                        String.format("ATD will quit the driver for persona: '%s'", userPersona));
+                LOGGER.info("Close the app");
+                IOSDriver iOSDriver = (IOSDriver) appiumDriver;
+                iOSDriver.terminateApp(appPackageName);
+            } else {
+                LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
+                attachDeviceLogsToReportPortal(userPersona);
+                terminateIOSAppOnDevice(appPackageName, appiumDriver);
+            }
+        }
+    }
+
+    private static void terminateIOSAppOnDevice(String appPackageName,
+                                                AppiumDriver appiumDriver) {
+        String logMessage;
+        ApplicationState applicationState = null;
+        try {
+            LOGGER.info(String.format("Terminate app: %s", appPackageName));
+            IOSDriver iOSDriver = (IOSDriver) appiumDriver;
+            applicationState = iOSDriver.queryAppState(appPackageName);
+
+            logMessage = String.format("App: '%s' Application state before closing app: '%s'%n",
+                    appPackageName, applicationState);
+            LOGGER.info(logMessage);
+            ReportPortalLogger.logDebugMessage(logMessage);
+
+            iOSDriver.terminateApp(appPackageName);
+            applicationState = iOSDriver.queryAppState(appPackageName);
+            logMessage = String.format("App: '%s' Application state after closing app: '%s'%n",
+                    appPackageName, applicationState);
+            LOGGER.info(logMessage);
+        } catch (NoSuchSessionException e) {
+            logMessage = e.getMessage();
+            LOGGER.info(logMessage);
+        }
+        ReportPortalLogger.logDebugMessage(logMessage);
     }
 }

@@ -106,6 +106,10 @@ public class Drivers {
                 currentDriver = AppiumDriverManager.createWindowsDriverForUser(userPersona,
                                                                                forPlatform,
                                                                                context);
+            case iOS:
+                currentDriver = AppiumDriverManager.createIOSDriverForUser(userPersona,
+                        forPlatform,
+                        context);
                 break;
             default:
                 throw new InvalidTestDataException(String.format(

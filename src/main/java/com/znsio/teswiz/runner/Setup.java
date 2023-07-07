@@ -235,6 +235,7 @@ class Setup {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
         CUKE_ARGS.addAll(DeviceSetup.setupAndroidExecution());
+        CUKE_ARGS.addAll(DeviceSetup.setupIOSExecution());
         CUKE_ARGS.addAll(setupWebExecution());
         CUKE_ARGS.addAll(DeviceSetup.setupWindowsExecution());
         initialiseApplitoolsConfiguration();
@@ -652,8 +653,8 @@ class Setup {
 
     static void cleanUpExecutionEnvironment() {
         LOGGER.info("cleanUpExecutionEnvironment");
-        if(currentPlatform.equals(Platform.android) || currentPlatform.equals(Platform.web)) {
-            if(Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
+        if (currentPlatform.equals(Platform.android) || currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.iOS)) {
+            if (Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
                 DeviceSetup.cleanupCloudExecution();
             } else {
                 LOGGER.info("Not running in CI. Nothing to cleanup in Execution environment");
