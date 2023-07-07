@@ -108,20 +108,14 @@ class DeviceSetup {
         String filePath = saveToDirectory + File.separator + fileName;
         if (isAppPathAUrl(appPath)) {
             LOGGER.info(String.format("App url '%s' is provided in capabilities. Download it.", appPath));
-            if (!(new File(filePath).exists())) {
-                downloadFile(appPath, filePath, saveToDirectory);
-            }
+            downloadFileIfDoesNotExist(appPath, filePath, saveToDirectory);
             LOGGER.info("Changing value of appPath from URL to file path");
             LOGGER.info(String.format("Before change, appPath value: %s", appPath));
             appPath = filePath;
             LOGGER.info(String.format("After change, appPath value: %s", filePath));
         } else if (!(new File(appPath).exists())) {
             LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
-            if (!appPath.equals(filePath)) {
-                throw new InvalidTestDataException(String.format("App file path '%s' provided in capabilities is incorrect, so not able to access file", appPath));
-            } else {
-                throw new RuntimeException(String.format("App file path '%s' provided in capabilities is correct, but file doesn't exist", appPath));
-            }
+            checkEitherFilePathIsIncorrectOrFileIsMissing(appPath, filePath);
         }
         LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
         LOGGER.info(String.format("File available at App file path '%s'", appPath));
@@ -158,6 +152,20 @@ class DeviceSetup {
                     throw new RuntimeException("Failed to close input stream after downloading file" + e);
                 }
             }
+        }
+    }
+
+    private static void checkEitherFilePathIsIncorrectOrFileIsMissing(String appPath, String filePath){
+        if (!appPath.equals(filePath)) {
+            throw new InvalidTestDataException(String.format("App file path '%s' provided in capabilities is incorrect, so not able to access file", appPath));
+        } else {
+            throw new RuntimeException(String.format("App file path '%s' provided in capabilities is correct, but file doesn't exist", appPath));
+        }
+    }
+
+    private static void downloadFileIfDoesNotExist(String appPath, String filePath, String saveToDirectory){
+        if (!(new File(filePath).exists())) {
+            downloadFile(appPath, filePath, saveToDirectory);
         }
     }
 
