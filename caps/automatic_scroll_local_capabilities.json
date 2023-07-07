@@ -1,0 +1,30 @@
+{
+  "android": {
+    "platformName": "android",
+    "automationName": "UiAutomator2",
+    "autoGrantPermissions": true,
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AutomaticScroll.apk",
+    "appPackage": "com.tafayor.autoscroll2",
+    "uiautomator2ServerInstallTimeout": 10000,
+    "adbExecTimeout": 45000,
+    "eventTimings": true,
+    "enablePerformanceLogging": true,
+    "printPageSourceOnFindFailure": true,
+    "deviceName": "android",
+    "noSign": true
+  },
+  "serverConfig": {
+    "server": {
+      "use-plugins": [
+        "device-farm",
+        "appium-dashboard"
+      ],
+      "plugin": {
+        "device-farm": {
+          "platform": "android",
+          "skipChromeDownload": true
+        }
+      }
+    }
+  }
+}
