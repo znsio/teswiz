@@ -637,11 +637,13 @@ public class Driver {
     }
 
     private Collection<Sequence> pinchAndZoomIn(Point locus, int distance) {
-        return pinchAndZoom(locus, 200, 200 + distance, 45, Duration.ofMillis(100));
+        int startRadius = 200, endRadius = 200 + distance, pinchAngle = 45, duration = 100;
+        return pinchAndZoom(locus, startRadius, endRadius, pinchAngle, Duration.ofMillis(duration));
     }
 
     private Collection<Sequence> pinchAndZoomOut(Point locus, int distance) {
-        return pinchAndZoom(locus, 200 + distance, 200, 45, Duration.ofMillis(100));
+        int endRadius = 200, startRadius = 200 + distance, pinchAngle = 45, duration = 100;
+        return pinchAndZoom(locus, startRadius, endRadius, pinchAngle, Duration.ofMillis(duration));
     }
 
     public void pinchAndZoomIn(WebElement element) {
