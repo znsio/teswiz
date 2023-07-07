@@ -43,6 +43,6 @@ public class JioCinemaSteps {
 
     @When("I swipe {string} trending no {int} on trending in india section")
     public void iSwipeRightTrendingNoOnTrendingInIndiaSection(String direction, int movieNumberOnScreen) {
-        new JioCinemaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).swipeMovieInTrendingInIndiaSection(direction,movieNumberOnScreen);
+        new JioCinemaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).swipeMovieTrendingInIndiaSection(direction,movieNumberOnScreen);
     }
 }

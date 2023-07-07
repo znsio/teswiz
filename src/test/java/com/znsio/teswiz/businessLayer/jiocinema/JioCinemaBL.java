@@ -40,8 +40,8 @@ public class JioCinemaBL {
         return this;
     }
 
-    public JioCinemaBL swipeMovieInTrendingInIndiaSection(String direction, int movieNumberOnScreen) {
-        JioCinemaScreen.get().swipeTrendingItem(direction,movieNumberOnScreen);
+    public JioCinemaBL swipeMovieTrendingInIndiaSection(String direction, int movieNumberOnScreen) {
+        JioCinemaScreen.get().swipeTrendingItem(direction, movieNumberOnScreen);
         return this;
     }
 
