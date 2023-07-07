@@ -24,12 +24,10 @@ These can be overridden by providing the same either as environment variables or
     BUILD_ID=BUILDID -> The key name of the environment variable that has the corresponding build id of the test execution
     CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> Uninstall app from local Android devices before starting test execution
     CLOUD_KEY=<auth / api key> for pCloudy / Headspin
-    CLOUD_USER=<username / email> for pCloudy -> Not required for Headspin
-    CLOUD_NAME=headspin|pCloudy -> REQUIRED when running against pCloudy / Headspin
+    CLOUD_USERNAME=<username / email> for pCloudy -> Not required for Headspin
     CLOUD_UPLOAD_APP=false -> Upload the app to pCloudy / headspin before running the tests
     CLOUD_USE_PROXY=true -> If we need proxy for connecting to the cloud device farm using the curl command. Default: false
     CLOUD_USE_LOCAL_TESTING=false -> If we want to enable local testing (currently only in BrowserStack) -  
-    DEVICE_LAB_URL=<root url for device farm>
     ENVIRONMENT_CONFIG_FILE=./src/test/resources/environments.json -> Environment specific configuration file
     IS_VISUAL=false -> Should enable Applitools Visual Testing? If yes, set to true
     LOG_DIR=target -> Where should logs be created?

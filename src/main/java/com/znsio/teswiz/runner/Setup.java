@@ -44,8 +44,7 @@ class Setup {
     static final String APP_PACKAGE_NAME = "APP_PACKAGE_NAME";
     static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
     static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
-    static final String CLOUD_USER = "CLOUD_USER";
-    static final String CLOUD_NAME = "CLOUD_NAME";
+    static final String CLOUD_USERNAME = "CLOUD_USERNAME";
     static final String PROXY_URL = "PROXY_URL";
     static final String REMOTE_WEBDRIVER_GRID_PORT = "REMOTE_WEBDRIVER_GRID_PORT";
     static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
@@ -56,7 +55,6 @@ class Setup {
     static final String PLUGIN = "--plugin";
     static final String APP_PATH = "APP_PATH";
     static final String CLOUD_UPLOAD_APP = "CLOUD_UPLOAD_APP";
-    static final String DEVICE_LAB_URL = "DEVICE_LAB_URL";
     static final String EXECUTED_ON = "EXECUTED_ON";
     static final String LOG_DIR = "LOG_DIR";
     static final String PARALLEL = "PARALLEL";
@@ -260,7 +258,7 @@ class Setup {
         LOGGER.info(String.format("ReportPortal Test Execution Attributes: %s", rpAttributes));
 
         // properties needed for atd
-        System.setProperty(CLOUD_USER, configs.get(CLOUD_USER));
+        System.setProperty(CLOUD_USERNAME, configs.get(CLOUD_USERNAME));
         System.setProperty(CLOUD_KEY, configs.get(CLOUD_KEY));
         System.setProperty(CONFIG_FILE, configs.get(CONFIG_FILE));
         System.setProperty(CAPS, configs.get(CAPS));
@@ -345,12 +343,9 @@ class Setup {
         configs.put(CLOUD_KEY, getOverriddenStringValue(CLOUD_KEY,
                                                         getStringValueFromPropertiesIfAvailable(
                                                                 CLOUD_KEY, NOT_SET)));
-        configs.put(CLOUD_USER, getOverriddenStringValue(CLOUD_USER,
+        configs.put(CLOUD_USERNAME, getOverriddenStringValue(CLOUD_USERNAME,
                                                          getStringValueFromPropertiesIfAvailable(
-                                                                 CLOUD_USER, NOT_SET)));
-        configs.put(CLOUD_NAME, getOverriddenStringValue(CLOUD_NAME,
-                                                         getStringValueFromPropertiesIfAvailable(
-                                                                 CLOUD_NAME, LOCAL)));
+                                                                 CLOUD_USERNAME, NOT_SET)));
         configsBoolean.put(CLOUD_UPLOAD_APP, getOverriddenBooleanValue(CLOUD_UPLOAD_APP,
                                                                        getBooleanValueFromPropertiesIfAvailable(
                                                                                CLOUD_UPLOAD_APP,
@@ -363,9 +358,6 @@ class Setup {
                            getOverriddenBooleanValue(CLOUD_USE_LOCAL_TESTING,
                                                      getBooleanValueFromPropertiesIfAvailable(
                                                              CLOUD_USE_LOCAL_TESTING, false)));
-        configs.put(DEVICE_LAB_URL, getOverriddenStringValue(DEVICE_LAB_URL,
-                                                             getStringValueFromPropertiesIfAvailable(
-                                                                     DEVICE_LAB_URL, NOT_SET)));
         configs.put(ENVIRONMENT_CONFIG_FILE, getOverriddenStringValue(ENVIRONMENT_CONFIG_FILE,
                                                                       getStringValueFromPropertiesIfAvailable(
                                                                               ENVIRONMENT_CONFIG_FILE,

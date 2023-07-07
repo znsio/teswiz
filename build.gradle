@@ -4,9 +4,9 @@ buildscript {
     ext {
         gradleVersion = '7.3.3'
         assertJVersion = '3.24.2'
-        atdVersion = '13.1.0'
-        applitoolsSeleniumVersion = '5.56.0'
-        applitoolsAppiumVersion = '5.56.0'
+        atdVersion = '5b23b2273f'
+        applitoolsSeleniumVersion = '5.59.0'
+        applitoolsAppiumVersion = '5.59.0'
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.14.4'
         jadbVersion = '1.2.1'
@@ -15,7 +15,7 @@ buildscript {
         slf4jVersion = '2.0.7'
         fasterxmlJacksonVersion = '2.15.2'
         jodaTimeVersion = '2.12.5'
-        masterThoughtVersion = '5.7.5'
+        masterThoughtVersion = '5.7.6'
         browserStackLocalVersion = '1.1.0'
         jetbrainsAnnotationsVersion = '24.0.1'
         aspectJVersion = '1.9.6'
@@ -32,7 +32,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.80'
+version '0.0.81'
 
 repositories {
     mavenLocal()
@@ -95,7 +95,8 @@ shadowJar {
     }
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
+tasks.register('sourcesJar', Jar) {
+    dependsOn classes
     archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
@@ -118,7 +119,7 @@ publishing {
     }
 }
 
-task install(dependsOn: publishToMavenLocal)
+tasks.register('install') { dependsOn publishToMavenLocal }
 
 static def getCurrentDatestamp() {
     Date today = new Date()
@@ -132,7 +133,7 @@ static def getCurrentTimestamp() {
     return df.format(today)
 }
 
-task run(type: JavaExec) {
+tasks.register('run', JavaExec) {
     doFirst {
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
@@ -151,10 +152,10 @@ task run(type: JavaExec) {
 //        println "isRunningInCI: $isRunInCI"
 //        def configFile = isRunInCI
 //                ? "./configs/theapp_pcloudy_config.properties"
-//                : "./configs/theapp_local_config.properties"
+//                : "./configs/theapp_local_android_config.properties"
 //        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
 
-        systemProperties = System.properties
+        systemProperties = System.properties as Map<String, ?>
         def runnerArgs = [
                 "${configFile}",
                 "com/znsio/teswiz/steps",
@@ -201,3 +202,5 @@ test {
         junitXml.destination(file("$buildDir/unit-test-results"))
     }
 }
+
+shadowJar.finalizedBy sourcesJar

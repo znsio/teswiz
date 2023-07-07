@@ -45,10 +45,10 @@ echo "Updated artifactPath=$artifactPath"
 
 echo "Uploading apk from " $artifactPath " to BrowserStack"
 
-echo $CLOUD_USER
+echo $CLOUD_USERNAME
 echo $CLOUD_KEY
 echo "Print Cloud USer and Key"
-listOfAlreadyUploadedFiles=$(curl --insecure  -u "$CLOUD_USER:$CLOUD_KEY" -X GET https://api-cloud.browserstack.com/app-automate/recent_apps)
+listOfAlreadyUploadedFiles=$(curl --insecure  -u "$CLOUD_USERNAME:$CLOUD_KEY" -X GET https://api-cloud.browserstack.com/app-automate/recent_apps)
 echo "listOfAlreadyUploadedFiles: $listOfAlreadyUploadedFiles"
 
 checkFileName=$(printf '%s\n' "${listOfAlreadyUploadedFiles[@]}" | grep $artifactName)
@@ -56,10 +56,10 @@ echo "Is file already available in Browserstack?: $checkFileName"
 
 if [ -z "$checkFileName" ]; then
   echo "$artifactPath needs to be uploaded to Browserstack"
-  uploadToBrowserstack=$(curl --insecure -u "$CLOUD_USER:$CLOUD_KEY" -X POST "https://api-cloud.browserstack.com/app-automate/upload" -F "file=@$artifactPath" -F "custom_id=$artifactName")
+  uploadToBrowserstack=$(curl --insecure -u "$CLOUD_USERNAME:$CLOUD_KEY" -X POST "https://api-cloud.browserstack.com/app-automate/upload" -F "file=@$artifactPath" -F "custom_id=$artifactName")
   echo "uploadToBrowserstack: $uploadToBrowserstack"
   echo "$artifactPath uploaded to Browserstack"
-  listOfFilesAfterUpload=$(curl --insecure  -u "$CLOUD_USER:$CLOUD_KEY" -X GET https://api-cloud.browserstack.com/app-automate/recent_apps)
+  listOfFilesAfterUpload=$(curl --insecure  -u "$CLOUD_USERNAME:$CLOUD_KEY" -X GET https://api-cloud.browserstack.com/app-automate/recent_apps)
   echo "listOfFilesAfterUpload: $listOfFilesAfterUpload"
 else
   echo "file $artifactName already uploaded to Browserstack"
