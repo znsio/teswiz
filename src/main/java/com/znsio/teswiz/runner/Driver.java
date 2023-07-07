@@ -603,4 +603,26 @@ public class Driver {
                 .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         appiumDriver.perform(Arrays.asList(clickPosition));
     }
+
+
+    public void flick() {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        Dimension screenSize = driver.manage().window().getSize();
+
+        LOGGER.info("Implementing flick action on the basis of screen size and co-ordinates");
+        int startX = screenSize.width - 100;
+        int startY = screenSize.height / 2;
+        int endX = screenSize.width / 2;
+        int endY = screenSize.height / 2;
+
+        LOGGER.info("Start co-ordinates- X axis: "+startX+" & Y axis: "+startY+", End co-ordinates- X axis: "+endX+" & Y axis: "+endY);
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence flick = new Sequence(finger, 0);
+        flick.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), startX, startY));
+        flick.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        flick.addAction(finger.createPointerMove(Duration.ofMillis(100), PointerInput.Origin.viewport(), endX, endY));
+        flick.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+        appiumDriver.perform(Arrays.asList(flick));
+    }
 }

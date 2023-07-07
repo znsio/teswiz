@@ -24,6 +24,8 @@ public class HomeScreenAndroid
             "com.android.permissioncontroller:id/permission_message");
     private static final By byAllowButtonId = By.id(
             "com.android.permissioncontroller:id/permission_allow_button");
+    private static final By bySideMenuId = By.id("com.ril.ajio:id/fahIvMenu");
+    private static final String byFilterProductXpath = "//android.widget.TextView[@text='%s']";
     private final Driver driver;
     private final Visual visually;
 
@@ -46,20 +48,38 @@ public class HomeScreenAndroid
         String destinationFileLocation = (String) imageData.get("UPLOAD_IMAGE_LOCATION");
         LOGGER.info("searchByImage");
 
-        if(driver.isElementPresent(byDismissButtonId)) {
+        if (driver.isElementPresent(byDismissButtonId)) {
             driver.findElement(byDismissButtonId).click();
         }
 
         driver.waitTillElementIsPresent(byStartSearchBoxId).click();
         visually.checkWindow(SCREEN_NAME, "Upload a Photo");
         driver.waitTillElementIsPresent(byUploadPhotoButtonId).click();
-        if(driver.isElementPresent(bySystemPermissionMessageId)) {
+        if (driver.isElementPresent(bySystemPermissionMessageId)) {
             driver.waitTillElementIsPresent(byAllowButtonId).click();
         }
 
         driver.pushFileToDevice(sourceFileLocation, destinationFileLocation);
         LOGGER.info("Image Pushed to Device path" + destinationFileLocation);
         return this;
+    }
+
+
+    @Override
+    public HomeScreen goToMenu() {
+        LOGGER.info("Opening Side Drawer Menu");
+        driver.waitTillElementIsVisible(bySideMenuId).click();
+        return this;
+    }
+
+    @Override
+    public SearchScreen selectProductFromCategory(String product, String category, String gender) {
+        LOGGER.info(String.format("Selecting %s for %s", product, gender));
+        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, gender))).click();
+        driver.scrollVertically(20, 60, 50);
+        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, category))).click();
+        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, product))).click();
+        return SearchScreen.get();
     }
 
 }
