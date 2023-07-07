@@ -10,7 +10,6 @@ import com.znsio.teswiz.screen.android.vodqa.VodqaScreenAndroid;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.WebElement;
 
 public abstract class VodqaScreen {
     private static final String SCREEN_NAME = VodqaScreen.class.getSimpleName();
@@ -68,7 +67,7 @@ public abstract class VodqaScreen {
 
     public abstract DragAndDropScreen openDragAndDropScreen();
 
-    public abstract VodqaScreen navigateToPhotoView();
+    public abstract VodqaScreen navigateToUImageView();
 
     public abstract VodqaScreen pinchAndZoomInOnAnElement();
 
