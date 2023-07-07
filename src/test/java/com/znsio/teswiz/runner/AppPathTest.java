@@ -1,5 +1,6 @@
 package com.znsio.teswiz.runner;
 
+import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -22,24 +23,21 @@ public class AppPathTest {
     @Test
     void givenIncorrectUrl_WhenDirectoryAndFileDoNotExist_ThenIOExceptionOccurWhileTryingToDownloadFile() {
         deleteDirectorySubDirectoryAndFiles(directoryPath);
-        assertThrows(RuntimeException.class, () -> DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectUrl, directoryPath));
+        assertThrows(InvalidTestDataException.class, () -> DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectUrl, directoryPath));
     }
 
     @Test
     void givenIncorrectUrl_WhenDirectoryExistAndFileDoNotExist_ThenIOExceptionOccurWhileTryingToDownloadFile() {
         createDirectory(directoryPath);
         deleteFile(appPathAsCorrectFilePath);
-        assertThrows(RuntimeException.class, () -> DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectUrl, directoryPath));
+        assertThrows(InvalidTestDataException.class, () -> DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectUrl, directoryPath));
     }
 
     @Test
     void givenIncorrectUrl_WhenDirectoryAndFileBothExist_ThenFileIsReadable() {
         createDirectory(directoryPath);
         DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectUrl, directoryPath);
-        assertTrue(new File(expectedAppPath).canRead());
-        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectUrl, directoryPath);
-        assertTrue(new File(actualAppPath).canRead());
-        assertEquals(expectedAppPath, actualAppPath);
+        assertThrows(InvalidTestDataException.class, () -> DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsIncorrectUrl, directoryPath));
     }
 
     @Test
