@@ -14,10 +14,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -107,10 +104,10 @@ class DeviceSetup {
     }
 
     public static String downloadAppToDirectoryIfNeeded(String appPath, String saveToDirectory) {
+        String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
+        String filePath = saveToDirectory + File.separator + fileName;
         if (isAppPathAUrl(appPath)) {
             LOGGER.info(String.format("App url '%s' is provided in capabilities. Download it.", appPath));
-            String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
-            String filePath = saveToDirectory + File.separator + fileName;
             if (!(new File(filePath).exists())) {
                 downloadFile(appPath, filePath, saveToDirectory);
             }
@@ -118,7 +115,16 @@ class DeviceSetup {
             LOGGER.info(String.format("Before change, appPath value: %s", appPath));
             appPath = filePath;
             LOGGER.info(String.format("After change, appPath value: %s", filePath));
+        } else if (!(new File(appPath).exists())) {
+            LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
+            if (!appPath.equals(filePath)) {
+                throw new InvalidTestDataException(String.format("App file path '%s' provided in capabilities is incorrect, so not able to access file", appPath));
+            } else {
+                throw new RuntimeException(String.format("App file path '%s' provided in capabilities is correct, but file doesn't exist", appPath));
+            }
         }
+        LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
+        LOGGER.info(String.format("File available at App file path '%s'", appPath));
         return appPath;
     }
 
@@ -245,7 +251,7 @@ class DeviceSetup {
             responseCode = connection.getResponseCode();
             connection.disconnect();
         } catch (IOException e) {
-            throw new RuntimeException(String.format("Failed to make a connection using url: '%s'", appPathUrl)+e);
+            throw new RuntimeException(String.format("Failed to make a connection using url: '%s'", appPathUrl) + e);
         }
 
         if (responseCode != HttpURLConnection.HTTP_OK) {
