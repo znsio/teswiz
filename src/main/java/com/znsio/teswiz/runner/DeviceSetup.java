@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -37,7 +38,7 @@ class DeviceSetup {
     private static final Logger LOGGER = Logger.getLogger(DeviceSetup.class.getName());
     private static final String DEFAULT_TEMP_SAMPLE_APP_DIRECTORY =
             System.getProperty("user.dir") + File.separator +
-                                                    "temp" + File.separator + "sampleApps";
+                    "temp" + File.separator + "sampleApps";
 
     private DeviceSetup() {
         LOGGER.debug("DeviceSetup - private constructor");
@@ -227,15 +228,33 @@ class DeviceSetup {
         }
     }
 
-    private static boolean isAppPathAUrl(String appPath) {
+    private static boolean isAppPathAUrl(String appPathUrl) {
+        URL url;
         try {
-            URL url = new URL(appPath);
-            LOGGER.info(String.format("'%s' is a valid URL.", appPath));
-            return true;
+            url = new URL(appPathUrl);
         } catch (MalformedURLException e) {
-            LOGGER.info(String.format("'%s' is not a valid URL.", appPath));
+            LOGGER.info(String.format("'%s' is not a URL.", appPathUrl));
             return false;
         }
+        LOGGER.info(String.format("'%s' is a URL.", appPathUrl));
+        int responseCode;
+        HttpURLConnection connection;
+        try {
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("HEAD");
+            responseCode = connection.getResponseCode();
+            connection.disconnect();
+        } catch (IOException e) {
+            throw new RuntimeException(String.format("Failed to make a connection using url: '%s'", appPathUrl)+e);
+        }
+
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            LOGGER.info(String.format("'%s' is an invalid URL.", appPathUrl));
+            throw new InvalidTestDataException("URL is not accessible: " + appPathUrl);
+        }
+        LOGGER.info(String.format("'%s' is a valid URL.", appPathUrl));
+        return true;
+
     }
 
     private static void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {
