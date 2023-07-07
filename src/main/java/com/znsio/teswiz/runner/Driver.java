@@ -87,7 +87,7 @@ public class Driver {
 
     private void instantiateEyes(String testName, WebDriver innerDriver) {
         this.visually = new Visual(this.type, this.driverForPlatform, innerDriver, testName,
-                                   userPersona, appName);
+                userPersona, appName);
     }
 
     public WebElement waitForClickabilityOf(String elementId) {
@@ -109,7 +109,7 @@ public class Driver {
     public void waitForAlert(int numberOfSecondsToWait) {
         new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.alertIsPresent());
         driver.switchTo()
-              .alert();
+                .alert();
     }
 
     public WebElement findElement(By elementId) {
@@ -156,7 +156,7 @@ public class Driver {
 
     public boolean isElementPresentByAccessibilityId(String locator) {
         return driver.findElements(AppiumBy.accessibilityId(locator))
-                                      .size() > 0;
+                .size() > 0;
     }
 
     public boolean isElementPresentWithin(WebElement parentElement, By locator) {
@@ -171,9 +171,9 @@ public class Driver {
         int fromHeight = (int) (windowSize.height * 0.8);
         int toHeight = (int) (windowSize.height * 0.2);
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
-        Point from=new Point(width,fromHeight);
-        Point to=new Point(width,toHeight);
-        scroll(from,to);
+        Point from = new Point(width, fromHeight);
+        Point to = new Point(width, toHeight);
+        scroll(from, to);
     }
 
     public void scrollVertically(int fromPercentScreenHeight, int toPercentScreenHeight,
@@ -186,13 +186,13 @@ public class Driver {
         int toHeight = (windowSize.height * toPercentScreenHeight) / 100;
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
-        Point from=new Point(width,fromHeight);
-        Point to=new Point(width,toHeight);
-        scroll(from,to);
+        Point from = new Point(width, fromHeight);
+        Point to = new Point(width, toHeight);
+        scroll(from, to);
     }
 
     public void tapOnMiddleOfScreen() {
-        if(this.type.equals(Driver.APPIUM_DRIVER)) {
+        if (this.type.equals(Driver.APPIUM_DRIVER)) {
             tapOnMiddleOfScreenOnDevice();
         } else {
             simulateMouseMovementOnBrowser();
@@ -207,7 +207,7 @@ public class Driver {
         LOGGER.info(String.format("tapOnMiddleOfScreen: Screen dimensions: '%s'. Tapping on coordinates: %d:%d%n", screenSize, midWidth, midHeight));
         PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
         Sequence clickPosition = new Sequence(touch, 1);
-        clickPosition.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), midWidth,midHeight))
+        clickPosition.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), midWidth, midHeight))
                 .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
                 .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         appiumDriver.perform(Arrays.asList(clickPosition));
@@ -335,7 +335,7 @@ public class Driver {
     public void goToDeepLinkUrl(String url, String packageName) {
         LOGGER.info("Hitting a Deep Link URL: " + url);
         ((AppiumDriver) driver).executeScript("mobile:deepLink",
-                                              ImmutableMap.of("url", url, "package", packageName));
+                ImmutableMap.of("url", url, "package", packageName));
     }
 
     public WebDriver getInnerDriver() {
@@ -351,10 +351,10 @@ public class Driver {
     }
 
     public void longPress(By elementId) {
-        longPress(elementId,1);
+        longPress(elementId, 1);
     }
 
-    public void longPress(By elementId,long durationInSeconds){
+    public void longPress(By elementId, long durationInSeconds) {
         WebElement elementToBeLongTapped =
                 new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(elementId));
         final Point location = elementToBeLongTapped.getLocation();
@@ -370,24 +370,24 @@ public class Driver {
 
     public void pushFileToDevice(String filePathToPush, String devicePath) {
         LOGGER.info("Pushing the file: '" + filePathToPush + TO + Runner.getPlatform()
-                                                                        .name() + "' " + "device "
-                    + "on path: '" + devicePath + "'");
+                .name() + "' " + "device "
+                + "on path: '" + devicePath + "'");
         try {
-            if(Runner.getPlatform().equals(Platform.android)) {
+            if (Runner.getPlatform().equals(Platform.android)) {
                 ((AndroidDriver) driver).pushFile(devicePath, new File(filePathToPush));
-            } else if(Runner.getPlatform().equals(Platform.iOS)) {
+            } else if (Runner.getPlatform().equals(Platform.iOS)) {
                 ((IOSDriver) driver).pushFile(devicePath, new File(filePathToPush));
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new FileNotUploadedException(
                     String.format("Error in pushing the file: '%s%s%s' device on path: '%s'",
-                                  filePathToPush, TO, Runner.getPlatform().name(), devicePath), e);
+                            filePathToPush, TO, Runner.getPlatform().name(), devicePath), e);
         }
     }
 
     public void allowPermission(By element) {
         waitForClickabilityOf(element);
-        if(Runner.getPlatform().equals(Platform.android)) {
+        if (Runner.getPlatform().equals(Platform.android)) {
             driver.findElement(element).click();
         }
     }
@@ -424,7 +424,7 @@ public class Driver {
         return waitTillVisibilityOfAllElements(elementId, 10);
     }
 
-    public List<WebElement> waitTillVisibilityOfAllElements(By elementId, int numberOfSecondsToWait){
+    public List<WebElement> waitTillVisibilityOfAllElements(By elementId, int numberOfSecondsToWait) {
         return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(elementId)));
     }
 
@@ -445,7 +445,7 @@ public class Driver {
     }
 
     public void setWindowSize(int width, int height) {
-        if(this.type.equals(Driver.WEB_DRIVER)) {
+        if (this.type.equals(Driver.WEB_DRIVER)) {
             driver.manage().window().setSize(new Dimension(width, height));
         }
     }
@@ -502,7 +502,7 @@ public class Driver {
         try {
             iterator.next();
             driver.switchTo().window(iterator.next());
-        } catch(NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             throw new NoSuchElementException("Unable to get next window handle.", e);
         }
     }
@@ -510,7 +510,7 @@ public class Driver {
     public void switchToParentTab() {
         try {
             driver.switchTo().window(driver.getWindowHandles().iterator().next());
-        } catch(NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             throw new NoSuchElementException("No previous tab found.", e);
         }
     }
@@ -519,10 +519,10 @@ public class Driver {
         try {
             LOGGER.info("Uploading file: " + filePath + " to the browser");
             driver.findElement(locator).sendKeys(filePath);
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new FileNotUploadedException(
                     String.format("Error in uploading the file: '%s%s%s", filePath, TO,
-                                  Runner.getPlatform().name()), e);
+                            Runner.getPlatform().name()), e);
         }
     }
 
@@ -535,12 +535,12 @@ public class Driver {
      */
     public void injectMediaToBrowserstackDevice(String uploadFileURL) {
         String cloudName = Runner.getCloudName();
-        if(Runner.getPlatform().equals(Platform.android) && cloudName.equalsIgnoreCase(
+        if (Runner.getPlatform().equals(Platform.android) && cloudName.equalsIgnoreCase(
                 "browserstack")) {
             String cloudUser = Runner.getCloudUser();
             String cloudKey = Runner.getCloudKey();
             BrowserStackImageInjection.injectMediaToDriver(uploadFileURL, ((AppiumDriver) driver),
-                                                           cloudUser, cloudKey);
+                    cloudUser, cloudKey);
         } else {
             throw new NotImplementedException(
                     "injectMediaToBrowserstackDevice is not implemented for: " + cloudName);
@@ -561,7 +561,7 @@ public class Driver {
         scroll(fromPoint, toPoint);
     }
 
-    public void setAttributeValue(WebElement element, String attribute, String value){
+    public void setAttributeValue(WebElement element, String attribute, String value) {
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].setAttribute(arguments[1],arguments[2])", element, attribute, value);
     }
@@ -574,14 +574,14 @@ public class Driver {
         WebElement dragElement = findElement(draggableLocator);
         WebElement dropZoneElement = findElement(dropZoneLocator);
 
-        int middleXCoordinate_dragElement = dragElement.getLocation().x + dragElement.getSize().width/2;
-        int middleYCoordinate_dragElement = dragElement.getLocation().y + dragElement.getSize().height/2;
+        int middleXCoordinate_dragElement = dragElement.getLocation().x + dragElement.getSize().width / 2;
+        int middleYCoordinate_dragElement = dragElement.getLocation().y + dragElement.getSize().height / 2;
 
-        int middleXCoordinate_dropZone = dropZoneElement.getLocation().x + dropZoneElement.getSize().width/2;
-        int middleYCoordinate_dropZone = dropZoneElement.getLocation().y + dropZoneElement.getSize().height/2;
+        int middleXCoordinate_dropZone = dropZoneElement.getLocation().x + dropZoneElement.getSize().width / 2;
+        int middleYCoordinate_dropZone = dropZoneElement.getLocation().y + dropZoneElement.getSize().height / 2;
 
         sequence.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(),
-                middleXCoordinate_dragElement, middleYCoordinate_dragElement))
+                        middleXCoordinate_dragElement, middleYCoordinate_dragElement))
                 .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
                 .addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), middleXCoordinate_dropZone, middleYCoordinate_dropZone))
                 .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
@@ -609,11 +609,11 @@ public class Driver {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, fingerName);
         Sequence fingerPath = new Sequence(finger, 0);
 
-        int fingerStartXPoint = (int)Math.floor(locus.x + startRadius * Math.cos(angle)); //converting from polar coordinates to cartesian
-        int fingerStartYPoint = (int)Math.floor(locus.y - startRadius * Math.sin(angle));
+        int fingerStartXPoint = (int) Math.floor(locus.x + startRadius * Math.cos(angle)); //converting from polar coordinates to cartesian
+        int fingerStartYPoint = (int) Math.floor(locus.y - startRadius * Math.sin(angle));
 
-        int fingerEndXPoint = (int)Math.floor(locus.x + endRadius * Math.cos(angle));
-        int fingerEndYPoint = (int)Math.floor(locus.y - endRadius * Math.sin(angle));
+        int fingerEndXPoint = (int) Math.floor(locus.x + endRadius * Math.cos(angle));
+        int fingerEndYPoint = (int) Math.floor(locus.y - endRadius * Math.sin(angle));
 
         fingerPath.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), fingerStartXPoint, fingerStartYPoint))
                 .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))

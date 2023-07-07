@@ -43,7 +43,8 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byDoubleTapScreenXpath = AppiumBy.xpath("//android.widget.TextView[@text='Double Tap']");
     private final By byDoubleTapSuccessfulXpath = AppiumBy.xpath("//android.widget.TextView[@text='Double tap successful!']");
     private final By byPhotoViewElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='photoView']");
-    private final By byImageElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='photo']/android.widget.ImageView");;
+    private final By byImageElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='photo']/android.widget.ImageView");
+    ;
 
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -187,12 +188,12 @@ public class VodqaScreenAndroid extends VodqaScreen {
         driver.waitForClickabilityOf(byLongPressOptionXpath).click();
         LOGGER.info("Performing long press on element");
         visually.checkWindow(SCREEN_NAME, "Long press screen");
-        driver.longPress(byLongPressButtonAccessibilityId,3);
+        driver.longPress(byLongPressButtonAccessibilityId, 3);
         return this;
     }
 
     @Override
-     public boolean isLongPressedPopupVisible() {
+    public boolean isLongPressedPopupVisible() {
         visually.checkWindow(SCREEN_NAME, "Long pressed popup");
         return driver.isElementPresent(byLongPressedPopupId);
     }
@@ -209,7 +210,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     public VodqaScreen doubleTapOnElement() {
         LOGGER.info("Performing Double tap on element in Double tap screen");
         driver.waitTillElementIsVisible(byDoubleTapScreenXpath).click();
-        visually.check(SCREEN_NAME,"Double Tap Element Screen",Target.window());
+        visually.check(SCREEN_NAME, "Double Tap Element Screen", Target.window());
         driver.doubleTap(driver.waitTillElementIsVisible(byDoubleTapElementXpath));
         return this;
     }
@@ -218,7 +219,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     public boolean isDoubleTapSuccessful() {
         LOGGER.info("Checking if double tap on element is successful");
         driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
-        visually.check(SCREEN_NAME,"Double Tap Successful Message", Target.region(byDoubleTapSuccessfulXpath));
+        visually.check(SCREEN_NAME, "Double Tap Successful Message", Target.region(byDoubleTapSuccessfulXpath));
         return driver.isElementPresent(byDoubleTapSuccessfulXpath);
     }
 
@@ -232,7 +233,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public VodqaScreen pinchAndZoomInOnAnElement() {
         LOGGER.info("Zoomed In Image element");
-        visually.check(SCREEN_NAME,"Zoomed In Image element",Target.window());
+        visually.check(SCREEN_NAME, "Zoomed In Image element", Target.window());
         driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
         driver.pinchAndZoomIn(driver.waitTillElementIsVisible(byImageElementXpath));
         return this;
@@ -241,7 +242,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public VodqaScreen pinchAndZoomOutOnAnElement() {
         LOGGER.info("Zoomed Out Image element");
-        visually.check(SCREEN_NAME,"Zoomed Out Image element",Target.window());
+        visually.check(SCREEN_NAME, "Zoomed Out Image element", Target.window());
         driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
         driver.pinchAndZoomOut(driver.waitTillElementIsVisible(byImageElementXpath));
         return this;
