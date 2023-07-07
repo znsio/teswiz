@@ -24,6 +24,8 @@ public class HomeScreenAndroid
             "com.android.permissioncontroller:id/permission_message");
     private static final By byAllowButtonId = By.id(
             "com.android.permissioncontroller:id/permission_allow_button");
+    private static final By bySideMenuId = By.id("com.ril.ajio:id/fahIvMenu");
+    private static final String byFilterProductXpath = "//android.widget.TextView[@text='%s']";
     private final Driver driver;
     private final Visual visually;
 
@@ -60,6 +62,24 @@ public class HomeScreenAndroid
         driver.pushFileToDevice(sourceFileLocation, destinationFileLocation);
         LOGGER.info("Image Pushed to Device path" + destinationFileLocation);
         return this;
+    }
+
+
+    @Override
+    public HomeScreen goToMenu() {
+        LOGGER.info("Opening Side Drawer Menu");
+        driver.waitTillElementIsVisible(bySideMenuId).click();
+        return this;
+    }
+
+    @Override
+    public SearchScreen selectProductFromCategory(String product, String category, String gender) {
+        LOGGER.info(String.format("Selecting %s for %s", product, gender));
+        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, gender))).click();
+        driver.scrollVertically(20,60,50);
+        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, category))).click();
+        driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, product))).click();
+        return SearchScreen.get();
     }
 
 }

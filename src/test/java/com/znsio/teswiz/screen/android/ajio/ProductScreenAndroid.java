@@ -1,6 +1,9 @@
 package com.znsio.teswiz.screen.android.ajio;
 
+import com.context.TestExecutionContext;
+import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Driver;
+import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.ajio.CartScreen;
 import com.znsio.teswiz.screen.ajio.ProductScreen;
@@ -17,12 +20,17 @@ public class ProductScreenAndroid
     private static final By byViewBagButtonXpath = By.xpath(
             "//android.widget.TextView[@text='View Bag']");
     private static final By byBrandNameId = By.id("com.ril.ajio:id/product_name");
+    private static final By byProductImageId = By.id("com.ril.ajio:id/pdp_product_img");
+    private final TestExecutionContext context;
+
     private final Driver driver;
     private final Visual visually;
 
     public ProductScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
+        long threadId = Thread.currentThread().getId();
+        context = Runner.getTestExecutionContext(threadId);
     }
 
     @Override
@@ -47,4 +55,33 @@ public class ProductScreenAndroid
         return productName;
     }
 
+    @Override
+    public boolean isProductDetailsLoaded() {
+        LOGGER.info("Verifying if Product Details page is loaded");
+        boolean isProductedLoaded = false;
+        driver.tapOnMiddleOfScreen();
+        driver.waitTillElementIsPresent(byProductImageId);
+        driver.findElement(byProductImageId).click();
+        if (driver.isElementPresent(byProductImageId)) {
+            isProductedLoaded =  true;
+        }
+        return isProductedLoaded;
+    }
+
+    @Override
+    public ProductScreen flickImage() {
+        LOGGER.info("Performing flick to view multiple product images");
+        driver.findElement(byProductImageId).click();
+        String initialElementId = driver.findElement(byProductImageId).getAttribute("bounds");
+        context.addTestState(SAMPLE_TEST_CONTEXT.INITIAL_ELEMENT_ID, initialElementId);
+        driver.flick();
+        return this;
+    }
+
+    @Override
+    public String isElementIdChanged() {
+        LOGGER.info("Verifying if flick happened");
+        visually.checkWindow(SCREEN_NAME, "Other images are visible");
+        return driver.findElement(byProductImageId).getAttribute("bounds");
+    }
 }
