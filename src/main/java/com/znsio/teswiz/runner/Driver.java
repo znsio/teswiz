@@ -615,8 +615,7 @@ public class Driver {
         int endX = screenSize.width / 2;
         int endY = screenSize.height / 2;
 
-        LOGGER.info("Start co-ordinates- X axis: "+startX+" & Y axis: "+startY);
-        LOGGER.info("End co-ordinates- X axis: "+endX+" & Y axis: "+endY);
+        LOGGER.info("Start co-ordinates- X axis: "+startX+" & Y axis: "+startY+", End co-ordinates- X axis: "+endX+" & Y axis: "+endY);
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence flick = new Sequence(finger, 0);
         flick.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), startX, startY));
