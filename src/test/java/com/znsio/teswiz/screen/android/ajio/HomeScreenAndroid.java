@@ -48,14 +48,14 @@ public class HomeScreenAndroid
         String destinationFileLocation = (String) imageData.get("UPLOAD_IMAGE_LOCATION");
         LOGGER.info("searchByImage");
 
-        if(driver.isElementPresent(byDismissButtonId)) {
+        if (driver.isElementPresent(byDismissButtonId)) {
             driver.findElement(byDismissButtonId).click();
         }
 
         driver.waitTillElementIsPresent(byStartSearchBoxId).click();
         visually.checkWindow(SCREEN_NAME, "Upload a Photo");
         driver.waitTillElementIsPresent(byUploadPhotoButtonId).click();
-        if(driver.isElementPresent(bySystemPermissionMessageId)) {
+        if (driver.isElementPresent(bySystemPermissionMessageId)) {
             driver.waitTillElementIsPresent(byAllowButtonId).click();
         }
 
@@ -76,7 +76,7 @@ public class HomeScreenAndroid
     public SearchScreen selectProductFromCategory(String product, String category, String gender) {
         LOGGER.info(String.format("Selecting %s for %s", product, gender));
         driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, gender))).click();
-        driver.scrollVertically(20,60,50);
+        driver.scrollVertically(20, 60, 50);
         driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, category))).click();
         driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, product))).click();
         return SearchScreen.get();

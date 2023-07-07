@@ -63,7 +63,7 @@ public class ProductScreenAndroid
         driver.waitTillElementIsPresent(byProductImageId);
         driver.findElement(byProductImageId).click();
         if (driver.isElementPresent(byProductImageId)) {
-            isProductedLoaded =  true;
+            isProductedLoaded = true;
         }
         return isProductedLoaded;
     }
@@ -80,8 +80,8 @@ public class ProductScreenAndroid
 
     @Override
     public String isElementIdChanged() {
-        LOGGER.info("Verifying if flick happened");
-        visually.checkWindow(SCREEN_NAME, "Other images are visible");
+        LOGGER.info("Verifying other images after flick");
+        visually.checkWindow(SCREEN_NAME, "Other visible images after flick");
         return driver.findElement(byProductImageId).getAttribute("bounds");
     }
 }
