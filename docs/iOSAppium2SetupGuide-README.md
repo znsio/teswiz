@@ -65,6 +65,7 @@
 
 * `appium --relaxed-security --allow-cors --use-plugins="appium-dashboard,relaxed-caps,device-farm" -pa /wd/hub --plugin-device-farm-platform=both`
 
+Please keep in mind that Teswiz will start the Appium 2 server and handle the necessary configurations.
 
 ![Launch-Appium-with-installed-plugins.png](Launch-Appium-with-installed-plugins.png)
 
