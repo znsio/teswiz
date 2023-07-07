@@ -15,14 +15,6 @@
 ## Install Plugins
 
 
-**Appium Device Farm** is a plugin for Appium that allows to run iOS automation tests on a variety of real devices and simulators. This can be helpful for ensuring that the app works correctly on a variety of devices and iOS versions.
-
-
-**Appium Dashboard plugin*** is a tool that allows to view and interact with iOS automation tests in real time. This can be helpful for debugging and troubleshooting tests.
-
-
-
-**Appium relaxed-caps plugin** is required because it allows to use capabilities that are not prefixed with the vendor's name. This can be helpful for compatibility reasons, as some vendors may not support the vendor prefix for certain capabilities.
 
 
 
