@@ -7,7 +7,7 @@ Feature: Ajio tests
     When I add the product to the cart
     Then I should see the product in the cart
 
-# CONFIG=./configs/ajio_local_config.properties TAG="@ajio and @flick" PLATFORM=android ./gradlew run
+# CONFIG=./configs/ajio_local_config.properties TAG=@flick PLATFORM=android ./gradlew run
   @android @flick
   Scenario: As a guest user, I should be able to flick and see images in product details
     Given I open "Jackets" from "Topwear" section for "Men"
