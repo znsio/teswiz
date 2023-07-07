@@ -547,8 +547,8 @@ public class Driver {
         }
     }
 
-    public void scrollInDynamicLayer(Direction direction, WebElement dropDownElement) {
-        Dimension dimension = dropDownElement.getSize();
+    public void scrollInDynamicLayer(Direction direction, WebElement dynamicLayerElement) {
+        Dimension dimension = dynamicLayerElement.getSize();
         int width = (int) (dimension.width * 0.5);
         int fromHeight = (int) (dimension.height * 0.7);
         int toHeight = (int) (dimension.height * 0.6);
