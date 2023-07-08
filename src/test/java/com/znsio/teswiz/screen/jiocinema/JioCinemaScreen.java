@@ -1,5 +1,6 @@
 package com.znsio.teswiz.screen.jiocinema;
 
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Drivers;
@@ -34,4 +35,7 @@ public abstract class JioCinemaScreen {
     public abstract JioCinemaScreen scrollTillTrendingInIndiaSection();
 
     public abstract boolean isMovieNumberVisibleOnScreen(int movieNumberOnScreen);
+
+    public abstract JioCinemaScreen swipeTrendingItem(Direction direction, int movieNumberOnScreen);
+
 }
