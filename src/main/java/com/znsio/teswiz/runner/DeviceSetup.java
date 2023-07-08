@@ -7,6 +7,7 @@ import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +15,11 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -90,32 +95,35 @@ class DeviceSetup {
 
     static void verifyAppExistsAtMentionedPath() {
         String appPath = Setup.getFromConfigs(APP_PATH);
-        String directoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "sampleApps";
         LOGGER.info(String.format("Update path to Apk: %s", appPath));
         if (appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
-            appPath = downloadAppToDirectoryIfNeeded(appPath, directoryPath);
+            appPath = downloadAppToDirectoryIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
             Setup.addToConfigs(APP_PATH, appPath);
         } else {
-            appPath = downloadAppToDirectoryIfNeeded(appPath, directoryPath);
+            appPath = downloadAppToDirectoryIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
             LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s",
                     appPath));
         }
     }
 
-    public static String downloadAppToDirectoryIfNeeded(String appPath, String saveToDirectory) {
+    public static String downloadAppToDirectoryIfNeeded(String appPath, String saveToLocalDirectory) {
         String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
-        String filePath = saveToDirectory + File.separator + fileName;
+        String localFilePath = saveToLocalDirectory + File.separator + fileName;
         if (isAppPathAUrl(appPath)) {
-            LOGGER.info(String.format("App url '%s' is provided in capabilities. Download it.", appPath));
-            downloadFileIfDoesNotExist(appPath, filePath, saveToDirectory);
+            LOGGER.info(String.format("App url '%s' is provided in capabilities. Download it, if " +
+                                              "not already available at '%s'", appPath, localFilePath));
+            downloadFileIfDoesNotExist(appPath, localFilePath, saveToLocalDirectory);
             LOGGER.info("Changing value of appPath from URL to file path");
             LOGGER.info(String.format("Before change, appPath value: %s", appPath));
-            appPath = filePath;
-            LOGGER.info(String.format("After change, appPath value: %s", filePath));
-        } else if (!(new File(appPath).exists())) {
+            appPath = localFilePath;
+            LOGGER.info(String.format("After change, appPath value: %s", localFilePath));
+        } else {
             LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
-            checkEitherFilePathIsIncorrectOrFileIsMissing(appPath, filePath);
+            if (!(new File(appPath).exists())) {
+                throw new InvalidTestDataException(String.format("App file path '%s' provided in capabilities is incorrect", appPath));
+//                checkEitherFilePathIsIncorrectOrFileIsMissing(appPath, localFilePath);
+            }
         }
         LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
         LOGGER.info(String.format("File available at App file path '%s'", appPath));
@@ -132,40 +140,69 @@ class DeviceSetup {
     }
 
     private static void downloadFile(String url, String filePath, String saveToDirectory) {
-        LOGGER.info("File doesn't exist, need to download it");
-        InputStream inputStream = null;
+        LOGGER.info(String.format("Downloading App from url: '%s'", url));
         try {
             URL fileUrl = new URL(url);
-            inputStream = fileUrl.openStream();
-            if (!Files.exists(Path.of(saveToDirectory))) {
-                createDirectory(saveToDirectory);
-            }
-            Files.copy(inputStream, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
-            LOGGER.info("File downloaded at path: " + filePath);
+            HttpURLConnection connection = getHttpURLConnection(fileUrl);
+            downloadFileFromHttpURL(filePath, saveToDirectory, connection);
+            String formattedSize = getDownloadedAppSize(Path.of(filePath));
+            LOGGER.info(String.format("App downloaded at path: '%s', having size: '%s MB'", filePath, formattedSize));
         } catch (IOException e) {
             throw new InvalidTestDataException("An error occurred while opening the URL/downloading file: " + e.getMessage());
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to close input stream after downloading file" + e);
-                }
-            }
         }
     }
 
-    private static void checkEitherFilePathIsIncorrectOrFileIsMissing(String appPath, String filePath){
-        if (!appPath.equals(filePath)) {
-            throw new InvalidTestDataException(String.format("App file path '%s' provided in capabilities is incorrect, so not able to access file", appPath));
-        } else {
-            throw new RuntimeException(String.format("App file path '%s' provided in capabilities is correct, but file doesn't exist", appPath));
+    private static String getDownloadedAppSize(Path filePath) {
+        long fileSizeBytes = 0;
+        try {
+            fileSizeBytes = Files.size(filePath);
+        } catch (IOException e) {
+            throw new InvalidTestDataException("Unable to get downloaded app file size. Download " +
+                                                       "may be corrupt. Check and fix before " +
+                                                       "rerunning the test.", e);
+        }
+        double fileSizeMB = (double) fileSizeBytes / (1024 * 1024);
+        return new DecimalFormat("#.##").format(fileSizeMB);
+    }
+
+    private static void downloadFileFromHttpURL(String filePath, String saveToDirectory, HttpURLConnection connection)  {
+        try (InputStream inputStream = connection.getInputStream()) {
+            createDirectoryIfNotExists(saveToDirectory);
+            Files.copy(inputStream, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new InvalidTestDataException(String.format("Unable to download file '%s'", connection.getURL().toString()), e);
+        }
+    }
+
+    @NotNull
+    private static HttpURLConnection getHttpURLConnection(URL fileUrl) {
+        try {
+            HttpURLConnection connection = (HttpURLConnection) fileUrl.openConnection();
+            connection.setRequestMethod("GET");
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new InvalidTestDataException(String.format("Unable to connect to url: '%s'. Got connection error '%d'", fileUrl, responseCode));
+            }
+            return connection;
+        } catch (IOException e) {
+            throw new InvalidTestDataException(String.format("Unable to connect to url: '%s'.", fileUrl));
+        }
+    }
+
+    private static void createDirectoryIfNotExists(String directory) throws IOException {
+        Path directoryPath = Path.of(directory);
+        if (!Files.exists(directoryPath)) {
+            Files.createDirectories(directoryPath);
         }
     }
 
     private static void downloadFileIfDoesNotExist(String appPath, String filePath, String saveToDirectory){
         if (!(new File(filePath).exists())) {
+            LOGGER.info(String.format("App is not available at path: '%s'. Download it.", appPath));
             downloadFile(appPath, filePath, saveToDirectory);
+        } else {
+            LOGGER.info(String.format("App is already available at path: '%s'. No need to download it.", appPath));
         }
     }
 
@@ -224,8 +261,7 @@ class DeviceSetup {
 
     private static String getAppPathFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
-        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
-                new String[]{Setup.getPlatform().name(), "app"});
+        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile, new String[]{Setup.getPlatform().name(), "app"});
     }
 
     private static void checkIfAppExistsAtTheMentionedPath(String appPath,
@@ -246,20 +282,25 @@ class DeviceSetup {
         URL url;
         try {
             url = new URL(appPathUrl);
+            LOGGER.info(String.format("'%s' is a URL.", appPathUrl));
+            isAppUrlValid(appPathUrl);
+            return true;
         } catch (MalformedURLException e) {
             LOGGER.info(String.format("'%s' is not a URL.", appPathUrl));
             return false;
         }
-        LOGGER.info(String.format("'%s' is a URL.", appPathUrl));
+    }
+
+    private static void isAppUrlValid(String appPathUrl) {
         int responseCode;
         HttpURLConnection connection;
         try {
-            connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) new URL(appPathUrl).openConnection();
             connection.setRequestMethod("HEAD");
             responseCode = connection.getResponseCode();
             connection.disconnect();
         } catch (IOException e) {
-            throw new RuntimeException(String.format("Failed to make a connection using url: '%s'", appPathUrl) + e);
+            throw new InvalidTestDataException(String.format("Failed to make a connection using url: '%s'", appPathUrl) + e);
         }
 
         if (responseCode != HttpURLConnection.HTTP_OK) {
@@ -267,8 +308,6 @@ class DeviceSetup {
             throw new InvalidTestDataException("URL is not accessible: " + appPathUrl);
         }
         LOGGER.info(String.format("'%s' is a valid URL.", appPathUrl));
-        return true;
-
     }
 
     private static void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {
