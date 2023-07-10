@@ -11,6 +11,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,7 +38,7 @@ public class Runner {
         throw new InvalidTestDataException("Required args not provided to Runner");
     }
 
-    public Runner(String configFilePath, String stepDefDirName, String featuresDirName) {
+    public Runner(String configFilePath, String stepDefDirName, String featuresDirName) throws IOException {
         Path path = Paths.get(configFilePath);
         if(!Files.exists(path)) {
             throw new InvalidTestDataException(
@@ -125,7 +126,7 @@ public class Runner {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         String logDir = System.getProperty("LOG_DIR");
         System.setProperty("OUTPUT_DIRECTORY", logDir);
         LOGGER.info("teswiz Runner");

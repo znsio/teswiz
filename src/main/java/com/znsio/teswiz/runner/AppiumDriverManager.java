@@ -238,7 +238,6 @@ class AppiumDriverManager {
         } else if(Runner.getPlatform().equals(Platform.iOS)){
             closeIOSAppOnDevice(userPersona, driver);
         }
-        // todo - fix for appium 2.0, implement new method to terminate app on iOS devices
         else {
             throw new InvalidTestDataException(String.format("No implementation for platform: %s", Runner.getPlatform()));
         }

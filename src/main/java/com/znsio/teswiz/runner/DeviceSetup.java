@@ -272,7 +272,7 @@ class DeviceSetup {
         }
     }
 
-    static ArrayList<String> setupIOSExecution() {
+    static ArrayList<String> setupIOSExecution() throws IOException {
         ArrayList<String> iOSCukeArgs = new ArrayList<>();
         if (Setup.getPlatform().equals(Platform.iOS)) {
             verifyAppExistsAtMentionedPath();
@@ -281,7 +281,7 @@ class DeviceSetup {
             if (Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
-                LocalDevicesSetup.setupLocalExecution();
+                LocalDevicesSetup.setupLocalIOSExecution();
             }
             iOSCukeArgs.add("--threads");
             iOSCukeArgs.add(Setup.getIntegerValueAsStringFromConfigs(PARALLEL));
