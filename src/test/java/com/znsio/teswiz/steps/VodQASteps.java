@@ -108,8 +108,8 @@ public class VodQASteps {
         new VodqaBL().doubleTapOnAnElement();
     }
 
-    @Then("I should be able to perform multi touch on an element")
-    public void iShouldBeAbleToPerformMultiTouchOnAnElement() {
-        new VodqaBL().multiTouchOnElement();
+    @Then("I should be able set both sliders to value {float} by multi touch action")
+    public void iShouldBeAbleSetBothSlidersToValueByMultiTouchAction(float setSliderValue) {
+        new VodqaBL().performMultiTouchForBothSilders(setSliderValue);
     }
 }
