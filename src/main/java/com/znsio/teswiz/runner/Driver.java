@@ -641,6 +641,7 @@ public class Driver {
     }
 
         public void multiTouchOnElements (WebElement firstElement, WebElement SecondElement){
+            LOGGER.info("Determining x and y co-ordinates of WebElements to perform multi touch action");
             Dimension screenSize = driver.manage().window().getSize();
             int xCoordinate_firstElement = (screenSize.width - 40) / 2;
             int yCoordinate_firstElement = firstElement.getLocation().y;
@@ -657,9 +658,11 @@ public class Driver {
             PointerInput finger1 = new PointerInput(PointerInput.Kind.MOUSE, "finger1");
             PointerInput finger2 = new PointerInput(PointerInput.Kind.MOUSE, "finger2");
 
+            LOGGER.info("Creating two action sequences to perform multi touch action with two fingers");
             Sequence multiTouchAction = new Sequence(finger1, 1);
             Sequence multiTouchAction2 = new Sequence(finger2, 1);
 
+            LOGGER.info("Performing tap action simultaneously on elements present at co-ordinates X1: "+ x_element1 + " Y1: "+ y_element1 +" and X2: "+x_element2+ " Y2: "+y_element2);
             multiTouchAction.addAction(finger1.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x_element1, y_element1))
                     .addAction(finger1.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
                     .addAction(finger1.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
