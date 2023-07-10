@@ -480,10 +480,10 @@ class AppiumDriverManager {
         } else {
             TestExecutionContext context = SessionContext.getTestExecutionContext(
                     Thread.currentThread().getId());
-            AppiumDriver atdAppiumDriver =
+            AppiumDriver iOSAppiumDriver =
                     (AppiumDriver) context.getTestState(
                             TEST_CONTEXT.APPIUM_DRIVER);
-            if (appiumDriver.equals(atdAppiumDriver)) {
+            if (appiumDriver.equals(iOSAppiumDriver)) {
                 LOGGER.info(
                         String.format("ATD will quit the driver for persona: '%s'", userPersona));
                 LOGGER.info("Close the app");
