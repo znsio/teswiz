@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.FileNotUploadedException;
+import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.HidesKeyboard;
@@ -26,6 +27,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
+import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -37,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
@@ -604,7 +607,6 @@ public class Driver {
         appiumDriver.perform(Arrays.asList(clickPosition));
     }
 
-
     public void flick() {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension screenSize = driver.manage().window().getSize();
@@ -624,5 +626,16 @@ public class Driver {
         flick.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         appiumDriver.perform(Arrays.asList(flick));
+    }
+
+    public void horizontalSwipeWithGesture(WebElement element, Direction direction) {
+        RemoteWebElement remoteWebElement = (RemoteWebElement) element;
+        if ((direction.equals(Direction.LEFT)) || direction.equals(Direction.RIGHT)) {
+            ((JavascriptExecutor) driver).executeScript("mobile: swipeGesture", Map.of("elementId", remoteWebElement.getId(),
+                    "direction", direction.toString(),
+                    "percent", 1,
+                    "speed", 80
+            ));
+        } else throw new InvalidTestDataException("Invalid Direction");
     }
 }
