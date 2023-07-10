@@ -71,7 +71,7 @@ Feature: Vodqa test
     Given I login to vodqa application using valid credentials
     Then I should be able to double tap on an element
 
-    #  CONFIG=./configs/vodqa_local_config.properties TAG=@doubleTap PLATFORM=android ./gradlew run
+    #  CONFIG=./configs/vodqa_local_config.properties TAG=@multiTouch PLATFORM=android ./gradlew run
   @android @multiTouch
   Scenario: Validate that user is able to multi touch on an element
     Given I login to vodqa application using valid credentials
