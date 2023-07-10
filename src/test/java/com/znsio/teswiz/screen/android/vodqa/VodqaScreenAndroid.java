@@ -232,26 +232,25 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public VodqaScreen pinchAndZoomInOnAnElement() {
-        LOGGER.info("Zoomed In Image element");
-        visually.check(SCREEN_NAME, "Zoomed In Image element", Target.window());
+        LOGGER.info("Perform Pinch action and Zoom In Image element");
         driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
         driver.pinchAndZoomIn(driver.waitTillElementIsVisible(byImageElementXpath));
+        visually.check(SCREEN_NAME, "Zoomed In Image element", Target.window());
         return this;
     }
 
     @Override
     public VodqaScreen pinchAndZoomOutOnAnElement() {
-        LOGGER.info("Zoomed Out Image element");
-        visually.check(SCREEN_NAME, "Zoomed Out Image element", Target.window());
+        LOGGER.info("Perform Pinch action and Zoom out Image element");
         driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
         driver.pinchAndZoomOut(driver.waitTillElementIsVisible(byImageElementXpath));
+        visually.check(SCREEN_NAME, "Zoomed Out Image element", Target.window());
         return this;
     }
 
     @Override
     public boolean isPinchAndZoomInSuccessful(Dimension initialElementDimension) {
 
-        LOGGER.info("Validate pinch and zoom in on element is successful");
         Dimension actualElementDimension = driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
         return (initialElementDimension.width * initialElementDimension.height) > (actualElementDimension.width * actualElementDimension.height);
     }
@@ -259,7 +258,6 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public boolean isPinchAndZoomOutSuccessful(Dimension initialElementDimension) {
 
-        LOGGER.info("Validate pinch and zoom out on element is successful");
         Dimension actualElementDimension = driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
         return (initialElementDimension.width * initialElementDimension.height) < (actualElementDimension.width * actualElementDimension.height);
     }
