@@ -615,6 +615,7 @@ public class Driver {
         int fingerEndXPoint = (int) Math.floor(locus.x + endRadius * Math.cos(angle));
         int fingerEndYPoint = (int) Math.floor(locus.y - endRadius * Math.sin(angle));
 
+        LOGGER.debug(String.format("fingerStartXPoint: %s, fingerStartYPoint: %s \nfingerEndXPoint: %s, fingerEndYPoint: %s", fingerStartXPoint, fingerStartYPoint, fingerEndXPoint, fingerEndYPoint));
         fingerPath.addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), fingerStartXPoint, fingerStartYPoint))
                 .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
                 .addAction(new Pause(finger, Duration.ofMillis(10)))
@@ -627,6 +628,7 @@ public class Driver {
     private Collection<Sequence> pinchAndZoom(Point locus, int startRadius, int endRadius, int pinchAngle, Duration duration) {
 
         double angle = Math.PI / 2 - (2 * Math.PI / 360 * pinchAngle); // convert degree angle into radians
+        LOGGER.debug(String.format("Locus: %s, startRadius: %s, endRadius: %s, pinchAngle: %s, duration: %s", locus, startRadius, endRadius, pinchAngle, duration));
 
         Sequence finger1Path = fingerAction("finger1", locus, startRadius, endRadius, angle, duration);
 
@@ -652,6 +654,7 @@ public class Driver {
         Dimension size = element.getSize();
         int centerX = size.getWidth() / 2;
         int centerY = size.getHeight() / 2;
+        LOGGER.debug(String.format("Web element dimensions are centerX: %s, centerY: %s", centerX, centerY));
 
         Point locus = new Point(centerX, centerY);
         appiumDriver.perform(pinchAndZoomIn(locus, 5));
@@ -663,6 +666,7 @@ public class Driver {
         Dimension size = getDimension(element);
         int centerX = size.getWidth() / 2;
         int centerY = size.getHeight() / 2;
+        LOGGER.debug(String.format("Web element dimensions are centerX: %s, centerY: %s", centerX, centerY));
 
         Point locus = new Point(centerX, centerY);
         appiumDriver.perform(pinchAndZoomOut(locus, 5));
