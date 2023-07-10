@@ -243,19 +243,19 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public boolean isPinchAndZoomInSuccessful(Dimension initialElementDimension) {
 
-        Dimension actualElementDimension = driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
+        Dimension actualElementDimension = driver.waitTillElementIsVisible(byImageElementXpath).getSize();
         return (initialElementDimension.width * initialElementDimension.height) > (actualElementDimension.width * actualElementDimension.height);
     }
 
     @Override
     public boolean isPinchAndZoomOutSuccessful(Dimension initialElementDimension) {
 
-        Dimension actualElementDimension = driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
+        Dimension actualElementDimension = driver.waitTillElementIsVisible(byImageElementXpath).getSize();
         return (initialElementDimension.width * initialElementDimension.height) < (actualElementDimension.width * actualElementDimension.height);
     }
 
     @Override
     public Dimension getImageElementDimension() {
-        return driver.getDimension(driver.waitTillElementIsVisible(byImageElementXpath));
+        return driver.waitTillElementIsVisible(byImageElementXpath).getSize();
     }
 }

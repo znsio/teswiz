@@ -698,16 +698,12 @@ public class Driver {
     public void pinchAndZoomOut(WebElement element) {
 
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
-        Dimension size = getDimension(element);
+        Dimension size = element.getSize();
         int centerX = size.getWidth() / 2;
         int centerY = size.getHeight() / 2;
         LOGGER.debug(String.format("Web element dimensions are centerX: %s, centerY: %s", centerX, centerY));
 
         Point locus = new Point(centerX, centerY);
         appiumDriver.perform(pinchAndZoomOut(locus, 5));
-    }
-
-    public Dimension getDimension(WebElement element) {
-        return element.getSize();
     }
 }
