@@ -14,7 +14,7 @@ public class WeatherAPIBL {
     private final Map<String, Object> testData = Runner.getTestDataAsMap("API");
     private final String base_URL = testData.get("url").toString();
 
-    public JSONObject getCurrentWeatherJSON() {
+    public HttpResponse<JsonNode> getCurrentWeatherJSON() {
         LOGGER.info("Getting current weather data for given location coordinates");
         String latitude = testData.get("latitude").toString();
         String longitude = testData.get("longitude").toString();
@@ -26,12 +26,25 @@ public class WeatherAPIBL {
                 .queryString("current_weather",true)
                 .asJson();
 
-        return jsonResponse.getBody().getObject().getJSONObject("current_weather");
+        assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
+                .isEqualTo(200);
+        return jsonResponse;
     }
 
-    public void verifyCurrentWeather(JSONObject jsonResponse) {
+    public JSONObject getValueForKey(HttpResponse<JsonNode> jsonResponse, String key) {
+        assertThat(jsonResponse.getBody().getObject().has(key))
+                .as("Key: "+key+" not found in JSON response!").isTrue();
+        return jsonResponse.getBody().getObject().getJSONObject(key);
+    }
+
+    public void verifyCurrentTemperature(JSONObject jsonResponse, int lowerLimit, int upperLimit) {
         LOGGER.info("Verifying weather is in range 0-55 C");
         assertThat(((int) jsonResponse.getDouble("temperature"))).as("Weather value incorrect!")
-                .isBetween(0,55);
+                .isBetween(lowerLimit,upperLimit);
+    }
+
+    public void verifyKeyValueInResponse(JSONObject jsonResponse, String key, int value) {
+        LOGGER.info("Verifying "+key +" is equals : "+ value);
+        assertThat(jsonResponse.getInt(key)).as(key+" not equals "+value).isEqualTo(value);
     }
 }

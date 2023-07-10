@@ -24,8 +24,9 @@ public class Hooks {
                                   scenario.getName()));
         LOGGER.info(String.format("Hooks: Running test %s on %s", testExecutionContext.getTestName(),
                                   Runner.getPlatform().name()));
-        if(!Runner.getPlatform().name().equalsIgnoreCase("api"))
+        if(!Runner.getPlatform().name().equalsIgnoreCase("api")) {
             testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
+        }
         testExecutionContext.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS,
                                           new UserPersonaDetails());
         SoftAssertions softly = new SoftAssertions();

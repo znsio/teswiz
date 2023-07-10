@@ -1,7 +1,13 @@
-@weatherAPI
+@weatherAPI @api
 Feature: Weather API
 # CONFIG=./configs/weatherAPI_local_config.properties TAG=weatherAPI PLATFORM=api ./gradlew run
-  @api
-  Scenario: Validate GET current weather from Weather API
-    Given GET request is sent to the weather API with valid location coordinates
-    Then we verify weather of that location in response
+
+  Scenario: Validate current temperature for given location
+    Given I send GET request with valid location coordinates
+    When I query key "current_weather" in response
+    Then I verify temperature of that location in range 0 and 55 C
+
+  Scenario: Validate weather code for given location
+    Given I send GET request with valid location coordinates
+    When I query key "current_weather" in response
+    Then I verify "weathercode" is 96
