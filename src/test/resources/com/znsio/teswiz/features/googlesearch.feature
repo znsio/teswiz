@@ -1,7 +1,7 @@
 @google-search
-Feature: Search for flight options
+Feature: Scenarios for "google-search"
 
-#  CONFIG=./configs/google_search_mobile_chorme_config.properties PLATFORM=android TAG="@google-search and @android-chrome" ./gradlew run
+#  CONFIG=./configs/google_search_mobile_chrome_config.properties PLATFORM=android TAG="@google-search and @android-chrome" ./gradlew run
   @android-chrome @android
-  Scenario: Search and verify google search results
+  Scenario: Google search results
     Given I search for "india" in "chrome-android"

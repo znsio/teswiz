@@ -22,11 +22,11 @@ public class GoogleSearchSteps {
     }
 
     /**
-     * Launch browser in specified platform
+     * Launches browser in specified platform
      *
      * @param searchText text for google search
      * @param appName    in format of "browser-platform"
-     *                   examples: "chrome-android" or "forefox-web"
+     *                   examples: "chrome-android" or "firefox-web"
      */
     @Given("I search for {string} in {string}")
     public void iSearchFor(String searchText, String appName) {
