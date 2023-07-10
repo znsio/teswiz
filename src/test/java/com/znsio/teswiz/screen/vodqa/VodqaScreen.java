@@ -69,6 +69,6 @@ public abstract class VodqaScreen {
 
     public abstract VodqaScreen multiTouchOnElements();
 
-    public abstract boolean isMultiTouchSuccessful();
+    public abstract float getSliderValue();
 
 }
