@@ -42,6 +42,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By bySliderSectionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='slider1']/android.view.ViewGroup");
     private final By byFirstSliderElementId = AppiumBy.accessibilityId("slider");
     private final By bySecondSliderElementId = AppiumBy.accessibilityId("slider1");
+    private final By bySliderValueXpath = AppiumBy.xpath("//android.view.ViewGroup/android.widget.TextView[2]");
 
 
 
@@ -229,10 +230,16 @@ public class VodqaScreenAndroid extends VodqaScreen {
         driver.waitTillElementIsVisible(bySliderSectionXpath).click();
         visually.check(SCREEN_NAME,"Slider Section Screen",Target.window());
         driver.multiTouchOnElements(byFirstSliderElementId, bySecondSliderElementId);
+        return this;
     }
 
     @Override
     public boolean isMultiTouchSuccessful() {
+        float sliderValue = Float.parseFloat(driver.waitTillElementIsPresent(bySliderValueXpath).getText());
+        visually.check(SCREEN_NAME, "Slider value check", Target.window());
+        if(sliderValue>0){
+            return true;
+        }
         return false;
     }
 }

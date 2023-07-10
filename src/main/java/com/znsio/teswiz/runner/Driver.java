@@ -43,6 +43,7 @@ import static com.znsio.teswiz.tools.Wait.waitFor;
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
 import static java.util.Collections.singletonList;
+import static java.util.Arrays.asList;
 
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
@@ -604,27 +605,75 @@ public class Driver {
         appiumDriver.perform(Arrays.asList(clickPosition));
     }
 
-    public void multiTouchOnElements(By byFirstSliderElementId, By bySecondSliderElementId) {
-        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        public void multiTouchOnElements (By byFirstSliderElementId, By bySecondSliderElementId){
+            AppiumDriver appiumDriver = (AppiumDriver) this.driver;
 
-        WebElement sliderElement1 = findElement(byFirstSliderElementId);
-        WebElement sliderElement2 = findElement(bySecondSliderElementId);
+            WebElement sliderElement1 = findElement(byFirstSliderElementId);
+            WebElement sliderElement2 = findElement(bySecondSliderElementId);
 
-        int middleXCoordinate_slider1 = sliderElement1.getLocation().x + sliderElement1.getSize().width/2;
-        int middleYCoordinate_slider1 = sliderElement1.getLocation().y + sliderElement1.getSize().height/2;
+            PointerInput finger1 = new PointerInput(PointerInput.Kind.MOUSE, "finger1");
+            PointerInput finger2 = new PointerInput(PointerInput.Kind.MOUSE, "finger2");
 
-        int middleXCoordinate_slider2 = sliderElement2.getLocation().x + sliderElement2.getSize().width/2;
-        int middleYCoordinate_slider2 = sliderElement2.getLocation().y + sliderElement2.getSize().height/2;
+            int x1 = sliderElement1.getLocation().x;
+            int y1 = sliderElement1.getLocation().y;
 
-        Dimension sizeSlider = sliderElement1.getSize();
-        Dimension sizeSlider1 = sliderElement2.getSize();
+            int x2 = sliderElement2.getLocation().x;
+            int y2 = sliderElement2.getLocation().y;
 
-        PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
-        Sequence sequence = new Sequence(touch, 1);
+            Dimension sliderElement1Size = sliderElement1.getSize();
+            Dimension sliderElement2Size = sliderElement2.getSize();
 
-        MultiTouchAction
+            int xOffsetSlider1 = sliderElement1Size.getWidth() / 2;
+            int yOffsetSlider1 = sliderElement1Size.getHeight() / 2;
 
-        sequence.addAction()
+            int xOffsetSlider2 = sliderElement2Size.getWidth() / 2;
+            int yOffsetSlider2 = sliderElement2Size.getHeight() / 2;
 
+            Sequence multiTouchAction = new Sequence(finger1, 1);
+            Sequence multiTouchAction2 = new Sequence(finger2, 1);
+
+//            multiTouchAction.addAction(finger1.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x1, y1));
+//            multiTouchAction.addAction(finger1.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+//
+//            multiTouchAction2.addAction(finger2.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x2, y2));
+//            multiTouchAction2.addAction(finger2.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+//
+//
+//            multiTouchAction.addAction(finger1.createPointerMove(Duration.ofMillis(1000), PointerInput.Origin.viewport(), xOffsetSlider1, yOffsetSlider1));
+//            multiTouchAction2.addAction(finger2.createPointerMove(Duration.ofMillis(1000), PointerInput.Origin.viewport(), xOffsetSlider2, yOffsetSlider2));
+//
+//            multiTouchAction.addAction(finger1.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+//            multiTouchAction2.addAction(finger2.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+
+            //new
+//            multiTouchAction.addAction(finger1.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), xOffsetSlider1, yOffsetSlider1))
+//                        .addAction(finger1.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+//                        .addAction(finger1.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+//            multiTouchAction2.addAction(finger2.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), xOffsetSlider2, yOffsetSlider2))
+//                        .addAction(finger2.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+//                        .addAction(finger2.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+            LOGGER.info("X position: "+x1+" X offset: "+xOffsetSlider1+" Y position: "+y1+" Y offset:"+yOffsetSlider1);
+            LOGGER.info("X2 position: "+x2+" X2 offset: "+xOffsetSlider2+" Y2 position: "+y2+" Y2 offset:"+yOffsetSlider2);
+
+            multiTouchAction.addAction(finger1.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), 700, y1));
+            multiTouchAction.addAction(finger1.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            multiTouchAction.addAction(finger1.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+            multiTouchAction2.addAction(finger2.createPointerMove(Duration.ofMillis(1), PointerInput.Origin.viewport(), 700, y2));
+            multiTouchAction2.addAction(finger2.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+            multiTouchAction2.addAction(finger2.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+            //appiumDriver.perform(asList(multiTouchAction2));
+
+            appiumDriver.perform(asList(multiTouchAction, multiTouchAction2));
+
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
     }
-}
