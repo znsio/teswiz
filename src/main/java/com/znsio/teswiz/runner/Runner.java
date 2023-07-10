@@ -18,6 +18,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
+import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
+
 public class Runner {
     public static final String OS_NAME = System.getProperty("os.name");
     public static final boolean IS_WINDOWS = OS_NAME.toLowerCase().startsWith("windows");
@@ -74,7 +76,7 @@ public class Runner {
     }
 
     public static String getCloudName() {
-        return Setup.getFromConfigs(Setup.CLOUD_NAME);
+        return getCloudNameFromCapabilities();
     }
 
     public static String getCloudUser() {

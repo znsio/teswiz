@@ -4,10 +4,10 @@
 version: "3"
 services:
 
-  appium:
-    image: appium/appium
-    ports:
-      - ${APPIUM_PORT}:4723
+#  appium:
+#    image: appium/appium
+#    ports:
+#      - ${APPIUM_PORT}:4723
 
   selenium-hub:
     image: selenium/hub:3.141.59-20210929

@@ -3,7 +3,6 @@ package com.znsio.teswiz.steps;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.businessLayer.vodqa.VodqaBL;
-import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
@@ -79,12 +78,6 @@ public class VodQASteps {
         new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).isElementWithTextVisible(elementText);
     }
 
-    @When("I scroll {string} in dynamic layer on vertical swiping screen")
-    public void iScrollInDynamicLayerOnVerticalSwipingScreen(String direction) {
-        new VodqaBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform())
-                .scrollInDynamicLayerOnVerticalSwipingScreen(Direction.valueOf(direction.toUpperCase()));
-    }
-  
     @When("I scroll vertically from {int} percent height to {int} percent height and {int} percent width")
     public void iScrollVerticallyFromPercentHeightToPercentHeightAndPercentWidth(int fromPercentHeight, int toPercentHeight, int percentWidth) {
         new VodqaBL().scrollVerticallyByPercentageOnVerticalSwipingScreen(fromPercentHeight, toPercentHeight, percentWidth);

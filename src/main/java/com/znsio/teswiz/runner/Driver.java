@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.FileNotUploadedException;
+import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.HidesKeyboard;
@@ -26,6 +27,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
+import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -37,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
@@ -548,8 +551,8 @@ public class Driver {
         }
     }
 
-    public void scrollInDynamicLayer(Direction direction) {
-        Dimension dimension = driver.manage().window().getSize();
+    public void scrollInDynamicLayer(Direction direction, WebElement dynamicLayerElement) {
+        Dimension dimension = dynamicLayerElement.getSize();
         int width = (int) (dimension.width * 0.5);
         int fromHeight = (int) (dimension.height * 0.7);
         int toHeight = (int) (dimension.height * 0.6);
@@ -604,6 +607,39 @@ public class Driver {
                 .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         appiumDriver.perform(Arrays.asList(clickPosition));
     }
+
+    public void flick() {
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+        Dimension screenSize = driver.manage().window().getSize();
+
+        LOGGER.info("Implementing flick action on the basis of screen size and co-ordinates");
+        int startX = screenSize.width - 100;
+        int startY = screenSize.height / 2;
+        int endX = screenSize.width / 2;
+        int endY = screenSize.height / 2;
+
+        LOGGER.info("Start co-ordinates- X axis: "+startX+" & Y axis: "+startY+", End co-ordinates- X axis: "+endX+" & Y axis: "+endY);
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence flick = new Sequence(finger, 0);
+        flick.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), startX, startY));
+        flick.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        flick.addAction(finger.createPointerMove(Duration.ofMillis(100), PointerInput.Origin.viewport(), endX, endY));
+        flick.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+        appiumDriver.perform(Arrays.asList(flick));
+    }
+
+    public void horizontalSwipeWithGesture(WebElement element, Direction direction) {
+        RemoteWebElement remoteWebElement = (RemoteWebElement) element;
+        if ((direction.equals(Direction.LEFT)) || direction.equals(Direction.RIGHT)) {
+            ((JavascriptExecutor) driver).executeScript("mobile: swipeGesture", Map.of("elementId", remoteWebElement.getId(),
+                    "direction", direction.toString(),
+                    "percent", 1,
+                    "speed", 80
+            ));
+        } else throw new InvalidTestDataException("Invalid Direction");
+    }
+}
 
         public void multiTouchOnElements (By byFirstSliderElementId, By bySecondSliderElementId){
             AppiumDriver appiumDriver = (AppiumDriver) this.driver;
