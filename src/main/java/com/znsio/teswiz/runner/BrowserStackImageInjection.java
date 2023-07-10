@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.Arrays;
 
+import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.tools.Wait.waitFor;
 
 class BrowserStackImageInjection {
@@ -19,7 +20,7 @@ class BrowserStackImageInjection {
         uploadFilePath = new File(uploadFilePath).getAbsolutePath();
         String fileName = new File(uploadFilePath).getName();
         String mediaUrl = Runner.NOT_SET;
-        String cloudName = System.getenv("CLOUD_NAME");
+        String cloudName = getCloudNameFromCapabilities();
 
         String[] curlCommand = new String[]{
                 "curl --insecure -u \"" + cloudUser + ":" + cloudKey + "\"",

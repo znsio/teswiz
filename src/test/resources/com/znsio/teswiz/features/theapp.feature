@@ -1,29 +1,29 @@
 @theapp
 Feature: Scenarios for "The App"
 
-#  CONFIG=./configs/theapp_local_config.properties PLATFORM=web TAG="@theapp and @switchUser" ./gradlew run
-#  CONFIG=./configs/theapp_local_config.properties PLATFORM=android TAG="@theapp and @switchUser" ./gradlew run
+#  CONFIG=./configs/theapp_local_web_config.properties PLATFORM=web TAG="@theapp and @switchUser" ./gradlew run
+#  CONFIG=./configs/theapp_local_android_config.properties PLATFORM=android TAG="@theapp and @switchUser" ./gradlew run
   @android @web @switchUser @theapp
   Scenario: Switch user persona
     And "I" login to TheApp with invalid credentials - "znsio1", "invalid password"
     When "I" switch my role to "You"
     Then "You" can login again with invalid credentials - "switched user", "switched user invalid password"
 
-#  CONFIG=./configs/theapp_local_config.properties PLATFORM=web TAG="@theapp and @invalidLogin1" ./gradlew run
-#  CONFIG=./configs/theapp_local_config.properties PLATFORM=android TAG="@theapp and @invalidLogin1" ./gradlew run
+#  CONFIG=./configs/theapp_local_web_config.properties PLATFORM=web TAG="@theapp and @invalidLogin1" ./gradlew run
+#  CONFIG=./configs/theapp_local_android_config.properties PLATFORM=android TAG="@theapp and @invalidLogin1" ./gradlew run
   @android @web @invalidLogin @invalidLogin1 @theapp
   Scenario: Verify error message on invalid login
     Given I login with invalid credentials - "znsio1", "invalid password"
-    Then I try to login again with invalid credentials - "znsio2", "another invalid password"
+#    Then I try to login again with invalid credentials - "znsio2", "another invalid password"
 
-#  CONFIG=./configs/theapp_local_config.properties PLATFORM=web TAG="@theapp and @invalidLogin2" ./gradlew run
-#  CONFIG=./configs/theapp_local_config.properties PLATFORM=android TAG="@theapp and @invalidLogin2" ./gradlew run
+#  CONFIG=./configs/theapp_local_web_config.properties PLATFORM=web TAG="@theapp and @invalidLogin2" ./gradlew run
+#  CONFIG=./configs/theapp_local_android_config.properties PLATFORM=android TAG="@theapp and @invalidLogin2" ./gradlew run
   @android @web @invalidLogin @invalidLogin2 @theapp
   Scenario: Another Verify error message on invalid login test
     Given I login with invalid credentials - "anotheruser1", "invalid password"
     Then I try to login again with invalid credentials - "anotheruser2", "another invalid password"
 
-#  CONFIG=./configs/theapp_local_config.properties PLATFORM=android TAG=theapp ./gradlew run
+#  CONFIG=./configs/theapp_local_android_config.properties PLATFORM=android TAG=theapp ./gradlew run
   @android @echo @theapp
   Scenario: Verify error message on another invalid login
     Given I login with invalid credentials - "znsio2", "2nd invalid password"

@@ -1,7 +1,6 @@
 package com.znsio.teswiz.businessLayer.vodqa;
 
 import com.context.TestExecutionContext;
-import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
@@ -106,11 +105,6 @@ public class VodqaBL {
         LOGGER.info("Validating app working in background");
         boolean isAppWorkInBackground = VodqaScreen.get().putAppInTheBackground(time).isAppWorkingInBackground();
         assertThat(isAppWorkInBackground).as(String.format("App do not works in background")).isTrue();
-        return this;
-    }
-
-    public VodqaBL scrollInDynamicLayerOnVerticalSwipingScreen(Direction direction) {
-        VodqaScreen.get().openVerticalSwipingScreen().scrollDownInDynamicLayer(direction);
         return this;
     }
 

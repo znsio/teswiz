@@ -1,7 +1,6 @@
 package com.znsio.teswiz.screen.android.vodqa;
 
 import com.applitools.eyes.appium.Target;
-import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
@@ -159,13 +158,6 @@ public class VodqaScreenAndroid extends VodqaScreen {
         String currentOpenApp = CommandLineExecutor.execCommand(new String[]{adbCommand}).toString();
         String currentAppPackageName = Runner.getAppPackageName();
         return currentOpenApp.contains(currentAppPackageName);
-    }
-
-    @Override
-    public VodqaScreen scrollDownInDynamicLayer(Direction direction) {
-        driver.waitTillElementIsPresent(byCLanguageTextView);
-        driver.scrollInDynamicLayer(direction);
-        return this;
     }
 
     @Override
