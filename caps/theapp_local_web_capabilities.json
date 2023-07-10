@@ -1,0 +1,36 @@
+{
+  "android": {
+    "platformName": "android",
+    "automationName": "UiAutomator2",
+    "autoGrantPermissions": true,
+    "appPackage": "com.appiumpro.the_app",
+    "uiautomator2ServerInstallTimeout": 10000,
+    "adbExecTimeout": 45000,
+    "eventTimings": true,
+    "enablePerformanceLogging": true,
+    "printPageSourceOnFindFailure": true,
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
+    "deviceName": "android",
+    "noSign": true
+  },
+  "serverConfig" : {
+    "server": {
+      "use-plugins": ["device-farm", "appium-dashboard"],
+      "plugin": {
+        "device-farm": {
+          "platform": "web",
+          "skipChromeDownload": true,
+          "cloud": {
+            "cloudName": "docker",
+            "web": {}
+          }
+        }
+      }
+    }
+  },
+  "hostMachines": [
+    {
+      "machineIP": "127.0.0.1"
+    }
+  ]
+}
