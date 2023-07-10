@@ -13,6 +13,7 @@ import io.appium.java_client.AppiumBy;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.WebElement;
 
 public class VodqaScreenAndroid extends VodqaScreen {
     private final Driver driver;
@@ -221,17 +222,16 @@ public class VodqaScreenAndroid extends VodqaScreen {
         LOGGER.info("Performing multi touch action in Slider Screen");
         driver.waitTillElementIsVisible(bySliderSectionXpath).click();
         visually.check(SCREEN_NAME,"Slider Section Screen",Target.window());
-        driver.multiTouchOnElements(byFirstSliderElementId, bySecondSliderElementId);
+        WebElement firstSliderElement = driver.findElement(byFirstSliderElementId);
+        WebElement secondSliderElement = driver.findElement(bySecondSliderElementId);
+        driver.multiTouchOnElements(firstSliderElement, secondSliderElement);
         return this;
     }
 
     @Override
-    public boolean isMultiTouchSuccessful() {
-        float sliderValue = Float.parseFloat(driver.waitTillElementIsPresent(bySliderValueXpath).getText());
-        visually.check(SCREEN_NAME, "Slider value check", Target.window());
-        if(sliderValue>0){
-            return true;
-        }
-        return false;
+    public float getSliderValue() {
+        float actualSliderValue = Float.parseFloat(driver.waitTillElementIsPresent(bySliderValueXpath).getText());
+        visually.check(SCREEN_NAME, "Slider value check", Target.region(bySliderValueXpath));
+        return actualSliderValue;
     }
 }
