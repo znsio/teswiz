@@ -166,4 +166,5 @@ public class VodqaBL {
         VodqaScreen.get().multiTouchOnElements();
         assertThat(VodqaScreen.get().getSliderValue()).as("Multi Touch failed as slider value is not equal").isEqualTo(sliderValue);
         return this;
+    }
 }
