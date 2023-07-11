@@ -37,8 +37,14 @@ public class WeatherAPISteps {
         new WeatherAPIBL().verifyCurrentTemperature(jsonObject, lowerLimit, upperLimit);
     }
 
-    @Then("I verify {string} is {int}")
-    public void iVerifyIs(String key, int value) {
-        new WeatherAPIBL().verifyKeyValueInResponse(jsonObject, key, value);
+    @Given("I send GET request with valid location coordinates and invalid forecast days")
+    public void iSendGETRequestWithValidLocationCoordinatesAndForecastDays() {
+        jsonObject = new WeatherAPIBL().getForecastForInvalidDays();
     }
+
+    @Then("I verify error reason {string}")
+    public void iVerifyErrorReason(String errorMessage) {
+        new WeatherAPIBL().verifyErrorForInvalidForecastDays(jsonObject, errorMessage);
+    }
+
 }
