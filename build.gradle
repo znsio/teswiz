@@ -28,7 +28,7 @@ plugins {
     id "idea"
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'maven-publish'
-    id("io.freefair.aspectj.post-compile-weaving") version "8.1.0"
+    id("io.freefair.aspectj.post-compile-weaving") version "8.0.1"
 }
 
 group = 'com.github.znsio'
