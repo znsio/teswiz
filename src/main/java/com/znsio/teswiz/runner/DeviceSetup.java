@@ -261,7 +261,8 @@ class DeviceSetup {
 
     private static String getAppPathFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
-        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile, new String[]{Setup.getPlatform().name(), "app"});
+        return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
+                new String[]{Setup.getPlatform().name(), "app"}, Setup.getLoadedCapabilities());
     }
 
     private static void checkIfAppExistsAtTheMentionedPath(String appPath,
@@ -326,24 +327,28 @@ class DeviceSetup {
     }
 
     static String getCloudNameFromCapabilities() {
-        String capabilityFile = Setup.getFromConfigs(CAPS);
-        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
-                new String[]{"serverConfig", "server", "plugin",
-                        "device-farm", "cloud", "cloudName"});
+        if (Runner.isRunningInCI()) {
+            String capabilityFile = Setup.getFromConfigs(CAPS);
+            return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
+                    new String[]{"serverConfig", "server", "plugin",
+                            "device-farm", "cloud", "cloudName"}, Setup.getLoadedCapabilities());
+        } else {
+            return NOT_SET;
+        }
     }
 
     private static String getCloudUrlFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
-        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
+        return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
                 new String[]{"serverConfig", "server", "plugin",
-                        "device-farm", "cloud", "url"});
+                        "device-farm", "cloud", "url"}, Setup.getLoadedCapabilities());
     }
 
     private static String getCloudApiUrlFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
-        return JsonFile.getNodeValueAsStringFromJsonFile(capabilityFile,
+        return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
                 new String[]{"serverConfig", "server", "plugin",
-                        "device-farm", "cloud", "apiUrl"});
+                        "device-farm", "cloud", "apiUrl"}, Setup.getLoadedCapabilities());
     }
 
     static ArrayList<String> setupWindowsExecution() {

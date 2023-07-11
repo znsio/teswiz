@@ -67,6 +67,7 @@ class Setup {
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
+    private static Map<String, Map> loadedCapabilityFile;
     private static final String CHROME = "chrome";
     private static final String TEMP_DIRECTORY = "temp";
     private static final int DEFAULT_PARALLEL = 1;
@@ -145,6 +146,7 @@ class Setup {
 
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
+        loadCapabilitiesFile(configs.get(CAPS));
         setupExecutionEnvironment();
 
         LOGGER.info(printStringMap("Using string values", configs));
@@ -152,6 +154,10 @@ class Setup {
         LOGGER.info(printIntegerMap("Using integer values", configsInteger));
 
         return CUKE_ARGS;
+    }
+
+    private static void loadCapabilitiesFile(String capabilityFile) {
+        loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
     }
 
     static void loadAndUpdateConfigParameters(String configFilePath) {
@@ -701,5 +707,9 @@ class Setup {
 
     static Platform getPlatform() {
         return currentPlatform;
+    }
+
+    public static Map<String, Map> getLoadedCapabilities() {
+        return loadedCapabilityFile;
     }
 }

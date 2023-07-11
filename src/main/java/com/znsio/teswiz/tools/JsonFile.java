@@ -70,18 +70,22 @@ public class JsonFile {
 
     public static String getNodeValueAsStringFromJsonFile(String fileName, String[] nodeTree) {
         Map<String, Map> map = loadJsonFile(fileName);
+        return getValueFromLoadedJsonMap(fileName, nodeTree, map);
+    }
 
+    public static String getValueFromLoadedJsonMap(String fileName, String[] nodeTree, Map<String,
+                                                                                             Map> loadedMap) {
         StringBuilder nodePath = new StringBuilder();
         for(int nodeCount = 0; nodeCount < nodeTree.length - 1; nodeCount++) {
             LOGGER.info("\tFinding node: " + nodeTree[nodeCount]);
             nodePath.append(nodeTree[nodeCount]).append(" -> ");
-            map = map.get(nodeTree[nodeCount]);
-            if(null == map) {
+            loadedMap = loadedMap.get(nodeTree[nodeCount]);
+            if(null == loadedMap) {
                 throw new InvalidTestDataException(
                         String.format("Node: '%s' not found in file: '%s'", nodePath, fileName));
             }
         }
-        String retValue = String.valueOf(map.get(nodeTree[nodeTree.length - 1]));
+        String retValue = String.valueOf(loadedMap.get(nodeTree[nodeTree.length - 1]));
         LOGGER.info("\tFound value: " + retValue);
         return retValue;
     }
