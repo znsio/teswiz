@@ -205,8 +205,10 @@ class BrowserDriverManager {
                 webDriverManagerProxyUrl, browserType));
 
         // TODO - get browser version from local or container. What about cloud?
-        String browserVersion = NOT_SET;
+        WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
+                                                    .proxy(webDriverManagerProxyUrl);
         if (Runner.isRunningInCI() && getCloudNameFromCapabilities().equalsIgnoreCase("docker")) {
+            String browserVersion = NOT_SET;
             LOGGER.info("Running in docker. Get driver for browser in docker");
             String[] getBrowserVersionFromDockerCommand = new String[] {"cURL -s --request GET " +
                                                         "'http://localhost:" + Runner.getRemoteDriverGridPort() + "/status'" +
@@ -215,19 +217,19 @@ class BrowserDriverManager {
                                                                 "| .browserVersion '"};
             CommandLineResponse commandLineResponse = CommandLineExecutor.execCommand(getBrowserVersionFromDockerCommand);
             browserVersion = commandLineResponse.getStdOut().split("\n")[0];
+            webDriverManager.browserInDocker();
+//            webDriverManager.browserVersion(browserVersion);
             LOGGER.info(String.format("%s browser version in docker container: %s", browserType, browserVersion));
         }
-        WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
-                                                            .proxy(webDriverManagerProxyUrl);
-        if (!browserVersion.equalsIgnoreCase(NOT_SET)) {
-            webDriverManager.browserVersion(browserVersion);
-        }
+//        if (!browserVersion.equalsIgnoreCase(NOT_SET)) {
+//            webDriverManager.browserVersion(browserVersion);
+//        }
         webDriverManager.setup();
-        String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
+//        String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
 
-        String message = String.format("Using %s browser version: %s", driverManagerType, downloadedDriverVersion);
-        LOGGER.info(message);
-        ReportPortalLogger.logInfoMessage(message);
+//        String message = String.format("Using %s browser version: %s", driverManagerType, downloadedDriverVersion);
+//        LOGGER.info(message);
+//        ReportPortalLogger.logInfoMessage(message);
         return driverManagerType;
     }
 
