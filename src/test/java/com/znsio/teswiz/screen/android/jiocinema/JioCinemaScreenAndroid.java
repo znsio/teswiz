@@ -2,11 +2,14 @@ package com.znsio.teswiz.screen.android.jiocinema;
 
 import com.applitools.eyes.MatchLevel;
 import com.applitools.eyes.appium.Target;
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiocinema.JioCinemaScreen;
 import io.appium.java_client.AppiumBy;
 import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 public class JioCinemaScreenAndroid extends JioCinemaScreen {
     private static final Logger LOGGER = Logger.getLogger(JioCinemaScreenAndroid.class.getName());
@@ -14,6 +17,7 @@ public class JioCinemaScreenAndroid extends JioCinemaScreen {
     private final Visual visually;
     private final String SCREEN_NAME = JioCinemaScreenAndroid.class.getSimpleName();
     private final String visibleMovieNumberXpath = "//android.widget.TextView[@text='%s']";
+    private final String movieXpath = "//android.widget.TextView[@text='%s']//parent::android.view.View";
 
     public JioCinemaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -48,5 +52,14 @@ public class JioCinemaScreenAndroid extends JioCinemaScreen {
         visually.check(SCREEN_NAME, String.format("movie number %s visible on screen", movieNumberOnScreen),
                 Target.region(AppiumBy.xpath(String.format(visibleMovieNumberXpath, movieNumberOnScreen))));
         return isMovieVisibleOnScreen;
+    }
+
+    @Override
+    public JioCinemaScreen swipeTrendingItem(Direction direction, int movieNumberOnScreen) {
+        LOGGER.info(String.format("Swiping %s movie number : %s ", direction, movieNumberOnScreen));
+        WebElement movieTrending = driver.waitTillElementIsVisible(
+                By.xpath(String.format(movieXpath, movieNumberOnScreen)));
+        driver.horizontalSwipeWithGesture(movieTrending, direction);
+        return this;
     }
 }

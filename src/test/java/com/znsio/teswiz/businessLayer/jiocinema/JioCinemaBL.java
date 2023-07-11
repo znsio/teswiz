@@ -1,6 +1,7 @@
 package com.znsio.teswiz.businessLayer.jiocinema;
 
 import com.context.TestExecutionContext;
+import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.jiocinema.JioCinemaScreen;
@@ -37,6 +38,11 @@ public class JioCinemaBL {
 
     public JioCinemaBL scrollTillTrendingInIndiaSection() {
         JioCinemaScreen.get().scrollTillTrendingInIndiaSection();
+        return this;
+    }
+
+    public JioCinemaBL swipeMovieTrendingInIndiaSection(Direction direction, int movieNumberOnScreen) {
+        JioCinemaScreen.get().swipeTrendingItem(direction, movieNumberOnScreen);
         return this;
     }
 

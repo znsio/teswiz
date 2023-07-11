@@ -43,13 +43,6 @@ Feature: Vodqa test
     Given I login to vodqa application using valid credentials
     Then App should work in background for 5 sec
 
-  #  CONFIG=./configs/vodqa_local_config.properties TAG=@scrollInDynamicLayer PLATFORM=android ./gradlew run
-  @android @scrollInDynamicLayer
-  Scenario: Validating scroll in dynamic layer functionality
-    Given I login to vodqa application using valid credentials
-    When I scroll "down" in dynamic layer on vertical swiping screen
-    Then Element text ".net" should be visible
-
   #  CONFIG=./configs/vodqa_local_config.properties TAG=@scrollVertically PLATFORM=android ./gradlew run
   @android @scrollVertically
   Scenario: Validate that user is able to scroll vertically by screen percentage
@@ -77,3 +70,10 @@ Feature: Vodqa test
   Scenario: Validate that user is able to double tap on an element
     Given I login to vodqa application using valid credentials
     Then I should be able to double tap on an element
+
+  #  CONFIG=./configs/vodqa_local_config.properties TAG=@scrollVertically PLATFORM=android ./gradlew run
+  @android @pinchAndZoom
+  Scenario: Validate that user is able to pinch and zoom on particular element
+    Given I login to vodqa application using valid credentials
+    Then I should be able to pinch and zoom in on an element
+    And I should be able to pinch and zoom out on an element

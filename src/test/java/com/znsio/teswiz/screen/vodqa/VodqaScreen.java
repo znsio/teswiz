@@ -1,6 +1,5 @@
 package com.znsio.teswiz.screen.vodqa;
 
-import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Drivers;
@@ -9,6 +8,7 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.android.vodqa.VodqaScreenAndroid;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.openqa.selenium.Dimension;
 
 public abstract class VodqaScreen {
     private static final String SCREEN_NAME = VodqaScreen.class.getSimpleName();
@@ -54,17 +54,27 @@ public abstract class VodqaScreen {
 
     public abstract boolean isAppWorkingInBackground();
 
-    public abstract VodqaScreen scrollDownInDynamicLayer(Direction direction);
-
     public abstract boolean isElementWithTextVisible(String elementText);
-  
+
     public abstract VodqaScreen scrollVerticallyByPercentage(int fromPercentHeight, int toPercentHeight, int percentWidth);
 
     public abstract VodqaScreen longPressOnElement();
 
     public abstract boolean isLongPressedPopupVisible();
-  
+
     public abstract DragAndDropScreen openDragAndDropScreen();
+
+    public abstract VodqaScreen navigateToUImageView();
+
+    public abstract VodqaScreen pinchAndZoomInOnAnElement();
+
+    public abstract boolean isPinchAndZoomInSuccessful(Dimension initialElementDimension);
+
+    public abstract boolean isPinchAndZoomOutSuccessful(Dimension initialElementDimension);
+
+    public abstract VodqaScreen pinchAndZoomOutOnAnElement();
+
+    public abstract Dimension getImageElementDimension();
 
     public abstract VodqaScreen doubleTapOnElement();
 
