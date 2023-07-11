@@ -9,6 +9,7 @@ import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
+import org.openqa.selenium.Dimension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -144,6 +145,20 @@ public class VodqaBL {
 
     public VodqaBL verifyLongPressedPopup() {
         assertThat(VodqaScreen.get().isLongPressedPopupVisible()).as("Long Pressed Popup is not visible").isTrue();
+        return this;
+    }
+
+    public VodqaBL pinchAndZoomInOnAnElement() {
+        VodqaScreen vodqaScreen = VodqaScreen.get();
+        Dimension elementDimension = vodqaScreen.navigateToUImageView().getImageElementDimension();
+        assertThat(vodqaScreen.pinchAndZoomOutOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom Out on an element failed").isTrue();
+        return this;
+    }
+
+    public VodqaBL pinchAndZoomOutOnAnElement() {
+        VodqaScreen vodqaScreen = VodqaScreen.get();
+        Dimension elementDimension = vodqaScreen.navigateToUImageView().getImageElementDimension();
+        assertThat(vodqaScreen.pinchAndZoomOutOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom Out on an element failed").isTrue();
         return this;
     }
 }
