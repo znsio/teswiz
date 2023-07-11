@@ -199,14 +199,7 @@ class BrowserDriverManager {
     private static DriverManagerType setupBrowserDriver(TestExecutionContext testExecutionContext,
                                                         String browserType) {
         DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
-        String webDriverManagerProxyUrl = (null == Runner.getWebDriverManagerProxyURL()) ? "" : Runner.getWebDriverManagerProxyURL();
-        LOGGER.info(String.format(
-                "Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'",
-                webDriverManagerProxyUrl, browserType));
-
-        // TODO - get browser version from local or container. What about cloud?
-        WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
-                                                    .proxy(webDriverManagerProxyUrl);
+        WebDriverManager webDriverManager = getWebDriverManagerWithProxy(browserType, driverManagerType);
         if (Runner.isRunningInCI() && getCloudNameFromCapabilities().equalsIgnoreCase("docker")) {
             String browserVersion = NOT_SET;
             LOGGER.info("Running in docker. Get driver for browser in docker");
@@ -218,19 +211,41 @@ class BrowserDriverManager {
             CommandLineResponse commandLineResponse = CommandLineExecutor.execCommand(getBrowserVersionFromDockerCommand);
             browserVersion = commandLineResponse.getStdOut().split("\n")[0];
             webDriverManager.browserInDocker();
-//            webDriverManager.browserVersion(browserVersion);
             LOGGER.info(String.format("%s browser version in docker container: %s", browserType, browserVersion));
         }
-//        if (!browserVersion.equalsIgnoreCase(NOT_SET)) {
-//            webDriverManager.browserVersion(browserVersion);
-//        }
         webDriverManager.setup();
-//        String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
-
-//        String message = String.format("Using %s browser version: %s", driverManagerType, downloadedDriverVersion);
-//        LOGGER.info(message);
-//        ReportPortalLogger.logInfoMessage(message);
         return driverManagerType;
+    }
+
+    @NotNull
+    private static WebDriverManager getWebDriverManagerWithProxy(String browserType, DriverManagerType driverManagerType) {
+        String webDriverManagerProxyUrl = (null == Runner.getWebDriverManagerProxyURL()) ? "" : Runner.getWebDriverManagerProxyURL();
+        LOGGER.info(String.format(
+                "Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'",
+                webDriverManagerProxyUrl, browserType));
+
+        WebDriverManager webDriverManager = null;
+        switch (driverManagerType){
+            case CHROME:
+                webDriverManager = WebDriverManager.chromedriver();
+                break;
+            case FIREFOX:
+                webDriverManager = WebDriverManager.firefoxdriver();
+                break;
+            case EDGE:
+                webDriverManager = WebDriverManager.edgedriver();
+                break;
+            case SAFARI:
+                webDriverManager = WebDriverManager.safaridriver();
+                break;
+            case OPERA:
+            case IEXPLORER:
+            case CHROMIUM:
+                throw new InvalidTestDataException(String.format("This browser %s is not supported", browserType));
+        }
+        // TODO - get browser version from local or container. What about cloud?
+        webDriverManager.proxy(webDriverManagerProxyUrl);
+        return webDriverManager;
     }
 
     @NotNull
