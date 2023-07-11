@@ -52,6 +52,7 @@ class BrowserDriverManager {
     private static final String MAXIMIZE = "maximize";
     private static final String EXCLUDE_SWITCHES = "excludeSwitches";
     private static final String SETTING_PROXY_FOR_BROWSER = "Setting Proxy for browser: ";
+    private static final String SETTING_NO_PROXY_FOR_BROWSER = "Setting NO_Proxy for browser: ";
     private static int numberOfWebDriversUsed = 0;
     private static boolean shouldBrowserBeMaximized = false;
     private static boolean isRunInHeadlessMode = false;
@@ -244,7 +245,9 @@ class BrowserDriverManager {
                 throw new InvalidTestDataException(String.format("This browser %s is not supported", browserType));
         }
         // TODO - get browser version from local or container. What about cloud?
-        webDriverManager.proxy(webDriverManagerProxyUrl);
+        if (null != webDriverManagerProxyUrl) {
+            webDriverManager.proxy(webDriverManagerProxyUrl);
+        }
         return webDriverManager;
     }
 
@@ -256,7 +259,6 @@ class BrowserDriverManager {
         boolean enableVerboseLogging = chromeConfiguration.getBoolean(VERBOSE_LOGGING);
         boolean acceptInsecureCerts = chromeConfiguration.getBoolean(ACCEPT_INSECURE_CERTS);
         shouldBrowserBeMaximized = chromeConfiguration.getBoolean(MAXIMIZE);
-        String proxyUrl = Runner.getProxyURL();
 
         ChromeOptions chromeOptions = new ChromeOptions();
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
@@ -286,9 +288,12 @@ class BrowserDriverManager {
         }
         chromeOptions.setCapability(ChromeOptions.LOGGING_PREFS, logPrefs);
 
+        String proxyUrl = Runner.getProxyURL();
         if(null != proxyUrl) {
             LOGGER.info(SETTING_PROXY_FOR_BROWSER + proxyUrl);
             chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
+        } else {
+            LOGGER.info(SETTING_NO_PROXY_FOR_BROWSER + proxyUrl);
         }
 
         JSONObject headlessOptions = chromeConfiguration.getJSONObject("headlessOptions");
@@ -341,8 +346,6 @@ class BrowserDriverManager {
         boolean enableVerboseLogging = firefoxConfiguration.getBoolean(VERBOSE_LOGGING);
         boolean acceptInsecureCerts = firefoxConfiguration.getBoolean(ACCEPT_INSECURE_CERTS);
         shouldBrowserBeMaximized = firefoxConfiguration.getBoolean(MAXIMIZE);
-        String proxyUrl = Runner.getProxyURL();
-
         FirefoxOptions firefoxOptions = new FirefoxOptions();
 
         setLogFileName(forUserPersona, testExecutionContext, "Firefox");
@@ -382,9 +385,12 @@ class BrowserDriverManager {
         }
         firefoxOptions.setCapability("moz:firefoxOptions",logPrefs);
 
+        String proxyUrl = Runner.getProxyURL();
         if(null != proxyUrl) {
             LOGGER.info(SETTING_PROXY_FOR_BROWSER + proxyUrl);
             firefoxOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
+        } else {
+            LOGGER.info(SETTING_NO_PROXY_FOR_BROWSER + proxyUrl);
         }
 
         JSONObject headlessOptions = firefoxConfiguration.getJSONObject("headlessOptions");
