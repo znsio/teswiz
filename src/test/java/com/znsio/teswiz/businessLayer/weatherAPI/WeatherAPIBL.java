@@ -43,8 +43,29 @@ public class WeatherAPIBL {
                 .isBetween(lowerLimit,upperLimit);
     }
 
-    public void verifyKeyValueInResponse(JSONObject jsonResponse, String key, int value) {
-        LOGGER.info("Verifying "+key +" is equals : "+ value);
-        assertThat(jsonResponse.getInt(key)).as(key+" not equals "+value).isEqualTo(value);
+    public JSONObject getForecastForInvalidDays() {
+        String days = testData.get("days").toString();
+        String latitude = testData.get("latitude").toString();
+        String longitude = testData.get("longitude").toString();
+        String hourly = testData.get("hourly").toString();
+        LOGGER.info("Getting temperature forecast for days: "+days);
+        HttpResponse<JsonNode> jsonResponse
+                = Unirest.get(base_URL)
+                .header("accept", "application/json")
+                .queryString("latitude", latitude)
+                .queryString("longitude",longitude)
+                .queryString("hourly",hourly)
+                .queryString("forecast_days",days)
+                .asJson();
+
+        assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
+                .isEqualTo(400);
+        return jsonResponse.getBody().getObject();
+    }
+
+    public void verifyErrorForInvalidForecastDays(JSONObject jsonObject, String errorMessage) {
+        String jsonError = jsonObject.get("reason").toString();
+        assertThat(jsonError.contains(errorMessage))
+                .as("Incorrect error message!").isTrue();
     }
 }
