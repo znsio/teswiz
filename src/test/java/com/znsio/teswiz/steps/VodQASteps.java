@@ -108,8 +108,17 @@ public class VodQASteps {
         new VodqaBL().doubleTapOnAnElement();
     }
 
+    @Then("I should be able to pinch and zoom in on an element")
+    public void iShouldBeAbleToPinchAndZoomInOnAnElement() {
+        new VodqaBL().pinchAndZoomInOnAnElement();
+    }
+
+    @And("I should be able to pinch and zoom out on an element")
+    public void iShouldBeAbleToPinchAndZoomOutOnAnElement() {
+        new VodqaBL().pinchAndZoomOutOnAnElement();
+    }
+    
     @Then("I should be able set both sliders to value {float} by multi touch action")
     public void iShouldBeAbleSetBothSlidersToValueByMultiTouchAction(float setSliderValue) {
         new VodqaBL().performMultiTouchForBothSilders(setSliderValue);
-    }
 }
