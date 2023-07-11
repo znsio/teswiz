@@ -18,18 +18,6 @@
     "skipUnlock": true,
     "noReset": true
   },
-  "serverConfig" : {
-    "server": {
-      "port": 31337,
-      "use-plugins": ["device-farm", "appium-dashboard"],
-      "plugin": {
-        "device-farm": {
-          "platform": "android",
-          "skipChromeDownload": true
-        }
-      }
-    }
-  },
   "hostMachines": [
     {
       "machineIP": "127.0.0.1",
@@ -40,5 +28,30 @@
         }
       ]
     }
-  ]
+  ],
+  "iOS": {
+    "platformName": "iOS",
+    "app": "src/test/resources/ajio.zip",
+    "deviceName": "iPhone",
+    "preventWDAAttachments": true,
+    "clearSystemFiles": true,
+    "shouldUseSingletonTestManager": false,
+    "simpleIsVisibleCheck": true,
+    "maxTypingFrequency": 10,
+    "automationName": "XCUITest",
+    "usePrebuiltWDA": true,
+    "appium:iPhoneOnly": true,
+    "noReset": true
+  },
+  "serverConfig" : {
+    "server": {
+      "use-plugins": ["device-farm", "appium-dashboard","relaxed-caps-plugin"],
+      "plugin": {
+        "device-farm": {
+          "platform": "android",
+          "skipChromeDownload": true
+        }
+      }
+    }
+  }
 }
