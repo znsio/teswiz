@@ -9,8 +9,6 @@
 - ```npm i -g appium@next```
 
 
-3. Verify XCUITest Driver installation path.
-![XCUITest-driver-path.png](XCUITest-driver-path.png)
 
 ## Install Plugins
 
@@ -18,7 +16,7 @@
 
 
 
-4. To install the Appium Device Farm and Appium Dashboard plugins, run the following commands.
+3. To install the Appium Device Farm and Appium Dashboard plugins, run the following commands.
 
 * `appium plugin install --source=npm appium-device-farm`
 
@@ -26,11 +24,11 @@
 
 
 
-5. Install plugin for Relaxing Appium's requirement for vendor prefixes on capabilities.
+4. Install plugin for Relaxing Appium's requirement for vendor prefixes on capabilities.
 
 * `appium plugin install relaxed-caps`
 
-* `appium plugin install --source=npm @appium/relaxed-caps-plugin`
+   `appium plugin install --source=npm @appium/relaxed-caps-plugin`
 
 
 
@@ -38,13 +36,17 @@
 
 
 
-6. Cross Platform installation, [click here](https://github.com/danielpaulus/go-ios), this is an operating system independent implementation of iOS device features. You can run UI tests, launch or kill apps, install apps etc. with it.
+5. Cross Platform installation, [click here](https://github.com/danielpaulus/go-ios), this is an operating system independent implementation of iOS device features. You can run UI tests, launch or kill apps, install apps etc. with it.
+   MacOS users will need to install this driver to unzip files. To install the driver, run the following command
+* `npm install -g go-ios`
 
 
-7. The XCUITest driver is used to automate iOS apps that are written using Xcode. To install the driver, run the following command:
+6. The XCUITest driver is used to automate iOS apps that are written using Xcode. To install the driver, run the following command:
 
 * `appium driver install xcuitest`
 
+7. Verify XCUITest Driver installation path.
+   ![XCUITest-driver-path.png](XCUITest-driver-path.png)
 
 
 ## Install and configure Appium Inspector
