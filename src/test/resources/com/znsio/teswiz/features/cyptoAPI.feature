@@ -1,5 +1,5 @@
 @cryptoAPI @api
-Feature: Crypto-Currency price data for last 24 hrs
+Feature: Crypto-Currency data change
 # CONFIG=./configs/api_local_config.properties TAG=cryptoAPI PLATFORM=api ./gradlew run
 
   @priceChange

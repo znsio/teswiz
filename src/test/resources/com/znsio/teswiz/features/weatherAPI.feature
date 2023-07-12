@@ -1,5 +1,5 @@
 @weatherAPI @api
-Feature: Weather API
+Feature: Weather data based on location Coordinates
 # CONFIG=./configs/api_local_config.properties TAG=weatherAPI PLATFORM=api ./gradlew run
 
   @temperature
