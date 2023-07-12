@@ -19,3 +19,8 @@ Feature: Weather API
     | "28.651952" | "77.231495" |
     | "22.562627" | "88.363044" |
     | "13.084622" | "80.248357" |
+
+  Scenario: Verify the temperature for city - "San Francisco" using location coordinates
+    Given I send GET request for city "San Francisco"
+    When I fetch latitude and longitude using city name
+    Then wind direction should be less than 360
