@@ -1,6 +1,7 @@
 package com.znsio.teswiz.steps;
 
 import com.context.TestExecutionContext;
+import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
@@ -24,7 +25,7 @@ public class Hooks {
                                   scenario.getName()));
         LOGGER.info(String.format("Hooks: Running test %s on %s", testExecutionContext.getTestName(),
                                   Runner.getPlatform().name()));
-        if(!Runner.getPlatform().name().equalsIgnoreCase("api")) {
+        if(!Runner.getPlatform().equals(Platform.api)) {
             testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
         }
         testExecutionContext.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS,
