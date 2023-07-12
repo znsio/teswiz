@@ -31,6 +31,7 @@ public class GoogleSearchLandingScreenAndroid extends GoogleSearchLandingScreen 
 
     @Override
     public GoogleSearchResultsScreen searchFor(String searchText) {
+        visually.checkWindow(SCREEN_NAME, "Google");
         driver.findElement(SEARCH_INPUT).sendKeys(searchText, Keys.ENTER);
         return GoogleSearchResultsScreen.get();
     }

@@ -31,12 +31,10 @@ public class GoogleSearchSteps {
     @Given("I search for {string} in {string}")
     public void iSearchFor(String searchText, String appName) {
         String[] appNameParts = appName.split("-");
-        String browserName = appNameParts[0].toLowerCase(Locale.ROOT) + "_" + Runner.getCloudName()
-                .toLowerCase();
+        String browserName = appNameParts[0].toLowerCase(Locale.ROOT);
         String onPlatform = appNameParts[appNameParts.length - 1].toLowerCase(Locale.ROOT);
         LOGGER.info(System.out.printf("iSearchFor - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
-        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, appName, browserName,
-                Platform.valueOf(onPlatform), context);
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, appName, browserName, Platform.valueOf(onPlatform), context);
         new GoogleSearchBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).searchFor(searchText);
     }
 }

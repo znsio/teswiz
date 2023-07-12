@@ -9,6 +9,8 @@ import com.znsio.teswiz.screen.android.googlesearch.GoogleSearchResultsScreenAnd
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 
+import java.util.List;
+
 public abstract class GoogleSearchResultsScreen {
     private static final String SCREEN_NAME = GoogleSearchResultsScreen.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
@@ -27,4 +29,6 @@ public abstract class GoogleSearchResultsScreen {
                         SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
         }
     }
+
+    public abstract List<String> getSearchResults();
 }

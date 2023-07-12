@@ -7,6 +7,10 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.googlesearch.GoogleSearchLandingScreen;
 import org.assertj.core.api.SoftAssertions;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class GoogleSearchBL {
     private final TestExecutionContext context;
     private final SoftAssertions softly;
@@ -23,7 +27,8 @@ public class GoogleSearchBL {
     }
 
     public SearchResultsBL searchFor(String searchText) {
-        GoogleSearchLandingScreen.get().searchFor(searchText);
+        List<String> searchResults = GoogleSearchLandingScreen.get().searchFor(searchText).getSearchResults();
+        assertThat(searchResults).as("Verifying google search results").allMatch(s -> s.toLowerCase().contains(searchText));
         return new SearchResultsBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform());
     }
 }
