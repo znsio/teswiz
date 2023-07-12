@@ -14,7 +14,7 @@ public class CryptoAPIBL {
     private final Map<String, Object> testData = Runner.getTestDataAsMap("Crypto_API");
     private final String base_URL = testData.get("url").toString();
 
-    public HttpResponse<JsonNode> getCryptoData(String symbol) {
+    public HttpResponse<JsonNode> getDataUsingCryptoSymbol(String symbol) {
         LOGGER.info("Getting crypto currency data for last 24-Hrs");
         HttpResponse<JsonNode> jsonResponse
                 = Unirest.get(base_URL)
@@ -27,19 +27,21 @@ public class CryptoAPIBL {
         return jsonResponse;
     }
 
-    public void verifyMaxPriceChange(HttpResponse<JsonNode> jsonResponse, int maxPriceChange) {
+    public CryptoAPIBL verifypriceChange(HttpResponse<JsonNode> jsonResponse, int maxPriceChange) {
         LOGGER.info("Verifying price change is less than "+maxPriceChange);
         double priceChange = Double.parseDouble(jsonResponse.getBody().getObject().getString("priceChange"));
         assertThat(priceChange)
                 .as("Price change value more than expected maximum value!")
                 .isLessThan(maxPriceChange);
+        return this;
     }
 
-    public void verifyMaxPriceChangePercent(HttpResponse<JsonNode> jsonResponse, int maxPriceChangePercent) {
+    public CryptoAPIBL verifyPriceChangePercent(HttpResponse<JsonNode> jsonResponse, int maxPriceChangePercent) {
         LOGGER.info("Verifying price change percent is less than "+maxPriceChangePercent);
         double priceChangePercent = Double.parseDouble(jsonResponse.getBody().getObject().getString("priceChangePercent"));
         assertThat(priceChangePercent)
                 .as("Price change percent value more than expected maximum value!")
                 .isLessThan(maxPriceChangePercent);
+        return this;
     }
 }
