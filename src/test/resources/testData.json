@@ -14,6 +14,7 @@
     },
     "Weather_API":{
       "url": "https://api.open-meteo.com/v1/forecast?",
+      "geocode_url": "https://geocode.maps.co/search?",
       "latitude": "28.6139",
       "longitude": "77.2090",
       "hourly": "temperature_2m",
