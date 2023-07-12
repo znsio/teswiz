@@ -38,7 +38,7 @@
 
 5. Cross Platform installation, [click here](https://github.com/danielpaulus/go-ios), this is an operating system independent implementation of iOS device features. You can run UI tests, launch or kill apps, install apps etc. with it.
    MacOS users will need to install this driver to unzip files. To install the driver, run the following command
-* `npm install -g go-ios`
+* `npm install go-ios`
 
 
 6. The XCUITest driver is used to automate iOS apps that are written using Xcode. To install the driver, run the following command:
