@@ -4,6 +4,7 @@ import com.appium.filelocations.FileLocations;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
+import com.znsio.teswiz.runner.Runner;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.EventPublisher;
 import io.cucumber.plugin.event.TestCaseFinished;
@@ -17,31 +18,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class CucumberWebScenarioListener
+public class CucumberScenarioListener
         implements ConcurrentEventListener {
     private static final Logger LOGGER = Logger.getLogger(
-            CucumberWebScenarioListener.class.getName());
+            CucumberScenarioListener.class.getName());
     private final Map<String, Integer> scenarioRunCounts = new HashMap<>();
 
-    public CucumberWebScenarioListener() {
-        LOGGER.info(String.format("ThreadId: %d: CucumberWebScenarioListener%n",
+    public CucumberScenarioListener() {
+        LOGGER.info(String.format("ThreadId: %d: CucumberScenarioListener%n",
                                   Thread.currentThread().getId()));
     }
 
     @Override
     public void setEventPublisher(EventPublisher eventPublisher) {
-        eventPublisher.registerHandlerFor(TestRunStarted.class, this::webRunStartedHandler);
-        eventPublisher.registerHandlerFor(TestCaseStarted.class, this::webCaseStartedHandler);
-        eventPublisher.registerHandlerFor(TestCaseFinished.class, this::webCaseFinishedHandler);
-        eventPublisher.registerHandlerFor(TestRunFinished.class, this::webRunFinishedHandler);
+        eventPublisher.registerHandlerFor(TestRunStarted.class, this::testRunStartedHandler);
+        eventPublisher.registerHandlerFor(TestCaseStarted.class, this::testCaseStartedHandler);
+        eventPublisher.registerHandlerFor(TestCaseFinished.class, this::testCaseFinishedHandler);
+        eventPublisher.registerHandlerFor(TestRunFinished.class, this::testRunFinishedHandler);
     }
 
-    private void webRunStartedHandler(TestRunStarted event) {
-        LOGGER.info("webRunStartedHandler");
+    private void testRunStartedHandler(TestRunStarted event) {
+        LOGGER.info("testRunStartedHandler for platform :" + Runner.getPlatform());
         LOGGER.info(String.format("ThreadId: %d: beforeSuite: %n", Thread.currentThread().getId()));
     }
 
-    private void webCaseStartedHandler(TestCaseStarted event) {
+    private void testCaseStartedHandler(TestCaseStarted event) {
         String scenarioName = event.getTestCase().getName();
         Integer scenarioRunCount = getScenarioRunCount(scenarioName);
         TestExecutionContext testExecutionContext = new TestExecutionContext(
@@ -52,8 +53,8 @@ public class CucumberWebScenarioListener
                 "STARTED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$",
                 scenarioName));
         LOGGER.info(
-                String.format("webCaseStartedHandler: '%s' with scenarioRunCount: %d", scenarioName,
-                              scenarioRunCount));
+                String.format("testCaseStartedHandler: '%s' with scenarioRunCount: %d and platform: %s", scenarioName,
+                              scenarioRunCount, Runner.getPlatform()));
         String normalisedScenarioName = normaliseScenarioName(scenarioName);
 
         LOGGER.info(String.format("ThreadId: %d: beforeScenario: for scenario: %s%n",
@@ -67,10 +68,10 @@ public class CucumberWebScenarioListener
         testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_DIRECTORY, screenshotDirectory);
     }
 
-    private void webCaseFinishedHandler(TestCaseFinished event) {
+    private void testCaseFinishedHandler(TestCaseFinished event) {
         String scenarioName = event.getTestCase().getName();
-        LOGGER.info("webCaseFinishedHandler Name: " + scenarioName);
-        LOGGER.info("webCaseFinishedHandler Result: " + event.getResult().getStatus().toString());
+        LOGGER.info("testCaseFinishedHandler Name: " + scenarioName +" ,Platform: "+Runner.getPlatform());
+        LOGGER.info("testCaseFinishedHandler Result: " + event.getResult().getStatus().toString());
         long threadId = Thread.currentThread().getId();
         LOGGER.info(String.format("ThreadID: %d: afterScenario: for scenario: %s%n", threadId,
                                   scenarioName));
@@ -79,9 +80,9 @@ public class CucumberWebScenarioListener
                 "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$   TEST-CASE  -- " + scenarioName + "  ENDED   $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
     }
 
-    private void webRunFinishedHandler(TestRunFinished event) {
-        LOGGER.info("webRunFinishedHandler: " + event.getResult().toString());
-        LOGGER.debug("webRunFinishedHandler: rp.launch.id: " + System.getProperty("rp.launch.id"));
+    private void testRunFinishedHandler(TestRunFinished event) {
+        LOGGER.info("testRunFinishedHandler: " + event.getResult().toString()+" ,Platform: "+Runner.getPlatform());
+        LOGGER.debug("testRunFinishedHandler: rp.launch.id: " + System.getProperty("rp.launch.id"));
         SessionContext.setReportPortalLaunchURL();
         LOGGER.info(String.format("ThreadId: %d: afterSuite: %n", Thread.currentThread().getId()));
     }
