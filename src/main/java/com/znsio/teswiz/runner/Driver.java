@@ -46,6 +46,7 @@ import static com.znsio.teswiz.tools.Wait.waitFor;
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
 import static java.util.Collections.singletonList;
+import static java.util.Arrays.asList;
 
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
@@ -706,4 +707,40 @@ public class Driver {
         Point locus = new Point(centerX, centerY);
         appiumDriver.perform(pinchAndZoomOut(locus, 5));
     }
+
+    public void multiTouchOnElements (WebElement firstElement, WebElement SecondElement){
+            
+        LOGGER.info("Determining x and y co-ordinates of WebElements to perform multi touch action");
+        Dimension screenSize = driver.manage().window().getSize();
+        int xCoordinate_firstElement = (screenSize.width - 40) / 2;
+        int yCoordinate_firstElement = firstElement.getLocation().y;
+
+        int xCoordinate_secondElement = (screenSize.width - 40) / 2;
+        int yCoordinate_secondElement = SecondElement.getLocation().y;
+        multiTouch(xCoordinate_firstElement, yCoordinate_firstElement, xCoordinate_secondElement, yCoordinate_secondElement);
+
+     }
+
+     private void multiTouch(int x_element1, int y_element1, int x_element2, int y_element2){
+        AppiumDriver appiumDriver = (AppiumDriver) this.driver;
+
+        PointerInput finger1 = new PointerInput(PointerInput.Kind.MOUSE, "finger1");
+        PointerInput finger2 = new PointerInput(PointerInput.Kind.MOUSE, "finger2");
+
+        LOGGER.info("Creating two action sequences to perform multi touch action with two fingers");
+        Sequence multiTouchAction = new Sequence(finger1, 1);
+        Sequence multiTouchAction2 = new Sequence(finger2, 1);
+
+        LOGGER.info("Performing tap action simultaneously on elements present at co-ordinates X1: "+ x_element1 + " Y1: "+ y_element1 +" and X2: "+x_element2+ " Y2: "+y_element2);
+        multiTouchAction.addAction(finger1.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x_element1, y_element1))
+              .addAction(finger1.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+              .addAction(finger1.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+        multiTouchAction2.addAction(finger2.createPointerMove(Duration.ofMillis(1), PointerInput.Origin.viewport(), x_element2, y_element2))
+              .addAction(finger2.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+              .addAction(finger2.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+        appiumDriver.perform(asList(multiTouchAction, multiTouchAction2));
+
+     }
 }

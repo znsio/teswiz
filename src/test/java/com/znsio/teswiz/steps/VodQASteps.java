@@ -117,4 +117,9 @@ public class VodQASteps {
     public void iShouldBeAbleToPinchAndZoomOutOnAnElement() {
         new VodqaBL().pinchAndZoomOutOnAnElement();
     }
+    
+    @Then("I should be able set both sliders to value {float} by multi touch action")
+    public void iShouldBeAbleSetBothSlidersToValueByMultiTouchAction(float setSliderValue) {
+        new VodqaBL().performMultiTouchForBothSilders(setSliderValue);
+    }
 }
