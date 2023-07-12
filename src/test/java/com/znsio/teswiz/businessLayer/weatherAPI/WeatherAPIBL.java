@@ -8,6 +8,7 @@ import kong.unirest.json.JSONObject;
 import org.apache.log4j.Logger;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.array;
 
 public class WeatherAPIBL {
     private static final Logger LOGGER = Logger.getLogger(WeatherAPIBL.class.getName());
@@ -83,5 +84,40 @@ public class WeatherAPIBL {
         LOGGER.info("Verifying wind speed is in range "+lowerLimit+" and "+upperLimit);
         assertThat(((int) jsonResponse.getDouble("windspeed"))).as("Wind speed value incorrect!")
                 .isBetween(lowerLimit,upperLimit);
+    }
+
+    public JSONObject getLocationCoordinatesFor(String city) {
+        LOGGER.info("Getting coordinates for city "+city);
+        String geocode_url = testData.get("geocode_url").toString();
+
+        HttpResponse<JsonNode> jsonResponse
+                = Unirest.get(geocode_url)
+                .header("accept", "application/json")
+                .queryString("q", city)
+                .asJson();
+
+        assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
+                .isEqualTo(200);
+        return jsonResponse.getBody().getArray().getJSONObject(0);
+    }
+
+    public String getLatitudeFromJSON(JSONObject jsonObject) {
+        assertThat(jsonObject.has("lat"))
+                .as("Latitude in not available in JSON response!")
+                .isTrue();
+        return jsonObject.getString("lat");
+    }
+
+    public String getLongitudeFromJSON(JSONObject jsonObject) {
+        assertThat(jsonObject.has("lon"))
+                .as("Longitude in not available in JSON response!")
+                .isTrue();
+        return jsonObject.getString("lon");
+    }
+
+    public void verifyCurrentWindDirection(String latitude, String longitude, int maxWindDirection) {
+        JSONObject responseJSON =  getCurrentWeatherJSON(latitude,longitude);
+        assertThat((Double) responseJSON.get("winddirection"))
+                .as("Wind direction above maximum limit!").isLessThan(maxWindDirection);
     }
 }

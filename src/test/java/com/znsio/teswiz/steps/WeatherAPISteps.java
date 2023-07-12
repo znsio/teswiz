@@ -15,6 +15,8 @@ public class WeatherAPISteps {
     private JSONObject jsonObject;
     private static final Logger LOGGER = Logger.getLogger(WeatherAPISteps.class.getName());
     private final TestExecutionContext context;
+    private String latitude;
+    private String longitude;
 
     public WeatherAPISteps() {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
@@ -50,4 +52,22 @@ public class WeatherAPISteps {
     public void iVerifyWindSpeedOfThatLocationInRangeAndKmph(int lowerLimit, int upperLimit) {
         new WeatherAPIBL().verifyCurrentWindSpeed(jsonObject, lowerLimit, upperLimit);
     }
+
+    @Given("I send GET request for city {string}")
+    public void iSendGETRequestWithCity(String city) {
+        jsonObject = new WeatherAPIBL().getLocationCoordinatesFor(city);
+
+    }
+
+    @When("I fetch latitude and longitude using city name")
+    public void iFetchLatitudeAndLongitudeUsingCityName() {
+        latitude = new WeatherAPIBL().getLatitudeFromJSON(jsonObject);
+        longitude = new WeatherAPIBL().getLongitudeFromJSON(jsonObject);
+    }
+
+    @Then("wind direction should be less than {int}")
+    public void windDirectionShouldBeLessThan(int maxWindDirection) {
+        new WeatherAPIBL().verifyCurrentWindDirection(latitude, longitude, maxWindDirection);
+    }
+
 }
