@@ -77,7 +77,7 @@ class LocalDevicesSetup {
         return adbCommandOutput;
     }
 
-    private static List<String> getBootedIOSSimulators() throws IOException {
+    private static List<String> getBootedIOSSimulators()  {
         List<String> bootedSimulators = new ArrayList<>();
         try {
             Process process = Runtime.getRuntime().exec("xcrun simctl list devices");
@@ -106,7 +106,7 @@ class LocalDevicesSetup {
         return bootedSimulators;
     }
 
-    static void setupLocalIOSExecution() throws IOException {
+    static void setupLocalIOSExecution() {
         int numberOfDevicesForParallelExecution = getBootedIOSSimulators().size();
         if (numberOfDevicesForParallelExecution == 0) {
             throw new EnvironmentSetupException("No devices available to run the tests");
