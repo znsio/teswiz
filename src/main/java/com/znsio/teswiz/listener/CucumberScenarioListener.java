@@ -3,6 +3,7 @@ package com.znsio.teswiz.listener;
 import com.appium.filelocations.FileLocations;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
+import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
 import io.cucumber.plugin.ConcurrentEventListener;
@@ -24,6 +25,8 @@ public class CucumberScenarioListener
             CucumberScenarioListener.class.getName());
     private final Map<String, Integer> scenarioRunCounts = new HashMap<>();
 
+    private Platform platform = Runner.getPlatform();
+
     public CucumberScenarioListener() {
         LOGGER.info(String.format("ThreadId: %d: CucumberScenarioListener%n",
                                   Thread.currentThread().getId()));
@@ -38,7 +41,7 @@ public class CucumberScenarioListener
     }
 
     private void testRunStartedHandler(TestRunStarted event) {
-        LOGGER.info("testRunStartedHandler for platform :" + Runner.getPlatform());
+        LOGGER.info("testRunStartedHandler for platform :" + platform);
         LOGGER.info(String.format("ThreadId: %d: beforeSuite: %n", Thread.currentThread().getId()));
     }
 
@@ -54,7 +57,7 @@ public class CucumberScenarioListener
                 scenarioName));
         LOGGER.info(
                 String.format("testCaseStartedHandler: '%s' with scenarioRunCount: %d and platform: %s", scenarioName,
-                              scenarioRunCount, Runner.getPlatform()));
+                              scenarioRunCount, platform));
         String normalisedScenarioName = normaliseScenarioName(scenarioName);
 
         LOGGER.info(String.format("ThreadId: %d: beforeScenario: for scenario: %s%n",
@@ -70,7 +73,7 @@ public class CucumberScenarioListener
 
     private void testCaseFinishedHandler(TestCaseFinished event) {
         String scenarioName = event.getTestCase().getName();
-        LOGGER.info("testCaseFinishedHandler Name: " + scenarioName +" ,Platform: "+Runner.getPlatform());
+        LOGGER.info("testCaseFinishedHandler Name: " + scenarioName +" ,Platform: "+platform);
         LOGGER.info("testCaseFinishedHandler Result: " + event.getResult().getStatus().toString());
         long threadId = Thread.currentThread().getId();
         LOGGER.info(String.format("ThreadID: %d: afterScenario: for scenario: %s%n", threadId,
@@ -81,7 +84,7 @@ public class CucumberScenarioListener
     }
 
     private void testRunFinishedHandler(TestRunFinished event) {
-        LOGGER.info("testRunFinishedHandler: " + event.getResult().toString()+" ,Platform: "+Runner.getPlatform());
+        LOGGER.info("testRunFinishedHandler: " + event.getResult().toString()+" ,Platform: "+platform);
         LOGGER.debug("testRunFinishedHandler: rp.launch.id: " + System.getProperty("rp.launch.id"));
         SessionContext.setReportPortalLaunchURL();
         LOGGER.info(String.format("ThreadId: %d: afterSuite: %n", Thread.currentThread().getId()));
