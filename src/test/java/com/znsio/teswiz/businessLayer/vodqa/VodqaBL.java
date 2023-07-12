@@ -109,7 +109,7 @@ public class VodqaBL {
     }
 
     public VodqaBL isElementWithTextVisible(String elementText) {
-        boolean isScrollSuccessful = VodqaScreen.get().isElementWithTextVisible(elementText);
+        boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible(elementText);
         assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
         return this;
     }
@@ -159,6 +159,12 @@ public class VodqaBL {
         VodqaScreen vodqaScreen = VodqaScreen.get();
         Dimension elementDimension = vodqaScreen.navigateToUImageView().getImageElementDimension();
         assertThat(vodqaScreen.pinchAndZoomOutOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom Out on an element failed").isTrue();
+        return this;
+    }
+    
+    public VodqaBL performMultiTouchForBothSilders(float sliderValue) {
+        VodqaScreen.get().multiTouchOnElements();
+        assertThat(VodqaScreen.get().getSliderValue()).as("Multi Touch failed as slider value is not equal").isEqualTo(sliderValue);
         return this;
     }
 }

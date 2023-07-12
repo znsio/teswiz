@@ -43,8 +43,13 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byDoubleTapSuccessfulXpath = AppiumBy.xpath("//android.widget.TextView[@text='Double tap successful!']");
     private final By byPhotoViewElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='photoView']");
     private final By byImageElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='photo']/android.widget.ImageView");
-    ;
-
+    
+    private final By bySliderSectionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='slider1']/android.view.ViewGroup");
+    private final By byFirstSliderElementId = AppiumBy.accessibilityId("slider");
+    private final By bySecondSliderElementId = AppiumBy.accessibilityId("slider1");
+    private final By bySliderValueXpath = AppiumBy.xpath("//android.view.ViewGroup/android.widget.TextView[2]");
+  
+  
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
@@ -257,5 +262,23 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public Dimension getImageElementDimension() {
         return driver.waitTillElementIsVisible(byImageElementXpath).getSize();
+    }
+    
+    @Override
+    public VodqaScreen multiTouchOnElements() {
+        LOGGER.info("Performing multi touch action in Slider Screen");
+        driver.waitTillElementIsVisible(bySliderSectionXpath).click();
+        visually.check(SCREEN_NAME,"Slider Section Screen",Target.window());
+        WebElement firstSliderElement = driver.findElement(byFirstSliderElementId);
+        WebElement secondSliderElement = driver.findElement(bySecondSliderElementId);
+        driver.multiTouchOnElements(firstSliderElement, secondSliderElement);
+        return this;
+    }
+  
+    @Override
+    public float getSliderValue() {
+        float actualSliderValue = Float.parseFloat(driver.waitTillElementIsPresent(bySliderValueXpath).getText());
+        visually.check(SCREEN_NAME, "Slider value check", Target.region(bySliderValueXpath));
+        return actualSliderValue;
     }
 }
