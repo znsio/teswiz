@@ -32,10 +32,11 @@ public class WeatherAPIBL {
         return jsonResponse.getBody().getObject().getJSONObject("current_weather");
     }
 
-    public void verifyCurrentTemperature(JSONObject jsonResponse, int lowerLimit, int upperLimit) {
+    public WeatherAPIBL verifyCurrentTemperature(JSONObject jsonResponse, int lowerLimit, int upperLimit) {
         LOGGER.info("Verifying weather is in range "+lowerLimit+" and "+upperLimit+" C");
         assertThat(((int) jsonResponse.getDouble("temperature"))).as("Temperature value incorrect!")
                 .isBetween(lowerLimit,upperLimit);
+        return this;
     }
 
     public JSONObject getForecastForInvalidDays() {
@@ -58,11 +59,12 @@ public class WeatherAPIBL {
         return jsonResponse.getBody().getObject();
     }
 
-    public void verifyErrorForInvalidForecastDays(JSONObject jsonObject, String errorMessage) {
+    public WeatherAPIBL verifyErrorForInvalidForecastDays(JSONObject jsonObject, String errorMessage) {
         String jsonError = jsonObject.get("reason").toString();
         LOGGER.info("Verifying error message for invalid forecast days");
         assertThat(jsonError.contains(errorMessage))
                 .as("Incorrect error message!").isTrue();
+        return this;
     }
 
     public JSONObject getCurrentWeatherJSON(String latitude, String longitude) {
@@ -80,10 +82,11 @@ public class WeatherAPIBL {
         return jsonResponse.getBody().getObject().getJSONObject("current_weather");
     }
 
-    public void verifyCurrentWindSpeed(JSONObject jsonResponse, int lowerLimit, int upperLimit) {
+    public WeatherAPIBL verifyCurrentWindSpeed(JSONObject jsonResponse, int lowerLimit, int upperLimit) {
         LOGGER.info("Verifying wind speed is in range "+lowerLimit+" and "+upperLimit);
         assertThat(((int) jsonResponse.getDouble("windspeed"))).as("Wind speed value incorrect!")
                 .isBetween(lowerLimit,upperLimit);
+        return this;
     }
 
     public JSONObject getLocationCoordinatesFor(String city) {
@@ -117,10 +120,10 @@ public class WeatherAPIBL {
         return jsonObject.getString("lon");
     }
 
-    public void verifyCurrentWindDirection(String latitude, String longitude, int maxWindDirection) {
+    public WeatherAPIBL verifyCurrentWindDirection(JSONObject jsonObject, int maxWindDirection) {
         LOGGER.info("Verifying maximum wind direction is less than: "+maxWindDirection);
-        JSONObject responseJSON =  getCurrentWeatherJSON(latitude,longitude);
-        assertThat((Double) responseJSON.get("winddirection"))
+        assertThat((Double) jsonObject.get("winddirection"))
                 .as("Wind direction above maximum limit!").isLessThan(maxWindDirection);
+        return this;
     }
 }
