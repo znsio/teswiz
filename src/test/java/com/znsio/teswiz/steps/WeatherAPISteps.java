@@ -51,21 +51,21 @@ public class WeatherAPISteps {
         new WeatherAPIBL().verifyCurrentWindSpeed(jsonObject, lowerLimit, upperLimit);
     }
 
-    @Given("I send GET request for city {string}")
+    @Given("I fetch location coordinates for {string}")
     public void iSendGETRequestWithCity(String city) {
         jsonObject = new WeatherAPIBL().getLocationCoordinatesFor(city);
-
-    }
-
-    @When("I fetch latitude and longitude using city name")
-    public void iFetchLatitudeAndLongitudeUsingCityName() {
         latitude = new WeatherAPIBL().getLatitudeFromJSON(jsonObject);
         longitude = new WeatherAPIBL().getLongitudeFromJSON(jsonObject);
     }
 
+    @When("I fetch weather data for the location coordinates")
+    public void iFetchLatitudeAndLongitudeUsingCityName() {
+        jsonObject = new WeatherAPIBL().getCurrentWeatherJSON(latitude, longitude);
+    }
+
     @Then("wind direction should be less than {int}")
     public void windDirectionShouldBeLessThan(int maxWindDirection) {
-        new WeatherAPIBL().verifyCurrentWindDirection(latitude, longitude, maxWindDirection);
+        new WeatherAPIBL().verifyCurrentWindDirection(jsonObject, maxWindDirection);
     }
 
 }
