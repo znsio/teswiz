@@ -6,7 +6,7 @@
 ## Install Appium 2
 
 2. Install Appium 2 using the following command:
-- ```npm i -g appium@next```
+- ```npm intall appium```
 
 
 
