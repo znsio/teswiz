@@ -12,7 +12,6 @@ import kong.unirest.json.JSONObject;
 import org.apache.log4j.Logger;
 
 public class WeatherAPISteps {
-    private HttpResponse<JsonNode> jsonResponse;
     private JSONObject jsonObject;
     private static final Logger LOGGER = Logger.getLogger(WeatherAPISteps.class.getName());
     private final TestExecutionContext context;
@@ -22,29 +21,33 @@ public class WeatherAPISteps {
         LOGGER.info("context: " + context.getTestName());
     }
 
-    @Given("I send GET request with valid location coordinates")
+    @Given("I send GET request with location coordinates")
     public void getRequestIsSentToTheWeatherAPIWithValidLatitudeAndLongitude() {
-        jsonResponse = new WeatherAPIBL().getCurrentWeatherJSON();
+        jsonObject = new WeatherAPIBL().getCurrentWeatherJSON();
     }
 
-    @When("I query key {string} in response")
-    public void iQueryKeyWeatherInResponse(String key) {
-        jsonObject = new WeatherAPIBL().getValueForKey(jsonResponse, key);
-    }
-
-    @Then("I verify temperature of that location in range {int} and {int} C")
+    @Then("temperature of that location should be in range {int} and {int} C")
     public void weVerifyWeatherOfThatLocationInResponse(int lowerLimit, int upperLimit) {
         new WeatherAPIBL().verifyCurrentTemperature(jsonObject, lowerLimit, upperLimit);
     }
 
-    @Given("I send GET request with valid location coordinates and invalid forecast days")
+    @Given("I send GET request with location coordinates and invalid forecast days")
     public void iSendGETRequestWithValidLocationCoordinatesAndForecastDays() {
         jsonObject = new WeatherAPIBL().getForecastForInvalidDays();
     }
 
-    @Then("I verify error reason {string}")
+    @Then("error message should be {string}")
     public void iVerifyErrorReason(String errorMessage) {
         new WeatherAPIBL().verifyErrorForInvalidForecastDays(jsonObject, errorMessage);
     }
 
+    @Given("I send GET request with valid location coordinates {string} and {string}")
+    public void iSendGETRequestWithValidLocationCoordinatesLatitudeAndLongitude(String latitude, String longitude) {
+        jsonObject = new WeatherAPIBL().getCurrentWeatherJSON(latitude, longitude);
+    }
+
+    @Then("wind speed of that location should be in range {int} and {int} kmph")
+    public void iVerifyWindSpeedOfThatLocationInRangeAndKmph(int lowerLimit, int upperLimit) {
+        new WeatherAPIBL().verifyCurrentWindSpeed(jsonObject, lowerLimit, upperLimit);
+    }
 }
