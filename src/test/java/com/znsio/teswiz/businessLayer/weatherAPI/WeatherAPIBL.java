@@ -102,6 +102,7 @@ public class WeatherAPIBL {
     }
 
     public String getLatitudeFromJSON(JSONObject jsonObject) {
+        LOGGER.info("Fetch latitude value from json response");
         assertThat(jsonObject.has("lat"))
                 .as("Latitude in not available in JSON response!")
                 .isTrue();
@@ -109,6 +110,7 @@ public class WeatherAPIBL {
     }
 
     public String getLongitudeFromJSON(JSONObject jsonObject) {
+        LOGGER.info("Fetch longitude value from json response");
         assertThat(jsonObject.has("lon"))
                 .as("Longitude in not available in JSON response!")
                 .isTrue();
@@ -116,6 +118,7 @@ public class WeatherAPIBL {
     }
 
     public void verifyCurrentWindDirection(String latitude, String longitude, int maxWindDirection) {
+        LOGGER.info("Verifying maximum wind direction is less than: "+maxWindDirection);
         JSONObject responseJSON =  getCurrentWeatherJSON(latitude,longitude);
         assertThat((Double) responseJSON.get("winddirection"))
                 .as("Wind direction above maximum limit!").isLessThan(maxWindDirection);

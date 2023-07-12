@@ -6,8 +6,6 @@ import com.znsio.teswiz.businessLayer.weatherAPI.WeatherAPIBL;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
 import kong.unirest.json.JSONObject;
 import org.apache.log4j.Logger;
 
