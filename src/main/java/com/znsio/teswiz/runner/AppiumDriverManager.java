@@ -464,37 +464,40 @@ class AppiumDriverManager {
         return currentDriver;
     }
 
-    static void closeIOSAppOnDevice(String userPersona,
-                                    @NotNull
-                                    Driver driver) {
-        String appPackageName = Runner.getAppPackageName();
+    static void closeIOSAppOnDevice(String userPersona, @NotNull Driver driver) {
+        String appBundleId = Runner.getAppPackageName();
         String logMessage;
         --numberOfAppiumDriversUsed;
         LOGGER.info(String.format("numberOfAppiumDriversUsed: %d", numberOfAppiumDriversUsed));
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
+
         if (null == appiumDriver) {
-            logMessage = String.format("Strange. But AppiumDriver for user '%s' already closed",
-                    userPersona);
+            logMessage = String.format("Strange. But AppiumDriver for user '%s' already closed", userPersona);
             LOGGER.info(logMessage);
             ReportPortalLogger.logDebugMessage(logMessage);
         } else {
-            TestExecutionContext context = SessionContext.getTestExecutionContext(
-                    Thread.currentThread().getId());
-            AppiumDriver iOSAppiumDriver =
-                    (AppiumDriver) context.getTestState(
-                            TEST_CONTEXT.APPIUM_DRIVER);
+            TestExecutionContext context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
+            AppiumDriver iOSAppiumDriver = (AppiumDriver) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
+
             if (appiumDriver.equals(iOSAppiumDriver)) {
-                LOGGER.info(
-                        String.format("ATD will quit the driver for persona: '%s'", userPersona));
-                LOGGER.info("Close the app");
-                IOSDriver iOSDriver = (IOSDriver) appiumDriver;
-                iOSDriver.terminateApp(appPackageName);
+                closeIOSDriver(appiumDriver, userPersona);
             } else {
-                LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
+                quitDriver(appiumDriver, userPersona);
                 attachDeviceLogsToReportPortal(userPersona);
-                terminateIOSAppOnDevice(appPackageName, appiumDriver);
+                terminateIOSAppOnDevice(appBundleId, appiumDriver);
             }
         }
+    }
+
+    static void closeIOSDriver(AppiumDriver appiumDriver, String userPersona) {
+        LOGGER.info(String.format("Appium will quit the driver for persona: '%s'", userPersona));
+        LOGGER.info("Close the app");
+        IOSDriver iOSDriver = (IOSDriver) appiumDriver;
+        iOSDriver.closeApp();
+    }
+
+    static void quitDriver(AppiumDriver appiumDriver, String userPersona) {
+        LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
     }
 
     private static void terminateIOSAppOnDevice(String appPackageName,

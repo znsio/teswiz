@@ -272,7 +272,7 @@ class DeviceSetup {
         }
     }
 
-    static ArrayList<String> setupIOSExecution() throws IOException {
+    static ArrayList<String> setupIOSExecution()  {
         ArrayList<String> iOSCukeArgs = new ArrayList<>();
         if (Setup.getPlatform().equals(Platform.iOS)) {
             verifyAppExistsAtMentionedPath();
