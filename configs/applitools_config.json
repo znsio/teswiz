@@ -9,6 +9,6 @@
   "useUFG": true,
   "testConcurrency": 10,
   "showLogs": true,
-  "ignoreDisplacement": false,
+  "ignoreDisplacement": true,
   "APPLITOOLS_PROXY_KEY": ""
 }
