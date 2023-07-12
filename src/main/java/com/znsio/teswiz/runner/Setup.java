@@ -133,7 +133,7 @@ class Setup {
         return curlProxyCommand;
     }
 
-    static List<String> getExecutionArguments() throws IOException {
+    static List<String> getExecutionArguments()  {
         loadAndUpdateConfigParameters(configFilePath);
 
         setupDirectories();
@@ -231,7 +231,7 @@ class Setup {
                                                                 environment, testDataFile);
     }
 
-    private static void setupExecutionEnvironment() throws IOException {
+    private static void setupExecutionEnvironment()  {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
         CUKE_ARGS.addAll(DeviceSetup.setupAndroidExecution());

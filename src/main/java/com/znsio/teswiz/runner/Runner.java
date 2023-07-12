@@ -38,7 +38,7 @@ public class Runner {
         throw new InvalidTestDataException("Required args not provided to Runner");
     }
 
-    public Runner(String configFilePath, String stepDefDirName, String featuresDirName) throws IOException {
+    public Runner(String configFilePath, String stepDefDirName, String featuresDirName) {
         Path path = Paths.get(configFilePath);
         if(!Files.exists(path)) {
             throw new InvalidTestDataException(
