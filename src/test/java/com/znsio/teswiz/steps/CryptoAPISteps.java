@@ -22,16 +22,16 @@ public class CryptoAPISteps {
 
     @Given("I send GET request for crypto {string}")
     public void iSendGETRequestWithValidCryptoSymbol(String symbol) {
-        jsonResponse = new CryptoAPIBL().getCryptoData(symbol);
+        jsonResponse = new CryptoAPIBL().getDataUsingCryptoSymbol(symbol);
     }
 
     @Then("price change should be less than {int}")
     public void iVerifyPriceChangeIsLessThan(int maxPriceChange) {
-        new CryptoAPIBL().verifyMaxPriceChange(jsonResponse, maxPriceChange);
+        new CryptoAPIBL().verifypriceChange(jsonResponse, maxPriceChange);
     }
 
     @Then("price change percentage should be less than {int}")
     public void iVerifyPriceChangePercentageIsLessThan(int maxPriceChangePercent) {
-        new CryptoAPIBL().verifyMaxPriceChangePercent(jsonResponse, maxPriceChangePercent);
+        new CryptoAPIBL().verifyPriceChangePercent(jsonResponse, maxPriceChangePercent);
     }
 }
