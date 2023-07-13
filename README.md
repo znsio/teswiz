@@ -161,8 +161,8 @@ pCloudy.
 
 ### [Configuration parameters](docs/ConfigurationParameters-README.md)
 
-## [Troubleshooting / FAQs](docs/FAQs-README.md)
-
 ### [Add Auto Logging Using AspectJ](docs/AspectJLogging-README.md)
+
+## [Troubleshooting / FAQs](docs/FAQs-README.md)
 
 ### Contact [Anand Bagmar](https://twitter.com/BagmarAnand) for help or if you face issues using teswiz
