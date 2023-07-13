@@ -24,7 +24,7 @@ public class RunTestCukes
         long threadId = Thread.currentThread().getId();
         LOGGER.info("RunTestCukes: Constructor: ThreadId: " + threadId);
         context = SessionContext.getTestExecutionContext(threadId);
-        System.setProperty(TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT, "@android,@web");
+        System.setProperty(TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT, "@android,@web,@iOS");
     }
 
     @Override
@@ -45,8 +45,8 @@ public class RunTestCukes
         Configuration ufgConfig = new Configuration();
         ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
         ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
-        ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
-        ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
+        ufgConfig.addDeviceEmulation(DeviceName.iPhone_11_Pro_Max, ScreenOrientation.PORTRAIT);
+        ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.PORTRAIT);
         context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
     }
 

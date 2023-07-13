@@ -29,13 +29,11 @@ public class CartScreenIOS
         LOGGER.info("getCartProductName");
         waitFor(5);
         if (driver.isElementPresent(byWishlistPopUp)) {
-            visually.check(SCREEN_NAME, "Get Actual Product Name",
-                    Target.window().fully().layout(byWishlistPopUp));
+            visually.checkWindow(SCREEN_NAME, "Wishlist Pop Up Screen");
             driver.waitTillElementIsPresent(byWishlistPopUp).click();
         }
         WebElement product = driver.waitTillElementIsPresent(byProductTitleId);
-        visually.check(SCREEN_NAME, "Get Actual Product Name",
-                Target.window().fully().layout(product));
+        visually.check(SCREEN_NAME, "Get Actual Product Name", Target.window().fully().layout(product));
         product.click();
         String productTitle = product.getText();
         LOGGER.info("productTitle in the cart" + productTitle);

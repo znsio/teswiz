@@ -6,6 +6,7 @@ import com.znsio.teswiz.screen.ajio.HomeScreen;
 import com.znsio.teswiz.screen.ajio.SearchScreen;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import java.util.Map;
 
@@ -26,7 +27,9 @@ public class HomeScreenIOS
 
     @Override
     public SearchScreen searchByImage() {
-        driver.waitTillElementIsPresent(byImageId).click();
+        WebElement uploadImageButton =  driver.waitTillElementIsPresent(byImageId);
+        visually.checkWindow(SCREEN_NAME,"searchByImage");
+        uploadImageButton.click();
         LOGGER.info("Clicked on Image");
         return SearchScreen.get();
     }

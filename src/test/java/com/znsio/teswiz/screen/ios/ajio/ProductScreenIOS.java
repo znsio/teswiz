@@ -34,7 +34,9 @@ public class ProductScreenIOS
         visually.checkWindow(SCREEN_NAME, "Add to cart");
         driver.waitTillElementIsPresent(bySelectSizeMediumXpath).click();
         driver.waitTillElementIsPresent(byAddToBagId).click();
+        visually.checkWindow(SCREEN_NAME, "Product Added");
         driver.waitTillElementIsPresent(byViewBagButtonId).click();
+        visually.checkWindow(SCREEN_NAME, "Updated Cart with Product");
         return CartScreen.get();
     }
 
