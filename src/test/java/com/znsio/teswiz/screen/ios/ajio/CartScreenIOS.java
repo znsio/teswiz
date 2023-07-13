@@ -18,7 +18,6 @@ public class CartScreenIOS
     private final Driver driver;
     private final Visual visually;
 
-
     public CartScreenIOS(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
@@ -29,10 +28,13 @@ public class CartScreenIOS
         LOGGER.info("getCartProductName");
         waitFor(5);
         if (driver.isElementPresent(byWishlistPopUp)) {
+            visually.check(SCREEN_NAME, "Get Actual Product Name",
+                    Target.window().fully().layout(byWishlistPopUp));
             driver.waitTillElementIsPresent(byWishlistPopUp).click();
         }
-        visually.checkWindow(SCREEN_NAME, "Product in the cart");
         WebElement product = driver.waitTillElementIsPresent(byProductTitleId);
+        visually.check(SCREEN_NAME, "Get Actual Product Name",
+                Target.window().fully().layout(product));
         product.click();
         String productTitle = product.getText();
         LOGGER.info("productTitle in the cart" + productTitle);

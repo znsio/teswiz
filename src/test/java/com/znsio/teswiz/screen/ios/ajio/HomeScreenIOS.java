@@ -35,7 +35,7 @@ public class HomeScreenIOS
     public HomeScreen attachFileToDevice(Map imageData) {
         driver.waitTillElementIsPresent(byStartSearchBoxId).click();
         LOGGER.info("Clicked on HomePage Search Box");
-        visually.checkWindow(SCREEN_NAME, "Upload a Photo");
+        visually.checkWindow(SCREEN_NAME, "Get Search Screen");
         driver.waitTillElementIsPresent(byUploadPhotoButtonId).click();
         LOGGER.info("Clicked on Upload Photo Button");
         return this;
