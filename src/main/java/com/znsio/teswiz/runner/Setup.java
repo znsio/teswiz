@@ -517,9 +517,9 @@ class Setup {
         webCukeArgs.add("--threads");
         webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
         webCukeArgs.add(PLUGIN);
-        webCukeArgs.add("com.znsio.teswiz.listener.CucumberScenarioListener");
+        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioListener");
         webCukeArgs.add(PLUGIN);
-        webCukeArgs.add("com.znsio.teswiz.listener.CucumberScenarioReporterListener");
+        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioReporterListener");
         return webCukeArgs;
     }
 

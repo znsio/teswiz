@@ -19,15 +19,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class CucumberScenarioListener
+public class CucumberPlatformScenarioListener
         implements ConcurrentEventListener {
     private static final Logger LOGGER = Logger.getLogger(
-            CucumberScenarioListener.class.getName());
+            CucumberPlatformScenarioListener.class.getName());
     private final Map<String, Integer> scenarioRunCounts = new HashMap<>();
 
     private Platform platform = Runner.getPlatform();
 
-    public CucumberScenarioListener() {
+    public CucumberPlatformScenarioListener() {
         LOGGER.info(String.format("ThreadId: %d: CucumberScenarioListener%n",
                                   Thread.currentThread().getId()));
     }

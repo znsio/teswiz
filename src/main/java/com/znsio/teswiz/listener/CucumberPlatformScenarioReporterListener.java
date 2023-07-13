@@ -7,15 +7,15 @@ import org.apache.log4j.Logger;
 
 import java.util.Calendar;
 
-public class CucumberScenarioReporterListener
+public class CucumberPlatformScenarioReporterListener
         extends ScenarioReporter {
     private static final Logger LOGGER = Logger.getLogger(
-            CucumberScenarioReporterListener.class.getName());
+            CucumberPlatformScenarioReporterListener.class.getName());
     private static final String DUMMY_ROOT_SUITE_NAME = "End-2-End Tests";
     private static final String RP_STORY_TYPE = "SUITE";
     public static String launchUUID;
 
-    public CucumberScenarioReporterListener() {
+    public CucumberPlatformScenarioReporterListener() {
         LOGGER.info("CucumberScenarioReporterListener");
     }
 
