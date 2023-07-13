@@ -1,6 +1,7 @@
 package com.znsio.teswiz.businessLayer.cryptoAPI;
 
 import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.services.UnirestService;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
@@ -16,12 +17,7 @@ public class CryptoAPIBL {
 
     public HttpResponse<JsonNode> getDataUsingCryptoSymbol(String symbol) {
         LOGGER.info("Getting crypto currency data for last 24-Hrs");
-        HttpResponse<JsonNode> jsonResponse
-                = Unirest.get(base_URL)
-                .header("accept", "application/json")
-                .queryString("symbol", symbol)
-                .asJson();
-
+        HttpResponse<JsonNode> jsonResponse= UnirestService.getResponseFromGetCallWithQueryString(base_URL, "symbol", symbol);
         assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
                 .isEqualTo(200);
         return jsonResponse;
