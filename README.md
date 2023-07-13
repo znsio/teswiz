@@ -54,6 +54,7 @@ There is a new method added:
 3. scroll(Point fromPoint, Point toPoint) , scrollVertically() , scrollDownByScreenSize()
 4. tapOnMiddleOfScreenOnDevice()
 5. swipeLeft() , swipeRight() , swipe(int height, int fromWidth, int toWidth)
+6. dragAndDrop()
 
 ## References:
 
@@ -161,5 +162,7 @@ pCloudy.
 ### [Configuration parameters](docs/ConfigurationParameters-README.md)
 
 ## [Troubleshooting / FAQs](docs/FAQs-README.md)
+
+### [Add Auto Logging Using AspectJ](docs/AspectJLogging-README.md)
 
 ### Contact [Anand Bagmar](https://twitter.com/BagmarAnand) for help or if you face issues using teswiz
