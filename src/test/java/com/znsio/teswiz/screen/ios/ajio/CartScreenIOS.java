@@ -1,5 +1,6 @@
 package com.znsio.teswiz.screen.ios.ajio;
 
+import com.applitools.eyes.appium.Target;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.ajio.CartScreen;

@@ -33,4 +33,11 @@ public abstract class ProductScreen {
     public abstract CartScreen addProductToCart();
 
     public abstract String getProductName();
+
+    public abstract boolean isProductDetailsLoaded();
+
+    public abstract ProductScreen flickImage();
+
+    public abstract String isElementIdChanged();
+
 }

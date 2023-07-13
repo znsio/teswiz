@@ -41,4 +41,14 @@ public class HomeScreenIOS
         return this;
     }
 
+    @Override
+    public HomeScreen goToMenu() {
+        return this;
+    }
+
+    @Override
+    public SearchScreen selectProductFromCategory(String product, String category, String gender) {
+        return SearchScreen.get();
+    }
+
 }

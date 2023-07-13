@@ -45,7 +45,6 @@ class Setup {
     static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
     static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
     static final String CLOUD_USERNAME = "CLOUD_USERNAME";
-    static final String CLOUD_NAME = "CLOUD_NAME";
     static final String PROXY_URL = "PROXY_URL";
     static final String REMOTE_WEBDRIVER_GRID_PORT = "REMOTE_WEBDRIVER_GRID_PORT";
     static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
@@ -68,6 +67,7 @@ class Setup {
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
+    private static Map<String, Map> loadedCapabilityFile;
     private static final String CHROME = "chrome";
     private static final String TEMP_DIRECTORY = "temp";
     private static final int DEFAULT_PARALLEL = 1;
@@ -146,6 +146,7 @@ class Setup {
 
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
+        loadCapabilitiesFile(configs.get(CAPS));
         setupExecutionEnvironment();
 
         LOGGER.info(printStringMap("Using string values", configs));
@@ -153,6 +154,10 @@ class Setup {
         LOGGER.info(printIntegerMap("Using integer values", configsInteger));
 
         return CUKE_ARGS;
+    }
+
+    private static void loadCapabilitiesFile(String capabilityFile) {
+        loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
     }
 
     static void loadAndUpdateConfigParameters(String configFilePath) {
@@ -348,9 +353,6 @@ class Setup {
         configs.put(CLOUD_USERNAME, getOverriddenStringValue(CLOUD_USERNAME,
                                                          getStringValueFromPropertiesIfAvailable(
                                                                  CLOUD_USERNAME, NOT_SET)));
-        configs.put(CLOUD_NAME, getOverriddenStringValue(CLOUD_NAME,
-                                                         getStringValueFromPropertiesIfAvailable(
-                                                                 CLOUD_NAME, LOCAL)));
         configsBoolean.put(CLOUD_UPLOAD_APP, getOverriddenBooleanValue(CLOUD_UPLOAD_APP,
                                                                        getBooleanValueFromPropertiesIfAvailable(
                                                                                CLOUD_UPLOAD_APP,
@@ -706,5 +708,9 @@ class Setup {
 
     static Platform getPlatform() {
         return currentPlatform;
+    }
+
+    public static Map<String, Map> getLoadedCapabilities() {
+        return loadedCapabilityFile;
     }
 }

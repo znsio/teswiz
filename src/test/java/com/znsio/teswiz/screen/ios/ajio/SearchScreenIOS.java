@@ -2,6 +2,7 @@ package com.znsio.teswiz.screen.ios.ajio;
 
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
+import com.znsio.teswiz.screen.ajio.ProductScreen;
 import com.znsio.teswiz.screen.ajio.SearchScreen;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -30,8 +31,14 @@ public class SearchScreenIOS
     }
 
     @Override
-    public void selectProduct() {
+    public ProductScreen selectProduct() {
         LOGGER.info("selection of Product in the result page");
         driver.waitTillElementIsPresent(byProductXpath).click();
+        return ProductScreen.get();
+    }
+
+    @Override
+    public boolean isProductListLoaded(String product) {
+        return true;
     }
 }

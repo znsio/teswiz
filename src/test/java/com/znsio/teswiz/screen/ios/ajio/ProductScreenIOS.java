@@ -49,4 +49,19 @@ public class ProductScreenIOS
         return productName;
     }
 
+    @Override
+    public boolean isProductDetailsLoaded() {
+        return false;
+    }
+
+    @Override
+    public ProductScreen flickImage() {
+        return null;
+    }
+
+    @Override
+    public String isElementIdChanged() {
+        return null;
+    }
+
 }

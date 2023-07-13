@@ -176,7 +176,7 @@ class BrowserStackSetup {
                                   deviceCount));
         for(int numDevices = 0; numDevices < deviceCount; numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
-            deviceInfo.put("platform", platformName);
+            deviceInfo.put("platform", platformName.toLowerCase());
             deviceInfo.put("os_version", availableDevices.get(numDevices).getOs_version());
             deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
             listOfAndroidDevices.add(deviceInfo);
