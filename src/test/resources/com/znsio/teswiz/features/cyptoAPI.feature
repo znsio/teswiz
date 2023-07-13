@@ -3,7 +3,7 @@ Feature: Crypto-Currency data change
 # CONFIG=./configs/api_local_config.properties TAG=cryptoAPI PLATFORM=api ./gradlew run
 
   @priceChange
-  Scenario Outline: Validate price change in last 24 hrs for given crypto currencies
+  Scenario Outline: Validate price change in last 24 hrs for  crypto currency <symbol>
     Given I send GET request for crypto <symbol>
     Then price change should be less than <maxPriceChange>
     Examples:
