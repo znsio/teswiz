@@ -1,14 +1,14 @@
 package com.znsio.teswiz.businessLayer.weatherAPI;
 
 import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.services.UnirestService;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 import org.apache.log4j.Logger;
+import java.util.HashMap;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.array;
 
 public class WeatherAPIBL {
     private static final Logger LOGGER = Logger.getLogger(WeatherAPIBL.class.getName());
@@ -17,16 +17,12 @@ public class WeatherAPIBL {
 
     public JSONObject getCurrentWeatherJSON() {
         LOGGER.info("Getting current weather data for given location coordinates");
-        String latitude = testData.get("latitude").toString();
-        String longitude = testData.get("longitude").toString();
-        HttpResponse<JsonNode> jsonResponse
-                = Unirest.get(base_URL)
-                .header("accept", "application/json")
-                .queryString("latitude", latitude)
-                .queryString("longitude",longitude)
-                .queryString("current_weather",true)
-                .asJson();
-
+        HashMap<String, Object> queryString= new HashMap<>(){{
+            put("latitude",testData.get("latitude").toString());
+            put("longitude",testData.get("longitude").toString());
+            put("current_weather",true);
+        }};
+        HttpResponse<JsonNode> jsonResponse= UnirestService.getResponseFromGetCallWithQueryMap(base_URL,queryString);
         assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
                 .isEqualTo(200);
         return jsonResponse.getBody().getObject().getJSONObject("current_weather");
@@ -40,20 +36,14 @@ public class WeatherAPIBL {
     }
 
     public JSONObject getForecastForInvalidDays() {
-        String days = testData.get("days").toString();
-        String latitude = testData.get("latitude").toString();
-        String longitude = testData.get("longitude").toString();
-        String hourly = testData.get("hourly").toString();
-        LOGGER.info("Getting temperature forecast for days: "+days);
-        HttpResponse<JsonNode> jsonResponse
-                = Unirest.get(base_URL)
-                .header("accept", "application/json")
-                .queryString("latitude", latitude)
-                .queryString("longitude",longitude)
-                .queryString("hourly",hourly)
-                .queryString("forecast_days",days)
-                .asJson();
-
+        LOGGER.info("Getting temperature forecast");
+        HashMap<String, Object> queryString= new HashMap<>(){{
+            put("latitude",testData.get("latitude").toString());
+            put("longitude",testData.get("longitude").toString());
+            put("hourly",testData.get("hourly").toString());
+            put("forecast_days",testData.get("days").toString());
+        }};
+        HttpResponse<JsonNode> jsonResponse= UnirestService.getResponseFromGetCallWithQueryMap(base_URL,queryString);
         assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
                 .isEqualTo(400);
         return jsonResponse.getBody().getObject();
@@ -69,14 +59,12 @@ public class WeatherAPIBL {
 
     public JSONObject getCurrentWeatherJSON(String latitude, String longitude) {
         LOGGER.info("Getting current weather data for given location coordinates");
-        HttpResponse<JsonNode> jsonResponse
-                = Unirest.get(base_URL)
-                .header("accept", "application/json")
-                .queryString("latitude", latitude)
-                .queryString("longitude",longitude)
-                .queryString("current_weather",true)
-                .asJson();
-
+        HashMap<String, Object> queryString= new HashMap<>(){{
+            put("latitude",latitude);
+            put("longitude",longitude);
+            put("current_weather",true);
+        }};
+        HttpResponse<JsonNode> jsonResponse= UnirestService.getResponseFromGetCallWithQueryMap(base_URL,queryString);
         assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
                 .isEqualTo(200);
         return jsonResponse.getBody().getObject().getJSONObject("current_weather");
@@ -92,13 +80,7 @@ public class WeatherAPIBL {
     public JSONObject getLocationCoordinatesFor(String city) {
         LOGGER.info("Getting coordinates for city "+city);
         String geocode_url = testData.get("geocode_url").toString();
-
-        HttpResponse<JsonNode> jsonResponse
-                = Unirest.get(geocode_url)
-                .header("accept", "application/json")
-                .queryString("q", city)
-                .asJson();
-
+        HttpResponse<JsonNode> jsonResponse= UnirestService.getResponseFromGetCallWithQueryString(geocode_url, "q", city);
         assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
                 .isEqualTo(200);
         return jsonResponse.getBody().getArray().getJSONObject(0);
