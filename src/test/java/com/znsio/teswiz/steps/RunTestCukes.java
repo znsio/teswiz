@@ -45,8 +45,8 @@ public class RunTestCukes
         Configuration ufgConfig = new Configuration();
         ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
         ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
-        ufgConfig.addDeviceEmulation(DeviceName.iPhone_11_Pro_Max, ScreenOrientation.PORTRAIT);
-        ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.PORTRAIT);
+        ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
+        ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
         context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
     }
 
