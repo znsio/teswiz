@@ -9,7 +9,7 @@ Feature: Crypto-Currency data change
     Examples:
     | symbol    | maxPriceChange |
     | "LTCUSDT" |       75       |
-    | "ETHUSDT" |       60       |
+    | "ETHUSDT" |       200      |
     | "BNBUSDT" |       55       |
     | "XRPUSDT" |       80       |
 

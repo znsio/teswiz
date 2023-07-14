@@ -22,7 +22,7 @@ public class WeatherAPIBL {
             put("longitude",testData.get("longitude").toString());
             put("current_weather",true);
         }};
-        HttpResponse<JsonNode> jsonResponse= UnirestService.getResponseFromGetCallWithQueryMap(base_URL,queryString);
+        HttpResponse<JsonNode> jsonResponse= UnirestService.getHttpResponseWithQueryMap(base_URL,queryString);
         assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
                 .isEqualTo(200);
         return jsonResponse.getBody().getObject().getJSONObject("current_weather");
@@ -43,7 +43,7 @@ public class WeatherAPIBL {
             put("hourly",testData.get("hourly").toString());
             put("forecast_days",testData.get("days").toString());
         }};
-        HttpResponse<JsonNode> jsonResponse= UnirestService.getResponseFromGetCallWithQueryMap(base_URL,queryString);
+        HttpResponse<JsonNode> jsonResponse= UnirestService.getHttpResponseWithQueryMap(base_URL,queryString);
         assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
                 .isEqualTo(400);
         return jsonResponse.getBody().getObject();
@@ -64,7 +64,7 @@ public class WeatherAPIBL {
             put("longitude",longitude);
             put("current_weather",true);
         }};
-        HttpResponse<JsonNode> jsonResponse= UnirestService.getResponseFromGetCallWithQueryMap(base_URL,queryString);
+        HttpResponse<JsonNode> jsonResponse= UnirestService.getHttpResponseWithQueryMap(base_URL,queryString);
         assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
                 .isEqualTo(200);
         return jsonResponse.getBody().getObject().getJSONObject("current_weather");
@@ -80,7 +80,7 @@ public class WeatherAPIBL {
     public JSONObject getLocationCoordinatesFor(String city) {
         LOGGER.info("Getting coordinates for city "+city);
         String geocode_url = testData.get("geocode_url").toString();
-        HttpResponse<JsonNode> jsonResponse= UnirestService.getResponseFromGetCallWithQueryString(geocode_url, "q", city);
+        HttpResponse<JsonNode> jsonResponse= UnirestService.getHttpResponseWithQueryParameter(geocode_url, "q", city);
         assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
                 .isEqualTo(200);
         return jsonResponse.getBody().getArray().getJSONObject(0);

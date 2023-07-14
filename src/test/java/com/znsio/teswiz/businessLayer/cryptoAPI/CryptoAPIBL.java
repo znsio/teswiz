@@ -4,8 +4,8 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.services.UnirestService;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
 import org.apache.log4j.Logger;
+
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,7 +17,7 @@ public class CryptoAPIBL {
 
     public HttpResponse<JsonNode> getDataUsingCryptoSymbol(String symbol) {
         LOGGER.info("Getting crypto currency data for last 24-Hrs");
-        HttpResponse<JsonNode> jsonResponse= UnirestService.getResponseFromGetCallWithQueryString(base_URL, "symbol", symbol);
+        HttpResponse<JsonNode> jsonResponse= UnirestService.getHttpResponseWithQueryParameter(base_URL, "symbol", symbol);
         assertThat(jsonResponse.getStatus()).as("API status code incorrect!")
                 .isEqualTo(200);
         return jsonResponse;
