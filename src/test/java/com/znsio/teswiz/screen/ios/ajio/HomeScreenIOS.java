@@ -16,7 +16,7 @@ public class HomeScreenIOS
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final By byStartSearchBoxId = By.id("Home_Search_Label");
     private static final By byUploadPhotoButtonId = By.id("Upload a Photo");
-    private static final By byImageId = By.id("Photo, Yellow Handbag, July 06, 6:04 PM");
+    private static final By byImageId = By.xpath("//XCUIElementTypeImage[contains(@name,'Photo, October 10')]");
     private final Driver driver;
     private final Visual visually;
 
