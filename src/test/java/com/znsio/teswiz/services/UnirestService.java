@@ -18,13 +18,13 @@ public class UnirestService {
         return unirest;
     }
 
-    public static HttpResponse<JsonNode> getResponseFromGetCallWithQueryString(String completeURLPath, String key, String value) {
-        LOGGER.info("==== Processing Get call with query String");
+    public static HttpResponse<JsonNode> getHttpResponseWithQueryParameter(String completeURLPath, String key, String value) {
+        LOGGER.info("==== Processing GET call with base URL and single query parameter");
         return getUnirestObj().get(completeURLPath).headers(getHeadersWithoutAuthorization()).queryString(key, value).asJson();
     }
 
-    public static HttpResponse<JsonNode> getResponseFromGetCallWithQueryMap(String completeURLPath, HashMap<String, Object> query) {
-        LOGGER.info("==== Processing Get call with Query Map");
+    public static HttpResponse<JsonNode> getHttpResponseWithQueryMap(String completeURLPath, HashMap<String, Object> query) {
+        LOGGER.info("==== Processing GET call with base URL and multi query parameters");
         return getUnirestObj().get(completeURLPath).headers(getHeadersWithoutAuthorization()).queryString(query).asJson();
     }
 
