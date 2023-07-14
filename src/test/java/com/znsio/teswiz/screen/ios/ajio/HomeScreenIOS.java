@@ -16,7 +16,10 @@ public class HomeScreenIOS
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final By byStartSearchBoxId = By.id("Home_Search_Label");
     private static final By byUploadPhotoButtonId = By.id("Upload a Photo");
-    private static final By byImageId = By.id("Photo, Yellow Handbag, July 06, 6:04 PM");
+    private static final By byImageId = By.xpath("//XCUIElementTypeImage[contains(@name,'Photo, October 10')]");
+    private static final By byAllowNotificationsId = By.id("Allow");
+    private static final By byAllowLocationId = By.xpath("//XCUIElementTypeButton[@name='Home_local_localBtn']");
+    private static final By byAllowLocationWhileUsingAppId = By.id("Allow While Using App");
     private final Driver driver;
     private final Visual visually;
 
@@ -27,8 +30,8 @@ public class HomeScreenIOS
 
     @Override
     public SearchScreen searchByImage() {
-        WebElement uploadImageButton =  driver.waitTillElementIsPresent(byImageId);
-        visually.checkWindow(SCREEN_NAME,"searchByImage");
+        WebElement uploadImageButton = driver.waitTillElementIsPresent(byImageId);
+        visually.checkWindow(SCREEN_NAME, "searchByImage");
         uploadImageButton.click();
         LOGGER.info("Clicked on Image");
         return SearchScreen.get();

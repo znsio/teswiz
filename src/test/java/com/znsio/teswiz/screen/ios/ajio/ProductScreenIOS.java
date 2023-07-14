@@ -17,7 +17,7 @@ public class ProductScreenIOS
     private static final By byProductNameId = By.id("V2Pdp_brand_ProductName");
     private static final By byAddToCartButtonId = By.id("Add To Bag");
     private static final By byViewBagButtonId = By.id("V2PDP_BottomFloatingView_ATC");
-    private static final By bySelectSizeMediumXpath = By.xpath("//XCUIElementTypeCollectionView//XCUIElementTypeStaticText[@label='M']");
+    private static final By bySelectSizeFirstXpath = By.xpath("//XCUIElementTypeOther[@name='pdp_Size_Scroll_View']/XCUIElementTypeCollectionView/XCUIElementTypeCell");
     private static final By byAddToBagId = By.id("V2PDP_bottomView_AddToButtonView");
     private final Driver driver;
     private final Visual visually;
@@ -32,7 +32,7 @@ public class ProductScreenIOS
         LOGGER.info("addProductToCart");
         driver.waitTillElementIsPresent(byAddToCartButtonId).click();
         visually.checkWindow(SCREEN_NAME, "Add to cart");
-        driver.waitTillElementIsPresent(bySelectSizeMediumXpath).click();
+        driver.waitTillElementIsPresent(bySelectSizeFirstXpath).click();
         driver.waitTillElementIsPresent(byAddToBagId).click();
         visually.checkWindow(SCREEN_NAME, "Product Added");
         driver.waitTillElementIsPresent(byViewBagButtonId).click();
