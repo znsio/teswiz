@@ -27,6 +27,7 @@ public class AjioSteps {
         LOGGER.info(System.out.printf("iSearchForProductsUsing:'%s' - Persona:'%s'", searchtype,
                                       SAMPLE_TEST_CONTEXT.ME));
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
+        new HomeBL().handlePopups();
         new SearchBL().searchProduct(Runner.getTestDataAsMap(searchtype));
     }
 
@@ -45,9 +46,9 @@ public class AjioSteps {
     }
 
     @Given("I open {string} from {string} section for {string}")
-    public void iOpebShirtsSectionForMen(String product, String category, String gender) {
+    public void iOpenShirtsSectionForMen(String product, String category, String gender) {
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
-        new HomeBL().openProduct(product,category, gender);
+        new HomeBL().handlePopups().openProduct(product,category, gender);
     }
 
 
