@@ -26,6 +26,9 @@ public class HomeScreenAndroid
             "com.android.permissioncontroller:id/permission_allow_button");
     private static final By bySideMenuId = By.id("com.ril.ajio:id/fahIvMenu");
     private static final String byFilterProductXpath = "//android.widget.TextView[@text='%s']";
+    private static final By byAllowNotificationsId = By.id("com.android.permissioncontroller:id/permission_allow_always_button");
+    private static final By byAllowLocationId = By.xpath("//*[@text='Allow Location']");
+    private static final By byAllowLocationWhileUsingAppId = By.id("//*[@text='Allow While Using App]");
     private final Driver driver;
     private final Visual visually;
 
@@ -80,6 +83,36 @@ public class HomeScreenAndroid
         driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, category))).click();
         driver.waitTillElementIsVisible(By.xpath(String.format(byFilterProductXpath, product))).click();
         return SearchScreen.get();
+    }
+
+    @Override
+    public HomeScreen clickOnAllowToSendNotifications() {
+        if (driver.findElements(byAllowNotificationsId).size() > 0) {
+            driver.waitTillElementIsPresent(byAllowNotificationsId).click();
+        }
+        return HomeScreen.get();
+    }
+
+    @Override
+    public HomeScreen clickOnAllowLocation() {
+        if (driver.findElements(byAllowLocationId).size() > 0) {
+            driver.waitTillElementIsPresent(byAllowLocationId).click();
+        }
+        return HomeScreen.get();
+    }
+
+    @Override
+    public HomeScreen clickOnAllowLocationWhileUsingApp() {
+        if (driver.findElements(byAllowLocationWhileUsingAppId).size() > 0) {
+            driver.waitTillElementIsPresent(byAllowLocationWhileUsingAppId).click();
+        }
+        return HomeScreen.get();
+    }
+
+    @Override
+    public HomeScreen relaunchApplication() {
+        driver.relaunchApp();
+        return HomeScreen.get();
     }
 
 }

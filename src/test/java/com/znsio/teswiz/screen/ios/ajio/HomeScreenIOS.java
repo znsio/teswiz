@@ -57,4 +57,34 @@ public class HomeScreenIOS
         return SearchScreen.get();
     }
 
+    @Override
+    public HomeScreen clickOnAllowToSendNotifications() {
+        if (driver.findElements(byAllowNotificationsId).size() > 0) {
+            driver.waitTillElementIsPresent(byAllowNotificationsId).click();
+        }
+        return HomeScreen.get();
+    }
+
+    @Override
+    public HomeScreen clickOnAllowLocation() {
+        if (driver.findElements(byAllowLocationId).size() > 0) {
+            driver.waitTillElementIsPresent(byAllowLocationId).click();
+        }
+        return HomeScreen.get();
+    }
+
+    @Override
+    public HomeScreen clickOnAllowLocationWhileUsingApp() {
+        if (driver.findElements(byAllowLocationWhileUsingAppId).size() > 0) {
+            driver.waitTillElementIsPresent(byAllowLocationWhileUsingAppId).click();
+        }
+        return HomeScreen.get();
+    }
+
+    @Override
+    public HomeScreen relaunchApplication() {
+        driver.relaunchApp();
+        return HomeScreen.get();
+    }
+
 }
