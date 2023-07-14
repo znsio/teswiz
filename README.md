@@ -46,6 +46,7 @@ There is a new method added:
 | Purpose                                                                                            | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
 |:---------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
 | A new method is added for swipe by passing the screen height and width in percentage as parameters | swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth)     |
+| A new method is added to perform flick action on the screen based on the device size               | flick()                                                                                                               |
 
 ## Updated Usage Of Appium Driver in Methods
 
