@@ -45,7 +45,7 @@ public class HomeBL {
     }
 
     public HomeBL handlePopups(){
-        HomeScreen.get().clickOnAllowToSendNotifications().clickOnAllowLocation().clickOnAllowLocationWhileUsingApp().relaunchApplication();
+        HomeScreen.get().clickOnAllowToSendNotifications().clickOnAllowToSendNotifications().clickOnAllowLocation().clickOnAllowLocationWhileUsingApp().relaunchApplication();
         return this;
     }
 }

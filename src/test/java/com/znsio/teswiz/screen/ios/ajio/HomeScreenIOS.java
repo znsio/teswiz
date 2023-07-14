@@ -10,6 +10,8 @@ import org.openqa.selenium.WebElement;
 
 import java.util.Map;
 
+import static com.znsio.teswiz.tools.Wait.waitFor;
+
 public class HomeScreenIOS
         extends HomeScreen {
     private static final String SCREEN_NAME = HomeScreenIOS.class.getSimpleName();
@@ -60,7 +62,7 @@ public class HomeScreenIOS
     @Override
     public HomeScreen clickOnAllowToSendNotifications() {
         if (driver.findElements(byAllowNotificationsId).size() > 0) {
-            driver.waitTillElementIsPresent(byAllowNotificationsId).click();
+            driver.waitTillElementIsPresent(byAllowNotificationsId,15).click();
         }
         return HomeScreen.get();
     }
@@ -68,15 +70,16 @@ public class HomeScreenIOS
     @Override
     public HomeScreen clickOnAllowLocation() {
         if (driver.findElements(byAllowLocationId).size() > 0) {
-            driver.waitTillElementIsPresent(byAllowLocationId).click();
+            driver.waitTillElementIsPresent(byAllowLocationId,15).click();
         }
         return HomeScreen.get();
     }
 
     @Override
     public HomeScreen clickOnAllowLocationWhileUsingApp() {
+        waitFor(5);
         if (driver.findElements(byAllowLocationWhileUsingAppId).size() > 0) {
-            driver.waitTillElementIsPresent(byAllowLocationWhileUsingAppId).click();
+            driver.waitTillElementIsPresent(byAllowLocationWhileUsingAppId,15).click();
         }
         return HomeScreen.get();
     }
