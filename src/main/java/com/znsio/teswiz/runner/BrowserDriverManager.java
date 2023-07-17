@@ -158,10 +158,10 @@ class BrowserDriverManager {
                                                 TestExecutionContext testExecutionContext,
                                                 JSONObject browserConfig) {
 
-        DriverManagerType driverManagerType = setupBrowserDriver(testExecutionContext, browserName);
+        //DriverManagerType driverManagerType = setupBrowserDriver(testExecutionContext, browserName);
         WebDriver driver = null;
         LOGGER.info(
-                BrowserDriverManager.class.getName() + "-createNewWebDriver: " + driverManagerType.getBrowserNameLowerCase());
+                BrowserDriverManager.class.getName() + "-createNewWebDriver: " + .getBrowserNameLowerCase());
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(
                 driverManagerType.getBrowserNameLowerCase());
         switch(driverManagerType) {
