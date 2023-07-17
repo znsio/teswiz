@@ -14,7 +14,13 @@ public class UnirestService {
     private static final Unirest unirest = new Unirest();
 
     private static Unirest getUnirestObj(){
-        unirest.config().verifySsl(false);
+        unirest.config().verifySsl(false).socketTimeout(1000).connectTimeout(500);
+        return unirest;
+    }
+
+    private static Unirest getUnirestObjWithProxy(String host, int port, String username, String password){
+        unirest.config().verifySsl(false).socketTimeout(1000).connectTimeout(500)
+                .proxy(host,port,username,password);
         return unirest;
     }
 
