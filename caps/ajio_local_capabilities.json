@@ -16,7 +16,7 @@
     "platformName": "android",
     "printPageSourceOnFindFailure": true,
     "skipUnlock": true,
-    "noReset": true
+    "noReset": false
   },
   "hostMachines": [
     {
@@ -41,14 +41,14 @@
     "automationName": "XCUITest",
     "usePrebuiltWDA": false,
     "appium:iPhoneOnly": true,
-    "noReset": true
+    "noReset": false
   },
   "serverConfig" : {
     "server": {
       "use-plugins": ["device-farm", "appium-dashboard","relaxed-caps-plugin"],
       "plugin": {
         "device-farm": {
-          "platform": "android",
+          "platform": "iOS",
           "skipChromeDownload": true
         }
       }

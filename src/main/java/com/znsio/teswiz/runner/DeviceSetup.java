@@ -48,12 +48,12 @@ class DeviceSetup {
 
     static void saveNewCapabilitiesFile(String platformName, String capabilityFile,
                                         Map<String, Map> loadedCapabilityFile,
-                                        ArrayList listOfAndroidDevices) {
+                                        ArrayList listOfDevices) {
         Object pluginConfig = ((LinkedTreeMap) loadedCapabilityFile.get("serverConfig").get("server")).get(
                 "plugin");
         Map cloudConfig = (Map) ((LinkedTreeMap) ((LinkedTreeMap) pluginConfig).get("device-farm")).get(
                 "cloud");
-        cloudConfig.put("devices", listOfAndroidDevices);
+        cloudConfig.put("devices", listOfDevices);
 
         LOGGER.info(
                 String.format("Updated Device Lab Capabilities file: %n%s", loadedCapabilityFile));

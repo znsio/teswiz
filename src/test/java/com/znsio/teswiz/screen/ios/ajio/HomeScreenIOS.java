@@ -10,6 +10,8 @@ import org.openqa.selenium.WebElement;
 
 import java.util.Map;
 
+import static com.znsio.teswiz.tools.Wait.waitFor;
+
 public class HomeScreenIOS
         extends HomeScreen {
     private static final String SCREEN_NAME = HomeScreenIOS.class.getSimpleName();
@@ -17,6 +19,9 @@ public class HomeScreenIOS
     private static final By byStartSearchBoxId = By.id("Home_Search_Label");
     private static final By byUploadPhotoButtonId = By.id("Upload a Photo");
     private static final By byImageId = By.xpath("//XCUIElementTypeImage[contains(@name,'Photo, October 10')]");
+    private static final By byAllowNotificationsId = By.id("Allow");
+    private static final By byAllowLocationId = By.xpath("//XCUIElementTypeButton[@name='Home_local_localBtn']");
+    private static final By byAllowLocationWhileUsingAppId = By.id("Allow While Using App");
     private final Driver driver;
     private final Visual visually;
 
@@ -27,8 +32,8 @@ public class HomeScreenIOS
 
     @Override
     public SearchScreen searchByImage() {
-        WebElement uploadImageButton =  driver.waitTillElementIsPresent(byImageId);
-        visually.checkWindow(SCREEN_NAME,"searchByImage");
+        WebElement uploadImageButton = driver.waitTillElementIsPresent(byImageId);
+        visually.checkWindow(SCREEN_NAME, "searchByImage");
         uploadImageButton.click();
         LOGGER.info("Clicked on Image");
         return SearchScreen.get();
@@ -52,6 +57,37 @@ public class HomeScreenIOS
     @Override
     public SearchScreen selectProductFromCategory(String product, String category, String gender) {
         return SearchScreen.get();
+    }
+
+    @Override
+    public HomeScreen clickOnAllowToSendNotifications() {
+        if (driver.findElements(byAllowNotificationsId).size() > 0) {
+            driver.waitTillElementIsPresent(byAllowNotificationsId,15).click();
+        }
+        return HomeScreen.get();
+    }
+
+    @Override
+    public HomeScreen clickOnAllowLocation() {
+        if (driver.findElements(byAllowLocationId).size() > 0) {
+            driver.waitTillElementIsPresent(byAllowLocationId,15).click();
+        }
+        return HomeScreen.get();
+    }
+
+    @Override
+    public HomeScreen clickOnAllowLocationWhileUsingApp() {
+        waitFor(5);
+        if (driver.findElements(byAllowLocationWhileUsingAppId).size() > 0) {
+            driver.waitTillElementIsPresent(byAllowLocationWhileUsingAppId,15).click();
+        }
+        return HomeScreen.get();
+    }
+
+    @Override
+    public HomeScreen relaunchApplication() {
+        driver.relaunchApp();
+        return HomeScreen.get();
     }
 
 }

@@ -12,7 +12,7 @@ public class SearchScreenIOS
     private static final String SCREEN_NAME = SearchScreenIOS.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final By byResultsXpath = By.xpath("//XCUIElementTypeStaticText[@name[contains(.,'Products')]]");
-    private static final By byProductXpath = By.xpath("//XCUIElementTypeStaticText[@label[contains(.,'M&M A Line Kurta')]]");
+    private static final By byProductXpath = By.xpath("(//XCUIElementTypeButton[@name=\"view_similar_button\"])[1]/preceding-sibling::XCUIElementTypeImage");
     private final Driver driver;
     private final Visual visually;
 

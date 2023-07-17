@@ -42,6 +42,10 @@ public class HomeBL {
                 .as("Selected Product list is not loaded")
                 .isTrue();
         return this;
+    }
 
+    public HomeBL handlePopups(){
+        HomeScreen.get().clickOnAllowToSendNotifications().clickOnAllowToSendNotifications().clickOnAllowLocation().clickOnAllowLocationWhileUsingApp().relaunchApplication();
+        return this;
     }
 }

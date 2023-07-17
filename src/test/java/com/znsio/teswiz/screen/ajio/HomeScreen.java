@@ -42,4 +42,8 @@ public abstract class HomeScreen {
     public abstract HomeScreen goToMenu();
 
     public abstract SearchScreen selectProductFromCategory(String product, String category, String gender);
+    public abstract HomeScreen clickOnAllowToSendNotifications();
+    public abstract HomeScreen clickOnAllowLocation();
+    public abstract HomeScreen clickOnAllowLocationWhileUsingApp();
+    public abstract HomeScreen relaunchApplication();
 }
