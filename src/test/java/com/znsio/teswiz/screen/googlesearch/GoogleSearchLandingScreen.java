@@ -1,36 +1,32 @@
-package com.znsio.teswiz.screen.ajio;
+package com.znsio.teswiz.screen.googlesearch;
 
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
-import com.znsio.teswiz.screen.android.ajio.SearchScreenAndroid;
+import com.znsio.teswiz.screen.android.googlesearch.GoogleSearchLandingScreenAndroid;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 
-public abstract class SearchScreen {
-    private static final String SCREEN_NAME = SearchScreen.class.getSimpleName();
+public abstract class GoogleSearchLandingScreen {
+    private static final String SCREEN_NAME = GoogleSearchLandingScreen.class.getSimpleName();
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
 
-    public static SearchScreen get() {
+    public static GoogleSearchLandingScreen get() {
         Driver driver = Drivers.getDriverForCurrentUser(Thread.currentThread().getId());
         Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
 
-        switch(platform) {
+        switch (platform) {
             case android:
-                return new SearchScreenAndroid(driver, visually);
+                return new GoogleSearchLandingScreenAndroid(driver, visually);
+            default:
+                throw new NotImplementedException(SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
         }
-        throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
     }
 
-    public abstract int numberOfProductFound();
-
-    public abstract ProductScreen selectProduct();
-
-    public abstract boolean isProductListLoaded(String product);
+    public abstract GoogleSearchResultsScreen searchFor(String searchText);
 
 }
