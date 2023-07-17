@@ -22,6 +22,18 @@
     },
     "Crypto_API":{
       "url": "https://data.binance.com/api/v3/ticker/24hr?"
+    },
+    "RestUser_API":{
+      "url": "https://jsonplaceholder.typicode.com/posts",
+      "postBody": {
+        "title": "Teswiz",
+        "body": "API workflow test",
+        "userId": "1"
+      },
+      "patchBody": {
+        "title": "Automation"
+      },
+      "updatedTitle": "Automation"
     }
   },
   "dev": {},
