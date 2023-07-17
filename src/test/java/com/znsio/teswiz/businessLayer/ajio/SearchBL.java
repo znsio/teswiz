@@ -63,4 +63,12 @@ public class SearchBL {
                 .isEqualTo(context.getTestState("productName"));
         return this;
     }
+
+    public ProductBL selectFirstItem(String userPersona) {
+        ProductScreen productScreen = ProductScreen.get();
+        SearchScreen.get().selectFirstItemFromList();
+        assertThat(productScreen.isProductBrandNameVisible()).as("Item name is not visible").isTrue();
+        context.addTestState(userPersona + " ProductName", productScreen.getProductName());
+        return new ProductBL();
+    }
 }

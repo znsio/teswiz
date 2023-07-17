@@ -4,10 +4,12 @@ import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.screen.ajio.CartScreen;
 import com.znsio.teswiz.screen.ajio.ProductScreen;
 import com.znsio.teswiz.screen.ajio.SearchScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProductBL {
@@ -47,6 +49,19 @@ public class ProductBL {
         String finalElementId = ProductScreen.get().flickImage().isElementIdChanged();
         String initialElementId = (String) context.getTestState(SAMPLE_TEST_CONTEXT.INITIAL_ELEMENT_ID);
         assertThat(initialElementId).as("Unable to perform flick action").isNotEqualTo(finalElementId);
+        return this;
+    }
+
+    public ProductBL addItemToCart(String userPersona) {
+        ProductScreen productScreen = ProductScreen.get();
+        productScreen.clickOnAddToCart().selectAvailableSize().clickOnAddToBagButton();
+        assertThat(productScreen.getAddedToBagToastMessage()).as("Product is not added to cart")
+                .isEqualTo("Added to Bag");
+        productScreen.clickOnCartIcon();
+        String actualProductName = CartScreen.get().getActualProductName();
+        LOGGER.info("Actual product name in the cart" + actualProductName);
+        assertThat(actualProductName).as("Product in the Cart")
+                .isEqualTo(context.getTestState(userPersona + " ProductName"));
         return this;
     }
 }

@@ -13,3 +13,12 @@ Feature: Ajio tests
     Given I open "Jackets" from "Topwear" section for "Men"
     When I select the first result
     Then I should be able to perform flick and view images
+
+  @searchItem @multiuser-iOS
+  Scenario: As a guest user, I should be able to flick and see images in product details
+    Given "I" search "beauty" item on "iOS"
+    And "You" search "jeans" item on "iOS"
+    When "I" select first item
+    And "You" select first item
+    Then "I" add item to cart
+    Then "You" add item to cart

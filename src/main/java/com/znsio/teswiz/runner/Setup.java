@@ -464,7 +464,11 @@ class Setup {
                 currentPlatform = Platform.windows;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Windows & Android";
-            } else {
+            } else if(providedTags.contains("multiuser-iOS")) {
+                currentPlatform = Platform.iOS;
+                inferredTags = providedTags + AND_NOT_WIP;
+                launchName += " - Real User Simulation on IOS";
+            }else {
                 launchName += " - " + currentPlatform;
             }
         }
