@@ -1,6 +1,7 @@
 package com.znsio.teswiz.runner;
 
 import com.context.TestExecutionContext;
+import com.znsio.teswiz.entities.BrowserType;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
@@ -9,9 +10,6 @@ import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
-import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import io.github.bonigarcia.wdm.config.DriverManagerType;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -39,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Runner.*;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
@@ -157,14 +154,13 @@ class BrowserDriverManager {
     private static WebDriver createNewWebDriver(String forUserPersona, String browserName,
                                                 TestExecutionContext testExecutionContext,
                                                 JSONObject browserConfig) {
-
-        //DriverManagerType driverManagerType = setupBrowserDriver(testExecutionContext, browserName);
+        BrowserType browserType = BrowserType.valueOf(browserName.toUpperCase());
         WebDriver driver = null;
-        LOGGER.info(
-                BrowserDriverManager.class.getName() + "-createNewWebDriver: " + .getBrowserNameLowerCase());
+        LOGGER.info(BrowserDriverManager.class.getName() + "-createNewWebDriver: " + browserType);
+
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(
-                driverManagerType.getBrowserNameLowerCase());
-        switch(driverManagerType) {
+                browserType.toString().toLowerCase());
+        switch(browserType) {
             case CHROME:
                 driver = createChromeDriver(forUserPersona, testExecutionContext,
                                             browserConfigForBrowserType);
@@ -193,42 +189,6 @@ class BrowserDriverManager {
         }
         LOGGER.info("Reset browser window size");
         return driver;
-    }
-
-    @NotNull
-    private static DriverManagerType setupBrowserDriver(TestExecutionContext testExecutionContext,
-                                                        String browserType) {
-        DriverManagerType driverManagerType = DriverManagerType.valueOf(browserType.toUpperCase());
-        String webDriverManagerProxyUrl = (null == Runner.getWebDriverManagerProxyURL()) ? "" : Runner.getWebDriverManagerProxyURL();
-        LOGGER.info(String.format(
-                "Using webDriverManagerProxyUrl: '%s' for getting the WebDriver for browser: '%s'",
-                webDriverManagerProxyUrl, browserType));
-
-        // TODO - get browser version from local or container. What about cloud?
-        String browserVersion = NOT_SET;
-        if (Runner.isRunningInCI() && getCloudNameFromCapabilities().equalsIgnoreCase("docker")) {
-            LOGGER.info("Running in docker. Get driver for browser in docker");
-            String[] getBrowserVersionFromDockerCommand = new String[] {"cURL -s --request GET " +
-                                                        "'http://localhost:" + Runner.getRemoteDriverGridPort() + "/status'" +
-                                                       " | jq -r -M  '.value" +
-                               ".nodes[].slots[].stereotype | select(.browserName == \"" + browserType + "\") " +
-                                                                "| .browserVersion '"};
-            CommandLineResponse commandLineResponse = CommandLineExecutor.execCommand(getBrowserVersionFromDockerCommand);
-            browserVersion = commandLineResponse.getStdOut().split("\n")[0];
-            LOGGER.info(String.format("%s browser version in docker container: %s", browserType, browserVersion));
-        }
-        WebDriverManager webDriverManager = WebDriverManager.getInstance(driverManagerType)
-                                                            .proxy(webDriverManagerProxyUrl);
-        if (!browserVersion.equalsIgnoreCase(NOT_SET)) {
-            webDriverManager.browserVersion(browserVersion);
-        }
-        webDriverManager.setup();
-        String downloadedDriverVersion = webDriverManager.getDownloadedDriverVersion();
-
-        String message = String.format("Using %s browser version: %s", driverManagerType, downloadedDriverVersion);
-        LOGGER.info(message);
-        ReportPortalLogger.logInfoMessage(message);
-        return driverManagerType;
     }
 
     @NotNull
