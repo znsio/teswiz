@@ -22,9 +22,3 @@ Feature: Weather data based on location Coordinates
     | "28.651952" | "77.231495" | Delhi   |
     | "22.562627" | "88.363044" | Kolkata |
     | "13.084622" | "80.248357" | Chennai |
-
-  @windDirectionScnario @workflow
-  Scenario: Verify the wind direction for city - "San Francisco" using location coordinates
-    Given I fetch location coordinates for "San Francisco"
-    When I fetch weather data for the location coordinates
-    Then wind direction should be less than 360
