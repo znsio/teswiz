@@ -33,6 +33,14 @@ Step Definition File: src/test/java/com/znsio/teswiz/steps/WeatherAPISteps.java
 BL File: src/test/java/com/znsio/teswiz/businessLayer/weatherAPI/WeatherAPIBL.java
 ```
 
+## Sample API Workflow scenario Example:
+
+```
+feature file: src/test/resources/com/znsio/teswiz/features/workflow/weatherAPI.feature
+Step Definition File: src/test/java/com/znsio/teswiz/steps/WeatherAPISteps.java
+BL File: src/test/java/com/znsio/teswiz/businessLayer/weatherAPI/WeatherAPIBL.java
+```
+
 ## Reportportal Execution report:
 
 To get reportportal execution report, Update following params in
