@@ -20,23 +20,23 @@ public class UnirestService {
     }
 
     public static HttpResponse<JsonNode> getHttpResponseWithQueryParameter(String completeURLPath, String key, String value) {
-        LOGGER.info("==== Processing GET call with base URL and single query parameter");
+        LOGGER.info("Processing GET call with base URL and single query parameter");
         return getUnirestObj().get(completeURLPath).headers(getHeadersWithoutAuthorization()).queryString(key, value).asJson();
     }
 
     public static HttpResponse<JsonNode> getHttpResponseWithQueryMap(String completeURLPath, HashMap<String, Object> query) {
 
-        LOGGER.info("==== Processing GET call with base URL and multi query parameters");
+        LOGGER.info("Processing GET call with base URL and multi query parameters");
         return getUnirestObj().get(completeURLPath).headers(getHeadersWithoutAuthorization()).queryString(query).asJson();
     }
 
     public static HttpResponse<JsonNode> getResponseFromPostCall(String completeURLPath, JSONObject requestBody) {
-        LOGGER.info("==== Processing post call");
+        LOGGER.info("Processing post call");
         return getUnirestObj().post(completeURLPath).body(requestBody).headers(getHeadersWithoutAuthorization()).asJson();
     }
 
     public static HttpResponse<JsonNode> getResponseFromPutCall(String completeURLPath, JSONObject requestBody) {
-        LOGGER.info("==== Processing post call");
+        LOGGER.info("Processing post call");
         return getUnirestObj().put(completeURLPath).body(requestBody).headers(getHeadersWithoutAuthorization()).asJson();
     }
 
