@@ -3,7 +3,6 @@ package com.znsio.teswiz.services;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
-import kong.unirest.json.JSONObject;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -30,16 +29,20 @@ public class UnirestService {
         return getUnirestObj().get(completeURLPath).headers(getHeadersWithoutAuthorization()).queryString(query).asJson();
     }
 
-    public static HttpResponse<JsonNode> getResponseFromPostCall(String completeURLPath, JSONObject requestBody) {
+    public static HttpResponse<JsonNode> postHttpRequest(String completeURLPath, Object requestBody) {
         LOGGER.info("Processing post call");
         return getUnirestObj().post(completeURLPath).body(requestBody).headers(getHeadersWithoutAuthorization()).asJson();
     }
 
-    public static HttpResponse<JsonNode> getResponseFromPutCall(String completeURLPath, JSONObject requestBody) {
-        LOGGER.info("Processing post call");
-        return getUnirestObj().put(completeURLPath).body(requestBody).headers(getHeadersWithoutAuthorization()).asJson();
+    public static HttpResponse<JsonNode> patchHttpRequest(String completeURLPath, Object requestBody) {
+        LOGGER.info("Processing patch call");
+        return getUnirestObj().patch(completeURLPath).body(requestBody).headers(getHeadersWithoutAuthorization()).asJson();
     }
 
+    public static HttpResponse<JsonNode> deleteHttpRequest(String completeURLPath){
+        LOGGER.info("Processing delete call");
+        return getUnirestObj().delete(completeURLPath).asJson();
+    }
     private static Map<String, String> getHeadersWithoutAuthorization() {
         return new HashMap<>() {{
             put("Accept", "application/json");
