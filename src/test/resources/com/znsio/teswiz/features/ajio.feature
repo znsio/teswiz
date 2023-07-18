@@ -14,8 +14,10 @@ Feature: Ajio tests
     When I select the first result
     Then I should be able to perform flick and view images
 
-  @searchItem @multiuser-iOS
-  Scenario: As a guest user, I should be able to flick and see images in product details
+# CONFIG=./configs/ajio_local_ios_config.properties TAG="@multiuser-iOS and @ajio" PLATFORM=iOS ./gradlew run
+# CONFIG=./configs/ajio_ios_browserstack_config.properties TAG="@multiuser-iOS and @ajio" CLOUD_KEY=<cloud_key> CLOUD_USERNAME=<cloud_username> PLATFORM=iOS RUN_IN_CI=true PLATFORM=iOS ./gradlew run
+  @searchItem @multiuser-iOS @ajio
+  Scenario: As a guest user, I should be able to add an item to cart
     Given "I" search "beauty" item on "iOS"
     And "You" search "jeans" item on "iOS"
     When "I" select first item
