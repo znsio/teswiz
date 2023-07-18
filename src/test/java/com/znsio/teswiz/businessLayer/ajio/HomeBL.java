@@ -52,6 +52,7 @@ public class HomeBL {
     }
 
     public SearchBL searchProduct(String productName) {
+        new HomeBL().handlePopups();
         HomeScreen.get().searchForTheProduct(productName);
         assertThat(SearchScreen.get().getProductListingPageHeader().toLowerCase()).as("Product searched is not displayed").contains(productName.toLowerCase());
         return new SearchBL();
