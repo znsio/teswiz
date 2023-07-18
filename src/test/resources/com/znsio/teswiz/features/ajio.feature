@@ -24,3 +24,10 @@ Feature: Ajio tests
     And "You" select first item
     Then "I" add item to cart
     Then "You" add item to cart
+
+# CONFIG=./configs/ajio_local_ios_config.properties TAG="@single-app and @ajio" PLATFORM=iOS ./gradlew run
+  @searchItem @iOS @single-app @ajio
+  Scenario: As a guest user, I should be able to add an item to cart
+    Given "I" search "beauty" item on "iOS"
+    When "I" select first item
+    Then "I" add item to cart
