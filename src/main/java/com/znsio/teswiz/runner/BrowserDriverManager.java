@@ -158,8 +158,7 @@ class BrowserDriverManager {
         WebDriver driver = null;
         LOGGER.info(BrowserDriverManager.class.getName() + "-createNewWebDriver: " + browserType);
 
-        JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(
-                browserType.toString().toLowerCase());
+        JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserType.toString().toLowerCase());
         switch(browserType) {
             case CHROME:
                 driver = createChromeDriver(forUserPersona, testExecutionContext,

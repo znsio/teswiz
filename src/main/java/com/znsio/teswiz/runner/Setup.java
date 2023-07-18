@@ -35,7 +35,6 @@ class Setup {
     static final String CLOUD_KEY = "CLOUD_KEY";
     static final String PLATFORM = "PLATFORM";
     static final String APP_NAME = "APP_NAME";
-    static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     static final String IS_VISUAL = "IS_VISUAL";
     static final String BROWSER = "BROWSER";
@@ -77,7 +76,6 @@ class Setup {
     private static final String LOCAL = "LOCAL";
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
     private static final String PROXY_KEY = "PROXY_KEY";
-    private static final String WEBDRIVER_MANAGER_PROXY_KEY = "WEBDRIVER_MANAGER_PROXY_KEY";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
     static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
@@ -393,13 +391,7 @@ class Setup {
                                                         getStringValueFromPropertiesIfAvailable(
                                                                 PROXY_KEY, PROXY_KEY)));
         configs.put(PROXY_URL, (null != configs.get(PROXY_KEY)) ? getOverriddenStringValue(configs.get(PROXY_KEY)) : configs.put(PROXY_URL, null));
-        configs.put(WEBDRIVER_MANAGER_PROXY_KEY,
-                    getOverriddenStringValue(WEBDRIVER_MANAGER_PROXY_KEY,
-                                             getStringValueFromPropertiesIfAvailable(
-                                                     WEBDRIVER_MANAGER_PROXY_KEY,
-                                                     WEBDRIVER_MANAGER_PROXY_KEY)));
-        configs.put(WEBDRIVER_MANAGER_PROXY_URL,
-                    getOverriddenStringValue(configs.get(WEBDRIVER_MANAGER_PROXY_KEY)));
+
         configs.put(REMOTE_WEBDRIVER_GRID_PORT_KEY,
                     getStringValueFromPropertiesIfAvailable(REMOTE_WEBDRIVER_GRID_PORT,
                                                             REMOTE_WEBDRIVER_GRID_PORT));
