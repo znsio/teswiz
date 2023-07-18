@@ -341,7 +341,7 @@ class AppiumDriverManager {
     }
 
     private static void attachDeviceLogsToReportPortal(String userPersona) {
-        String deviceLogFileName = getDeviceLogFileNameFor(userPersona, Platform.android.name());
+        String deviceLogFileName = getDeviceLogFileNameFor(userPersona, Runner.getPlatform().toString());
         File destinationFile = new File(deviceLogFileName);
 
         String adbLogMessage = String.format("ADB Logs for %s, file name: %s",

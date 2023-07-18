@@ -5,8 +5,10 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.ajio.HomeScreen;
+import com.znsio.teswiz.screen.ajio.SearchScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class HomeBL {
@@ -44,8 +46,14 @@ public class HomeBL {
         return this;
     }
 
-    public HomeBL handlePopups(){
+    public HomeBL handlePopups() {
         HomeScreen.get().clickOnAllowToSendNotifications().clickOnAllowToSendNotifications().clickOnAllowLocation().clickOnAllowLocationWhileUsingApp().relaunchApplication();
         return this;
+    }
+
+    public SearchBL searchProduct(String productName) {
+        HomeScreen.get().searchForTheProduct(productName);
+        assertThat(SearchScreen.get().getProductListingPageHeader().toLowerCase()).as("Product searched is not displayed").contains(productName.toLowerCase());
+        return new SearchBL();
     }
 }

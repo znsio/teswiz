@@ -55,4 +55,14 @@ public class SearchScreenAndroid
         LOGGER.info("Loaded product: " + productLoaded);
         return productLoaded.contains(product);
     }
+
+    @Override
+    public String getProductListingPageHeader() {
+        return null;
+    }
+
+    @Override
+    public ProductScreen selectFirstItemFromList() {
+        return null;
+    }
 }

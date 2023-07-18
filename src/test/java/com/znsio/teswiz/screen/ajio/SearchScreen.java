@@ -20,7 +20,7 @@ public abstract class SearchScreen {
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
 
-        switch(platform) {
+        switch (platform) {
             case android:
                 return new SearchScreenAndroid(driver, visually);
             case iOS:
@@ -36,4 +36,7 @@ public abstract class SearchScreen {
 
     public abstract boolean isProductListLoaded(String product);
 
+    public abstract String getProductListingPageHeader();
+
+    public abstract ProductScreen selectFirstItemFromList();
 }

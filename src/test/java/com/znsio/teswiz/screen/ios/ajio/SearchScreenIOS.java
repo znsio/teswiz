@@ -13,6 +13,8 @@ public class SearchScreenIOS
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final By byResultsXpath = By.xpath("//XCUIElementTypeStaticText[@name[contains(.,'Products')]]");
     private static final By byProductXpath = By.xpath("(//XCUIElementTypeButton[@name=\"view_similar_button\"])[1]/preceding-sibling::XCUIElementTypeImage");
+    private static final By byProductListingPageHeaderId = By.id("headerTitle_NavigationBar");
+    private static final By byFirstProductXpath = By.xpath("(//XCUIElementTypeButton[@name='view_similar_button'])[1]/preceding-sibling::XCUIElementTypeImage");
     private final Driver driver;
     private final Visual visually;
 
@@ -40,5 +42,19 @@ public class SearchScreenIOS
     @Override
     public boolean isProductListLoaded(String product) {
         return true;
+    }
+
+    @Override
+    public String getProductListingPageHeader() {
+        LOGGER.info("Product listing page should be appeared");
+        visually.checkWindow(SCREEN_NAME, "Product Listing Screen");
+        return driver.waitForClickabilityOf(byProductListingPageHeaderId, 10).getText().trim();
+    }
+
+    @Override
+    public ProductScreen selectFirstItemFromList() {
+        LOGGER.info("Select first item from the list");
+        driver.waitTillElementIsPresent(byFirstProductXpath, 10).click();
+        return ProductScreen.get();
     }
 }

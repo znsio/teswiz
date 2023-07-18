@@ -20,7 +20,7 @@ public abstract class ProductScreen {
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
 
-        switch(platform) {
+        switch (platform) {
             case android:
                 return new ProductScreenAndroid(driver, visually);
             case iOS:
@@ -40,4 +40,15 @@ public abstract class ProductScreen {
 
     public abstract String isElementIdChanged();
 
+    public abstract boolean isProductBrandNameVisible();
+
+    public abstract ProductScreen clickOnAddToCart();
+
+    public abstract ProductScreen selectAvailableSize();
+
+    public abstract ProductScreen clickOnAddToBagButton();
+
+    public abstract String getAddedToBagToastMessage();
+
+    public abstract CartScreen clickOnCartIcon();
 }
