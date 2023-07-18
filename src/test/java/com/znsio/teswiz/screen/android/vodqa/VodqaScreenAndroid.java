@@ -12,7 +12,9 @@ import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import io.appium.java_client.AppiumBy;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.WebElement;
 
 public class VodqaScreenAndroid extends VodqaScreen {
     private final Driver driver;
@@ -31,6 +33,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byWebViewSectionOptionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='webView']");
     private final By byNativeViewSectionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='chainedView']");
     private final String languageTextView = "//android.widget.TextView[@text=' %s']";
+
     private final By byLongPressOptionXpath = AppiumBy.xpath("//android.widget.TextView[@content-desc='longPress']");
     private final By byLongPressButtonAccessibilityId = AppiumBy.accessibilityId("longpress");
     private final By byLongPressedPopupId = AppiumBy.id("android:id/alertTitle");
@@ -38,9 +41,15 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final By byDoubleTapElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='doubleTapMe']");
     private final By byDoubleTapScreenXpath = AppiumBy.xpath("//android.widget.TextView[@text='Double Tap']");
     private final By byDoubleTapSuccessfulXpath = AppiumBy.xpath("//android.widget.TextView[@text='Double tap successful!']");
-
-
-
+    private final By byPhotoViewElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='photoView']");
+    private final By byImageElementXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='photo']/android.widget.ImageView");
+    
+    private final By bySliderSectionXpath = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='slider1']/android.view.ViewGroup");
+    private final By byFirstSliderElementId = AppiumBy.accessibilityId("slider");
+    private final By bySecondSliderElementId = AppiumBy.accessibilityId("slider1");
+    private final By bySliderValueXpath = AppiumBy.xpath("//android.view.ViewGroup/android.widget.TextView[2]");
+  
+  
     public VodqaScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
@@ -176,17 +185,17 @@ public class VodqaScreenAndroid extends VodqaScreen {
         driver.waitForClickabilityOf(byLongPressOptionXpath).click();
         LOGGER.info("Performing long press on element");
         visually.checkWindow(SCREEN_NAME, "Long press screen");
-        driver.longPress(byLongPressButtonAccessibilityId,3);
+        driver.longPress(byLongPressButtonAccessibilityId, 3);
         return this;
     }
 
     @Override
-     public boolean isLongPressedPopupVisible() {
+    public boolean isLongPressedPopupVisible() {
         visually.checkWindow(SCREEN_NAME, "Long pressed popup");
         return driver.isElementPresent(byLongPressedPopupId);
     }
-  
-    @Override 
+
+    @Override
     public DragAndDropScreen openDragAndDropScreen() {
         driver.waitTillElementIsPresent(byDragAndDropTextView);
         visually.checkWindow(SCREEN_NAME, "Home Screen");
@@ -198,7 +207,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     public VodqaScreen doubleTapOnElement() {
         LOGGER.info("Performing Double tap on element in Double tap screen");
         driver.waitTillElementIsVisible(byDoubleTapScreenXpath).click();
-        visually.check(SCREEN_NAME,"Double Tap Element Screen",Target.window());
+        visually.check(SCREEN_NAME, "Double Tap Element Screen", Target.window());
         driver.doubleTap(driver.waitTillElementIsVisible(byDoubleTapElementXpath));
         return this;
     }
@@ -207,7 +216,69 @@ public class VodqaScreenAndroid extends VodqaScreen {
     public boolean isDoubleTapSuccessful() {
         LOGGER.info("Checking if double tap on element is successful");
         driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
-        visually.check(SCREEN_NAME,"Double Tap Successful Message", Target.region(byDoubleTapSuccessfulXpath));
+        visually.check(SCREEN_NAME, "Double Tap Successful Message", Target.region(byDoubleTapSuccessfulXpath));
         return driver.isElementPresent(byDoubleTapSuccessfulXpath);
+    }
+
+    @Override
+    public VodqaScreen navigateToUImageView() {
+        LOGGER.info("Navigate to Photo View Section");
+        driver.waitTillElementIsVisible(byPhotoViewElementXpath).click();
+        return this;
+    }
+
+    @Override
+    public VodqaScreen pinchAndZoomInOnAnElement() {
+        LOGGER.info("Perform Pinch action and Zoom In Image element");
+        driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
+        driver.pinchAndZoomIn(driver.waitTillElementIsVisible(byImageElementXpath));
+        visually.check(SCREEN_NAME, "Zoomed In Image element", Target.window());
+        return this;
+    }
+
+    @Override
+    public VodqaScreen pinchAndZoomOutOnAnElement() {
+        LOGGER.info("Perform Pinch action and Zoom out Image element");
+        driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
+        driver.pinchAndZoomOut(driver.waitTillElementIsVisible(byImageElementXpath));
+        visually.check(SCREEN_NAME, "Zoomed Out Image element", Target.window());
+        return this;
+    }
+
+    @Override
+    public boolean isPinchAndZoomInSuccessful(Dimension initialElementDimension) {
+
+        Dimension actualElementDimension = driver.waitTillElementIsVisible(byImageElementXpath).getSize();
+        return (initialElementDimension.width * initialElementDimension.height) > (actualElementDimension.width * actualElementDimension.height);
+    }
+
+    @Override
+    public boolean isPinchAndZoomOutSuccessful(Dimension initialElementDimension) {
+
+        Dimension actualElementDimension = driver.waitTillElementIsVisible(byImageElementXpath).getSize();
+        return (initialElementDimension.width * initialElementDimension.height) < (actualElementDimension.width * actualElementDimension.height);
+    }
+
+    @Override
+    public Dimension getImageElementDimension() {
+        return driver.waitTillElementIsVisible(byImageElementXpath).getSize();
+    }
+    
+    @Override
+    public VodqaScreen multiTouchOnElements() {
+        LOGGER.info("Performing multi touch action in Slider Screen");
+        driver.waitTillElementIsVisible(bySliderSectionXpath).click();
+        visually.check(SCREEN_NAME,"Slider Section Screen",Target.window());
+        WebElement firstSliderElement = driver.findElement(byFirstSliderElementId);
+        WebElement secondSliderElement = driver.findElement(bySecondSliderElementId);
+        driver.multiTouchOnElements(firstSliderElement, secondSliderElement);
+        return this;
+    }
+  
+    @Override
+    public float getSliderValue() {
+        float actualSliderValue = Float.parseFloat(driver.waitTillElementIsPresent(bySliderValueXpath).getText());
+        visually.check(SCREEN_NAME, "Slider value check", Target.region(bySliderValueXpath));
+        return actualSliderValue;
     }
 }

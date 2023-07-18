@@ -9,6 +9,7 @@ import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
+import org.openqa.selenium.Dimension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -108,7 +109,7 @@ public class VodqaBL {
     }
 
     public VodqaBL isElementWithTextVisible(String elementText) {
-        boolean isScrollSuccessful = VodqaScreen.get().isElementWithTextVisible(elementText);
+        boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible(elementText);
         assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
         return this;
     }
@@ -144,6 +145,26 @@ public class VodqaBL {
 
     public VodqaBL verifyLongPressedPopup() {
         assertThat(VodqaScreen.get().isLongPressedPopupVisible()).as("Long Pressed Popup is not visible").isTrue();
+        return this;
+    }
+
+    public VodqaBL pinchAndZoomInOnAnElement() {
+        VodqaScreen vodqaScreen = VodqaScreen.get();
+        Dimension elementDimension = vodqaScreen.navigateToUImageView().getImageElementDimension();
+        assertThat(vodqaScreen.pinchAndZoomOutOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom Out on an element failed").isTrue();
+        return this;
+    }
+
+    public VodqaBL pinchAndZoomOutOnAnElement() {
+        VodqaScreen vodqaScreen = VodqaScreen.get();
+        Dimension elementDimension = vodqaScreen.navigateToUImageView().getImageElementDimension();
+        assertThat(vodqaScreen.pinchAndZoomOutOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom Out on an element failed").isTrue();
+        return this;
+    }
+    
+    public VodqaBL performMultiTouchForBothSilders(float sliderValue) {
+        VodqaScreen.get().multiTouchOnElements();
+        assertThat(VodqaScreen.get().getSliderValue()).as("Multi Touch failed as slider value is not equal").isEqualTo(sliderValue);
         return this;
     }
 }
