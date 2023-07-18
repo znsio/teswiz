@@ -46,6 +46,7 @@ There is a new method added:
 | Purpose                                                                                            | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
 |:---------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
 | A new method is added for swipe by passing the screen height and width in percentage as parameters | swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth)     |
+| A new method is added for drag and object to a target location                                     | dragAndDrop(By draggableLocator, By dropZoneLocator)                                                                  |                                                                                                  |
 
 ## Updated Usage Of Appium Driver in Methods
 
@@ -54,7 +55,6 @@ There is a new method added:
 3. scroll(Point fromPoint, Point toPoint) , scrollVertically() , scrollDownByScreenSize()
 4. tapOnMiddleOfScreenOnDevice()
 5. swipeLeft() , swipeRight() , swipe(int height, int fromWidth, int toWidth)
-6. dragAndDrop()
 
 ## References:
 
