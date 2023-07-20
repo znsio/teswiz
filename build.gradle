@@ -10,7 +10,7 @@ buildscript {
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.14.5'
         jadbVersion = '1.2.1'
-        webDriverManagerVersion = '5.4.0'
+        webDriverManagerVersion = '5.4.1'
         junitVersion = '5.9.3'
         slf4jVersion = '2.0.7'
         fasterxmlJacksonVersion = '2.15.2'
