@@ -123,7 +123,7 @@ public class Visual {
                 new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
 
         // todo - enhancements - https://applitools.com/docs/topics/general-concepts/visual-test-best-practices.html?Highlight=setMatchTimeout
-        // add setIgnoreCaret, setHideScrollbars, setIgnoreDisplacements
+        // add setIgnoreCaret, setHideScrollbars
         appEyes.addProperty(Setup.APP_NAME, appName);
         appEyes.addProperty("USER_PERSONA", userPersona);
         appEyes.addProperty(Setup.BRANCH_NAME,
@@ -133,7 +133,7 @@ public class Visual {
         appEyes.addProperty(Setup.TARGET_ENVIRONMENT,
                             String.valueOf(getValueFromConfig(Setup.TARGET_ENVIRONMENT)));
         appEyes.addProperty("USER_NAME", USER_NAME);
-
+        appEyes.setIgnoreDisplacements(getValueFromConfig(APPLITOOLS.IGNORE_DISPLACEMENT, true));
         try {
             String proxyUrl = (String) applitoolsConfig.get(APPLITOOLS.PROXY_URL);
             if (null != proxyUrl) {

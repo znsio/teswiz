@@ -32,4 +32,8 @@ public abstract class HomeScreen {
     public abstract SearchScreen searchByImage();
 
     public abstract HomeScreen attachFileToDevice(Map imageData);
+
+    public abstract HomeScreen goToMenu();
+
+    public abstract SearchScreen selectProductFromCategory(String product, String category, String gender);
 }

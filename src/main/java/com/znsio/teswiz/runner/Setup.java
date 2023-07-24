@@ -45,7 +45,6 @@ class Setup {
     static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
     static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
     static final String CLOUD_USERNAME = "CLOUD_USERNAME";
-    static final String CLOUD_NAME = "CLOUD_NAME";
     static final String PROXY_URL = "PROXY_URL";
     static final String REMOTE_WEBDRIVER_GRID_PORT = "REMOTE_WEBDRIVER_GRID_PORT";
     static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
@@ -68,6 +67,7 @@ class Setup {
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
+    private static Map<String, Map> loadedCapabilityFile;
     private static final String CHROME = "chrome";
     private static final String TEMP_DIRECTORY = "temp";
     private static final int DEFAULT_PARALLEL = 1;
@@ -146,6 +146,7 @@ class Setup {
 
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
+        loadCapabilitiesFile(configs.get(CAPS));
         setupExecutionEnvironment();
 
         LOGGER.info(printStringMap("Using string values", configs));
@@ -153,6 +154,10 @@ class Setup {
         LOGGER.info(printIntegerMap("Using integer values", configsInteger));
 
         return CUKE_ARGS;
+    }
+
+    private static void loadCapabilitiesFile(String capabilityFile) {
+        loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
     }
 
     static void loadAndUpdateConfigParameters(String configFilePath) {
@@ -347,9 +352,6 @@ class Setup {
         configs.put(CLOUD_USERNAME, getOverriddenStringValue(CLOUD_USERNAME,
                                                          getStringValueFromPropertiesIfAvailable(
                                                                  CLOUD_USERNAME, NOT_SET)));
-        configs.put(CLOUD_NAME, getOverriddenStringValue(CLOUD_NAME,
-                                                         getStringValueFromPropertiesIfAvailable(
-                                                                 CLOUD_NAME, LOCAL)));
         configsBoolean.put(CLOUD_UPLOAD_APP, getOverriddenBooleanValue(CLOUD_UPLOAD_APP,
                                                                        getBooleanValueFromPropertiesIfAvailable(
                                                                                CLOUD_UPLOAD_APP,
@@ -429,6 +431,7 @@ class Setup {
         return files;
     }
 
+    // todo - reduce complexity and simplify
     private static void getPlatformTagsAndLaunchName() {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME);
@@ -525,11 +528,7 @@ class Setup {
             getApplitoolsConfigFromProvidedConfigFile();
             applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
             applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(APP_NAME));
-            applitoolsConfiguration.put(APPLITOOLS.API_KEY,
-                                        getOverriddenStringValue("APPLITOOLS_API_KEY",
-                                                                 String.valueOf(
-                                                                         applitoolsConfiguration.get(
-                                                                                 APPLITOOLS.API_KEY))));
+            applitoolsConfiguration.put(APPLITOOLS.API_KEY, getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
             applitoolsConfiguration.put(BRANCH_NAME, configs.get(BRANCH_NAME));
             applitoolsConfiguration.put(PLATFORM, currentPlatform.name());
             applitoolsConfiguration.put(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
@@ -537,20 +536,23 @@ class Setup {
             applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());
             applitoolsConfiguration.put(APPLITOOLS.RECTANGLE_SIZE, getViewportSize());
             updateApplitoolsProxyUrl();
-            applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED,
-                                        isBenchmarkingEnabled());
-            applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING,
-                                        isDisableBrowserFetching());
-            BatchInfo batchInfo = new BatchInfo(
-                    configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
-            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, batchInfo);
-            batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
-            batchInfo.addProperty(PLATFORM, currentPlatform.name());
-            batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
-            batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
+            applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED, isBenchmarkingEnabled());
+            applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING, isDisableBrowserFetching());
+            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, setupApplitoolsBatchInfo());
         }
         LOGGER.info(String.format("applitoolsConfiguration: %s", applitoolsConfiguration));
         return applitoolsConfiguration;
+    }
+
+    @NotNull
+    private static BatchInfo setupApplitoolsBatchInfo() {
+        BatchInfo batchInfo = new BatchInfo(
+                configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
+        batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
+        batchInfo.addProperty(PLATFORM, currentPlatform.name());
+        batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
+        batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
+        return batchInfo;
     }
 
     private static void updateApplitoolsProxyUrl() {
@@ -572,13 +574,11 @@ class Setup {
         String[] getBranchNameCommand = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(getBranchNameCommand);
         String branchName = response.getStdOut();
-        LOGGER.info(String.format("\tBranch name from git command: '%s': '%s'",
-                                  Arrays.toString(getBranchNameCommand), branchName));
+        LOGGER.info(String.format("\tBranch name from git command: '%s': '%s'", Arrays.toString(getBranchNameCommand), branchName));
         return branchName;
     }
 
-    private static boolean getBooleanValueFromPropertiesIfAvailable(String key,
-                                                                    boolean defaultValue) {
+    private static boolean getBooleanValueFromPropertiesIfAvailable(String key, boolean defaultValue) {
         return Boolean.parseBoolean(properties.getProperty(key, String.valueOf(defaultValue)));
     }
 
@@ -705,5 +705,9 @@ class Setup {
 
     static Platform getPlatform() {
         return currentPlatform;
+    }
+
+    public static Map<String, Map> getLoadedCapabilities() {
+        return loadedCapabilityFile;
     }
 }

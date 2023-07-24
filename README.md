@@ -38,9 +38,11 @@ There are some method name and implementation changes as listed below:
 
 There is a new method added:
 
-| Purpose                                                                                            | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
-|:---------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
-| A new method is added for swipe by passing the screen height and width in percentage as parameters | swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth)     |
+| Purpose                                                                                                               | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
+|:----------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
+| A new method is added to horizontal swipe an element using Gesture by passing the Direction and Element as parameters | horizontalSwipeWithGesture(WebElement element, Direction direction)                                                                                                                      |
+| A new method is added to double tap on an element by passing the Element as parameter                                 | doubleTap(WebElement element)                                                                                                                                                                                         |
+| A new method is added for swipe by passing the screen height and width in percentage as parameters                    | swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth)     |
 
 ## Updated Usage Of Appium Driver in Methods
 1. setWebViewContext()
@@ -140,6 +142,8 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 ## [Configuring the test execution](docs/ConfiguringTestExecution-README.md)
 
 ## [Running the sample tests](docs/SampleTests-README.md)
+
+## [Setting up docker containers](docs/dockerSetup-README.md)
 
 ## Additional configurations
 

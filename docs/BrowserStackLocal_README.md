@@ -38,7 +38,6 @@ Sample command
 
    * Set Variable in pipeline(Azure pipeline variables):
 
-     * `CLOUD_NAME`: browserstack
      * `CLOUD_USERNAME`: browserStackUserName
      * `CLOUD_KEY`: BrowserStack Key
      * `CLOUD_USE_PROXY` = true
