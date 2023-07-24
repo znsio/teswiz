@@ -11,7 +11,7 @@ buildscript {
         unirestVersion = '3.14.5'
         jadbVersion = '1.2.1'
         webDriverManagerVersion = '5.4.1'
-        junitVersion = '5.9.3'
+        junitVersion = '5.10.0'
         slf4jVersion = '2.0.7'
         fasterxmlJacksonVersion = '2.15.2'
         jodaTimeVersion = '2.12.5'
