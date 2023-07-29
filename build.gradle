@@ -6,7 +6,7 @@ buildscript {
         assertJVersion = '3.24.2'
         atdVersion = '13.1.2'
         applitoolsSeleniumVersion = '5.63.4'
-        applitoolsAppiumVersion = '5.63.0'
+        applitoolsAppiumVersion = '5.63.4'
         commonsLang3Version = '3.12.0'
         unirestVersion = '3.14.5'
         jadbVersion = '1.2.1'
