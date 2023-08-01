@@ -43,6 +43,7 @@ import java.util.logging.Level;
 
 import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
+import static com.znsio.teswiz.runner.Runner.IS_MAC;
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
@@ -67,7 +68,7 @@ class BrowserDriverManager {
     static Driver createWebDriverForUser(String userPersona, String browserName,
                                          Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format(
-                "createWebDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: " + "'%s', Number of webdrivers: '%d'%n",
+                "createWebDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: " + "'%s', Number of WebDrivers: '%d'%n",
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
         LOGGER.info("Active thread count: " + Thread.activeCount());
 
@@ -84,7 +85,7 @@ class BrowserDriverManager {
         Driver currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName, newWebDriver, isRunInHeadlessMode);
         numberOfWebDriversUsed++;
 
-        LOGGER.info(String.format("createWebDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', Number of webdrivers: '%d'",
+        LOGGER.info(String.format("createWebDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', Number of WebDrivers: '%d'",
                 userPersona, forPlatform.name(), appName, numberOfWebDriversUsed));
         return currentDriver;
     }
@@ -252,6 +253,10 @@ class BrowserDriverManager {
     private static ChromeOptions getChromeOptions(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject chromeConfiguration) {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setAcceptInsecureCerts(chromeConfiguration.getBoolean(ACCEPT_INSECURE_CERTS));
+        if(IS_MAC) {
+            chromeOptions.setBinary("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
+        }
+
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
 
         setPreferencesInChromeOptions(chromeConfiguration, chromeOptions);
