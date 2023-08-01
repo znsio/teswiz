@@ -225,23 +225,20 @@ class DeviceSetup {
         String cloudName = getCloudNameFromCapabilities();
         String deviceLabURL;
         switch (cloudName.toLowerCase()) {
-            case "headspin" -> {
+            case "headspin":
                 deviceLabURL = getCloudUrlFromCapabilities();
                 HeadSpinSetup.updateHeadspinCapabilities(deviceLabURL);
-            }
-            case "pcloudy" -> {
+                break;
+            case "pcloudy":
                 deviceLabURL = getCloudApiUrlFromCapabilities();
                 PCloudySetup.updatePCloudyCapabilities(deviceLabURL);
-            }
-            case "browserstack" -> {
+                break;
+            case "browserstack":
                 deviceLabURL = getCloudApiUrlFromCapabilities();
                 BrowserStackSetup.updateBrowserStackCapabilities(deviceLabURL);
-            }
-            case "saucelabs" -> {
+                break;
+            default:
                 throw new InvalidTestDataException(
-                        String.format(CLOUD_NAME_NOT_SUPPORTED_MESSAGE, cloudName));
-            }
-            default -> throw new InvalidTestDataException(
                     String.format(CLOUD_NAME_NOT_SUPPORTED_MESSAGE, cloudName));
         }
         Setup.addToConfigs(EXECUTED_ON, cloudName);
