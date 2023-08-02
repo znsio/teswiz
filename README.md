@@ -109,6 +109,8 @@ To make it easy to log to ReportPortal, the following new methods have been adde
 [//]: # (  style id2 fill:#bbf)
 
 [//]: # (```)
+=======
+# [BREAKING CHANGES](docs/BreakingChanges-README.md)
 
 # What is this repository about?
 
@@ -136,8 +138,10 @@ pCloudy.
 * cucumber-jvm (https://cucumber.io)
 * AppiumTestDistribution (https://github.com/AppiumTestDistribution/AppiumTestDistribution) -manages Android and iOS
   devices, and Appium
-* Appium (https://appium.io)
-* WebDriver (https://selenium.dev)
+* Appium 2.x (https://appium.io) 
+  * https://javadoc.io/doc/io.appium/java-client/8.0.0-beta/deprecated-list.html
+* Selenium WebDriver 4.x (https://selenium.dev)
+  * https://www.selenium.dev/selenium/docs/api/java/deprecated-list.html 
 * reportportal.io (https://reportportal.io)
 * Applitools (https://applitools.com)
 * Build tool: gradle 7.3.3
@@ -151,8 +155,6 @@ pCloudy.
 
 ## [Running the sample tests](docs/SampleTests-README.md)
 
-## [Setting up docker containers](docs/dockerSetup-README.md)
-
 ## Additional configurations
 
 ### [Running Visual Tests using Applitools Visual AI](docs/RunningVisualTests-README.md)
@@ -162,6 +164,10 @@ pCloudy.
 ### [Configuration parameters](docs/ConfigurationParameters-README.md)
 
 ### [Add Auto Logging Using AspectJ](docs/AspectJLogging-README.md)
+
+### [Setting up docker containers](docs/dockerSetup-README.md)
+
+### [Logging to ReportPortal](docs/reportportal-README.md)
 
 ## [Troubleshooting / FAQs](docs/FAQs-README.md)
 

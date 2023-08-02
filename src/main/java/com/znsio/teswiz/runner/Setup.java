@@ -35,7 +35,6 @@ class Setup {
     static final String CLOUD_KEY = "CLOUD_KEY";
     static final String PLATFORM = "PLATFORM";
     static final String APP_NAME = "APP_NAME";
-    static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     static final String IS_VISUAL = "IS_VISUAL";
     static final String BROWSER = "BROWSER";
@@ -77,7 +76,6 @@ class Setup {
     private static final String LOCAL = "LOCAL";
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
     private static final String PROXY_KEY = "PROXY_KEY";
-    private static final String WEBDRIVER_MANAGER_PROXY_KEY = "WEBDRIVER_MANAGER_PROXY_KEY";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
     static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
@@ -146,7 +144,11 @@ class Setup {
 
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
-        loadCapabilitiesFile(configs.get(CAPS));
+        if (NOT_SET.equalsIgnoreCase(configs.get(CAPS))) {
+            loadedCapabilityFile = new HashMap<>();
+        } else {
+            loadCapabilitiesFile(configs.get(CAPS));
+        }
         setupExecutionEnvironment();
 
         LOGGER.info(printStringMap("Using string values", configs));
@@ -240,7 +242,7 @@ class Setup {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
         CUKE_ARGS.addAll(DeviceSetup.setupAndroidExecution());
-        CUKE_ARGS.addAll(setupWebExecution());
+        CUKE_ARGS.addAll(setupPlatformExecution());
         CUKE_ARGS.addAll(DeviceSetup.setupWindowsExecution());
         initialiseApplitoolsConfiguration();
 
@@ -393,13 +395,7 @@ class Setup {
                                                         getStringValueFromPropertiesIfAvailable(
                                                                 PROXY_KEY, PROXY_KEY)));
         configs.put(PROXY_URL, (null != configs.get(PROXY_KEY)) ? getOverriddenStringValue(configs.get(PROXY_KEY)) : configs.put(PROXY_URL, null));
-        configs.put(WEBDRIVER_MANAGER_PROXY_KEY,
-                    getOverriddenStringValue(WEBDRIVER_MANAGER_PROXY_KEY,
-                                             getStringValueFromPropertiesIfAvailable(
-                                                     WEBDRIVER_MANAGER_PROXY_KEY,
-                                                     WEBDRIVER_MANAGER_PROXY_KEY)));
-        configs.put(WEBDRIVER_MANAGER_PROXY_URL,
-                    getOverriddenStringValue(configs.get(WEBDRIVER_MANAGER_PROXY_KEY)));
+
         configs.put(REMOTE_WEBDRIVER_GRID_PORT_KEY,
                     getStringValueFromPropertiesIfAvailable(REMOTE_WEBDRIVER_GRID_PORT,
                                                             REMOTE_WEBDRIVER_GRID_PORT));
@@ -431,6 +427,7 @@ class Setup {
         return files;
     }
 
+    // todo - reduce complexity and simplify
     private static void getPlatformTagsAndLaunchName() {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME);
@@ -507,18 +504,21 @@ class Setup {
         System.setProperty("cucumber.publish.quiet", "true");
     }
 
-    private static ArrayList<String> setupWebExecution() {
+    private static ArrayList<String> setupPlatformExecution() {
         ArrayList<String> webCukeArgs = new ArrayList<>();
         if(currentPlatform.equals(Platform.web)) {
             configs.put(APP_PATH, configs.get(BROWSER));
-            webCukeArgs.add("--threads");
-            webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
-            webCukeArgs.add(PLUGIN);
-            webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioListener");
-            webCukeArgs.add(PLUGIN);
-            webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioReporterListener");
             configs.put(EXECUTED_ON, "Local Browsers");
         }
+        else if(currentPlatform.equals(Platform.api)) {
+            configs.put(EXECUTED_ON, currentPlatform.name());
+        }
+        webCukeArgs.add("--threads");
+        webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
+        webCukeArgs.add(PLUGIN);
+        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioListener");
+        webCukeArgs.add(PLUGIN);
+        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioReporterListener");
         return webCukeArgs;
     }
 
@@ -527,11 +527,7 @@ class Setup {
             getApplitoolsConfigFromProvidedConfigFile();
             applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
             applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(APP_NAME));
-            applitoolsConfiguration.put(APPLITOOLS.API_KEY,
-                                        getOverriddenStringValue("APPLITOOLS_API_KEY",
-                                                                 String.valueOf(
-                                                                         applitoolsConfiguration.get(
-                                                                                 APPLITOOLS.API_KEY))));
+            applitoolsConfiguration.put(APPLITOOLS.API_KEY, getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
             applitoolsConfiguration.put(BRANCH_NAME, configs.get(BRANCH_NAME));
             applitoolsConfiguration.put(PLATFORM, currentPlatform.name());
             applitoolsConfiguration.put(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
@@ -539,20 +535,23 @@ class Setup {
             applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());
             applitoolsConfiguration.put(APPLITOOLS.RECTANGLE_SIZE, getViewportSize());
             updateApplitoolsProxyUrl();
-            applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED,
-                                        isBenchmarkingEnabled());
-            applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING,
-                                        isDisableBrowserFetching());
-            BatchInfo batchInfo = new BatchInfo(
-                    configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
-            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, batchInfo);
-            batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
-            batchInfo.addProperty(PLATFORM, currentPlatform.name());
-            batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
-            batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
+            applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED, isBenchmarkingEnabled());
+            applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING, isDisableBrowserFetching());
+            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, setupApplitoolsBatchInfo());
         }
         LOGGER.info(String.format("applitoolsConfiguration: %s", applitoolsConfiguration));
         return applitoolsConfiguration;
+    }
+
+    @NotNull
+    private static BatchInfo setupApplitoolsBatchInfo() {
+        BatchInfo batchInfo = new BatchInfo(
+                configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
+        batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
+        batchInfo.addProperty(PLATFORM, currentPlatform.name());
+        batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
+        batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
+        return batchInfo;
     }
 
     private static void updateApplitoolsProxyUrl() {
@@ -574,13 +573,11 @@ class Setup {
         String[] getBranchNameCommand = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(getBranchNameCommand);
         String branchName = response.getStdOut();
-        LOGGER.info(String.format("\tBranch name from git command: '%s': '%s'",
-                                  Arrays.toString(getBranchNameCommand), branchName));
+        LOGGER.info(String.format("\tBranch name from git command: '%s': '%s'", Arrays.toString(getBranchNameCommand), branchName));
         return branchName;
     }
 
-    private static boolean getBooleanValueFromPropertiesIfAvailable(String key,
-                                                                    boolean defaultValue) {
+    private static boolean getBooleanValueFromPropertiesIfAvailable(String key, boolean defaultValue) {
         return Boolean.parseBoolean(properties.getProperty(key, String.valueOf(defaultValue)));
     }
 

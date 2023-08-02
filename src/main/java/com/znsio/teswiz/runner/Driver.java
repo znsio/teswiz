@@ -180,15 +180,13 @@ public class Driver {
         scroll(from, to);
     }
 
-    public void scrollVertically(int fromPercentScreenHeight, int toPercentScreenHeight,
-                                 int percentScreenWidth) {
+    public void scrollVertically(int fromPercentScreenHeight, int toPercentScreenHeight, int percentScreenWidth) {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         Dimension windowSize = appiumDriver.manage().window().getSize();
         LOGGER.info(DIMENSION + windowSize.toString());
         int width = (windowSize.width * percentScreenWidth) / 100;
-        int fromHeight = (windowSize.height * fromPercentScreenHeight) / 100;
-        int toHeight = (windowSize.height * toPercentScreenHeight) / 100;
-        LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
+        int fromHeight = windowSize.height * fromPercentScreenHeight / 100;
+        int toHeight = windowSize.height * toPercentScreenHeight / 100;
         LOGGER.info(String.format("width: %s, from height: %s, to height: %s", width, fromHeight, toHeight));
         Point from = new Point(width, fromHeight);
         Point to = new Point(width, toHeight);
@@ -227,8 +225,7 @@ public class Driver {
         int midWidth = screenSize.width / 2;
         int currentPositionX = currentPosition.getX();
         int currentPositionY = currentPosition.getY();
-        LOGGER.info(
-                String.format("Current position: '%d':'%d'", currentPositionX, currentPositionY));
+        LOGGER.info(String.format("Current position: '%d':'%d'", currentPositionX, currentPositionY));
 
         int offsetX = currentPositionX < midWidth ? 50 : -50;
         int offsetY = currentPositionY < midHeight ? 50 : -50;
@@ -254,8 +251,7 @@ public class Driver {
     private void checkPercentagesAreValid(int... percentages) {
         boolean arePercentagesValid = Arrays.stream(percentages).allMatch(percentage -> percentage >= 0 && percentage <= 100);
         if (!arePercentagesValid) {
-            throw new RuntimeException(String.format("Invalid percentage value - percentage value should be between 0 - 100. but are %s",
-                    Arrays.toString(percentages)));
+            throw new RuntimeException(String.format("Invalid percentage value - percentage value should be between 0 - 100. but are %s", Arrays.toString(percentages)));
         }
     }
 
@@ -377,10 +373,15 @@ public class Driver {
                 .name() + "' " + "device "
                 + "on path: '" + devicePath + "'");
         try {
-            if (Runner.getPlatform().equals(Platform.android)) {
-                ((AndroidDriver) driver).pushFile(devicePath, new File(filePathToPush));
-            } else if (Runner.getPlatform().equals(Platform.iOS)) {
-                ((IOSDriver) driver).pushFile(devicePath, new File(filePathToPush));
+            switch (Runner.getPlatform()) {
+                case android:
+                    ((AndroidDriver) driver).pushFile(devicePath, new File(filePathToPush));
+                    break;
+                case iOS:
+                    ((IOSDriver) driver).pushFile(devicePath, new File(filePathToPush));
+                    break;
+                default:
+                    throw new InvalidTestDataException("pushFile is supported only on Android/iOS platform");
             }
         } catch (IOException e) {
             throw new FileNotUploadedException(

@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "@appium/doctor": "^2.0.22",
+    "appium": "^2.0.1",
+    "appium-uiautomator2-driver": "^2.29.3",
+    "appium-device-farm": "^8.2.2"
+  },
+  "name": "appium2.0",
+  "description": "[![0.0.3](https://jitpack.io/v/znsio/teswiz.svg)](https://jitpack.io/#znsio/teswiz) [![0.0.3](https://jitci.com/gh/znsio/teswiz/svg)](https://jitci.com/gh/znsio/teswiz) [![CI](https://github.com/znsio/teswiz/actions/workflows/CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/CI.yml) [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)",
+  "version": "0.0.82",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["appium", "appium2.0", "appium-doctor", "appium-device-farm", "teswiz"],
+  "author": "Anand Bagmar",
+  "license": "ISC",
+  "devDependencies": {}
+}
