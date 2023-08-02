@@ -24,6 +24,7 @@
       }
     }
   },
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js",
   "hostMachines": [
     {
       "machineIP": "127.0.0.1"

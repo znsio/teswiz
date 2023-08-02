@@ -7,16 +7,16 @@ import org.apache.log4j.Logger;
 
 import java.util.Calendar;
 
-public class CucumberWebScenarioReporterListener
+public class CucumberPlatformScenarioReporterListener
         extends ScenarioReporter {
     private static final Logger LOGGER = Logger.getLogger(
-            CucumberWebScenarioReporterListener.class.getName());
+            CucumberPlatformScenarioReporterListener.class.getName());
     private static final String DUMMY_ROOT_SUITE_NAME = "End-2-End Tests";
     private static final String RP_STORY_TYPE = "SUITE";
     public static String launchUUID;
 
-    public CucumberWebScenarioReporterListener() {
-        LOGGER.info("CucumberWebScenarioReporterListener");
+    public CucumberPlatformScenarioReporterListener() {
+        LOGGER.info("CucumberScenarioReporterListener");
     }
 
     @Override
@@ -27,7 +27,7 @@ public class CucumberWebScenarioReporterListener
             rq.setStartTime(Calendar.getInstance().getTime());
             rq.setType(RP_STORY_TYPE);
             launchUUID = this.getItemTree().getLaunchId().blockingGet();
-            LOGGER.info("CucumberWebScenarioReporterListener: launchUUID: " + launchUUID);
+            LOGGER.info("CucumberScenarioReporterListener: launchUUID: " + launchUUID);
             return this.getLaunch().startTestItem(rq);
         });
     }

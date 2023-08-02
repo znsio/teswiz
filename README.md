@@ -33,12 +33,12 @@ Pcloudy etc make the following change:
 
 There are some method name and implementation changes as listed below:
 
-| Purpose                                                                                            | ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Old ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
-|:---------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
-| To put App in Background for number of Seconds                                                     | putAppInBackground(int time)                                                                                          | putAppInBackgroundFor(int numberOfSeconds)                                                                            |
-| Method Selects Device Notification from Notification Drawer                                        | selectNotification()	                                                                                                 | selectNotificationFromNotificationDrawer()                                                                            |
-| Scroll In Dynamic Layer method is using Direction Enum and dynamic layer web element as parameters | scrollInDynamicLayer(String direction)                                                                                | scrollInDynamicLayer(Direction direction, WebElement dynamicLayerElement)                                             |
-
+| Purpose                                                                                            | ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Old ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png)                         |
+|:---------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------|
+| To put App in Background for number of Seconds                                                     | putAppInBackground(int time)                                                                                          | putAppInBackgroundFor(int numberOfSeconds)                                                                                                    |
+| Method Selects Device Notification from Notification Drawer                                        | selectNotification()	                                                                                                 | selectNotificationFromNotificationDrawer()                                                                                                    |
+| Scroll In Dynamic Layer method is using Direction Enum and dynamic layer web element as parameters | scrollInDynamicLayer(String direction)                                                                                | scrollInDynamicLayer(Direction direction, WebElement dynamicLayerElement)                                                                     |
+| To long press on specific element with given duration in seconds                                   | public void longPress(By elementId)                                                                                   | public void longPress(By elementId)<br/>public void longPress(By elementId, long durationInSeconds)                                           |
 ## New Additions
 
 There is a new method added:
@@ -47,6 +47,7 @@ There is a new method added:
 |:---------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
 | A new method is added for swipe by passing the screen height and width in percentage as parameters | swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth)     |
 | A new method is added to perform flick action on the screen based on the device size               | flick()                                                                                                               |
+| A new method is added for drag and object to a target location                                     | dragAndDrop(By draggableLocator, By dropZoneLocator)                                                                  |                                                                                                  |
 
 ## Updated Usage Of Appium Driver in Methods
 
@@ -110,6 +111,8 @@ To make it easy to log to ReportPortal, the following new methods have been adde
 
 [//]: # (```)
 
+# [BREAKING CHANGES](docs/BreakingChanges-README.md)
+
 # What is this repository about?
 
 This repository implements automated tests for Android & iOS apps, specified using cucumber-jvm and intelligently run
@@ -136,8 +139,10 @@ pCloudy.
 * cucumber-jvm (https://cucumber.io)
 * AppiumTestDistribution (https://github.com/AppiumTestDistribution/AppiumTestDistribution) -manages Android and iOS
   devices, and Appium
-* Appium (https://appium.io)
-* WebDriver (https://selenium.dev)
+* Appium 2.x (https://appium.io) 
+  * https://javadoc.io/doc/io.appium/java-client/8.0.0-beta/deprecated-list.html
+* Selenium WebDriver 4.x (https://selenium.dev)
+  * https://www.selenium.dev/selenium/docs/api/java/deprecated-list.html 
 * reportportal.io (https://reportportal.io)
 * Applitools (https://applitools.com)
 * Build tool: gradle 7.3.3
@@ -151,8 +156,6 @@ pCloudy.
 
 ## [Running the sample tests](docs/SampleTests-README.md)
 
-## [Setting up docker containers](docs/dockerSetup-README.md)
-
 ## Additional configurations
 
 ### [Running Visual Tests using Applitools Visual AI](docs/RunningVisualTests-README.md)
@@ -160,6 +163,12 @@ pCloudy.
 ### [Functional/Feature Coverage](docs/FeatureCoverage-README.md)
 
 ### [Configuration parameters](docs/ConfigurationParameters-README.md)
+
+### [Add Auto Logging Using AspectJ](docs/AspectJLogging-README.md)
+
+### [Setting up docker containers](docs/dockerSetup-README.md)
+
+### [Logging to ReportPortal](docs/reportportal-README.md)
 
 ## [Troubleshooting / FAQs](docs/FAQs-README.md)
 
