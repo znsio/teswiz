@@ -1,13 +1,12 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/com.jio.rilconferences_v4.21.6.7-421607_Android-5.0.apk",
     "browserName": "Chrome",
     "platformVersion": "12",
     "appWaitDuration": 45000,
     "automationName": "UiAutomator2",
     "autoGrantPermissions": true,
-    "deviceName": "android",
+    "device": "android",
     "dontStopAppOnReset": true,
     "enablePerformanceLogging": true,
     "eventTimings": true,

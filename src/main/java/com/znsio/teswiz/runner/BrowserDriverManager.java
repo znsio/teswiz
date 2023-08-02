@@ -220,17 +220,11 @@ class BrowserDriverManager {
         }
 
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
-
         setPreferencesInChromeOptions(chromeConfiguration, chromeOptions);
-
         setLoggingPrefsInChromeOptions(chromeConfiguration.getBoolean(VERBOSE_LOGGING), chromeOptions);
-
         setProxyInChromeOptions(chromeOptions);
-
         setHeadlessInChromeOptions(chromeConfiguration, chromeOptions);
-
         setEmulationModeInChromeOptions(testExecutionContext, chromeOptions);
-
         LOGGER.info(String.format("ChromeOptions: %s", chromeOptions.asMap()));
         return chromeOptions;
     }
@@ -271,7 +265,9 @@ class BrowserDriverManager {
     private static void setHeadlessInFirefoxOptions(JSONObject firefoxConfiguration, FirefoxOptions firefoxOptions) {
         JSONObject headlessOptions = firefoxConfiguration.getJSONObject("headlessOptions");
         isRunInHeadlessMode = headlessOptions.getBoolean("headless");
-        firefoxOptions.setHeadless(isRunInHeadlessMode);
+        if (isRunInHeadlessMode) {
+            firefoxOptions.addArguments("-headless");
+        }
     }
 
     private static void setProxyInFirefoxOptions(FirefoxOptions firefoxOptions) {
@@ -358,7 +354,9 @@ class BrowserDriverManager {
         JSONObject headlessOptions = chromeConfiguration.getJSONObject("headlessOptions");
         isRunInHeadlessMode = headlessOptions.getBoolean("headless");
 
-        chromeOptions.setHeadless(isRunInHeadlessMode);
+        if (isRunInHeadlessMode) {
+            chromeOptions.addArguments("--headless=new");
+        }
 
         JSONArray arguments = chromeConfiguration.getJSONArray("arguments");
         arguments.forEach(argument -> chromeOptions.addArguments(argument.toString()));
@@ -374,11 +372,11 @@ class BrowserDriverManager {
         LoggingPreferences logPrefs = new LoggingPreferences();
         if (enableVerboseLogging) {
             System.setProperty("webdriver.chrome.verboseLogging", "true");
-            chromeOptions.setLogLevel(org.openqa.selenium.chrome.ChromeDriverLogLevel.DEBUG);
+            logPrefs.enable(LogType.DRIVER, Level.ALL);
             logPrefs.enable(LogType.BROWSER, Level.ALL);
             logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
         } else {
-            chromeOptions.setLogLevel(org.openqa.selenium.chrome.ChromeDriverLogLevel.INFO);
+            logPrefs.enable(LogType.DRIVER, Level.INFO);
             logPrefs.enable(LogType.BROWSER, Level.INFO);
             logPrefs.enable(LogType.PERFORMANCE, Level.INFO);
         }
