@@ -240,7 +240,7 @@ class Setup {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
         CUKE_ARGS.addAll(DeviceSetup.setupAndroidExecution());
-        CUKE_ARGS.addAll(setupWebExecution());
+        CUKE_ARGS.addAll(setupPlatformExecution());
         CUKE_ARGS.addAll(DeviceSetup.setupWindowsExecution());
         initialiseApplitoolsConfiguration();
 
@@ -508,18 +508,21 @@ class Setup {
         System.setProperty("cucumber.publish.quiet", "true");
     }
 
-    private static ArrayList<String> setupWebExecution() {
+    private static ArrayList<String> setupPlatformExecution() {
         ArrayList<String> webCukeArgs = new ArrayList<>();
         if(currentPlatform.equals(Platform.web)) {
             configs.put(APP_PATH, configs.get(BROWSER));
-            webCukeArgs.add("--threads");
-            webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
-            webCukeArgs.add(PLUGIN);
-            webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioListener");
-            webCukeArgs.add(PLUGIN);
-            webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioReporterListener");
             configs.put(EXECUTED_ON, "Local Browsers");
         }
+        else if(currentPlatform.equals(Platform.api)) {
+            configs.put(EXECUTED_ON, currentPlatform.name());
+        }
+        webCukeArgs.add("--threads");
+        webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
+        webCukeArgs.add(PLUGIN);
+        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioListener");
+        webCukeArgs.add(PLUGIN);
+        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioReporterListener");
         return webCukeArgs;
     }
 

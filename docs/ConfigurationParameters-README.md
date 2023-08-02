@@ -34,7 +34,7 @@ These can be overridden by providing the same either as environment variables or
     LOG_PROPERTIES_FILE=./src/test/resources/log4j.properties -> log4j configuration file
     MAX_NUMBER_OF_APPIUM_DRIVERS -> The max number of drivers on cloud to create for multiuser android tests, default value is 5
     MAX_NUMBER_OF_WEB_DRIVERS -> The max number of web drivers on cloud to create for multiuser web tests, default value is 5
-    PLATFORM=android -> Run tests against? Supported: android | iOS | windows | web
+    PLATFORM=android -> Run tests against? Supported: android | iOS | windows | web | api
     PARALLEL=1 -> How many tests should be run in parallel?
     PROXY_KEY=HTTP_PROXY -> If proxy should be set, what is the environment variable specifying the proxy?
     PROXY_URL=<proxy_url> -> What is the proxy url to be used if PROXY_KEY is set
