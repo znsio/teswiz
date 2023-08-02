@@ -46,6 +46,7 @@ There is a new method added:
 | Purpose                                                                                            | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
 |:---------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
 | A new method is added for swipe by passing the screen height and width in percentage as parameters | swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth)     |
+| A new method is added to perform flick action on the screen based on the device size               | flick()                                                                                                               |
 | A new method is added for drag and object to a target location                                     | dragAndDrop(By draggableLocator, By dropZoneLocator)                                                                  |                                                                                                  |
 
 ## Updated Usage Of Appium Driver in Methods
@@ -109,7 +110,7 @@ To make it easy to log to ReportPortal, the following new methods have been adde
 [//]: # (  style id2 fill:#bbf)
 
 [//]: # (```)
-=======
+
 # [BREAKING CHANGES](docs/BreakingChanges-README.md)
 
 # What is this repository about?
