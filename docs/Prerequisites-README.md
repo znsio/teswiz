@@ -8,11 +8,8 @@
     * **Refer to this post for instructions how to automatically setup your environment - https://applitools.com/blog/automatic-appium-setup/**
     * Additional References:
         * Setup Android Command-line tools and SDK - https://developer.android.com/studio#command-tools
-        * Install appium 2.0 - http://appium.io/docs/en/2.0/quickstart/install/
-        * Install appium-device-farm and appium-dashboard:
-            * appium plugin install --source=npm appium-device-farm
-            * appium plugin install --source=npm appium-dashboard
-            * For additional information refer - https://github.com/AppiumTestDistribution/appium-device-farm
+        * Install appium 2.0
+          *  ```npm install```
 * Appium Desktop App is a great way to identify locators, and the recorder is quite helpful to quickly identify multiple
   locators for your tests - https://github.com/appium/appium-desktop/releases/tag/v1.20.2. You can also use Katalon
   Studio for locator identification (especially helpful for Windows platform)

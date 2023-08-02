@@ -23,24 +23,19 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
-import static com.znsio.teswiz.runner.Setup.APP_PATH;
-import static com.znsio.teswiz.runner.Setup.APP_VERSION;
-import static com.znsio.teswiz.runner.Setup.CAPS;
-import static com.znsio.teswiz.runner.Setup.EXECUTED_ON;
-import static com.znsio.teswiz.runner.Setup.LOG_DIR;
-import static com.znsio.teswiz.runner.Setup.PARALLEL;
-import static com.znsio.teswiz.runner.Setup.PLUGIN;
-import static com.znsio.teswiz.runner.Setup.RUN_IN_CI;
+import static com.znsio.teswiz.runner.Setup.*;
 
 class DeviceSetup {
     private static final Logger LOGGER = Logger.getLogger(DeviceSetup.class.getName());
     private static final String DEFAULT_TEMP_SAMPLE_APP_DIRECTORY =
             System.getProperty("user.dir") + File.separator +
                     "temp" + File.separator + "sampleApps";
+    private static final String CLOUD_NAME_NOT_SUPPORTED_MESSAGE = "Provided cloudName: '%s' is not supported";
 
     private DeviceSetup() {
         LOGGER.debug("DeviceSetup - private constructor");
@@ -98,7 +93,9 @@ class DeviceSetup {
         LOGGER.info(String.format("Update path to Apk: %s", appPath));
         if (appPath.equals(NOT_SET)) {
             appPath = getAppPathFromCapabilities();
-            appPath = downloadAppToDirectoryIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
+            if (null == Setup.getLoadedCapabilities().get(Platform.android.name()).get("browserName")) {
+                appPath = downloadAppToDirectoryIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
+            }
             Setup.addToConfigs(APP_PATH, appPath);
         } else {
             appPath = downloadAppToDirectoryIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
@@ -122,21 +119,11 @@ class DeviceSetup {
             LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
             if (!(new File(appPath).exists())) {
                 throw new InvalidTestDataException(String.format("App file path '%s' provided in capabilities is incorrect", appPath));
-//                checkEitherFilePathIsIncorrectOrFileIsMissing(appPath, localFilePath);
             }
         }
         LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
         LOGGER.info(String.format("File available at App file path '%s'", appPath));
         return appPath;
-    }
-
-    private static void createDirectory(String directoryPath) {
-        try {
-            LOGGER.info("Directory doesn't exist, Creating directory");
-            Files.createDirectories(Path.of(directoryPath));
-        } catch (IOException e) {
-            throw new RuntimeException(String.format("Failed to create directory: %s, error occurred%s", directoryPath, e));
-        }
     }
 
     private static void downloadFile(String url, String filePath, String saveToDirectory) {
@@ -236,7 +223,7 @@ class DeviceSetup {
 
     static void setupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
-        String deviceLabURL = NOT_SET;
+        String deviceLabURL;
         switch (cloudName.toLowerCase()) {
             case "headspin":
                 deviceLabURL = getCloudUrlFromCapabilities();
@@ -250,11 +237,9 @@ class DeviceSetup {
                 deviceLabURL = getCloudApiUrlFromCapabilities();
                 BrowserStackSetup.updateBrowserStackCapabilities(deviceLabURL);
                 break;
-            case "saucelabs":
-                break;
             default:
                 throw new InvalidTestDataException(
-                        String.format("Provided cloudName: '%s' is not supported", cloudName));
+                    String.format(CLOUD_NAME_NOT_SUPPORTED_MESSAGE, cloudName));
         }
         Setup.addToConfigs(EXECUTED_ON, cloudName);
     }
@@ -265,24 +250,9 @@ class DeviceSetup {
                 new String[]{Setup.getPlatform().name(), "app"}, Setup.getLoadedCapabilities());
     }
 
-    private static void checkIfAppExistsAtTheMentionedPath(String appPath,
-                                                           String capabilitiesFileName) {
-        if (!isAppPathAUrl(appPath)) {
-            if (Files.exists(Paths.get(appPath))) {
-                LOGGER.info(String.format("\tUsing AppPath: %s in file: %s:: %s", appPath,
-                        capabilitiesFileName, Setup.getPlatform()));
-            } else {
-                LOGGER.info(String.format("\tAppPath: %s not found!", appPath));
-                throw new InvalidTestDataException(
-                        String.format("App file not found at the mentioned path: %s", appPath));
-            }
-        }
-    }
-
     private static boolean isAppPathAUrl(String appPathUrl) {
-        URL url;
         try {
-            url = new URL(appPathUrl);
+            new URL(appPathUrl);
             LOGGER.info(String.format("'%s' is a URL.", appPathUrl));
             isAppUrlValid(appPathUrl);
             return true;
@@ -397,7 +367,7 @@ class DeviceSetup {
                 break;
             default:
                 throw new InvalidTestDataException(
-                        String.format("Provided cloudName: '%s' is not supported", cloudName));
+                        String.format(CLOUD_NAME_NOT_SUPPORTED_MESSAGE, cloudName));
         }
     }
 }
