@@ -1,12 +1,13 @@
 # Breaking Changes
 
-# ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Breaking changes in Latest teswiz v0.0.81![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png)
+# ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Breaking Changes in Latest teswiz v0.0.83![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png)
 
-Below is the list of the breaking changes, and the corresponding new implementation starting from teswiz latest teswiz.
+Below is the list of the breaking changes, and the corresponding new implementation starting from latest teswiz.
 
 ## Cloud Changes
 
 In Config properties files, which are related to cloud execution platforms such as browserStack, HeadSpin, Lamda Tests, Pcloudy etc make the following change:
+
 **CLOUD_USER** config will now be replaced with **CLOUD_USERNAME**.
 
 ## Browser Stack and Lambda Test changes
@@ -26,7 +27,8 @@ There are some method name and implementation changes as listed below:
 |:---------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
 | To put App in Background for number of Seconds                                                     | putAppInBackground(int time)                                                                                          | putAppInBackgroundFor(int numberOfSeconds)                                                                            |
 | Method Selects Device Notification from Notification Drawer                                        | selectNotification()	                                                                                                 | selectNotificationFromNotificationDrawer()                                                                            |
-| Scroll In Dynamic Layer method is using Direction Enum instead of a String Parameter               | scrollInDynamicLayer(String direction)                                                                                | scrollInDynamicLayer(Direction direction)                                                                             |
+| Scroll In Dynamic Layer method is using Direction Enum and dynamic layer web element as parameters | scrollInDynamicLayer(String direction)                                                                                | scrollInDynamicLayer(Direction direction, WebElement dynamicLayerElement)                                             |
+| To long press on specific element with given duration in seconds                                   | public void longPress(By elementId)                                                                                   | public void longPress(By elementId)<br/>public void longPress(By elementId, long durationInSeconds)                   |
 
 ## New Additions
 
@@ -34,9 +36,12 @@ There is a new method added:
 
 | Purpose                                                                                                               | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
 |:----------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
-| A new method is added to horizontal swipe an element using Gesture by passing the Direction and Element as parameters | horizontalSwipeWithGesture(WebElement element, Direction direction)                                                                                                                      |
-| A new method is added to double tap on an element by passing the Element as parameter                                 | doubleTap(WebElement element)                                                                                                                                                                                         |
+| A new method is added to horizontal swipe an element using Gesture by passing the Direction and Element as parameters | horizontalSwipeWithGesture(WebElement element, Direction direction)                                                   |
+| A new method is added to double tap on an element by passing the Element as parameter                                 | doubleTap(WebElement element)                                                                                         |
 | A new method is added for swipe by passing the screen height and width in percentage as parameters                    | swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth)     |
+| A new method is added for swipe by passing the screen height and width in percentage as parameters                    | swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth)     |
+| A new method is added to perform flick action on the screen based on the device size                                  | flick()                                                                                                               |
+| A new method is added for drag and object to a target location                                                        | dragAndDrop(By draggableLocator, By dropZoneLocator)                                                                  |                                                                                                  |
 
 ## Updated Usage Of Appium Driver in Methods
 1. setWebViewContext()
