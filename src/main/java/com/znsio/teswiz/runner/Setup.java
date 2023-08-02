@@ -144,7 +144,11 @@ class Setup {
 
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
-        loadCapabilitiesFile(configs.get(CAPS));
+        if (NOT_SET.equalsIgnoreCase(configs.get(CAPS))) {
+            loadedCapabilityFile = new HashMap<>();
+        } else {
+            loadCapabilitiesFile(configs.get(CAPS));
+        }
         setupExecutionEnvironment();
 
         LOGGER.info(printStringMap("Using string values", configs));
