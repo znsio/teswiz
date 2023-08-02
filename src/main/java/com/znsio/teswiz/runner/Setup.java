@@ -423,6 +423,7 @@ class Setup {
         return files;
     }
 
+    // todo - reduce complexity and simplify
     private static void getPlatformTagsAndLaunchName() {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME);
@@ -519,11 +520,7 @@ class Setup {
             getApplitoolsConfigFromProvidedConfigFile();
             applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
             applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(APP_NAME));
-            applitoolsConfiguration.put(APPLITOOLS.API_KEY,
-                                        getOverriddenStringValue("APPLITOOLS_API_KEY",
-                                                                 String.valueOf(
-                                                                         applitoolsConfiguration.get(
-                                                                                 APPLITOOLS.API_KEY))));
+            applitoolsConfiguration.put(APPLITOOLS.API_KEY, getOverriddenStringValue("APPLITOOLS_API_KEY", String.valueOf(applitoolsConfiguration.get(APPLITOOLS.API_KEY))));
             applitoolsConfiguration.put(BRANCH_NAME, configs.get(BRANCH_NAME));
             applitoolsConfiguration.put(PLATFORM, currentPlatform.name());
             applitoolsConfiguration.put(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
@@ -531,20 +528,23 @@ class Setup {
             applitoolsConfiguration.put(APPLITOOLS.DEFAULT_MATCH_LEVEL, getMatchLevel());
             applitoolsConfiguration.put(APPLITOOLS.RECTANGLE_SIZE, getViewportSize());
             updateApplitoolsProxyUrl();
-            applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED,
-                                        isBenchmarkingEnabled());
-            applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING,
-                                        isDisableBrowserFetching());
-            BatchInfo batchInfo = new BatchInfo(
-                    configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
-            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, batchInfo);
-            batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
-            batchInfo.addProperty(PLATFORM, currentPlatform.name());
-            batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
-            batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
+            applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED, isBenchmarkingEnabled());
+            applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING, isDisableBrowserFetching());
+            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, setupApplitoolsBatchInfo());
         }
         LOGGER.info(String.format("applitoolsConfiguration: %s", applitoolsConfiguration));
         return applitoolsConfiguration;
+    }
+
+    @NotNull
+    private static BatchInfo setupApplitoolsBatchInfo() {
+        BatchInfo batchInfo = new BatchInfo(
+                configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
+        batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
+        batchInfo.addProperty(PLATFORM, currentPlatform.name());
+        batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
+        batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
+        return batchInfo;
     }
 
     private static void updateApplitoolsProxyUrl() {
@@ -566,13 +566,11 @@ class Setup {
         String[] getBranchNameCommand = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(getBranchNameCommand);
         String branchName = response.getStdOut();
-        LOGGER.info(String.format("\tBranch name from git command: '%s': '%s'",
-                                  Arrays.toString(getBranchNameCommand), branchName));
+        LOGGER.info(String.format("\tBranch name from git command: '%s': '%s'", Arrays.toString(getBranchNameCommand), branchName));
         return branchName;
     }
 
-    private static boolean getBooleanValueFromPropertiesIfAvailable(String key,
-                                                                    boolean defaultValue) {
+    private static boolean getBooleanValueFromPropertiesIfAvailable(String key, boolean defaultValue) {
         return Boolean.parseBoolean(properties.getProperty(key, String.valueOf(defaultValue)));
     }
 
