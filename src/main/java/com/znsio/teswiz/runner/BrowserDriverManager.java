@@ -1,7 +1,6 @@
 package com.znsio.teswiz.runner;
 
 import com.context.TestExecutionContext;
-import com.znsio.teswiz.entities.BrowserType;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
@@ -39,10 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Runner.IS_MAC;
-import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
 class BrowserDriverManager {
@@ -154,10 +151,9 @@ class BrowserDriverManager {
         JSONObject browserConfig = getBrowserConfig(testExecutionContext);
         LOGGER.info(String.format("Create new webdriver instance for: %s, on: %s, with browserConfig: %s", forUserPersona, browserName, browserConfig));
 
-        DriverManagerType driverManagerType = setupBrowserDriver(testExecutionContext, browserName);
-        LOGGER.info(BrowserDriverManager.class.getName() + "-createNewWebDriver: " + driverManagerType.getBrowserNameLowerCase());
-        JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(driverManagerType.getBrowserNameLowerCase());
-        WebDriver driver = createWebDriver(forUserPersona, testExecutionContext, driverManagerType, browserConfigForBrowserType);
+        LOGGER.info(BrowserDriverManager.class.getName() + "-createNewWebDriver: " + browserName.toLowerCase());
+        JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
+        WebDriver driver = createWebDriver(forUserPersona, testExecutionContext, browserName, browserConfigForBrowserType);
 
         if (null == driver) {
             throw new EnvironmentSetupException(
@@ -168,24 +164,21 @@ class BrowserDriverManager {
         return driver;
     }
 
-    private static WebDriver createWebDriver(String forUserPersona, TestExecutionContext testExecutionContext, DriverManagerType driverManagerType, JSONObject browserConfigForBrowserType) {
+    private static WebDriver createWebDriver(String forUserPersona, TestExecutionContext testExecutionContext, String browserName, JSONObject browserConfigForBrowserType) {
         WebDriver driver = null;
-        switch (driverManagerType) {
-            case CHROME:
+        switch (browserName.toLowerCase()) {
+            case "chrome":
                 driver = createChromeDriver(forUserPersona, testExecutionContext, browserConfigForBrowserType);
                 break;
-            case FIREFOX:
+            case "firefox":
                 driver = createFirefoxDriver(forUserPersona, testExecutionContext, browserConfigForBrowserType);
                 break;
-            case SAFARI:
+            case "safari":
                 driver = createSafariDriver(forUserPersona, testExecutionContext, browserConfigForBrowserType);
                 break;
-            case EDGE:
-            case IEXPLORER:
-            case CHROMIUM:
-            case OPERA:
+            default:
                 throw new InvalidTestDataException(
-                        String.format("Browser: '%s' is NOT supported", driverManagerType.getBrowserName()));
+                        String.format("Browser: '%s' is NOT supported", browserName));
         }
         LOGGER.info("Driver created");
         return driver;

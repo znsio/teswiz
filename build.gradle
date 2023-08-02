@@ -5,12 +5,10 @@ buildscript {
         gradleVersion = '7.3.3'
         assertJVersion = '3.24.2'
         atdVersion = '13.1.2'
-        applitoolsSeleniumVersion = '5.63.4'
         applitoolsAppiumVersion = '5.63.4'
         commonsLang3Version = '3.13.0'
         unirestVersion = '3.14.5'
         jadbVersion = '1.2.1'
-        webDriverManagerVersion = '5.4.1'
         junitVersion = '5.10.0'
         slf4jVersion = '2.0.7'
         fasterxmlJacksonVersion = '2.15.2'
@@ -79,7 +77,6 @@ dependencies {
     implementation "joda-time:joda-time:$project.jodaTimeVersion"
     implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
     implementation "com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion"
-    implementation "com.applitools:eyes-selenium-java5:$project.applitoolsSeleniumVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
     implementation "org.aspectj:aspectjrt:$project.aspectJVersion"
 }
