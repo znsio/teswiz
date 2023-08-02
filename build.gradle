@@ -72,7 +72,6 @@ dependencies {
     implementation "org.assertj:assertj-core:$project.assertJVersion"
     implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
-    implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
     implementation "org.jetbrains:annotations:$project.jetbrainsAnnotationsVersion"
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
