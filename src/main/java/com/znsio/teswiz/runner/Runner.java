@@ -189,12 +189,6 @@ public class Runner {
         return proxyURL;
     }
 
-    public static String getWebDriverManagerProxyURL() {
-        String webDriverManagerProxyURL = Setup.getFromConfigs(Setup.WEBDRIVER_MANAGER_PROXY_URL);
-        LOGGER.info(String.format("webDriverManagerProxyURL: %s", webDriverManagerProxyURL));
-        return webDriverManagerProxyURL;
-    }
-
     public static String getBrowserConfigFileContents() {
         InputStream inputStream;
         String browserConfigFile = Setup.getFromConfigs(Setup.BROWSER_CONFIG_FILE);
