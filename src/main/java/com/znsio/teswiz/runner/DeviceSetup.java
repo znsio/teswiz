@@ -98,34 +98,16 @@ class DeviceSetup {
 
     static String verifyAppExistsAtMentionedPath() {
         String appPath = Setup.getFromConfigs(APP_PATH);
-        LOGGER.info(String.format("Update path to Apk: %s", appPath));
+        LOGGER.info(String.format("Original path to apk/app: %s", appPath));
         if (appPath.equals(NOT_SET)) {
-            appPath = getAppPathFromCapabilities();
             if (null == Setup.getLoadedCapabilities().get(Platform.android.name()).get("browserName")) {
-                appPath = downloadAppToDirectoryIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
+                appPath = downloadAppToDirectoryIfNeeded(getAppPathFromCapabilities(), DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
             }
+            LOGGER.info(String.format("Updated path to apk/app: %s", appPath));
             Setup.addToConfigs(APP_PATH, appPath);
-        }
-        if (Platform.android.equals(Runner.getPlatform())) {
-            LOGGER.info(String.format("Update path to Apk: %s", appPath));
-            if (appPath.equals(NOT_SET)) {
-                appPath = getAppPathFromCapabilities();
-                Setup.addToConfigs(APP_PATH, appPath);
-                String capabilitiesFileName = Setup.getFromConfigs(CAPS);
-                checkIfAppExistsAtTheMentionedPath(appPath, capabilitiesFileName);
-            }
-        } else if (Platform.iOS.equals(Runner.getPlatform())) {
-            LOGGER.info(String.format("Update path to APP: %s", appPath));
-            if (appPath.equals(NOT_SET)) {
-                appPath = getAppPathFromCapabilities();
-                Setup.addToConfigs(APP_PATH, appPath);
-                String capabilitiesFileName = Setup.getFromConfigs(CAPS);
-                checkIfAppExistsAtTheMentionedPath(appPath, capabilitiesFileName);
-            }
         } else {
             appPath = downloadAppToDirectoryIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
-            LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s",
-                    appPath));
+            LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s", appPath));
         }
         return appPath;
     }
