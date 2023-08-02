@@ -133,7 +133,7 @@ class Setup {
         return curlProxyCommand;
     }
 
-    static List<String> getExecutionArguments() {
+    static List<String> getExecutionArguments()  {
         loadAndUpdateConfigParameters(configFilePath);
 
         setupDirectories();
@@ -236,10 +236,11 @@ class Setup {
                                                                 environment, testDataFile);
     }
 
-    private static void setupExecutionEnvironment() {
+    private static void setupExecutionEnvironment()  {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
         CUKE_ARGS.addAll(DeviceSetup.setupAndroidExecution());
+        CUKE_ARGS.addAll(DeviceSetup.setupIOSExecution());
         CUKE_ARGS.addAll(setupWebExecution());
         CUKE_ARGS.addAll(DeviceSetup.setupWindowsExecution());
         initialiseApplitoolsConfiguration();
@@ -464,7 +465,11 @@ class Setup {
                 currentPlatform = Platform.windows;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Windows & Android";
-            } else {
+            } else if(providedTags.contains("multiuser-iOS")) {
+                currentPlatform = Platform.iOS;
+                inferredTags = providedTags + AND_NOT_WIP;
+                launchName += " - Real User Simulation on IOS";
+            }else {
                 launchName += " - " + currentPlatform;
             }
         }
@@ -652,8 +657,8 @@ class Setup {
 
     static void cleanUpExecutionEnvironment() {
         LOGGER.info("cleanUpExecutionEnvironment");
-        if(currentPlatform.equals(Platform.android) || currentPlatform.equals(Platform.web)) {
-            if(Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
+        if (currentPlatform.equals(Platform.android) || currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.iOS)) {
+            if (Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
                 DeviceSetup.cleanupCloudExecution();
             } else {
                 LOGGER.info("Not running in CI. Nothing to cleanup in Execution environment");

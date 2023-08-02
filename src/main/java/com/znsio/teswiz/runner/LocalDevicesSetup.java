@@ -9,10 +9,15 @@ import se.vidstige.jadb.JadbDevice;
 import se.vidstige.jadb.JadbException;
 import se.vidstige.jadb.Stream;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.znsio.teswiz.runner.Setup.*;
 
@@ -71,4 +76,49 @@ class LocalDevicesSetup {
         LOGGER.info("\tOutput: " + adbCommandOutput);
         return adbCommandOutput;
     }
+
+    private static List<String> getBootedIOSSimulators()  {
+        List<String> bootedSimulators = new ArrayList<>();
+        try {
+            Process process = Runtime.getRuntime().exec("xcrun simctl list devices");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            StringBuilder output = new StringBuilder();
+            while ((line = reader.readLine()) != null) {
+                output.append(line);
+            }
+
+            Pattern pattern = Pattern.compile("(.*)Booted");
+            Matcher matcher = pattern.matcher(output.toString());
+            while (matcher.find()) {
+                bootedSimulators.add(matcher.group(1));
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                System.err.println("Failed to fetch iOS Simulators. Exit code: " + exitCode);
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new EnvironmentSetupException("No simulators detected to run the tests");
+        }
+
+        return bootedSimulators;
+    }
+
+    static void setupLocalIOSExecution() {
+        int numberOfDevicesForParallelExecution = getBootedIOSSimulators().size();
+        if (numberOfDevicesForParallelExecution == 0) {
+            throw new EnvironmentSetupException("No devices available to run the tests");
+        }
+        Integer providedParallelCount = Setup.getIntegerValueFromConfigs(PARALLEL);
+        if (numberOfDevicesForParallelExecution < providedParallelCount) {
+            throw new EnvironmentSetupException(String.format(
+                    "Fewer devices (%d) available to run the tests in parallel (Expected more " + "than: %d)",
+                    numberOfDevicesForParallelExecution, providedParallelCount));
+        }
+        Setup.addIntegerValueToConfigs(PARALLEL, providedParallelCount);
+        Setup.addToConfigs(EXECUTED_ON, "Local Devices");
+    }
 }
+

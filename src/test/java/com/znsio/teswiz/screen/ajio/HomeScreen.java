@@ -6,10 +6,13 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.android.ajio.HomeScreenAndroid;
+import com.znsio.teswiz.screen.ios.ajio.HomeScreenIOS;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 
 import java.util.Map;
+
+import static com.znsio.teswiz.entities.Platform.iOS;
 
 public abstract class HomeScreen {
     private static final String SCREEN_NAME = HomeScreen.class.getSimpleName();
@@ -21,9 +24,12 @@ public abstract class HomeScreen {
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
 
-        switch(platform) {
+        switch (platform) {
             case android:
                 return new HomeScreenAndroid(driver, visually);
+
+            case iOS:
+                return new HomeScreenIOS(driver, visually);
         }
         throw new NotImplementedException(
                 SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
@@ -36,4 +42,14 @@ public abstract class HomeScreen {
     public abstract HomeScreen goToMenu();
 
     public abstract SearchScreen selectProductFromCategory(String product, String category, String gender);
+
+    public abstract ProductScreen searchForTheProduct(String productName);
+
+    public abstract HomeScreen clickOnAllowToSendNotifications();
+
+    public abstract HomeScreen clickOnAllowLocation();
+
+    public abstract HomeScreen clickOnAllowLocationWhileUsingApp();
+
+    public abstract HomeScreen relaunchApplication();
 }

@@ -1,11 +1,12 @@
 package com.znsio.teswiz.screen.ajio;
 
 import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.android.ajio.CartScreenAndroid;
+import com.znsio.teswiz.screen.ios.ajio.CartScreenIOS;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 
@@ -22,6 +23,8 @@ public abstract class CartScreen {
         switch(platform) {
             case android:
                 return new CartScreenAndroid(driver, visually);
+            case iOS:
+                return new CartScreenIOS(driver, visually);
         }
         throw new NotImplementedException(
                 SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
