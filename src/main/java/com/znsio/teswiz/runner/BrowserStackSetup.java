@@ -152,7 +152,7 @@ class BrowserStackSetup {
                                                                 Map<String, Map> loadedCapabilityFile) {
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
         String platformName = Setup.getPlatform().name();
-        ArrayList listOfAndroidDevices = new ArrayList();
+        ArrayList listOfDevices = new ArrayList();
 
         String platformVersion = String.valueOf(
                 loadedCapabilityFile.get(platformName).getOrDefault("platformVersion", ""));
@@ -176,13 +176,13 @@ class BrowserStackSetup {
                                   deviceCount));
         for(int numDevices = 0; numDevices < deviceCount; numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
-            deviceInfo.put("platform", platformName);
+            deviceInfo.put("platform", platformName.toLowerCase());
             deviceInfo.put("os_version", availableDevices.get(numDevices).getOs_version());
             deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
-            listOfAndroidDevices.add(deviceInfo);
+            listOfDevices.add(deviceInfo);
         }
         DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
-                                            listOfAndroidDevices);
+                listOfDevices);
     }
 
     private static String uploadAPKToBrowserStack(String authenticationKey, String appPath,

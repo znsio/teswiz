@@ -322,9 +322,10 @@ public class Driver {
     public void putAppInBackgroundFor(int numberOfSeconds) {
         if (Runner.getPlatform() == Platform.android) {
             ((AndroidDriver) driver).runAppInBackground(Duration.ofSeconds(numberOfSeconds));
+        } else if (Runner.getPlatform() == Platform.iOS) {
+            ((IOSDriver) driver).runAppInBackground(Duration.ofSeconds(numberOfSeconds));
         } else {
-            throw new NotImplementedException(
-                    "Method is not implemented for " + Runner.getPlatform());
+            throw new NotImplementedException("putAppInBackgroundFor method is not implemented for " + Runner.getPlatform());
         }
     }
 
@@ -743,5 +744,18 @@ public class Driver {
 
         appiumDriver.perform(asList(multiTouchAction, multiTouchAction2));
 
-     }
+    }
+
+    public void relaunchApp() {
+        String appPackageName = Runner.getAppPackageName();
+        if (Runner.getPlatform().equals(Platform.android)) {
+            ((AndroidDriver) driver).terminateApp(appPackageName);
+            ((AndroidDriver) driver).activateApp(appPackageName);
+        } else if (Runner.getPlatform().equals(Platform.iOS)) {
+            ((IOSDriver) driver).terminateApp(appPackageName);
+            ((IOSDriver) driver).activateApp(appPackageName);
+        } else {
+            throw new NotImplementedException("relaunchApp method is not implemented for " + Runner.getPlatform());
+        }
+    }
 }

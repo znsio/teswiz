@@ -1,0 +1,60 @@
+{
+  "android": {
+    "adbExecTimeout": 45000,
+    "app": "./temp/ajio-8-3-4.apk",
+    "appActivity": "com.ril.ajio.launch.activity.SplashScreenActivity",
+    "appPackage": "com.ril.ajio",
+    "appWaitDuration": 45000,
+    "automationName": "UiAutomator2",
+    "autoGrantPermissions": true,
+    "deviceName": "android",
+    "dontStopAppOnReset": true,
+    "enablePerformanceLogging": true,
+    "eventTimings": true,
+    "newCommandTimeout": 12000,
+    "noSign": true,
+    "platformName": "android",
+    "platformVersion": "11.0",
+    "printPageSourceOnFindFailure": true,
+    "skipUnlock": true,
+    "noReset": false,
+    "browserstack.appium_version": "2.0.0"
+  },
+  "iOS": {
+    "platformName": "iOS",
+    "app": "./temp/AJIO_test_9_8_29.ipa",
+    "deviceName": "iPhone",
+    "appWaitDuration": 45000,
+    "automationName": "XCUITest",
+    "dontStopAppOnReset": true,
+    "enablePerformanceLogging": true,
+    "eventTimings": true,
+    "newCommandTimeout": 20000,
+    "noSign": true,
+    "printPageSourceOnFindFailure": true,
+    "skipUnlock": true,
+    "noReset": false,
+    "browserstack.appium_version": "2.0.0"
+  },
+  "serverConfig": {
+    "server": {
+      "port": 31337,
+      "use-plugins": [
+        "device-farm","appium-dashboard"
+      ],
+      "plugin": {
+        "device-farm": {
+          "platform": "iOS",
+          "skipChromeDownload": true,
+          "iosDeviceType": "real",
+          "cloud": {
+            "cloudName": "browserstack",
+            "url": "https://hub.browserstack.com",
+            "apiUrl": "https://api-cloud.browserstack.com/app-automate/"
+          }
+        }
+      }
+    }
+  },
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
+}

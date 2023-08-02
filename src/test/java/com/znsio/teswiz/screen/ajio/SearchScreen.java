@@ -6,6 +6,7 @@ import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.android.ajio.SearchScreenAndroid;
+import com.znsio.teswiz.screen.ios.ajio.SearchScreenIOS;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.log4j.Logger;
 
@@ -19,9 +20,11 @@ public abstract class SearchScreen {
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
 
-        switch(platform) {
+        switch (platform) {
             case android:
                 return new SearchScreenAndroid(driver, visually);
+            case iOS:
+                return new SearchScreenIOS(driver, visually);
         }
         throw new NotImplementedException(
                 SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
@@ -33,4 +36,7 @@ public abstract class SearchScreen {
 
     public abstract boolean isProductListLoaded(String product);
 
+    public abstract String getProductListingPageHeader();
+
+    public abstract ProductScreen selectFirstItemFromList();
 }

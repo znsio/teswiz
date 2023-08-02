@@ -168,7 +168,7 @@ pCloudy.
 
 ### [Setting up docker containers](docs/dockerSetup-README.md)
 
-### [Logging to ReportPortal](docs/reportportal-README.md)
+### [Logging to ReportPortal](docs/ReportPortal-README.md)
 
 ## [Troubleshooting / FAQs](docs/FAQs-README.md)
 

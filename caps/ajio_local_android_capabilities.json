@@ -14,15 +14,14 @@
     "newCommandTimeout": 12000,
     "noSign": true,
     "platformName": "android",
-    "platformVersion": "11.0",
     "printPageSourceOnFindFailure": true,
     "skipUnlock": true,
     "noReset": false
   },
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js",
   "serverConfig" : {
     "server": {
-      "port": 31337,
-      "use-plugins": ["device-farm", "appium-dashboard"],
+      "use-plugins": ["device-farm", "appium-dashboard","relaxed-caps-plugin"],
       "plugin": {
         "device-farm": {
           "platform": "android",
@@ -30,17 +29,5 @@
         }
       }
     }
-  },
-  "appiumServerPath": "./node_modules/appium/build/lib/main.js",
-  "hostMachines": [
-    {
-      "machineIP": "127.0.0.1",
-      "simulators": [
-        {
-          "deviceName": "iPhone 11",
-          "OS": "13.5"
-        }
-      ]
-    }
-  ]
+  }
 }
