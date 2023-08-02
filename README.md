@@ -4,59 +4,9 @@
 [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)
 
 # To Build
-
 `./gradlew clean build`
 
 # [BREAKING CHANGES](docs/BreakingChanges-README.md)
-
-## Logging to ReportPortal
-
-To make it easy to log to ReportPortal, the following new methods have been added:
-
-```
-        ReportPortalLogger.logDebugMessage("debugMessage");
-        ReportPortalLogger.logInfoMessage("infoMessage");
-        ReportPortalLogger.logWarningMessage("warningMessage");
-        ReportPortalLogger.attachFileInReportPortal("message", new File("fileName"));
-```
-
-[//]: # (```mermaid)
-
-[//]: # (flowchart TD)
-
-[//]: # (  id1[allDrivers.createDriverFor&#40;...&#41;]--has changed to---id2&#40;[Drivers.createDriverFor&#40;...&#41;]&#41;)
-
-[//]: # (  style id1 fill:#f9f)
-
-[//]: # (  style id2 fill:#bbf)
-
-[//]: # (```)
-
-[//]: # ()
-
-[//]: # (```mermaid)
-
-[//]: # (flowchart LR)
-
-[//]: # (  [Runner.platform]--is now changed to---id2&#40;Runner.getPlatform&#40;&#41;&#41;;)
-
-[//]: # (  style id1 fill:#f9f)
-
-[//]: # (  style id2 fill:#bbf)
-
-[//]: # (```)
-
-[//]: # (```mermaid)
-
-[//]: # (flowchart LR;)
-
-[//]: # (  [Runner.platform] -->|is now changed to| [Runner.getPlatform&#40;&#41;])
-
-[//]: # (  style id1 fill:#f9f)
-
-[//]: # (  style id2 fill:#bbf)
-
-[//]: # (```)
 
 # What is this repository about?
 
