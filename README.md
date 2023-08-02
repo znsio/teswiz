@@ -49,10 +49,6 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 
 ## [Running the sample tests](docs/SampleTests-README.md)
 
-## [Setting up docker containers](docs/dockerSetup-README.md)
-
-## [Logging to ReportPortal](docs/reportportal-README.md)
-
 ## Additional configurations
 
 ### [Running Visual Tests using Applitools Visual AI](docs/RunningVisualTests-README.md)
@@ -60,6 +56,10 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 ### [Functional/Feature Coverage](docs/FeatureCoverage-README.md)
 
 ### [Configuration parameters](docs/ConfigurationParameters-README.md)
+
+### [Setting up docker containers](docs/dockerSetup-README.md)
+
+### [Logging to ReportPortal](docs/reportportal-README.md)
 
 ## [Troubleshooting / FAQs](docs/FAQs-README.md)
 
