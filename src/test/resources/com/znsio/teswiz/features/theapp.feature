@@ -48,7 +48,7 @@ Feature: Scenarios for "The App"
     Then "You" login again with invalid credentials - "znsio4", "invalid password"
     Then "They" login again with invalid credentials - "znsio5", "invalid password"
 
-#  CONFIG=./configs/theapp_local_config.properties TAG="@multiuser-web and @theapp" ./gradlew run
+#  CONFIG=./configs/theapp_local_web_config.properties TAG="@multiuser-web and @theapp" ./gradlew run
   @multiuser-web @theapp
   Scenario: Orchestrating multiple users on different platforms as part of same test
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "web"

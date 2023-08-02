@@ -238,12 +238,13 @@ class Setup {
                                                                 environment, testDataFile);
     }
 
-    private static void setupExecutionEnvironment() {
+    private static void setupExecutionEnvironment()  {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
         CUKE_ARGS.addAll(DeviceSetup.setupAndroidExecution());
-        CUKE_ARGS.addAll(setupPlatformExecution());
+        CUKE_ARGS.addAll(DeviceSetup.setupIOSExecution());
         CUKE_ARGS.addAll(DeviceSetup.setupWindowsExecution());
+        CUKE_ARGS.addAll(setupPlatformExecution());
         initialiseApplitoolsConfiguration();
 
         String rpAttributes = String.format(
@@ -431,35 +432,39 @@ class Setup {
     private static void getPlatformTagsAndLaunchName() {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME);
-        if(Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
+        if (Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
             launchName += " on Device Farm";
         }
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);
-        if(providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
+        if (providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
             LOGGER.info("\tTags not specified");
             launchName += " - " + currentPlatform;
         } else {
-            if(providedTags.contains("multiuser-android-web")) {
+            if (providedTags.contains("multiuser-android-web")) {
                 currentPlatform = Platform.android;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Android & Web";
-            } else if(providedTags.contains("multiuser-android")) {
+            } else if (providedTags.contains("multiuser-android")) {
                 currentPlatform = Platform.android;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on multiple Androids";
-            } else if(providedTags.contains("multiuser-web")) {
+            } else if (providedTags.contains("multiuser-web")) {
                 currentPlatform = Platform.web;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Web";
-            } else if(providedTags.contains("multiuser-windows-web")) {
+            } else if (providedTags.contains("multiuser-windows-web")) {
                 currentPlatform = Platform.windows;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Windows & Web";
-            } else if(providedTags.contains("multiuser-windows-android")) {
+            } else if (providedTags.contains("multiuser-windows-android")) {
                 currentPlatform = Platform.windows;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Windows & Android";
+            } else if (providedTags.contains("multiuser-iOS")) {
+                currentPlatform = Platform.iOS;
+                inferredTags = providedTags + AND_NOT_WIP;
+                launchName += " - Real User Simulation on IOS";
             } else {
                 launchName += " - " + currentPlatform;
             }
@@ -651,8 +656,8 @@ class Setup {
 
     static void cleanUpExecutionEnvironment() {
         LOGGER.info("cleanUpExecutionEnvironment");
-        if(currentPlatform.equals(Platform.android) || currentPlatform.equals(Platform.web)) {
-            if(Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
+        if (currentPlatform.equals(Platform.android) || currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.iOS)) {
+            if (Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
                 DeviceSetup.cleanupCloudExecution();
             } else {
                 LOGGER.info("Not running in CI. Nothing to cleanup in Execution environment");

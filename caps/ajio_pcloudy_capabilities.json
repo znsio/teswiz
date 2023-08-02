@@ -1,0 +1,65 @@
+{
+  "android": {
+    "adbExecTimeout": 45000,
+    "app": "./temp/ajio-8-3-4.apk",
+    "appActivity": "com.ril.ajio.launch.activity.SplashScreenActivity",
+    "appPackage": "com.ril.ajio",
+    "automationName": "UIAutomator2",
+    "autoGrantPermissions": true,
+    "launchTimeout": 90000,
+    "newCommandTimeout": 600,
+    "pCloudy_DurationInMinutes": 10,
+    "platformName": "android",
+    "os_version": "10",
+    "device": "Samsung",
+    "pCloudy_WildNet": "false",
+    "pCloudy_EnableVideo": "true",
+    "pCloudy_EnablePerformanceData": "true",
+    "pCloudy_EnableDeviceLogs": "true",
+    "unicodeKeyboard": true,
+    "resetKeyboard": true,
+    "noReset": false,
+    "appiumVersion": "2.0.0"
+  },
+  "iOS": {
+    "app": "./temp/AJIO_test_9_8_29.ipa",
+    "newCommandTimeout": 600,
+    "launchTimeout": 90000,
+    "platformName": "ios",
+    "os_version": "15",
+    "device": "Apple",
+    "acceptAlerts": true,
+    "automationName": "XCUITest",
+    "bundleId": "com.ril.ajiofnl",
+    "pCloudy_DurationInMinutes": 60,
+    "pCloudy_WildNet": "false",
+    "pCloudy_EnableVideo": "true",
+    "pCloudy_EnablePerformanceData": "true",
+    "pCloudy_EnableDeviceLogs": "true",
+    "appiumVersion": "2.0.0"
+  },
+  "serverConfig": {
+    "server": {
+      "port": 31337,
+      "use-plugins": [
+        "device-farm",
+        "appium-dashboard"
+      ],
+      "plugin": {
+        "device-farm": {
+          "platform": "iOS",
+          "skipChromeDownload": true,
+          "iosDeviceType": "real",
+          "cloud": {
+            "cloudName": "pCloudy",
+            "apiUrl": "https://device.pcloudy.com",
+            "url": "https://device.pcloudy.com/appiumcloud/wd/hub",
+            "devices": [
+            ]
+          }
+        }
+      }
+    }
+  },
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
+}

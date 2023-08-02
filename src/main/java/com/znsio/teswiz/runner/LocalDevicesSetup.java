@@ -9,12 +9,18 @@ import se.vidstige.jadb.JadbDevice;
 import se.vidstige.jadb.JadbException;
 import se.vidstige.jadb.Stream;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static com.znsio.teswiz.runner.Setup.*;
+import static com.znsio.teswiz.runner.Setup.EXECUTED_ON;
+import static com.znsio.teswiz.runner.Setup.PARALLEL;
 
 class LocalDevicesSetup {
     private static final Logger LOGGER = Logger.getLogger(LocalDevicesSetup.class.getName());
@@ -71,4 +77,61 @@ class LocalDevicesSetup {
         LOGGER.info("\tOutput: " + adbCommandOutput);
         return adbCommandOutput;
     }
+
+    private static List<String> getBootedIOSSimulators()  {
+        List<String> bootedSimulators = getListOfSimulators();
+        if (bootedSimulators.isEmpty()) {
+            throw new EnvironmentSetupException("Failed to fetch iOS Simulators");
+        }
+        return bootedSimulators;
+    }
+
+    private static List<String> getListOfSimulators() {
+        List<String> bootedSimulators = new ArrayList<>();
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("xcrun", "simctl", "list", "devices");
+            processBuilder.redirectErrorStream(true); // Merge error and input streams
+
+            Process process = processBuilder.start();
+            readOutputOfXCRunCommand(process, bootedSimulators);
+
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                throw new EnvironmentSetupException(String.format("Failed to fetch iOS Simulators. Exit code: %d", exitCode));
+            }
+
+            return bootedSimulators;
+        } catch (IOException | InterruptedException e) {
+            throw new EnvironmentSetupException("No simulators detected to run the tests", e);
+        }
+    }
+
+    private static void readOutputOfXCRunCommand(Process process, List<String> bootedSimulators) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Matcher matcher = Pattern.compile("(.*)Booted").matcher(line);
+                if (matcher.find()) {
+                    bootedSimulators.add(matcher.group(1));
+                }
+            }
+        }
+    }
+
+
+    static void setupLocalIOSExecution() {
+        int numberOfDevicesForParallelExecution = getBootedIOSSimulators().size();
+        if (numberOfDevicesForParallelExecution == 0) {
+            throw new EnvironmentSetupException("No devices available to run the tests");
+        }
+        Integer providedParallelCount = Setup.getIntegerValueFromConfigs(PARALLEL);
+        if (numberOfDevicesForParallelExecution < providedParallelCount) {
+            throw new EnvironmentSetupException(String.format(
+                    "Fewer devices (%d) available to run the tests in parallel (Expected more " + "than: %d)",
+                    numberOfDevicesForParallelExecution, providedParallelCount));
+        }
+        Setup.addIntegerValueToConfigs(PARALLEL, providedParallelCount);
+        Setup.addToConfigs(EXECUTED_ON, "Local Devices");
+    }
 }
+

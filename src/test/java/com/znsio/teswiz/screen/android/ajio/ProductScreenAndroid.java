@@ -84,4 +84,34 @@ public class ProductScreenAndroid
         visually.checkWindow(SCREEN_NAME, "Other visible images after flick");
         return driver.findElement(byProductImageId).getAttribute("bounds");
     }
+
+    @Override
+    public boolean isProductBrandNameVisible() {
+        return false;
+    }
+
+    @Override
+    public ProductScreen clickOnAddToCart() {
+        return null;
+    }
+
+    @Override
+    public ProductScreen selectAvailableSize() {
+        return null;
+    }
+
+    @Override
+    public ProductScreen clickOnAddToBagButton() {
+        return null;
+    }
+
+    @Override
+    public String getAddedToBagToastMessage() {
+        return null;
+    }
+
+    @Override
+    public CartScreen clickOnCartIcon() {
+        return null;
+    }
 }
