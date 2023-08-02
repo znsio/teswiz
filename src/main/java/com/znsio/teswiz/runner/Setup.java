@@ -131,7 +131,7 @@ class Setup {
         return curlProxyCommand;
     }
 
-    static List<String> getExecutionArguments()  {
+    static List<String> getExecutionArguments() {
         loadAndUpdateConfigParameters(configFilePath);
 
         setupDirectories();
@@ -432,40 +432,40 @@ class Setup {
     private static void getPlatformTagsAndLaunchName() {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME);
-        if(Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
+        if (Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
             launchName += " on Device Farm";
         }
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);
-        if(providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
+        if (providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
             LOGGER.info("\tTags not specified");
             launchName += " - " + currentPlatform;
         } else {
-            if(providedTags.contains("multiuser-android-web")) {
+            if (providedTags.contains("multiuser-android-web")) {
                 currentPlatform = Platform.android;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Android & Web";
-            } else if(providedTags.contains("multiuser-android")) {
+            } else if (providedTags.contains("multiuser-android")) {
                 currentPlatform = Platform.android;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on multiple Androids";
-            } else if(providedTags.contains("multiuser-web")) {
+            } else if (providedTags.contains("multiuser-web")) {
                 currentPlatform = Platform.web;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Web";
-            } else if(providedTags.contains("multiuser-windows-web")) {
+            } else if (providedTags.contains("multiuser-windows-web")) {
                 currentPlatform = Platform.windows;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Windows & Web";
-            } else if(providedTags.contains("multiuser-windows-android")) {
+            } else if (providedTags.contains("multiuser-windows-android")) {
                 currentPlatform = Platform.windows;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Windows & Android";
-            } else if(providedTags.contains("multiuser-iOS")) {
+            } else if (providedTags.contains("multiuser-iOS")) {
                 currentPlatform = Platform.iOS;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on IOS";
-            }else {
+            } else {
                 launchName += " - " + currentPlatform;
             }
         }

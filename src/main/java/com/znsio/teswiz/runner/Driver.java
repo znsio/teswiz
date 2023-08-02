@@ -325,8 +325,7 @@ public class Driver {
         } else if (Runner.getPlatform() == Platform.iOS) {
             ((IOSDriver) driver).runAppInBackground(Duration.ofSeconds(numberOfSeconds));
         } else {
-            throw new NotImplementedException(
-                    "Method is not implemented for " + Runner.getPlatform());
+            throw new NotImplementedException("putAppInBackgroundFor method is not implemented for " + Runner.getPlatform());
         }
     }
 
@@ -749,21 +748,14 @@ public class Driver {
 
     public void relaunchApp() {
         String appPackageName = Runner.getAppPackageName();
-        if (Runner.getPlatform() == Platform.android) {
+        if (Runner.getPlatform().equals(Platform.android)) {
             ((AndroidDriver) driver).terminateApp(appPackageName);
-            try {
-                ((AndroidDriver) driver).activateApp(appPackageName);
-            } catch (Exception var2) {
-            }
-        } else if (Runner.getPlatform() == Platform.iOS) {
+            ((AndroidDriver) driver).activateApp(appPackageName);
+        } else if (Runner.getPlatform().equals(Platform.iOS)) {
             ((IOSDriver) driver).terminateApp(appPackageName);
-            try {
-                ((IOSDriver) driver).activateApp(appPackageName);
-            } catch (Exception var2) {
-            }
+            ((IOSDriver) driver).activateApp(appPackageName);
         } else {
-            throw new NotImplementedException(
-                    "Method is not implemented for " + Runner.getPlatform());
+            throw new NotImplementedException("relaunchApp method is not implemented for " + Runner.getPlatform());
         }
     }
 }

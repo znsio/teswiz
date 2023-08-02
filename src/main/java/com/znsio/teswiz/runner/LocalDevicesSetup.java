@@ -19,7 +19,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.znsio.teswiz.runner.Setup.*;
+import static com.znsio.teswiz.runner.Setup.EXECUTED_ON;
+import static com.znsio.teswiz.runner.Setup.PARALLEL;
 
 class LocalDevicesSetup {
     private static final Logger LOGGER = Logger.getLogger(LocalDevicesSetup.class.getName());
@@ -78,33 +79,45 @@ class LocalDevicesSetup {
     }
 
     private static List<String> getBootedIOSSimulators()  {
+        List<String> bootedSimulators = getListOfSimulators();
+        if (bootedSimulators.isEmpty()) {
+            throw new EnvironmentSetupException("Failed to fetch iOS Simulators");
+        }
+        return bootedSimulators;
+    }
+
+    private static List<String> getListOfSimulators() {
         List<String> bootedSimulators = new ArrayList<>();
         try {
-            Process process = Runtime.getRuntime().exec("xcrun simctl list devices");
+            ProcessBuilder processBuilder = new ProcessBuilder("xcrun", "simctl", "list", "devices");
+            processBuilder.redirectErrorStream(true); // Merge error and input streams
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            StringBuilder output = new StringBuilder();
-            while ((line = reader.readLine()) != null) {
-                output.append(line);
-            }
-
-            Pattern pattern = Pattern.compile("(.*)Booted");
-            Matcher matcher = pattern.matcher(output.toString());
-            while (matcher.find()) {
-                bootedSimulators.add(matcher.group(1));
-            }
+            Process process = processBuilder.start();
+            readOutputOfXCRunCommand(process, bootedSimulators);
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                System.err.println("Failed to fetch iOS Simulators. Exit code: " + exitCode);
+                throw new EnvironmentSetupException(String.format("Failed to fetch iOS Simulators. Exit code: %d", exitCode));
             }
-        } catch (IOException | InterruptedException e) {
-            throw new EnvironmentSetupException("No simulators detected to run the tests");
-        }
 
-        return bootedSimulators;
+            return bootedSimulators;
+        } catch (IOException | InterruptedException e) {
+            throw new EnvironmentSetupException("No simulators detected to run the tests", e);
+        }
     }
+
+    private static void readOutputOfXCRunCommand(Process process, List<String> bootedSimulators) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Matcher matcher = Pattern.compile("(.*)Booted").matcher(line);
+                if (matcher.find()) {
+                    bootedSimulators.add(matcher.group(1));
+                }
+            }
+        }
+    }
+
 
     static void setupLocalIOSExecution() {
         int numberOfDevicesForParallelExecution = getBootedIOSSimulators().size();

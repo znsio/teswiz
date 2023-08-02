@@ -137,13 +137,7 @@ class PCloudySetup {
     private static String uploadAppToPCloudy(String appPath, String deviceLabURL,
                                              String authToken) {
         LOGGER.info("uploadAPKTopCloudy: " + appPath);
-        StringBuilder apptype= new StringBuilder("");
-        if(Runner.getPlatform().equals(Platform.android)) {
-            apptype = new StringBuilder("apk");
-        }
-        else if (Runner.getPlatform().equals(Platform.iOS)) {
-            apptype= new StringBuilder("ipa");
-        }
+        StringBuilder apptype = getAppType();
         String[] listOfDevices = new String[]{CURL_INSECURE, getCurlProxyCommand(), "-X", "POST",
                 "-F", "file=@\"" + appPath + "\"", "-F",
                 "\"source_type=raw\"", "-F",
@@ -152,17 +146,26 @@ class PCloudySetup {
 
         CommandLineResponse uploadApkResponse = CommandLineExecutor.execCommand(listOfDevices);
         LOGGER.info("\tuploadApkResponse: " + uploadApkResponse.getStdOut());
-        JsonObject result = JsonFile.convertToMap(uploadApkResponse.getStdOut())
-                                    .getAsJsonObject(RESULT);
+        JsonObject result = JsonFile.convertToMap(uploadApkResponse.getStdOut()).getAsJsonObject(RESULT);
         int uploadStatus = result.get("code").getAsInt();
         if(200 != uploadStatus) {
-            throw new EnvironmentSetupException(
-                    String.format("Unable to upload app: '%s' to '%s'%n%s", appPath, deviceLabURL,
-                                  uploadApkResponse));
+            throw new EnvironmentSetupException(String.format("Unable to upload app to pCloudy: '%s' to '%s'%n%s", appPath, deviceLabURL, uploadApkResponse));
         }
         String uploadedFileName = result.get("file").getAsString();
         LOGGER.info("\tuploadAppToPCloudy: Uploaded: " + uploadedFileName);
         return uploadedFileName;
+    }
+
+    @NotNull
+    private static StringBuilder getAppType() {
+        StringBuilder apptype= new StringBuilder();
+        if(Runner.getPlatform().equals(Platform.android)) {
+            apptype = new StringBuilder("apk");
+        }
+        else if (Runner.getPlatform().equals(Platform.iOS)) {
+            apptype= new StringBuilder("ipa");
+        }
+        return apptype;
     }
 
     @NotNull
