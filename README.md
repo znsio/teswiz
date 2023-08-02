@@ -6,103 +6,7 @@
 # To Build
 `./gradlew clean build`
 
-# ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Breaking changes in Latest teswiz v0.0.81![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png)
-
-Below is the list of the breaking changes, and the corresponding new implementation starting from teswiz latest teswiz.
-
-## Cloud Changes
-
-In Config properties files, which are related to cloud execution platforms such as browserStack, HeadSpin, Lamda Tests, Pcloudy etc make the following change: 
-**CLOUD_USER** config will now be replaced with **CLOUD_USERNAME**.
-
-## Browser Stack and Lambda Test changes
-1. It is **Mandatory** to pass **CLOUD_USERNAME** & **CLOUD_KEY** as Environment variables when running on browser Stack from local
-2. Similarly, All the pipelines using browser Stack will need to be updated, **CLOUD_USERNAME** & **CLOUD_KEY** needs to be added
-
-**Note**: appium-device-farm plugin's version should be >= v8.1.0. minimum requirement is v8.1.0
-
-**Please Refer:** 
-[Browser Stack Local File](https://github.com/znsio/teswiz/blob/main/docs/BrowserStackLocal_README.md)
-
-## Method name and implementation changes
-
-There are some method name and implementation changes as listed below:
-
-| Purpose                                                                                            | ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Old ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
-|:---------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
-| To put App in Background for number of Seconds                                                     | putAppInBackground(int time)                                                                                          | putAppInBackgroundFor(int numberOfSeconds)                                                                            |
-| Method Selects Device Notification from Notification Drawer                                        | selectNotification()	                                                                                                 | selectNotificationFromNotificationDrawer()                                                                            |
-| Scroll In Dynamic Layer method is using Direction Enum instead of a String Parameter               | scrollInDynamicLayer(String direction)                                                                                | scrollInDynamicLayer(Direction direction)                                                                             |
-
-## New Additions
-
-There is a new method added:
-
-| Purpose                                                                                                               | ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) New ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) |
-|:----------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------|
-| A new method is added to horizontal swipe an element using Gesture by passing the Direction and Element as parameters | horizontalSwipeWithGesture(WebElement element, Direction direction)                                                                                                                      |
-| A new method is added to double tap on an element by passing the Element as parameter                                 | doubleTap(WebElement element)                                                                                                                                                                                         |
-| A new method is added for swipe by passing the screen height and width in percentage as parameters                    | swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth)     |
-
-## Updated Usage Of Appium Driver in Methods
-1. setWebViewContext()
-2. setNativeAppContext()
-3. scroll(Point fromPoint, Point toPoint) , scrollVertically() , scrollDownByScreenSize()
-4. tapOnMiddleOfScreenOnDevice()
-5. swipeLeft() , swipeRight() , swipe(int height, int fromWidth, int toWidth)
-
-## References:
-1. For appium2.0 : https://javadoc.io/doc/io.appium/java-client/8.0.0-beta/deprecated-list.html
-2. For selenium 4: https://www.selenium.dev/selenium/docs/api/java/deprecated-list.html
-
-## Logging to ReportPortal
-
-To make it easy to log to ReportPortal, the following new methods have been added:
-
-```
-        ReportPortalLogger.logDebugMessage("debugMessage");
-        ReportPortalLogger.logInfoMessage("infoMessage");
-        ReportPortalLogger.logWarningMessage("warningMessage");
-        ReportPortalLogger.attachFileInReportPortal("message", new File("fileName"));
-```
-
-[//]: # (```mermaid)
-
-[//]: # (flowchart TD)
-
-[//]: # (  id1[allDrivers.createDriverFor&#40;...&#41;]--has changed to---id2&#40;[Drivers.createDriverFor&#40;...&#41;]&#41;)
-
-[//]: # (  style id1 fill:#f9f)
-
-[//]: # (  style id2 fill:#bbf)
-
-[//]: # (```)
-
-[//]: # ()
-
-[//]: # (```mermaid)
-
-[//]: # (flowchart LR)
-
-[//]: # (  [Runner.platform]--is now changed to---id2&#40;Runner.getPlatform&#40;&#41;&#41;;)
-
-[//]: # (  style id1 fill:#f9f)
-
-[//]: # (  style id2 fill:#bbf)
-
-[//]: # (```)
-
-[//]: # (```mermaid)
-
-[//]: # (flowchart LR;)
-
-[//]: # (  [Runner.platform] -->|is now changed to| [Runner.getPlatform&#40;&#41;])
-
-[//]: # (  style id1 fill:#f9f)
-
-[//]: # (  style id2 fill:#bbf)
-
-[//]: # (```)
+# [BREAKING CHANGES](docs/BreakingChanges-README.md)
 
 # What is this repository about?
 
@@ -128,8 +32,10 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 * cucumber-jvm (https://cucumber.io)
 * AppiumTestDistribution (https://github.com/AppiumTestDistribution/AppiumTestDistribution) -manages Android and iOS
   devices, and Appium
-* Appium (https://appium.io)
-* WebDriver (https://selenium.dev)
+* Appium 2.x (https://appium.io) 
+  * https://javadoc.io/doc/io.appium/java-client/8.0.0-beta/deprecated-list.html
+* Selenium WebDriver 4.x (https://selenium.dev)
+  * https://www.selenium.dev/selenium/docs/api/java/deprecated-list.html 
 * reportportal.io (https://reportportal.io)
 * Applitools (https://applitools.com)
 * Build tool: gradle 7.3.3
@@ -143,8 +49,6 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 
 ## [Running the sample tests](docs/SampleTests-README.md)
 
-## [Setting up docker containers](docs/dockerSetup-README.md)
-
 ## Additional configurations
 
 ### [Running Visual Tests using Applitools Visual AI](docs/RunningVisualTests-README.md)
@@ -152,6 +56,10 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 ### [Functional/Feature Coverage](docs/FeatureCoverage-README.md)
 
 ### [Configuration parameters](docs/ConfigurationParameters-README.md)
+
+### [Setting up docker containers](docs/dockerSetup-README.md)
+
+### [Logging to ReportPortal](docs/reportportal-README.md)
 
 ## [Troubleshooting / FAQs](docs/FAQs-README.md)
 

@@ -26,10 +26,7 @@
       }
     }
   },
-  "cloud": {
-    "android": [
-    ]
-  },
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js",
   "hostMachines": [
     {
       "machineIP": "appium-dev.headspin.io/v0/",
