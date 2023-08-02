@@ -6,6 +6,7 @@ buildscript {
         assertJVersion = '3.24.2'
         atdVersion = '13.1.2'
         applitoolsAppiumVersion = '5.63.4'
+        seleniumVersion = "4.11.0"
         commonsLang3Version = '3.13.0'
         unirestVersion = '3.14.5'
         jadbVersion = '1.2.1'
@@ -69,6 +70,7 @@ dependencies {
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
     implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
+    implementation "org.seleniumhq.selenium:selenium-java:$project.seleniumVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
     implementation "org.jetbrains:annotations:$project.jetbrainsAnnotationsVersion"

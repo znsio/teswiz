@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
-import static com.znsio.teswiz.runner.Runner.IS_MAC;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
 class BrowserDriverManager {
@@ -208,9 +207,6 @@ class BrowserDriverManager {
     private static ChromeOptions getChromeOptions(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject chromeConfiguration) {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setAcceptInsecureCerts(chromeConfiguration.getBoolean(ACCEPT_INSECURE_CERTS));
-        if(IS_MAC) {
-            chromeOptions.setBinary("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
-        }
 
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
         setPreferencesInChromeOptions(chromeConfiguration, chromeOptions);
