@@ -552,6 +552,7 @@ class Setup {
     private static BatchInfo setupApplitoolsBatchInfo() {
         BatchInfo batchInfo = new BatchInfo(
                 configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
+        batchInfo.addProperty(APP_NAME, configs.get(APP_NAME));
         batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
         batchInfo.addProperty(PLATFORM, currentPlatform.name());
         batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
