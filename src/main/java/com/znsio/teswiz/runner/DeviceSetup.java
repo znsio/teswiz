@@ -100,7 +100,7 @@ class DeviceSetup {
         String appPath = Setup.getFromConfigs(APP_PATH);
         LOGGER.info(String.format("Original path to apk/app: %s", appPath));
         if (appPath.equals(NOT_SET)) {
-            if (null == Setup.getLoadedCapabilities().get(Platform.android.name()).get("browserName")) {
+            if (null == Setup.getLoadedCapabilities().get(Runner.getPlatform().name()).get("browserName")) {
                 appPath = downloadAppToDirectoryIfNeeded(getAppPathFromCapabilities(), DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
             }
             LOGGER.info(String.format("Updated path to apk/app: %s", appPath));
