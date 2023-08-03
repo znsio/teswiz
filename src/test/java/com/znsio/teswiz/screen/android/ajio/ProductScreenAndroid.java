@@ -37,7 +37,6 @@ public class ProductScreenAndroid
     public CartScreen addProductToCart() {
         LOGGER.info("addProductToCart");
         driver.waitTillElementIsPresent(byAddToCartButtonId).click();
-
         visually.checkWindow(SCREEN_NAME, "Add to cart");
         driver.waitTillElementIsPresent(byViewBagButtonXpath).click();
         return CartScreen.get();
