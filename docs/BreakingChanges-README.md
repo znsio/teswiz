@@ -1,8 +1,8 @@
 # Breaking Changes
 
-# ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Breaking Changes in Latest teswiz v0.0.83![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png)
+# ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Breaking Changes from teswiz v0.0.81![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png)
 
-Below is the list of the breaking changes, and the corresponding new implementation starting from latest teswiz.
+**If you are using a teswiz version lower than 0.0.81, below is the list of the breaking changes, and the corresponding new implementation available in teswiz.**
 
 ## Cloud Changes
 
