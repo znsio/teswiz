@@ -66,6 +66,8 @@ class Setup {
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
+    private static final String RP_DESCRIPTION = "RP_DESCRIPTION";
+    private static final String RP_DEFAULT_DESCRIPTION = "End-2-End scenarios";
     private static Map<String, Map> loadedCapabilityFile;
     private static final String CHROME = "chrome";
     private static final String TEMP_DIRECTORY = "temp";
@@ -151,9 +153,9 @@ class Setup {
         }
         setupExecutionEnvironment();
 
-        LOGGER.info(printStringMap("Using string values", configs));
-        LOGGER.info(printBooleanMap("Using boolean values", configsBoolean));
-        LOGGER.info(printIntegerMap("Using integer values", configsInteger));
+        printStringConfigsMap();
+        printBooleanConfigsMap();
+        printIntegerConfigsMap();
 
         return CUKE_ARGS;
     }
@@ -279,39 +281,36 @@ class Setup {
 
         // properties needed for ReportPortal.io
         System.setProperty("rp.description", configs.get(
-                APP_NAME) + " End-2-End scenarios on " + currentPlatform.name());
+                APP_NAME) + " " + configs.get(RP_DESCRIPTION) + " on " + currentPlatform.name());
         System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
         System.setProperty("rp.attributes", rpAttributes);
     }
 
-    @NotNull
-    private static String printStringMap(String prefix, Map<String, String> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": \n");
-        for(Map.Entry<String, String> entry : printConfig.entrySet()) {
+    private static void printStringConfigsMap() {
+        StringBuilder printString = new StringBuilder("Using string values" + ": \n");
+        for(Map.Entry<String, String> entry : Setup.configs.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
                        .append("\n");
         }
-        return printString.toString() + printConfig;
+        LOGGER.info(printString.toString() + Setup.configs);
     }
 
-    @NotNull
-    private static String printBooleanMap(String prefix, Map<String, Boolean> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": \n");
-        for(Map.Entry<String, Boolean> entry : printConfig.entrySet()) {
+    private static void printBooleanConfigsMap() {
+        StringBuilder printString = new StringBuilder("Using boolean values" + ": \n");
+        for(Map.Entry<String, Boolean> entry : Setup.configsBoolean.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
                        .append("\n");
         }
-        return printString.toString() + printConfig;
+        LOGGER.info(printString.toString() + Setup.configsBoolean);
     }
 
-    @NotNull
-    private static String printIntegerMap(String prefix, Map<String, Integer> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": \n");
-        for(Map.Entry<String, Integer> entry : printConfig.entrySet()) {
+    private static void printIntegerConfigsMap() {
+        StringBuilder printString = new StringBuilder("Using integer values" + ": \n");
+        for(Map.Entry<String, Integer> entry : Setup.configsInteger.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
                        .append("\n");
         }
-        return printString.toString() + printConfig;
+        LOGGER.info(printString.toString() + Setup.configsInteger);
     }
 
     private static void buildMapOfRequiredProperties() {
@@ -418,6 +417,9 @@ class Setup {
         configs.put(LAUNCH_NAME_SUFFIX, getOverriddenStringValue(LAUNCH_NAME_SUFFIX,
                                                                  getStringValueFromPropertiesIfAvailable(
                                                                          LAUNCH_NAME_SUFFIX, "")));
+        configs.put(RP_DESCRIPTION, getOverriddenStringValue(RP_DESCRIPTION,
+                                                                 getStringValueFromPropertiesIfAvailable(
+                                                                         RP_DESCRIPTION, RP_DEFAULT_DESCRIPTION)));
         configs.put(APP_VERSION, NOT_SET);
     }
 
