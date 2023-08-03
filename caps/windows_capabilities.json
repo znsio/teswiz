@@ -1,9 +1,7 @@
 {
   "windows": {
     "platformName": "windows",
-    "app": {
-      "local": "C:\\Windows\\System32\\notepad.exe"
-    }
+    "app": "C:\\Windows\\System32\\notepad.exe"
   },
   "serverConfig" : {
     "server": {
