@@ -44,7 +44,7 @@ fi
 echo "Using GRID_PORT: $GRID_PORT"
 
 if [[ -z "${HTTP_PROXY}" ]]; then
-  echo "GRID_PORT is not set. Use default: 4444"
+  echo "HTTP_PROXY is not set."
   PROXY_KEY=NOT_SET
 else
   PROXY_KEY=$HTTP_PROXY
