@@ -69,8 +69,8 @@ echo "GRID_PORT_1: $GRID_PORT_1"
 echo "GRID_PORT_2: $GRID_PORT_2"
 
 if [[ ( $1 == "up" ) || ( $1 == "start" ) ]]; then
-    echo "Start docker containers"
-    docker-compose -f docker-compose-v3.yml up -d
+    echo "Start docker containers using command 'docker-compose -f docker-compose-v3.yml up --force-recreate -d'"
+    docker-compose -f docker-compose-v3.yml up --force-recreate -d
     ./wait_for_containers_to_be_up.sh
 elif [[ ( $1 == "down" ) || ( $1 == "stop" ) ]]; then
     echo "Stop docker containers"
