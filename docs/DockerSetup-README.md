@@ -18,7 +18,8 @@ or
 
     ./dockerContainers.sh stop
 
-This uses [docker-compose-v3.yml](../docker-compose-v3.yml) - which uses the latest chrome, firefox and selenium-hub.
+the [dockerContainers.sh](../dockerContainers.sh) file uses [docker-compose-v3.yml](../docker-compose-v3.yml) - which uses the latest chrome, firefox and selenium-hub.
+If you need to pass proxy information to the docker container, the [dockerContainers.sh](../dockerContainers.sh) file will automatically use [docker-compose-proxy-v3.yml](../docker-compose-proxy-v3.yml) to start/stop the containers.
 
 **The [dockerContainers.sh](../dockerContainers.sh) script also takes care of running tests on 
 Windows, Linux, Mac OSX 

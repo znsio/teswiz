@@ -59,7 +59,7 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 
 ### [Add Auto Logging Using AspectJ](docs/AspectJLogging-README.md)
 
-### [Setting up docker containers](docs/dockerSetup-README.md)
+### [Setting up docker containers](docs/DockerSetup-README.md)
 
 ### [Logging to ReportPortal](docs/ReportPortal-README.md)
 
