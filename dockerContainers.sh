@@ -70,7 +70,6 @@ echo "  GRID_PORT_1: $GRID_PORT_1"
 echo "  GRID_PORT_2: $GRID_PORT_2"
 
 if [[ ( $1 == "up" ) || ( $1 == "start" ) ]]; then
-      - "5900:5900"
     echo "Start docker containers using command: 'docker-compose -f $DOCKER_COMPOSE_FILE_NAME up --force-recreate -d'"
     docker-compose -f $DOCKER_COMPOSE_FILE_NAME up --force-recreate -d
     ./wait_for_containers_to_be_up.sh
