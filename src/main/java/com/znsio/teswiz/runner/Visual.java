@@ -122,8 +122,7 @@ public class Visual {
         appEyes.setLogHandler(
                 new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
 
-        // todo - enhancements - https://applitools.com/docs/topics/general-concepts/visual-test-best-practices.html?Highlight=setMatchTimeout
-        // add setIgnoreCaret, setHideScrollbars
+        appEyes.setIgnoreCaret(true);
         appName = appName + "-" + platform;
         appEyes.addProperty("USER_PERSONA", userPersona);
         appEyes.addProperty(Setup.BRANCH_NAME,
