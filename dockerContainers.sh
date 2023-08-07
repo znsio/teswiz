@@ -76,6 +76,11 @@ if [[ ( $1 == "up" ) || ( $1 == "start" ) ]]; then
 elif [[ ( $1 == "down" ) || ( $1 == "stop" ) ]]; then
     echo "Stop docker containers using command: 'docker-compose -f $DOCKER_COMPOSE_FILE_NAME down'"
     docker-compose -f $DOCKER_COMPOSE_FILE_NAME down
+elif [[ ( $1 == "restart" ) ]]; then
+    echo "Restarting docker containers using command: 'docker-compose -f $DOCKER_COMPOSE_FILE_NAME down' and then ''docker-compose -f $DOCKER_COMPOSE_FILE_NAME up''"
+    docker-compose -f $DOCKER_COMPOSE_FILE_NAME down
+    sleep 2
+    docker-compose -f $DOCKER_COMPOSE_FILE_NAME up -d
 else
     echo "Invalid command provided. Pass either 'up/start' or 'down/stop' as a parameter"
     exit 1
