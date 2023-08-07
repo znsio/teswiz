@@ -516,17 +516,22 @@ class Setup {
         if(currentPlatform.equals(Platform.web)) {
             configs.put(APP_PATH, configs.get(BROWSER));
             configs.put(EXECUTED_ON, "Local Browsers");
+            setupListenersForWebOrAPIExecution(webCukeArgs);
         }
         else if(currentPlatform.equals(Platform.api)) {
             configs.put(EXECUTED_ON, currentPlatform.name());
+            setupListenersForWebOrAPIExecution(webCukeArgs);
         }
+        return webCukeArgs;
+    }
+
+    private static void setupListenersForWebOrAPIExecution(ArrayList<String> webCukeArgs) {
         webCukeArgs.add("--threads");
         webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
         webCukeArgs.add(PLUGIN);
         webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioListener");
         webCukeArgs.add(PLUGIN);
         webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioReporterListener");
-        return webCukeArgs;
     }
 
     static Map<String, Object> initialiseApplitoolsConfiguration() {
