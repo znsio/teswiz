@@ -125,7 +125,6 @@ public class Visual {
         // todo - enhancements - https://applitools.com/docs/topics/general-concepts/visual-test-best-practices.html?Highlight=setMatchTimeout
         // add setIgnoreCaret, setHideScrollbars
         appName = appName + "-" + platform;
-        appEyes.addProperty(Setup.APP_NAME, appName);
         appEyes.addProperty("USER_PERSONA", userPersona);
         appEyes.addProperty(Setup.BRANCH_NAME,
                             String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
@@ -211,7 +210,6 @@ public class Visual {
                 new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
 
         appName = appName + "-" + platform;
-        webEyes.addProperty(Setup.APP_NAME, appName);
         webEyes.addProperty("USER_PERSONA", userPersona);
         webEyes.addProperty(Setup.BRANCH_NAME,
                             String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
