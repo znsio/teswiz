@@ -17,6 +17,7 @@ services:
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=2
       - SE_NODE_GRID_URL=http://localhost:${GRID_PORT}
+      - SE_NODE_SESSION_TIMEOUT=30
 
   firefox:
     image: ${DOCKER_REGISTRY}/${FIREFOX_REPO}:latest
@@ -32,6 +33,7 @@ services:
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=2
       - SE_NODE_GRID_URL=http://localhost:${GRID_PORT}
+      - SE_NODE_SESSION_TIMEOUT=30
 
   selenium-hub:
     image: ${DOCKER_REGISTRY}/${SELENIUM_HUB_REPO}:latest

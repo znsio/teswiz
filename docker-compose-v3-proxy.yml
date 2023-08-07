@@ -17,6 +17,7 @@ services:
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=2
       - SE_NODE_GRID_URL=http://localhost:${GRID_PORT}
+      - SE_NODE_SESSION_TIMEOUT=30
       - HTTP_PROXY=${PROXY_KEY}
       - HTTPS_PROXY=${PROXY_KEY}
       - http_proxy=${PROXY_KEY}
@@ -36,6 +37,7 @@ services:
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_MAX_SESSIONS=2
       - SE_NODE_GRID_URL=http://localhost:${GRID_PORT}
+      - SE_NODE_SESSION_TIMEOUT=30
       - HTTP_PROXY=${PROXY_KEY}
       - HTTPS_PROXY=${PROXY_KEY}
       - http_proxy=${PROXY_KEY}
