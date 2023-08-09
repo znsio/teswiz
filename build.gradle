@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 
 buildscript {
     ext {
-        gradleVersion = '7.3.3'
+        gradleVersion = '8.2.1'
         assertJVersion = '3.24.2'
         atdVersion = '13.1.2'
         applitoolsAppiumVersion = '5.63.6'
@@ -194,10 +194,10 @@ test {
         jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
     }
     reports {
-        html.enabled(true)
-        junitXml.enabled(true)
-        html.destination(file("$buildDir/unit-test-results"))
-        junitXml.destination(file("$buildDir/unit-test-results"))
+        html.required.set(true)
+        junitXml.required.set(true)
+        html.outputLocation.set(file("$buildDir/unit-test-results"))
+        junitXml.outputLocation.set(file("$buildDir/unit-test-results"))
     }
 }
 
