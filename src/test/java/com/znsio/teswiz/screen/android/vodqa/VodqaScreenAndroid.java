@@ -230,7 +230,6 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public VodqaScreen pinchAndZoomInOnAnElement() {
         LOGGER.info("Perform Pinch action and Zoom In Image element");
-        driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
         driver.pinchAndZoomIn(driver.waitTillElementIsVisible(byImageElementXpath));
         visually.check(SCREEN_NAME, "Zoomed In Image element", Target.window());
         return this;
@@ -239,7 +238,6 @@ public class VodqaScreenAndroid extends VodqaScreen {
     @Override
     public VodqaScreen pinchAndZoomOutOnAnElement() {
         LOGGER.info("Perform Pinch action and Zoom out Image element");
-        driver.waitTillElementIsVisible(byDoubleTapSuccessfulXpath);
         driver.pinchAndZoomOut(driver.waitTillElementIsVisible(byImageElementXpath));
         visually.check(SCREEN_NAME, "Zoomed Out Image element", Target.window());
         return this;
@@ -247,14 +245,12 @@ public class VodqaScreenAndroid extends VodqaScreen {
 
     @Override
     public boolean isPinchAndZoomInSuccessful(Dimension initialElementDimension) {
-
         Dimension actualElementDimension = driver.waitTillElementIsVisible(byImageElementXpath).getSize();
         return (initialElementDimension.width * initialElementDimension.height) > (actualElementDimension.width * actualElementDimension.height);
     }
 
     @Override
     public boolean isPinchAndZoomOutSuccessful(Dimension initialElementDimension) {
-
         Dimension actualElementDimension = driver.waitTillElementIsVisible(byImageElementXpath).getSize();
         return (initialElementDimension.width * initialElementDimension.height) < (actualElementDimension.width * actualElementDimension.height);
     }

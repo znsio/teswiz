@@ -21,20 +21,17 @@
       "plugin": {
         "device-farm": {
           "platform": "android",
-          "skipChromeDownload": true
+          "skipChromeDownload": true,
+          "cloud": {
+            "cloudName": "headspin",
+            "url": "appium-dev.headspin.io/v0/",
+            "apiUrl": "appium-dev.headspin.io/v0/",
+            "devices": [
+            ]
+          }
         }
       }
     }
   },
-  "cloud": {
-    "android": [
-    ]
-  },
-  "hostMachines": [
-    {
-      "machineIP": "appium-dev.headspin.io/v0/",
-      "isCloud": true,
-      "cloudName": "headspin"
-    }
-  ]
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
 }

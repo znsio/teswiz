@@ -31,15 +31,5 @@
       }
     }
   },
-  "hostMachines": [
-    {
-      "machineIP": "127.0.0.1",
-      "simulators": [
-        {
-          "deviceName": "iPhone 11",
-          "OS": "13.5"
-        }
-      ]
-    }
-  ]
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
 }

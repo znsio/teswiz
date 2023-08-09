@@ -41,6 +41,9 @@ class DeviceSetup {
     private static final String DEFAULT_TEMP_SAMPLE_APP_DIRECTORY =
             System.getProperty("user.dir") + File.separator +
                     "temp" + File.separator + "sampleApps";
+    private static final String CLOUD_NAME_NOT_SUPPORTED_MESSAGE = "Provided cloudName: '%s' is not supported";
+    private static final String CUCUMBER_SCENARIO_LISTENER = "com.cucumber.listener.CucumberScenarioListener";
+    private static final String CUCUMBER_SCENARIO_REPORTER_LISTENER = "com.cucumber.listener.CucumberScenarioReporterListener";
 
     private DeviceSetup() {
         LOGGER.debug("DeviceSetup - private constructor");
@@ -48,12 +51,12 @@ class DeviceSetup {
 
     static void saveNewCapabilitiesFile(String platformName, String capabilityFile,
                                         Map<String, Map> loadedCapabilityFile,
-                                        ArrayList listOfAndroidDevices) {
+                                        ArrayList listOfDevices) {
         Object pluginConfig = ((LinkedTreeMap) loadedCapabilityFile.get("serverConfig").get("server")).get(
                 "plugin");
         Map cloudConfig = (Map) ((LinkedTreeMap) ((LinkedTreeMap) pluginConfig).get("device-farm")).get(
                 "cloud");
-        cloudConfig.put("devices", listOfAndroidDevices);
+        cloudConfig.put("devices", listOfDevices);
 
         LOGGER.info(
                 String.format("Updated Device Lab Capabilities file: %n%s", loadedCapabilityFile));
@@ -86,25 +89,27 @@ class DeviceSetup {
             androidCukeArgs.add("--threads");
             androidCukeArgs.add(Setup.getIntegerValueAsStringFromConfigs(PARALLEL));
             androidCukeArgs.add(PLUGIN);
-            androidCukeArgs.add("com.cucumber.listener.CucumberScenarioListener");
+            androidCukeArgs.add(CUCUMBER_SCENARIO_LISTENER);
             androidCukeArgs.add(PLUGIN);
-            androidCukeArgs.add("com.cucumber.listener.CucumberScenarioReporterListener");
+            androidCukeArgs.add(CUCUMBER_SCENARIO_REPORTER_LISTENER);
         }
         return androidCukeArgs;
     }
 
-    static void verifyAppExistsAtMentionedPath() {
+    static String verifyAppExistsAtMentionedPath() {
         String appPath = Setup.getFromConfigs(APP_PATH);
-        LOGGER.info(String.format("Update path to Apk: %s", appPath));
+        LOGGER.info(String.format("Original path to apk/app: %s", appPath));
         if (appPath.equals(NOT_SET)) {
-            appPath = getAppPathFromCapabilities();
-            appPath = downloadAppToDirectoryIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
+            if (null == Setup.getLoadedCapabilities().get(Runner.getPlatform().name()).get("browserName")) {
+                appPath = downloadAppToDirectoryIfNeeded(getAppPathFromCapabilities(), DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
+            }
+            LOGGER.info(String.format("Updated path to apk/app: %s", appPath));
             Setup.addToConfigs(APP_PATH, appPath);
         } else {
             appPath = downloadAppToDirectoryIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
-            LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s",
-                    appPath));
+            LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s", appPath));
         }
+        return appPath;
     }
 
     public static String downloadAppToDirectoryIfNeeded(String appPath, String saveToLocalDirectory) {
@@ -122,21 +127,11 @@ class DeviceSetup {
             LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
             if (!(new File(appPath).exists())) {
                 throw new InvalidTestDataException(String.format("App file path '%s' provided in capabilities is incorrect", appPath));
-//                checkEitherFilePathIsIncorrectOrFileIsMissing(appPath, localFilePath);
             }
         }
         LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
         LOGGER.info(String.format("File available at App file path '%s'", appPath));
         return appPath;
-    }
-
-    private static void createDirectory(String directoryPath) {
-        try {
-            LOGGER.info("Directory doesn't exist, Creating directory");
-            Files.createDirectories(Path.of(directoryPath));
-        } catch (IOException e) {
-            throw new RuntimeException(String.format("Failed to create directory: %s, error occurred%s", directoryPath, e));
-        }
     }
 
     private static void downloadFile(String url, String filePath, String saveToDirectory) {
@@ -236,7 +231,7 @@ class DeviceSetup {
 
     static void setupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
-        String deviceLabURL = NOT_SET;
+        String deviceLabURL;
         switch (cloudName.toLowerCase()) {
             case "headspin":
                 deviceLabURL = getCloudUrlFromCapabilities();
@@ -250,11 +245,9 @@ class DeviceSetup {
                 deviceLabURL = getCloudApiUrlFromCapabilities();
                 BrowserStackSetup.updateBrowserStackCapabilities(deviceLabURL);
                 break;
-            case "saucelabs":
-                break;
             default:
                 throw new InvalidTestDataException(
-                        String.format("Provided cloudName: '%s' is not supported", cloudName));
+                    String.format(CLOUD_NAME_NOT_SUPPORTED_MESSAGE, cloudName));
         }
         Setup.addToConfigs(EXECUTED_ON, cloudName);
     }
@@ -265,24 +258,9 @@ class DeviceSetup {
                 new String[]{Setup.getPlatform().name(), "app"}, Setup.getLoadedCapabilities());
     }
 
-    private static void checkIfAppExistsAtTheMentionedPath(String appPath,
-                                                           String capabilitiesFileName) {
-        if (!isAppPathAUrl(appPath)) {
-            if (Files.exists(Paths.get(appPath))) {
-                LOGGER.info(String.format("\tUsing AppPath: %s in file: %s:: %s", appPath,
-                        capabilitiesFileName, Setup.getPlatform()));
-            } else {
-                LOGGER.info(String.format("\tAppPath: %s not found!", appPath));
-                throw new InvalidTestDataException(
-                        String.format("App file not found at the mentioned path: %s", appPath));
-            }
-        }
-    }
-
     private static boolean isAppPathAUrl(String appPathUrl) {
-        URL url;
         try {
-            url = new URL(appPathUrl);
+            new URL(appPathUrl);
             LOGGER.info(String.format("'%s' is a URL.", appPathUrl));
             isAppUrlValid(appPathUrl);
             return true;
@@ -357,9 +335,9 @@ class DeviceSetup {
             verifyAppExistsAtMentionedPath();
             fetchWindowsAppVersion();
             windowsCukeArgs.add(PLUGIN);
-            windowsCukeArgs.add("com.cucumber.listener.CucumberScenarioListener");
+            windowsCukeArgs.add(CUCUMBER_SCENARIO_LISTENER);
             windowsCukeArgs.add(PLUGIN);
-            windowsCukeArgs.add("com.cucumber.listener.CucumberScenarioReporterListener");
+            windowsCukeArgs.add(CUCUMBER_SCENARIO_REPORTER_LISTENER);
             Setup.addToConfigs(EXECUTED_ON, "Local Desktop Apps");
         }
         return windowsCukeArgs;
@@ -397,7 +375,29 @@ class DeviceSetup {
                 break;
             default:
                 throw new InvalidTestDataException(
-                        String.format("Provided cloudName: '%s' is not supported", cloudName));
+                        String.format(CLOUD_NAME_NOT_SUPPORTED_MESSAGE, cloudName));
         }
     }
+
+    static ArrayList<String> setupIOSExecution()  {
+        ArrayList<String> iOSCukeArgs = new ArrayList<>();
+        if (Setup.getPlatform().equals(Platform.iOS)) {
+            verifyAppExistsAtMentionedPath();
+//            TODO
+//            fetchIOSAppVersion();
+            if (Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
+                setupCloudExecution();
+            } else {
+                LocalDevicesSetup.setupLocalIOSExecution();
+            }
+            iOSCukeArgs.add("--threads");
+            iOSCukeArgs.add(Setup.getIntegerValueAsStringFromConfigs(PARALLEL));
+            iOSCukeArgs.add(PLUGIN);
+            iOSCukeArgs.add(CUCUMBER_SCENARIO_LISTENER);
+            iOSCukeArgs.add(PLUGIN);
+            iOSCukeArgs.add(CUCUMBER_SCENARIO_REPORTER_LISTENER);
+        }
+        return iOSCukeArgs;
+    }
+
 }

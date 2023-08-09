@@ -11,6 +11,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -187,12 +188,6 @@ public class Runner {
         String proxyURL = Setup.getFromConfigs(Setup.PROXY_URL);
         LOGGER.info(String.format("Using proxyURL: %s", proxyURL));
         return proxyURL;
-    }
-
-    public static String getWebDriverManagerProxyURL() {
-        String webDriverManagerProxyURL = Setup.getFromConfigs(Setup.WEBDRIVER_MANAGER_PROXY_URL);
-        LOGGER.info(String.format("webDriverManagerProxyURL: %s", webDriverManagerProxyURL));
-        return webDriverManagerProxyURL;
     }
 
     public static String getBrowserConfigFileContents() {

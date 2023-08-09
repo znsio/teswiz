@@ -1,9 +1,7 @@
 {
   "windows": {
     "platformName": "windows",
-    "app": {
-      "local": "C:\\Windows\\System32\\notepad.exe"
-    }
+    "app": "C:\\Windows\\System32\\notepad.exe"
   },
   "serverConfig" : {
     "server": {
@@ -17,9 +15,5 @@
       }
     }
   },
-  "hostMachines": [
-    {
-      "machineIP": "127.0.0.1"
-    }
-  ]
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
 }

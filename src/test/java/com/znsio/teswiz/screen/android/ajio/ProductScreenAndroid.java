@@ -37,7 +37,6 @@ public class ProductScreenAndroid
     public CartScreen addProductToCart() {
         LOGGER.info("addProductToCart");
         driver.waitTillElementIsPresent(byAddToCartButtonId).click();
-
         visually.checkWindow(SCREEN_NAME, "Add to cart");
         driver.waitTillElementIsPresent(byViewBagButtonXpath).click();
         return CartScreen.get();
@@ -83,5 +82,35 @@ public class ProductScreenAndroid
         LOGGER.info("Verifying other images after flick");
         visually.checkWindow(SCREEN_NAME, "Other visible images after flick");
         return driver.findElement(byProductImageId).getAttribute("bounds");
+    }
+
+    @Override
+    public boolean isProductBrandNameVisible() {
+        return false;
+    }
+
+    @Override
+    public ProductScreen clickOnAddToCart() {
+        return null;
+    }
+
+    @Override
+    public ProductScreen selectAvailableSize() {
+        return null;
+    }
+
+    @Override
+    public ProductScreen clickOnAddToBagButton() {
+        return null;
+    }
+
+    @Override
+    public String getAddedToBagToastMessage() {
+        return null;
+    }
+
+    @Override
+    public CartScreen clickOnCartIcon() {
+        return null;
     }
 }

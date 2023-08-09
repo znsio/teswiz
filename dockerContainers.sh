@@ -41,16 +41,15 @@ if [[ -z "${TESWIZ_GRID_PORT}" ]]; then
 else
   GRID_PORT=$TESWIZ_GRID_PORT
 fi
-echo "Using GRID_PORT: $GRID_PORT"
 
 if [[ -z "${HTTP_PROXY}" ]]; then
-  echo "GRID_PORT is not set. Use default: 4444"
+  echo "HTTP_PROXY is not set."
   PROXY_KEY=NOT_SET
+  DOCKER_COMPOSE_FILE_NAME="docker-compose-v3.yml"
 else
   PROXY_KEY=$HTTP_PROXY
+  DOCKER_COMPOSE_FILE_NAME="docker-compose-v3-proxy.yml"
 fi
-echo "Using PROXY_KEY: $PROXY_KEY"
-
 ((GRID_PORT_1=$GRID_PORT-1))
 ((GRID_PORT_2=$GRID_PORT-2))
 export PROXY_KEY=$PROXY_KEY
@@ -61,20 +60,34 @@ export SELENIUM_HUB_REPO=$SELENIUM_HUB_REPO
 export CHROME_REPO=$CHROME_REPO
 export FIREFOX_REPO=$FIREFOX_REPO
 
-echo "Using SELENIUM_HUB_REPO: $SELENIUM_HUB_REPO"
-echo "Using CHROME_REPO: $CHROME_REPO"
-echo "Using FIREFOX_REPO: $FIREFOX_REPO"
-echo "GRID_PORT: $GRID_PORT"
-echo "GRID_PORT_1: $GRID_PORT_1"
-echo "GRID_PORT_2: $GRID_PORT_2"
+echo "Using:"
+echo "  PROXY_KEY: $PROXY_KEY"
+echo "  SELENIUM_HUB_REPO: $SELENIUM_HUB_REPO"
+echo "  CHROME_REPO: $CHROME_REPO"
+echo "  FIREFOX_REPO: $FIREFOX_REPO"
+echo "  GRID_PORT: $GRID_PORT"
+echo "  GRID_PORT_1: $GRID_PORT_1"
+echo "  GRID_PORT_2: $GRID_PORT_2"
+
+CURRENT_DIR=${PWD##*/}
+echo "CURRENT_DIR: ${CURRENT_DIR}"
+
+DOCKER_COMPOSE_DOWN_CMD="docker-compose -f $DOCKER_COMPOSE_FILE_NAME -p ${CURRENT_DIR} down"
+DOCKER_COMPOSE_UP_CMD="docker-compose -f $DOCKER_COMPOSE_FILE_NAME -p ${CURRENT_DIR} up --force-recreate -d"
 
 if [[ ( $1 == "up" ) || ( $1 == "start" ) ]]; then
-    echo "Start docker containers"
-    docker-compose -f docker-compose-v3.yml up -d
+    echo "Start docker containers using command: '${DOCKER_COMPOSE_UP_CMD}'"
+    ${DOCKER_COMPOSE_UP_CMD}
     ./wait_for_containers_to_be_up.sh
 elif [[ ( $1 == "down" ) || ( $1 == "stop" ) ]]; then
-    echo "Stop docker containers"
-    docker-compose -f docker-compose-v3.yml down
+    echo "Stop docker containers using command: '${DOCKER_COMPOSE_DOWN_CMD}'"
+    ${DOCKER_COMPOSE_DOWN_CMD}
+elif [[ ( $1 == "restart" ) ]]; then
+    echo "Restarting docker containers using command: '${DOCKER_COMPOSE_DOWN_CMD}' and then '${DOCKER_COMPOSE_UP_CMD}'"
+    ${DOCKER_COMPOSE_DOWN_CMD}
+    sleep 2
+    ${DOCKER_COMPOSE_UP_CMD}
+    ./wait_for_containers_to_be_up.sh
 else
     echo "Invalid command provided. Pass either 'up/start' or 'down/stop' as a parameter"
     exit 1

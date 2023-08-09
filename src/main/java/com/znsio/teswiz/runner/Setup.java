@@ -35,7 +35,6 @@ class Setup {
     static final String CLOUD_KEY = "CLOUD_KEY";
     static final String PLATFORM = "PLATFORM";
     static final String APP_NAME = "APP_NAME";
-    static final String WEBDRIVER_MANAGER_PROXY_URL = "WEBDRIVER_MANAGER_PROXY_URL";
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     static final String IS_VISUAL = "IS_VISUAL";
     static final String BROWSER = "BROWSER";
@@ -67,6 +66,8 @@ class Setup {
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
+    private static final String RP_DESCRIPTION = "RP_DESCRIPTION";
+    private static final String RP_DEFAULT_DESCRIPTION = "End-2-End scenarios";
     private static Map<String, Map> loadedCapabilityFile;
     private static final String CHROME = "chrome";
     private static final String TEMP_DIRECTORY = "temp";
@@ -77,7 +78,6 @@ class Setup {
     private static final String LOCAL = "LOCAL";
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
     private static final String PROXY_KEY = "PROXY_KEY";
-    private static final String WEBDRIVER_MANAGER_PROXY_KEY = "WEBDRIVER_MANAGER_PROXY_KEY";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
     static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
@@ -146,12 +146,16 @@ class Setup {
 
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
         testDataForEnvironment = loadTestDataForEnvironment(configs.get(TARGET_ENVIRONMENT));
-        loadCapabilitiesFile(configs.get(CAPS));
+        if (NOT_SET.equalsIgnoreCase(configs.get(CAPS))) {
+            loadedCapabilityFile = new HashMap<>();
+        } else {
+            loadCapabilitiesFile(configs.get(CAPS));
+        }
         setupExecutionEnvironment();
 
-        LOGGER.info(printStringMap("Using string values", configs));
-        LOGGER.info(printBooleanMap("Using boolean values", configsBoolean));
-        LOGGER.info(printIntegerMap("Using integer values", configsInteger));
+        printStringConfigsMap();
+        printBooleanConfigsMap();
+        printIntegerConfigsMap();
 
         return CUKE_ARGS;
     }
@@ -236,12 +240,13 @@ class Setup {
                                                                 environment, testDataFile);
     }
 
-    private static void setupExecutionEnvironment() {
+    private static void setupExecutionEnvironment()  {
         getPlatformTagsAndLaunchName();
         addCucumberPlugsToArgs();
         CUKE_ARGS.addAll(DeviceSetup.setupAndroidExecution());
-        CUKE_ARGS.addAll(setupWebExecution());
+        CUKE_ARGS.addAll(DeviceSetup.setupIOSExecution());
         CUKE_ARGS.addAll(DeviceSetup.setupWindowsExecution());
+        CUKE_ARGS.addAll(setupPlatformExecution());
         initialiseApplitoolsConfiguration();
 
         String rpAttributes = String.format(
@@ -263,6 +268,11 @@ class Setup {
 
         LOGGER.info(String.format("ReportPortal Test Execution Attributes: %s", rpAttributes));
 
+        // Set the system property to indicate that Java 11+ Http client needs to be used.
+        // By default, it uses the AsyncHttpClient.
+        // https://www.selenium.dev/blog/2022/using-java11-httpclient/
+        System.setProperty("webdriver.http.factory", "jdk-http-client");
+
         // properties needed for atd
         System.setProperty(CLOUD_USERNAME, configs.get(CLOUD_USERNAME));
         System.setProperty(CLOUD_KEY, configs.get(CLOUD_KEY));
@@ -276,39 +286,36 @@ class Setup {
 
         // properties needed for ReportPortal.io
         System.setProperty("rp.description", configs.get(
-                APP_NAME) + " End-2-End scenarios on " + currentPlatform.name());
+                APP_NAME) + " " + configs.get(RP_DESCRIPTION) + " on " + currentPlatform.name());
         System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
         System.setProperty("rp.attributes", rpAttributes);
     }
 
-    @NotNull
-    private static String printStringMap(String prefix, Map<String, String> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": \n");
-        for(Map.Entry<String, String> entry : printConfig.entrySet()) {
+    private static void printStringConfigsMap() {
+        StringBuilder printString = new StringBuilder("Using string values" + ": \n");
+        for(Map.Entry<String, String> entry : Setup.configs.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
                        .append("\n");
         }
-        return printString.toString() + printConfig;
+        LOGGER.info(printString.toString() + Setup.configs);
     }
 
-    @NotNull
-    private static String printBooleanMap(String prefix, Map<String, Boolean> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": \n");
-        for(Map.Entry<String, Boolean> entry : printConfig.entrySet()) {
+    private static void printBooleanConfigsMap() {
+        StringBuilder printString = new StringBuilder("Using boolean values" + ": \n");
+        for(Map.Entry<String, Boolean> entry : Setup.configsBoolean.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
                        .append("\n");
         }
-        return printString.toString() + printConfig;
+        LOGGER.info(printString.toString() + Setup.configsBoolean);
     }
 
-    @NotNull
-    private static String printIntegerMap(String prefix, Map<String, Integer> printConfig) {
-        StringBuilder printString = new StringBuilder(prefix + ": \n");
-        for(Map.Entry<String, Integer> entry : printConfig.entrySet()) {
+    private static void printIntegerConfigsMap() {
+        StringBuilder printString = new StringBuilder("Using integer values" + ": \n");
+        for(Map.Entry<String, Integer> entry : Setup.configsInteger.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue())
                        .append("\n");
         }
-        return printString.toString() + printConfig;
+        LOGGER.info(printString.toString() + Setup.configsInteger);
     }
 
     private static void buildMapOfRequiredProperties() {
@@ -393,13 +400,7 @@ class Setup {
                                                         getStringValueFromPropertiesIfAvailable(
                                                                 PROXY_KEY, PROXY_KEY)));
         configs.put(PROXY_URL, (null != configs.get(PROXY_KEY)) ? getOverriddenStringValue(configs.get(PROXY_KEY)) : configs.put(PROXY_URL, null));
-        configs.put(WEBDRIVER_MANAGER_PROXY_KEY,
-                    getOverriddenStringValue(WEBDRIVER_MANAGER_PROXY_KEY,
-                                             getStringValueFromPropertiesIfAvailable(
-                                                     WEBDRIVER_MANAGER_PROXY_KEY,
-                                                     WEBDRIVER_MANAGER_PROXY_KEY)));
-        configs.put(WEBDRIVER_MANAGER_PROXY_URL,
-                    getOverriddenStringValue(configs.get(WEBDRIVER_MANAGER_PROXY_KEY)));
+
         configs.put(REMOTE_WEBDRIVER_GRID_PORT_KEY,
                     getStringValueFromPropertiesIfAvailable(REMOTE_WEBDRIVER_GRID_PORT,
                                                             REMOTE_WEBDRIVER_GRID_PORT));
@@ -421,6 +422,9 @@ class Setup {
         configs.put(LAUNCH_NAME_SUFFIX, getOverriddenStringValue(LAUNCH_NAME_SUFFIX,
                                                                  getStringValueFromPropertiesIfAvailable(
                                                                          LAUNCH_NAME_SUFFIX, "")));
+        configs.put(RP_DESCRIPTION, getOverriddenStringValue(RP_DESCRIPTION,
+                                                                 getStringValueFromPropertiesIfAvailable(
+                                                                         RP_DESCRIPTION, RP_DEFAULT_DESCRIPTION)));
         configs.put(APP_VERSION, NOT_SET);
     }
 
@@ -435,35 +439,39 @@ class Setup {
     private static void getPlatformTagsAndLaunchName() {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME);
-        if(Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
+        if (Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
             launchName += " on Device Farm";
         }
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);
-        if(providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
+        if (providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
             LOGGER.info("\tTags not specified");
             launchName += " - " + currentPlatform;
         } else {
-            if(providedTags.contains("multiuser-android-web")) {
+            if (providedTags.contains("multiuser-android-web")) {
                 currentPlatform = Platform.android;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Android & Web";
-            } else if(providedTags.contains("multiuser-android")) {
+            } else if (providedTags.contains("multiuser-android")) {
                 currentPlatform = Platform.android;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on multiple Androids";
-            } else if(providedTags.contains("multiuser-web")) {
+            } else if (providedTags.contains("multiuser-web")) {
                 currentPlatform = Platform.web;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Web";
-            } else if(providedTags.contains("multiuser-windows-web")) {
+            } else if (providedTags.contains("multiuser-windows-web")) {
                 currentPlatform = Platform.windows;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Windows & Web";
-            } else if(providedTags.contains("multiuser-windows-android")) {
+            } else if (providedTags.contains("multiuser-windows-android")) {
                 currentPlatform = Platform.windows;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Windows & Android";
+            } else if (providedTags.contains("multiuser-iOS")) {
+                currentPlatform = Platform.iOS;
+                inferredTags = providedTags + AND_NOT_WIP;
+                launchName += " - Real User Simulation on IOS";
             } else {
                 launchName += " - " + currentPlatform;
             }
@@ -508,19 +516,27 @@ class Setup {
         System.setProperty("cucumber.publish.quiet", "true");
     }
 
-    private static ArrayList<String> setupWebExecution() {
+    private static ArrayList<String> setupPlatformExecution() {
         ArrayList<String> webCukeArgs = new ArrayList<>();
         if(currentPlatform.equals(Platform.web)) {
             configs.put(APP_PATH, configs.get(BROWSER));
-            webCukeArgs.add("--threads");
-            webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
-            webCukeArgs.add(PLUGIN);
-            webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioListener");
-            webCukeArgs.add(PLUGIN);
-            webCukeArgs.add("com.znsio.teswiz.listener.CucumberWebScenarioReporterListener");
             configs.put(EXECUTED_ON, "Local Browsers");
+            setupListenersForWebOrAPIExecution(webCukeArgs);
+        }
+        else if(currentPlatform.equals(Platform.api)) {
+            configs.put(EXECUTED_ON, currentPlatform.name());
+            setupListenersForWebOrAPIExecution(webCukeArgs);
         }
         return webCukeArgs;
+    }
+
+    private static void setupListenersForWebOrAPIExecution(ArrayList<String> webCukeArgs) {
+        webCukeArgs.add("--threads");
+        webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
+        webCukeArgs.add(PLUGIN);
+        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioListener");
+        webCukeArgs.add(PLUGIN);
+        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioReporterListener");
     }
 
     static Map<String, Object> initialiseApplitoolsConfiguration() {
@@ -548,6 +564,7 @@ class Setup {
     private static BatchInfo setupApplitoolsBatchInfo() {
         BatchInfo batchInfo = new BatchInfo(
                 configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
+        batchInfo.addProperty(APP_NAME, configs.get(APP_NAME));
         batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
         batchInfo.addProperty(PLATFORM, currentPlatform.name());
         batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
@@ -652,8 +669,8 @@ class Setup {
 
     static void cleanUpExecutionEnvironment() {
         LOGGER.info("cleanUpExecutionEnvironment");
-        if(currentPlatform.equals(Platform.android) || currentPlatform.equals(Platform.web)) {
-            if(Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
+        if (currentPlatform.equals(Platform.android) || currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.iOS)) {
+            if (Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
                 DeviceSetup.cleanupCloudExecution();
             } else {
                 LOGGER.info("Not running in CI. Nothing to cleanup in Execution environment");

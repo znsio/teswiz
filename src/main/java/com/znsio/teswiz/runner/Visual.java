@@ -122,9 +122,8 @@ public class Visual {
         appEyes.setLogHandler(
                 new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
 
-        // todo - enhancements - https://applitools.com/docs/topics/general-concepts/visual-test-best-practices.html?Highlight=setMatchTimeout
-        // add setIgnoreCaret, setHideScrollbars
-        appEyes.addProperty(Setup.APP_NAME, appName);
+        appEyes.setIgnoreCaret(true);
+        appName = appName + "-" + platform;
         appEyes.addProperty("USER_PERSONA", userPersona);
         appEyes.addProperty(Setup.BRANCH_NAME,
                             String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
@@ -140,7 +139,7 @@ public class Visual {
                 LOGGER.info(String.format("Set proxyUrl for appEyes: %s", proxyUrl));
                 appEyes.setProxy(new ProxySettings(proxyUrl));
             }
-            appEyes.open(innerDriver, appName + "-" + platform, testName);
+            appEyes.open(innerDriver, appName, testName);
             LOGGER.info(String.format(
                     "instantiateAppiumEyes: Is Applitools Visual Testing enabled? - %s",
                     !appEyes.getIsDisabled()));
@@ -209,7 +208,7 @@ public class Visual {
         webEyes.setLogHandler(
                 new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
 
-        webEyes.addProperty(Setup.APP_NAME, appName);
+        appName = appName + "-" + platform;
         webEyes.addProperty("USER_PERSONA", userPersona);
         webEyes.addProperty(Setup.BRANCH_NAME,
                             String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
@@ -229,7 +228,7 @@ public class Visual {
                 LOGGER.info(String.format("Set proxyUrl for webEyes: %s", proxyUrl));
                 webEyes.setProxy(new ProxySettings(proxyUrl));
             }
-            webEyes.open(innerDriver, appName + "-" + platform, testName, setBrowserViewPortSize);
+            webEyes.open(innerDriver, appName, testName, setBrowserViewPortSize);
             LOGGER.info(
                     String.format("instantiateWebEyes:  Is Applitools Visual Testing enabled? - %s",
                                   !webEyes.getIsDisabled()));

@@ -41,6 +41,10 @@ For other cloud configurations, refer here: https://github.com/AppiumTestDistrib
 
     PLATFORM=web ./gradlew run
 
+### Run Api
+
+    PLATFORM=api ./gradlew run
+
 ### Running Multi-User simulations
 
 The framework now supports running multiuser scenarios. This means 1 cucumber scenario can orchestrate the interaction between multiple instances of the application-under-test in multiple platforms - ex: Android and Web

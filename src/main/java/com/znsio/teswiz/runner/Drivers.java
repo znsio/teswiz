@@ -93,25 +93,20 @@ public class Drivers {
         Driver currentDriver;
         switch(forPlatform) {
             case android:
-                currentDriver = AppiumDriverManager.createAndroidDriverForUser(userPersona,
-                                                                               forPlatform,
-                                                                               context);
+                currentDriver = AppiumDriverManager.createAndroidDriverForUser(userPersona, forPlatform, context);
                 break;
-            case web:
-                currentDriver = BrowserDriverManager.createWebDriverForUser(userPersona,
-                                                                            browserName,
-                                                                            forPlatform, context);
+            case iOS:
+                currentDriver = AppiumDriverManager.createIOSDriverForUser(userPersona, forPlatform, context);
                 break;
             case windows:
-                currentDriver = AppiumDriverManager.createWindowsDriverForUser(userPersona,
-                                                                               forPlatform,
-                                                                               context);
+                currentDriver = AppiumDriverManager.createWindowsDriverForUser(userPersona, forPlatform, context);
+                break;
+            case web:
+                currentDriver = BrowserDriverManager.createWebDriverForUser(userPersona, browserName, forPlatform, context);
                 break;
             default:
                 throw new InvalidTestDataException(String.format(
-                        "Unexpected platform value: '%s' provided to assign Driver for user: " +
-                        "'%s': ",
-                        forPlatform, userPersona));
+                        "Unexpected platform value: '%s' provided to assign Driver for user: '%s': ", forPlatform, userPersona));
         }
         return currentDriver;
     }

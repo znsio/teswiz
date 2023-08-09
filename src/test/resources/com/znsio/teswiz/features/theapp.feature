@@ -48,7 +48,7 @@ Feature: Scenarios for "The App"
     Then "You" login again with invalid credentials - "znsio4", "invalid password"
     Then "They" login again with invalid credentials - "znsio5", "invalid password"
 
-#  CONFIG=./configs/theapp_local_config.properties TAG="@multiuser-web and @theapp" ./gradlew run
+#  CONFIG=./configs/theapp_local_web_config.properties TAG="@multiuser-web and @theapp" ./gradlew run
   @multiuser-web @theapp
   Scenario: Orchestrating multiple users on different platforms as part of same test
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "web"
@@ -73,14 +73,14 @@ Feature: Scenarios for "The App"
     When "I" login again with invalid credentials - "znsio3", "invalid password"
     Then "you" login again with invalid credentials - "znsio4", "invalid password"
 
-  #CONFIG=./configs/theapp_local_config.properties TAG="fileupload and @theapp" PLATFORM=web ./gradlew run
+  # CONFIG=./configs/theapp_local_web_config.properties TAG="fileupload and @theapp" PLATFORM=web ./gradlew run
   @web @fileupload
   Scenario: Verify file upload
     Given I am on file upload page
     When I upload the "image" file
     Then File is uploaded successfully
 
-    #  CONFIG=./configs/theapp_local_config.properties TAG="@multiuser-web and @theapp and @switchUser"  PLATFORM=web ./gradlew run
+    #  CONFIG=./configs/theapp_local_web_config.properties TAG="@multiuser-web and @theapp and @switchUser"  PLATFORM=web ./gradlew run
   @multiuser-web @theapp @web @switchUser
   Scenario: Orchestrating multiple users with changing user persona on different platforms as part of same test
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "web"

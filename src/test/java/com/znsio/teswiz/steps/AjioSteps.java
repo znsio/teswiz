@@ -5,6 +5,7 @@ import com.context.TestExecutionContext;
 import com.znsio.teswiz.businessLayer.ajio.HomeBL;
 import com.znsio.teswiz.businessLayer.ajio.ProductBL;
 import com.znsio.teswiz.businessLayer.ajio.SearchBL;
+import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
@@ -25,29 +26,30 @@ public class AjioSteps {
     @Given("I search for products using {string}")
     public void iSearchForProductsUsing(String searchtype) {
         LOGGER.info(System.out.printf("iSearchForProductsUsing:'%s' - Persona:'%s'", searchtype,
-                                      SAMPLE_TEST_CONTEXT.ME));
+                SAMPLE_TEST_CONTEXT.ME));
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
+        new HomeBL().handlePopups();
         new SearchBL().searchProduct(Runner.getTestDataAsMap(searchtype));
     }
 
     @When("I add the product to the cart")
     public void iAddTheProductToTheCart() {
         LOGGER.info(System.out.printf("iAddTheProductToTheCart:- Persona:'%s'",
-                                      SAMPLE_TEST_CONTEXT.ME));
+                SAMPLE_TEST_CONTEXT.ME));
         new SearchBL().prepareCart();
     }
 
     @Then("I should see the product in the cart")
     public void iShouldSeeTheProductInTheCart() {
         LOGGER.info(System.out.printf("iShouldSeeTheProductInTheCart:- Persona:'%s'",
-                                      SAMPLE_TEST_CONTEXT.ME));
+                SAMPLE_TEST_CONTEXT.ME));
         new SearchBL().verifyCart();
     }
 
     @Given("I open {string} from {string} section for {string}")
-    public void iOpebShirtsSectionForMen(String product, String category, String gender) {
+    public void iOpenShirtsSectionForMen(String product, String category, String gender) {
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
-        new HomeBL().openProduct(product,category, gender);
+        new HomeBL().handlePopups().openProduct(product, category, gender);
     }
 
 
@@ -59,5 +61,24 @@ public class AjioSteps {
     @Then("I should be able to perform flick and view images")
     public void iShouldBeAbleToPerformFlickAndViewImages() {
         new ProductBL().flickAndViewImages();
+    }
+
+    @Given("{string} search {string} item on {string}")
+    public void searchItemOn(String userPersona, String product, String onPlatform) {
+        LOGGER.info(System.out.printf(
+                "LoginWithValidCredentials - Persona:'%s', Platform: '%s'", userPersona, onPlatform));
+        context.addTestState(userPersona, userPersona);
+        Drivers.createDriverFor(userPersona, Platform.valueOf(onPlatform), context);
+        new HomeBL(userPersona, Runner.getPlatformForUser(userPersona)).searchProduct(product);
+    }
+
+    @When("{string} select first item")
+    public void selectFirstItem(String userPersona) {
+        new SearchBL(userPersona, Runner.getPlatformForUser(userPersona)).selectFirstItem(userPersona);
+    }
+
+    @Then("{string} add item to cart")
+    public void addItemToCart(String userPersona) {
+        new ProductBL(userPersona, Runner.getPlatformForUser(userPersona)).addItemToCart(userPersona);
     }
 }
