@@ -25,13 +25,13 @@ plugins {
     id "org.sonarqube" version "4.3.0.3225"
     id "java"
     id "idea"
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'maven-publish'
     id("io.freefair.aspectj.post-compile-weaving") version "8.0.1"
 }
 
 group = 'com.github.znsio'
-version '0.0.85'
+version '0.0.86'
 
 repositories {
     mavenLocal()
