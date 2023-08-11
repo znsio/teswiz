@@ -33,7 +33,7 @@
       ]
     },
     "noProxy": "localhost,127.0.0.1",
-    "proxyType": "autodetect"
+    "proxyType": "manual"
   },
   "firefox": {
     "firefoxProfile": {
@@ -55,7 +55,7 @@
       "headless": false
     },
     "noProxy": "localhost,127.0.0.1",
-    "proxyType": "autodetect"
+    "proxyType": "manual"
   },
   "safari": {
     "maximize": true,
