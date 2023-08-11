@@ -70,7 +70,7 @@ dependencies {
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
     implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
-    implementation "org.seleniumhq.selenium:selenium-http-jdk-client:$project.seleniumVersion"
+//    implementation "org.seleniumhq.selenium:selenium-http-jdk-client:$project.seleniumVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
     implementation "org.jetbrains:annotations:$project.jetbrainsAnnotationsVersion"

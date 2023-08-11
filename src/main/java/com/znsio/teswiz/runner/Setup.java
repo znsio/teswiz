@@ -271,7 +271,7 @@ class Setup {
         // Set the system property to indicate that Java 11+ Http client needs to be used.
         // By default, it uses the AsyncHttpClient.
         // https://www.selenium.dev/blog/2022/using-java11-httpclient/
-        System.setProperty("webdriver.http.factory", "jdk-http-client");
+//        System.setProperty("webdriver.http.factory", "jdk-http-client");
 
         // properties needed for atd
         System.setProperty(CLOUD_USERNAME, configs.get(CLOUD_USERNAME));
