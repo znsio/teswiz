@@ -262,8 +262,13 @@ class BrowserDriverManager {
         String proxyUrl = Runner.getProxyURL();
         if (null != proxyUrl) {
             String noProxyFor = firefoxConfiguration.getString("noProxy");
-            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor);
-            firefoxOptions.setProxy(new Proxy().setHttpProxy(proxyUrl).setNoProxy(noProxyFor));
+            String usingProxyType = firefoxConfiguration.getString("proxyType").toUpperCase();
+            Proxy.ProxyType proxyType = Proxy.ProxyType.valueOf(usingProxyType);
+            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor + ", and proxyType: " + proxyType);
+            Proxy proxy = new Proxy().setHttpProxy(proxyUrl)
+                    .setNoProxy(noProxyFor)
+                    .setProxyType(proxyType);
+            firefoxOptions.setProxy(proxy);
         }
     }
 
@@ -313,8 +318,13 @@ class BrowserDriverManager {
         String proxyUrl = Runner.getProxyURL();
         if (null != proxyUrl) {
             String noProxyFor = chromeConfiguration.getString("noProxy");
-            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor);
-            chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl).setNoProxy(noProxyFor));
+            String usingProxyType = chromeConfiguration.getString("proxyType").toUpperCase();
+            Proxy.ProxyType proxyType = Proxy.ProxyType.valueOf(usingProxyType);
+            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor + ", and proxyType: " + proxyType);
+            Proxy proxy = new Proxy().setHttpProxy(proxyUrl)
+                    .setNoProxy(noProxyFor)
+                    .setProxyType(proxyType);
+            chromeOptions.setProxy(proxy);
         }
     }
 

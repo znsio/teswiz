@@ -32,7 +32,8 @@
         "disable-gpu"
       ]
     },
-    "noProxy": "localhost,127.0.0.1"
+    "noProxy": "localhost,127.0.0.1",
+    "proxyType": "autodetect"
   },
   "firefox": {
     "firefoxProfile": {
@@ -53,7 +54,8 @@
     "headlessOptions": {
       "headless": false
     },
-    "noProxy": "localhost,127.0.0.1"
+    "noProxy": "localhost,127.0.0.1",
+    "proxyType": "autodetect"
   },
   "safari": {
     "maximize": true,
