@@ -49,7 +49,6 @@ class BrowserDriverManager {
     private static final String VERBOSE_LOGGING = "verboseLogging";
     private static final String MAXIMIZE = "maximize";
     private static final String EXCLUDE_SWITCHES = "excludeSwitches";
-    private static final String SETTING_PROXY_FOR_BROWSER = "Setting Proxy for browser: ";
     private static int numberOfWebDriversUsed = 0;
     private static boolean shouldBrowserBeMaximized = false;
     private static boolean isRunInHeadlessMode = false;
@@ -262,8 +261,9 @@ class BrowserDriverManager {
     private static void setProxyInFirefoxOptions(FirefoxOptions firefoxOptions, JSONObject firefoxConfiguration) {
         String proxyUrl = Runner.getProxyURL();
         if (null != proxyUrl) {
-            LOGGER.info(SETTING_PROXY_FOR_BROWSER + proxyUrl);
-            firefoxOptions.setProxy(new Proxy().setHttpProxy(proxyUrl).setNoProxy(firefoxConfiguration.getString("noProxy")));
+            String noProxyFor = firefoxConfiguration.getString("noProxy");
+            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor);
+            firefoxOptions.setProxy(new Proxy().setHttpProxy(proxyUrl).setNoProxy(noProxyFor));
         }
     }
 
@@ -312,8 +312,9 @@ class BrowserDriverManager {
     private static void setProxyInChromeOptions(ChromeOptions chromeOptions, JSONObject chromeConfiguration) {
         String proxyUrl = Runner.getProxyURL();
         if (null != proxyUrl) {
-            LOGGER.info(SETTING_PROXY_FOR_BROWSER + proxyUrl);
-            chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl).setNoProxy(chromeConfiguration.getString("noProxy")));
+            String noProxyFor = chromeConfiguration.getString("noProxy");
+            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor);
+            chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl).setNoProxy(noProxyFor));
         }
     }
 
@@ -417,7 +418,7 @@ class BrowserDriverManager {
     private static void setProxyInSafariOptions(SafariOptions safariOptions) {
         String proxyUrl = Runner.getProxyURL();
         if (null != proxyUrl) {
-            LOGGER.info(String.format("%s%s", SETTING_PROXY_FOR_BROWSER, proxyUrl));
+            LOGGER.info(String.format("%s%s", "Setting Proxy for browser: ", proxyUrl));
             safariOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
         }
     }
@@ -475,8 +476,7 @@ class BrowserDriverManager {
             }
 
             LOGGER.info(String.format("Starting RemoteWebDriver using url: %s with capabilities: '%s'", remoteUrl, capabilities));
-            RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(remoteUrl),
-                    capabilities);
+            RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(remoteUrl), capabilities);
             LOGGER.info(String.format("RemoteWebDriver created using url: %s", remoteUrl));
             return remoteWebDriver;
         } catch (MalformedURLException e) {
