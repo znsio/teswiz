@@ -12,11 +12,12 @@ while ! curl -sSL "http://localhost:${GRID_PORT}/wd/hub/status" 2>&1 \
     ((attempt=attempt+1))
     if [ $attempt -gt 15 ]; then
         echo "Grid not started after $attempt attempts. Abort"
-        curl GET "http://localhost:${GRID_PORT}/status"
+        curl -v "http://localhost:${GRID_PORT}/status"
         exit 1;
     fi
 done
 
 >&2 echo "Selenium Grid is up and ready to run tests"
-curl GET "http://localhost:${GRID_PORT}/status"
+curl -v "http://localhost:${GRID_PORT}/status"
+
 exec $cmd
