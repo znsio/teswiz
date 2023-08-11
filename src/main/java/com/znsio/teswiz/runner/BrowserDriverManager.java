@@ -321,9 +321,7 @@ class BrowserDriverManager {
             String usingProxyType = chromeConfiguration.getString("proxyType").toUpperCase();
             Proxy.ProxyType proxyType = Proxy.ProxyType.valueOf(usingProxyType);
             LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor + ", and proxyType: " + proxyType);
-            Proxy proxy = new Proxy().setHttpProxy(proxyUrl)
-                    .setNoProxy(noProxyFor)
-                    .setProxyType(proxyType);
+            Proxy proxy = new Proxy().setHttpProxy(proxyUrl).setNoProxy(noProxyFor).setProxyType(proxyType);
             chromeOptions.setProxy(proxy);
         }
     }
