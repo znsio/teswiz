@@ -31,7 +31,8 @@
       "include": [
         "disable-gpu"
       ]
-    }
+    },
+    "noProxy": "localhost,127.0.0.1"
   },
   "firefox": {
     "firefoxProfile": {
@@ -51,7 +52,8 @@
     "verboseLogging": false,
     "headlessOptions": {
       "headless": false
-    }
+    },
+    "noProxy": "localhost,127.0.0.1"
   },
   "safari": {
     "maximize": true,

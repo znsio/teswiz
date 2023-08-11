@@ -211,7 +211,7 @@ class BrowserDriverManager {
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
         setPreferencesInChromeOptions(chromeConfiguration, chromeOptions);
         setLoggingPrefsInChromeOptions(chromeConfiguration.getBoolean(VERBOSE_LOGGING), chromeOptions);
-        setProxyInChromeOptions(chromeOptions);
+        setProxyInChromeOptions(chromeOptions, chromeConfiguration);
         setHeadlessInChromeOptions(chromeConfiguration, chromeOptions);
         setEmulationModeInChromeOptions(testExecutionContext, chromeOptions);
         LOGGER.info(String.format("ChromeOptions: %s", chromeOptions.asMap()));
@@ -245,7 +245,7 @@ class BrowserDriverManager {
         setProfileInFirefoxOptions(firefoxConfiguration, firefoxOptions);
         setPreferencesInFirefoxOptions(firefoxConfiguration, firefoxOptions);
         setLoggingPrefsInFirefoxOptions(firefoxConfiguration, firefoxOptions);
-        setProxyInFirefoxOptions(firefoxOptions);
+        setProxyInFirefoxOptions(firefoxOptions, firefoxConfiguration);
         setHeadlessInFirefoxOptions(firefoxConfiguration, firefoxOptions);
         LOGGER.info(String.format("FirefoxOptions: %s", firefoxOptions.asMap()));
         return firefoxOptions;
@@ -259,11 +259,11 @@ class BrowserDriverManager {
         }
     }
 
-    private static void setProxyInFirefoxOptions(FirefoxOptions firefoxOptions) {
+    private static void setProxyInFirefoxOptions(FirefoxOptions firefoxOptions, JSONObject firefoxConfiguration) {
         String proxyUrl = Runner.getProxyURL();
         if (null != proxyUrl) {
             LOGGER.info(SETTING_PROXY_FOR_BROWSER + proxyUrl);
-            firefoxOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
+            firefoxOptions.setProxy(new Proxy().setHttpProxy(proxyUrl).setNoProxy(firefoxConfiguration.getString("noProxy")));
         }
     }
 
@@ -309,11 +309,11 @@ class BrowserDriverManager {
         firefoxOptions.setProfile(firefoxProfile);
     }
 
-    private static void setProxyInChromeOptions(ChromeOptions chromeOptions) {
+    private static void setProxyInChromeOptions(ChromeOptions chromeOptions, JSONObject chromeConfiguration) {
         String proxyUrl = Runner.getProxyURL();
         if (null != proxyUrl) {
             LOGGER.info(SETTING_PROXY_FOR_BROWSER + proxyUrl);
-            chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl));
+            chromeOptions.setProxy(new Proxy().setHttpProxy(proxyUrl).setNoProxy(chromeConfiguration.getString("noProxy")));
         }
     }
 
