@@ -1,7 +1,7 @@
 {
   "android": {
     "adbExecTimeout": 45000,
-    "app": "./temp/ajio-8-3-4.apk",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/ajio-8-3-4.apk",
     "appActivity": "com.ril.ajio.launch.activity.SplashScreenActivity",
     "appPackage": "com.ril.ajio",
     "automationName": "UIAutomator2",

@@ -19,7 +19,11 @@
       "plugin": {
         "device-farm": {
           "platform": "android",
-          "skipChromeDownload": true
+          "skipChromeDownload": true,
+          "cloud": {
+            "cloudName": "docker",
+            "web": {}
+          }
         }
       }
     }
