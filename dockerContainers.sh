@@ -2,6 +2,15 @@
 
 set -e
 
+# Get the IP address using ifconfig
+ip_address="$(ifconfig | grep "inet " | grep -v 127 | grep -E "192" | awk 'NR==1 {print $2} ')"
+echo "Host IP Address: $ip_address"
+if [[ "$ip_address" == "" ]]; then
+  echo "IP address not found based on the criteria. Exit."
+  ifconfig | grep "inet "
+  exit 1
+fi
+
 arch="$(uname -m)"  # -i is only linux, -m is linux and apple
 echo "Running on arch: $arch"
 DOCKER_REGISTRY="selenium"
@@ -64,10 +73,12 @@ export GRID_PORT_2=$GRID_PORT_2
 export SELENIUM_HUB_REPO=$SELENIUM_HUB_REPO
 export CHROME_REPO=$CHROME_REPO
 export FIREFOX_REPO=$FIREFOX_REPO
+export HOST_IP=$ip_address
 export PROJECT_NAME=$PROJECT_NAME
 
 echo "Using:"
 echo "  PROJECT_NAME: $PROJECT_NAME"
+echo "  HOST_IP: $ip_address"
 echo "  PROXY_KEY: $PROXY_KEY"
 echo "  SELENIUM_HUB_REPO: $SELENIUM_HUB_REPO"
 echo "  CHROME_REPO: $CHROME_REPO"

@@ -46,6 +46,7 @@ class Setup {
     static final String CLOUD_USERNAME = "CLOUD_USERNAME";
     static final String PROXY_URL = "PROXY_URL";
     static final String REMOTE_WEBDRIVER_GRID_PORT = "REMOTE_WEBDRIVER_GRID_PORT";
+    static final String REMOTE_WEBDRIVER_GRID_HOST_NAME = "REMOTE_WEBDRIVER_GRID_HOST_NAME";
     static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
     static final String BROWSER_CONFIG_FILE_CONTENTS = "BROWSER_CONFIG_FILE_CONTENTS";
     static final String DEFAULT_BROWSER_CONFIG_FILE = "/default_browser_config.json";
@@ -85,6 +86,7 @@ class Setup {
     private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
     private static final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
     private static final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
+    private static final String DEFAULT_WEBDRIVER_GRID_HOST_NAME = "localhost";
     private static final String BUILD_ID = "BUILD_ID";
     private static Map<String, Map> environmentConfiguration;
     private static Map<String, Map> testDataForEnvironment;
@@ -404,6 +406,9 @@ class Setup {
         configs.put(REMOTE_WEBDRIVER_GRID_PORT_KEY,
                     getStringValueFromPropertiesIfAvailable(REMOTE_WEBDRIVER_GRID_PORT,
                                                             REMOTE_WEBDRIVER_GRID_PORT));
+        configs.put(REMOTE_WEBDRIVER_GRID_HOST_NAME,
+                    getOverriddenStringValue(REMOTE_WEBDRIVER_GRID_HOST_NAME,
+                            getStringValueFromPropertiesIfAvailable(REMOTE_WEBDRIVER_GRID_HOST_NAME, DEFAULT_WEBDRIVER_GRID_HOST_NAME)));
         configs.put(REMOTE_WEBDRIVER_GRID_PORT,
                     getOverriddenStringValue(configs.get(REMOTE_WEBDRIVER_GRID_PORT_KEY),
                                              DEFAULT_WEBDRIVER_GRID_PORT));

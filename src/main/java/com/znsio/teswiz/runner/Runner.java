@@ -92,6 +92,10 @@ public class Runner {
         return Setup.getFromConfigs(Setup.REMOTE_WEBDRIVER_GRID_PORT);
     }
 
+    public static String getRemoteDriverGridHostName() {
+        return Setup.getFromConfigs(Setup.REMOTE_WEBDRIVER_GRID_HOST_NAME);
+    }
+
     public static int getMaxNumberOfAppiumDrivers() {
         return Setup.getIntegerValueFromConfigs(Setup.MAX_NUMBER_OF_APPIUM_DRIVERS);
     }

@@ -39,6 +39,7 @@ These can be overridden by providing the same either as environment variables or
     PROXY_KEY=HTTP_PROXY -> If proxy should be set, what is the environment variable specifying the proxy?
     PROXY_URL=<proxy_url> -> What is the proxy url to be used if PROXY_KEY is set
     REMOTE_WEBDRIVER_GRID_PORT=<environment variable name which holds the port to be used for RemoteWebDriver>
+    REMOTE_WEBDRIVER_GRID_HOST_NAME=<environment variable name which holds the host name/ip for RemoteWebDriver>
     REPORT_PORTAL_FILE=./src/test/resources/reportportal.properties -> ReportPortal.io configuration
     RP_DESCRIPTION=<description of the test execution to be shown in reportportal's launch description. Default: End-2-End scenarios>
     RUN_IN_CI=false -> Are tests running in CI?
