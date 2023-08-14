@@ -261,15 +261,18 @@ class BrowserDriverManager {
     private static void setProxyInFirefoxOptions(FirefoxOptions firefoxOptions, JSONObject firefoxConfiguration) {
         String proxyUrl = Runner.getProxyURL();
         if (null != proxyUrl) {
-            String noProxyFor = firefoxConfiguration.getString("noProxy");
-            String usingProxyType = firefoxConfiguration.getString("proxyType").toUpperCase();
-            Proxy.ProxyType proxyType = Proxy.ProxyType.valueOf(usingProxyType);
+            String noProxyFor = getNoProxy(firefoxConfiguration);
+            Proxy.ProxyType proxyType = getProxyType(firefoxConfiguration);
             LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor + "', and proxyType: '" + proxyType + "'");
             Proxy proxy = new Proxy().setHttpProxy(proxyUrl)
                     .setNoProxy(noProxyFor)
                     .setProxyType(proxyType);
             firefoxOptions.setProxy(proxy);
         }
+    }
+
+    private static String getNoProxy(JSONObject jsonObject) {
+        return jsonObject.keySet().contains("noProxy") ? jsonObject.getString("noProxy") : null;
     }
 
     private static void setLoggingPrefsInFirefoxOptions(JSONObject firefoxConfiguration, FirefoxOptions firefoxOptions) {
@@ -317,13 +320,16 @@ class BrowserDriverManager {
     private static void setProxyInChromeOptions(ChromeOptions chromeOptions, JSONObject chromeConfiguration) {
         String proxyUrl = Runner.getProxyURL();
         if (null != proxyUrl) {
-            String noProxyFor = chromeConfiguration.getString("noProxy");
-            String usingProxyType = chromeConfiguration.getString("proxyType").toUpperCase();
-            Proxy.ProxyType proxyType = Proxy.ProxyType.valueOf(usingProxyType);
+            String noProxyFor = getNoProxy(chromeConfiguration);
+            Proxy.ProxyType proxyType = getProxyType(chromeConfiguration);
             LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor + "', and proxyType: '" + proxyType + "'");
             Proxy proxy = new Proxy().setHttpProxy(proxyUrl).setNoProxy(noProxyFor).setProxyType(proxyType);
             chromeOptions.setCapability("proxy", proxy);
         }
+    }
+
+    private static Proxy.ProxyType getProxyType(JSONObject jsonObject) {
+        return jsonObject.keySet().contains("proxyType") ? Proxy.ProxyType.valueOf(jsonObject.getString("proxyType").toUpperCase()) : Proxy.ProxyType.MANUAL;
     }
 
     private static void setPreferencesInChromeOptions(JSONObject chromeConfiguration, ChromeOptions chromeOptions) {
