@@ -264,7 +264,7 @@ class BrowserDriverManager {
             String noProxyFor = firefoxConfiguration.getString("noProxy");
             String usingProxyType = firefoxConfiguration.getString("proxyType").toUpperCase();
             Proxy.ProxyType proxyType = Proxy.ProxyType.valueOf(usingProxyType);
-            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor + ", and proxyType: " + proxyType);
+            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor + "', and proxyType: '" + proxyType + "'");
             Proxy proxy = new Proxy().setHttpProxy(proxyUrl)
                     .setNoProxy(noProxyFor)
                     .setProxyType(proxyType);
@@ -320,7 +320,7 @@ class BrowserDriverManager {
             String noProxyFor = chromeConfiguration.getString("noProxy");
             String usingProxyType = chromeConfiguration.getString("proxyType").toUpperCase();
             Proxy.ProxyType proxyType = Proxy.ProxyType.valueOf(usingProxyType);
-            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor + ", and proxyType: " + proxyType);
+            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor + "', and proxyType: '" + proxyType + "'");
             Proxy proxy = new Proxy().setHttpProxy(proxyUrl).setNoProxy(noProxyFor).setProxyType(proxyType);
             chromeOptions.setCapability("proxy", proxy);
         }
