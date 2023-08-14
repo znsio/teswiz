@@ -5,6 +5,7 @@ version: "3"
 services:
   chrome:
     image: ${DOCKER_REGISTRY}/${CHROME_REPO}:latest
+    container_name: "${PROJECT_NAME}-chrome"
     shm_size: 2gb
     volumes:
       - /dev/shm:/dev/shm
@@ -21,6 +22,7 @@ services:
 
   firefox:
     image: ${DOCKER_REGISTRY}/${FIREFOX_REPO}:latest
+    container_name: "${PROJECT_NAME}-firefox"
     shm_size: 2gb
     volumes:
       - /dev/shm:/dev/shm
@@ -37,7 +39,7 @@ services:
 
   selenium-hub:
     image: ${DOCKER_REGISTRY}/${SELENIUM_HUB_REPO}:latest
-    container_name: selenium-hub
+    container_name: "${PROJECT_NAME}-selenium-hub"
     ports:
       - "${GRID_PORT_1}:4442"
       - "${GRID_PORT_2}:4443"

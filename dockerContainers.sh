@@ -52,6 +52,11 @@ else
 fi
 ((GRID_PORT_1=$GRID_PORT-1))
 ((GRID_PORT_2=$GRID_PORT-2))
+
+CURRENT_DIR=${PWD##*/}
+PROJECT_NAME=`echo "$CURRENT_DIR" | awk '{print tolower($0)}'`
+echo "PROJECT_NAME: ${PROJECT_NAME}"
+
 export PROXY_KEY=$PROXY_KEY
 export GRID_PORT=$GRID_PORT
 export GRID_PORT_1=$GRID_PORT_1
@@ -59,8 +64,10 @@ export GRID_PORT_2=$GRID_PORT_2
 export SELENIUM_HUB_REPO=$SELENIUM_HUB_REPO
 export CHROME_REPO=$CHROME_REPO
 export FIREFOX_REPO=$FIREFOX_REPO
+export PROJECT_NAME=$PROJECT_NAME
 
 echo "Using:"
+echo "  PROJECT_NAME: $PROJECT_NAME"
 echo "  PROXY_KEY: $PROXY_KEY"
 echo "  SELENIUM_HUB_REPO: $SELENIUM_HUB_REPO"
 echo "  CHROME_REPO: $CHROME_REPO"
@@ -69,11 +76,8 @@ echo "  GRID_PORT: $GRID_PORT"
 echo "  GRID_PORT_1: $GRID_PORT_1"
 echo "  GRID_PORT_2: $GRID_PORT_2"
 
-CURRENT_DIR=${PWD##*/}
-echo "CURRENT_DIR: ${CURRENT_DIR}"
-
-DOCKER_COMPOSE_DOWN_CMD="docker-compose -f $DOCKER_COMPOSE_FILE_NAME -p ${CURRENT_DIR} down"
-DOCKER_COMPOSE_UP_CMD="docker-compose -f $DOCKER_COMPOSE_FILE_NAME -p ${CURRENT_DIR} up --force-recreate -d"
+DOCKER_COMPOSE_DOWN_CMD="docker-compose -f $DOCKER_COMPOSE_FILE_NAME -p ${PROJECT_NAME} down"
+DOCKER_COMPOSE_UP_CMD="docker-compose -f $DOCKER_COMPOSE_FILE_NAME -p ${PROJECT_NAME} up --force-recreate -d"
 
 if [[ ( $1 == "up" ) || ( $1 == "start" ) ]]; then
     echo "Start docker containers using command: '${DOCKER_COMPOSE_UP_CMD}'"
