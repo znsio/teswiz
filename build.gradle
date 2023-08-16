@@ -25,9 +25,9 @@ plugins {
     id "org.sonarqube" version "4.3.0.3225"
     id "java"
     id "idea"
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'maven-publish'
-    id("io.freefair.aspectj.post-compile-weaving") version "8.2.2"
+    id "com.github.johnrengelman.shadow" version '8.1.1'
+    id "maven-publish"
+    id "io.freefair.aspectj.post-compile-weaving" version "8.2.2"
 }
 
 group = 'com.github.znsio'
