@@ -96,7 +96,7 @@ class DeviceSetup {
         return androidCukeArgs;
     }
 
-    static String verifyAppExistsAtMentionedPath() {
+    static void verifyAppExistsAtMentionedPath() {
         String appPath = Setup.getFromConfigs(APP_PATH);
         LOGGER.info(String.format("Original path to apk/app: %s", appPath));
         if (appPath.equals(NOT_SET)) {
@@ -104,12 +104,11 @@ class DeviceSetup {
                 appPath = downloadAppToDirectoryIfNeeded(getAppPathFromCapabilities(), DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
             }
             LOGGER.info(String.format("Updated path to apk/app: %s", appPath));
-            Setup.addToConfigs(APP_PATH, appPath);
         } else {
             appPath = downloadAppToDirectoryIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
             LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s", appPath));
         }
-        return appPath;
+        Setup.addToConfigs(APP_PATH, appPath);
     }
 
     public static String downloadAppToDirectoryIfNeeded(String appPath, String saveToLocalDirectory) {
