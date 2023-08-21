@@ -4,13 +4,13 @@ Test execution using teswiz is highly configurable. This enables you to control 
 
 See all the [Configuration parameters here](ConfigurationParameters-README.md)
 
-### Run on Android
+### Run Android app tests
 
 To run all the tests against the Android platform, run the following command:
 
     PLATFORM=android ./gradlew run
 
-#### Run on Local devices:
+#### Run on Local Android devices:
 
 The framework, by default, automatically figures out if there are multiple devices connected to the machine, and if so,
 will run the tests in parallel
@@ -29,11 +29,11 @@ Sample command:
 
 For other cloud configurations, refer here: https://github.com/AppiumTestDistribution/AppiumTestDistribution
 
-### Run on iOS
+### Run iOS app tests
 
     PLATFORM=iOS ./gradlew run
 
-### Run on Windows
+### Run Windows application tests
 
     PLATFORM=windows ./gradlew run
 
