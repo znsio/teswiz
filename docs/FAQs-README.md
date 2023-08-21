@@ -11,3 +11,14 @@ From Mac OSX or Linux:
 From Windows:
 
     set PLATFORM=android
+
+Example: 
+On Linux / OSX OS:
+
+    PLATFORM=android PARALLEL=2 ./gradlew run
+
+On Windows OS:
+
+    set PLATFORM=android
+    set PARALLEL=2
+    gradlew.bat run
