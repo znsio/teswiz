@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 
 buildscript {
     ext {
-        gradleVersion = '8.2.1'
+        gradleVersion = '8.3'
         assertJVersion = '3.24.2'
         atdVersion = '13.1.2'
         applitoolsAppiumVersion = '5.64.3'
