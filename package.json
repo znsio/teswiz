@@ -2,7 +2,7 @@
   "dependencies": {
     "@appium/doctor": "^2.0.23",
     "@appium/relaxed-caps-plugin": "^1.0.5",
-    "appium": "^2.1.0",
+    "appium": "^2.1.1",
     "appium-dashboard": "^2.0.2",
     "appium-device-farm": "^8.2.2",
     "appium-uiautomator2-driver": "^2.29.4",
