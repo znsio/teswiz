@@ -2,6 +2,8 @@
 [![CI](https://github.com/znsio/teswiz/actions/workflows/CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/CI.yml)
 [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)
 
+[![Latest Commit](https://img.shields.io/badge/commit-<commit_ID>-blue.svg)](https://jitpack.io/#znsio/teswiz)
+
 # To Build
 `./gradlew clean build`
 
