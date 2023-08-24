@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
       - name: Get Latest Commit ID
         id: commit_id
-        run: echo "{COMMIT_ID}={$(git rev-parse HEAD)}" >> $COMMIT_ID
+        run: echo "{commitId}={$(git rev-parse HEAD)}" >> $COMMIT_ID
       - name: Update README
         run: |
           sed -i 's|<COMMIT_ID>|'"$COMMIT_ID"'|' README.md
