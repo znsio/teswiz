@@ -37,8 +37,6 @@ jobs:
           awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md
           cat README_new.md
           mv README_new.md README.md
-        env:
-          COMMIT_ID: ${{ steps.commit_id.outputs.COMMIT_ID }}
       - name: Build with Gradle
         uses: gradle/gradle-build-action@3122f2c659b52a78671a7862f5bc93f72823bb43
         with:
