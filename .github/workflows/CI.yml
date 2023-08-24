@@ -37,6 +37,17 @@ jobs:
           awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md
           cat README_new.md
           mv README_new.md README.md
+      - name: Commit Changes
+        run: |
+            git config --global user.name "GitHub Actions"
+            git config --global user.email "actions@github.com"
+            git add README.md
+            git commit -m "Update README with latest commit ID - $COMMIT_ID"
+            git push --set-upstream origin main
+        env:
+          COMMIT_ID: ${{ steps.commit_id.outputs.commit }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+
       - name: Build with Gradle
         uses: gradle/gradle-build-action@3122f2c659b52a78671a7862f5bc93f72823bb43
         with:
