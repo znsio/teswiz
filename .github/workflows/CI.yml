@@ -26,14 +26,14 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
       - name: Display latest Commit ID
-        run: echo "Latest commitID is {$(git rev-parse HEAD | head -c 10)}"
+        run: echo "Latest commitID is $(git rev-parse HEAD | head -c 10)"
       - name: Get Latest Commit ID and save in GITHUB_ENV
-        run: echo "COMMIT_ID={$(git rev-parse HEAD | head -c 10)}" >> "$GITHUB_ENV"
+        run: echo "COMMIT_ID=$(git rev-parse HEAD | head -c 10)" >> "$GITHUB_ENV"
       - name: Display latest Commit ID from GITHUB_ENV
         run: echo "COMMIT_ID=$COMMIT_ID"
       - name: Update README with latest commit id - $COMMIT_ID
         run: |
-          awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md
+          awk -v id=$COMMIT_ID '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md
           cat README_new.md
           mv README_new.md README.md
         env:
