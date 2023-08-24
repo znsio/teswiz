@@ -33,7 +33,8 @@ jobs:
         run: echo "COMMIT_ID=$COMMIT_ID"
       - name: Update README with latest commit id - $COMMIT_ID
         run: |
-          awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md 
+          awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md
+          cat README_new.md
           mv README_new.md README.md
         env:
           COMMIT_ID: ${{ steps.commit_id.outputs.COMMIT_ID }}
