@@ -25,19 +25,18 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-      - name: Display latest Commit ID
-        run: echo "Latest commitID is $(git rev-parse HEAD | head -c 10)"
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@3122f2c659b52a78671a7862f5bc93f72823bb43
+        with:
+          arguments: build --refresh-dependencies
       - name: Get Latest Commit ID and save in GITHUB_ENV
         run: echo "COMMIT_ID=$(git rev-parse HEAD | head -c 10)" >> "$GITHUB_ENV"
-      - name: Display latest Commit ID from GITHUB_ENV
-        run: echo "COMMIT_ID=$COMMIT_ID"
-      - name: Update README with latest commit id - $COMMIT_ID
+      - name: "Update README with latest commit id - $COMMIT_ID"
         run: |
           echo "COMMIT_ID=$COMMIT_ID"
           awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md
-          cat README_new.md
           mv README_new.md README.md
-      - name: Commit Changes
+      - name: Commit changes to updated README.md
         run: |
             git config --global user.name "GitHub Actions"
             git config --global user.email "actions@github.com"
@@ -47,8 +46,3 @@ jobs:
         env:
           COMMIT_ID: ${{ steps.commit_id.outputs.commit }}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@3122f2c659b52a78671a7862f5bc93f72823bb43
-        with:
-          arguments: build --refresh-dependencies
