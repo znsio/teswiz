@@ -31,13 +31,14 @@ jobs:
           arguments: build --refresh-dependencies
       - name: Get Latest Commit ID and save in GITHUB_ENV
         run: echo "COMMIT_ID=$(git rev-parse HEAD | head -c 10)" >> "$GITHUB_ENV"
-      - name: Update README with latest commit id - ${{ COMMIT_ID }}
+      - name: Update README with latest commit id
         run: |
           echo "COMMIT_ID=$COMMIT_ID"
           awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md
           mv README_new.md README.md
       - name: Commit changes to updated README.md
         run: |
+            echo "COMMIT_ID=$COMMIT_ID"
             git config --global user.name "GitHub Actions"
             git config --global user.email "actions@github.com"
             git add README.md
