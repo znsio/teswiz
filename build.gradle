@@ -5,7 +5,7 @@ buildscript {
         gradleVersion = '8.3'
         assertJVersion = '3.24.2'
         atdVersion = '13.1.2'
-        applitoolsAppiumVersion = '5.64.3'
+        applitoolsAppiumVersion = '5.64.4'
         seleniumVersion = "4.11.0"
         commonsLang3Version = '3.13.0'
         unirestVersion = '3.14.5'
@@ -27,7 +27,7 @@ plugins {
     id "idea"
     id "com.github.johnrengelman.shadow" version '8.1.1'
     id "maven-publish"
-    id "io.freefair.aspectj.post-compile-weaving" version "8.2.2"
+    id "io.freefair.aspectj.post-compile-weaving" version "8.3"
 }
 
 group = 'com.github.znsio'
