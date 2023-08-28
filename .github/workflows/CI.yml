@@ -38,6 +38,7 @@ jobs:
           mv README_new.md README.md
       - name: Commit changes to updated README.md
         run: |
+            echo "COMMIT_ID=$(git rev-parse HEAD | head -c 10)" >> "$GITHUB_ENV"
             echo "COMMIT_ID=$COMMIT_ID"
             git config --global user.name "GitHub Actions"
             git config --global user.email "actions@github.com"
