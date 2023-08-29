@@ -46,3 +46,18 @@ jobs:
             git push -u origin main
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+      - name: Trigger Workflow in getting-started-with-teswiz
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.PAT_TOKEN }}  # Personal access token for authorization
+          repository: znsio/getting-started-with-teswiz  # Username/Org and repository name
+          event-type: UpdateREADME  # Custom event name for your downstream workflow
+        run: |
+          curl -X POST \
+          -H "Accept: application/vnd.github.everest-preview+json" \
+          -H "Authorization: Bearer $PAT_TOKEN" \
+          https://api.github.com/repos/znsio/teswiz/dispatches \
+          -d '{"event_type": "UpdateREADME" }'
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+
