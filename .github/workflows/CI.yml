@@ -26,7 +26,7 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@3122f2c659b52a78671a7862f5bc93f72823bb43
+        uses: gradle/gradle-build-action@8f08e41675472b8aa0aa2c356e8b2c1561af3bf9
         with:
           arguments: build --refresh-dependencies
       - name: Get Latest Commit ID and save in GITHUB_ENV
