@@ -53,12 +53,8 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $PAT_TOKEN" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/znsio/teswiz/dispatches \
+            https://api.github.com/repos/znsio/getting-started-with-teswiz/dispatches \
             -d '{"event_type":"UpdateREADME","client_payload":{"teswiz_commit_id":"$COMMIT_ID"}}'
-        with:
-          token: ${{ secrets.PAT_TOKEN }}  # Personal access token for authorization
-          repository: znsio/getting-started-with-teswiz  # Username/Org and repository name
-          event-type: UpdateREADME  # Custom event name for your downstream workflow
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
 
