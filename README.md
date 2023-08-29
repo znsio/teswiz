@@ -14,8 +14,6 @@
 # To Build
 `./gradlew clean build`
 
-# [BREAKING CHANGES from v0.0.81](docs/BreakingChanges-README.md)
-
 # What is this repository about?
 
 This repository implements automated tests for Android & iOS apps, specified using cucumber-jvm and intelligently run
@@ -70,6 +68,8 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 ### [Setting up docker containers](docs/DockerSetup-README.md)
 
 ### [Logging to ReportPortal](docs/ReportPortal-README.md)
+
+## [BREAKING CHANGES from v0.0.81](docs/BreakingChanges-README.md)
 
 ## [Troubleshooting / FAQs](docs/FAQs-README.md)
 
