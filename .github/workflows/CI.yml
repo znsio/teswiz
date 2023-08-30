@@ -46,10 +46,11 @@ jobs:
             git push -u origin main
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-      - name: Trigger Workflow in getting-started-with-teswiz
-        uses: peter-evans/repository-dispatch@v2
+      - name: Display COMMIT_ID
         run: |
           echo "COMMIT_ID=$COMMIT_ID"
+      - name: Trigger Workflow in getting-started-with-teswiz
+        uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.REPO_DISPATCH_TOKEN }}
           repository: znsio/getting-started-with-teswiz
