@@ -44,7 +44,7 @@ Test can run on local browsers / devices, or against any cloud provider, such as
   * https://www.selenium.dev/selenium/docs/api/java/deprecated-list.html 
 * reportportal.io (https://reportportal.io)
 * Applitools (https://applitools.com)
-* Build tool: gradle 7.3.3
+* Build tool: gradle v8
 * cucumber-reporting (https://github.com/damianszczepanik/cucumber-reporting)
 
 ## [Prerequisites](docs/Prerequisites-README.md)
