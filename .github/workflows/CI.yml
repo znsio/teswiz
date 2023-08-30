@@ -53,5 +53,3 @@ jobs:
           repository: znsio/getting-started-with-teswiz
           event-type: UpdateREADME
           client-payload: '{"teswiz_commit_id": "${{ COMMIT_ID }}" '
-        env:
-          teswiz_commit_id: ${{ COMMIT_ID }}
