@@ -52,6 +52,6 @@ jobs:
           token: ${{ secrets.REPO_DISPATCH_TOKEN }}
           repository: znsio/getting-started-with-teswiz
           event-type: UpdateREADME
-          client-payload: '{"teswiz_commit_id": "$teswiz_commit_id" }'
+          client-payload: '{"teswiz_commit_id": "${{ teswiz_commit_id }}" }'
         env:
           teswiz_commit_id: ${{ COMMIT_ID }}
