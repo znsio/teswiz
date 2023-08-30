@@ -49,6 +49,6 @@ jobs:
       - name: Trigger Workflow in getting-started-with-teswiz
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.REPO_DISPATCH_TOKEN }}
           repository: znsio/getting-started-with-teswiz
           event-type: UpdateREADME
