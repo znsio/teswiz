@@ -6,7 +6,7 @@ With below BrowserStack Local configurations, we can test the mobile apps those 
 
 #### Put these capabilities and config files in capabilities and config folder as per the project requirements.
 
-* browserstack_capabilities.json(https://github.com/znsio/teswiz/blob/main/caps/theapp_browserStack_capabilities.json) 
+* browserstack_capabilities.json(https://github.com/znsio/teswiz/blob/main/caps/theapp_browserstack_capabilities.json) 
 
 * browserstack_config.properties(https://github.com/znsio/teswiz/blob/main/configs/theapp_browserstack_config.properties)
 
