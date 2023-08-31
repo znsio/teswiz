@@ -5,7 +5,7 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-name: browserstack_CI
+name: BrowserStack_CI
 
 on:
   push:
@@ -29,6 +29,12 @@ jobs:
         run: |
           node -v
           npm install
+      - name: Display the env variables available in the pipeline
+        run: |
+          env
       - name: Run Android tests against Browserstack
         run: |
-          CONFIG=./configs/vodqa_browserstack_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=android TAG="@scrollUsing2Points and @browserstack" ./gradlew run
+          RUN_IN_CI=true APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/vodqa_browserstack_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=android TAG="@scrollUsing2Points and @browserstack" ./gradlew run
+      - name: Run Web tests against Browserstack
+        run: |
+          RUN_IN_CI=true APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/theapp_browserstack_web_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=web TAG="@theapp and @invalidLogin1 and @browserstack" ./gradlew run

@@ -1,0 +1,46 @@
+{
+  "android": {
+    "platformName": "android",
+    "automationName": "UiAutomator2",
+    "autoGrantPermissions": true,
+    "appPackage": "com.appiumpro.the_app",
+    "uiautomator2ServerInstallTimeout": 10000,
+    "adbExecTimeout": 45000,
+    "eventTimings": true,
+    "enablePerformanceLogging": true,
+    "printPageSourceOnFindFailure": true,
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
+    "deviceName": "android",
+    "noSign": true
+  },
+  "web": {
+    "browserName": "chrome",
+    "browserstackOptions": {
+      "os": "Windows",
+      "osVersion": "11",
+      "browserVersion": "latest",
+      "debug": "true",
+      "networkLogs": "true"
+    }
+  },
+  "serverConfig" : {
+    "server": {
+      "use-plugins": ["device-farm", "appium-dashboard"],
+      "plugin": {
+        "device-farm": {
+          "platform": "web",
+          "skipChromeDownload": true,
+          "cloud": {
+            "cloudName": "browserstack",
+            "url": "http://hub-cloud.browserstack.com",
+            "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
+            "devices": [
+            ],
+            "web": {}
+          }
+        }
+      }
+    }
+  },
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
+}
