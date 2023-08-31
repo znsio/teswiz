@@ -3,7 +3,8 @@
 Feature: Vodqa test
 
   #  CONFIG=./configs/vodqa_local_config.properties PLATFORM=android TAG=scrollUsing2Points ./gradlew run
-  @android @scrollUsing2Points
+  #  CONFIG=./configs/vodqa_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=android TAG="@scrollUsing2Points and @browserstack" ./gradlew run
+  @android @scrollUsing2Points @browserstack
   Scenario: Validating scroll functionality using 2 points
     Given I login to vodqa application using valid credentials
     When I scroll from one to another element point on vertical swiping screen
