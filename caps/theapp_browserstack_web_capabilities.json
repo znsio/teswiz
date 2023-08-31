@@ -1,17 +1,17 @@
 {
   "android": {
-    "platformName": "android",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
+    "adbExecTimeout": 45000,
+    "appPackage": "com.appiumpro.the_app",
     "automationName": "UiAutomator2",
     "autoGrantPermissions": true,
-    "appPackage": "com.appiumpro.the_app",
-    "uiautomator2ServerInstallTimeout": 10000,
-    "adbExecTimeout": 45000,
-    "eventTimings": true,
-    "enablePerformanceLogging": true,
-    "printPageSourceOnFindFailure": true,
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
     "deviceName": "android",
-    "noSign": true
+    "enablePerformanceLogging": true,
+    "eventTimings": true,
+    "noSign": true,
+    "platformName": "android",
+    "printPageSourceOnFindFailure": true,
+    "uiautomator2ServerInstallTimeout": 10000
   },
   "web": {
     "browserName": "chrome",

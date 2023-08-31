@@ -4,18 +4,8 @@
     "appPackage": "com.appiumpro.the_app",
     "appActivity": "com.appiumpro.the_app.MainActivity",
     "autoAcceptAlerts": true,
-    "automationName": "UIAutomator2",
-    "os_version": "12",
-    "platformName": "Android",
-    "device": "Samsung",
     "autoGrantPermissions": true,
-    "newCommandTimeout": 300,
-    "noSign": true,
-    "launchTimeout": 90000,
-    "unicodeKeyboard": true,
-    "resetKeyboard": true,
-    "noReset": true,
-    "project": "teswiz",
+    "automationName": "UIAutomator2",
     "browserstack.appium_version": "2.0.1",
     "browserstack.enableCameraImageInjection": true,
     "browserstack.debug": true,
@@ -23,7 +13,17 @@
     "browserstack.timezone": "Kolkata",
     "browserstack.networkLogs": "true",
     "browserstack.gpsLocation": "22,75",
-    "browserstack.locale": "IN"
+    "browserstack.locale": "IN",
+    "device": "Samsung",
+    "launchTimeout": 90000,
+    "newCommandTimeout": 300,
+    "noReset": true,
+    "noSign": true,
+    "os_version": "12",
+    "platformName": "Android",
+    "project": "teswiz",
+    "resetKeyboard": true,
+    "unicodeKeyboard": true
   },
   "web": {
     "browserName": "chrome",
@@ -31,7 +31,6 @@
       "os": "Windows",
       "osVersion": "11",
       "browserVersion": "latest",
-      "seleniumVersion": "3.14.0",
       "debug": "true",
       "networkLogs": "true"
     }
@@ -48,7 +47,8 @@
             "url": "http://hub-cloud.browserstack.com",
             "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
             "devices": [
-            ]
+            ],
+            "web": {}
           }
         }
       }

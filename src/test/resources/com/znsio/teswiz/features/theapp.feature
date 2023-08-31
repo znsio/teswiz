@@ -32,8 +32,9 @@ Feature: Scenarios for "The App"
     When I go back
     Then I can echo "how are you too?" in the message box
 
-#  CONFIG=./configs/theapp_local_config.properties TAG="@multiuser-android-web and @theapp" ./gradlew run
-  @multiuser-android-web @theapp
+#  CONFIG=./configs/theapp_local_android_config.properties TAG="@multiuser-android-web and @theapp" ./gradlew run
+#  RUN_IN_CI=true CONFIG=./configs/theapp_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY TAG="@multiuser-android-web and @theapp and @browserstack" ./gradlew run
+  @multiuser-android-web @theapp @browserstack
   Scenario: Orchestrating multiple users on different platforms as part of same test
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
     And "You" login with invalid credentials - "znsio2", "invalid password" on "web"

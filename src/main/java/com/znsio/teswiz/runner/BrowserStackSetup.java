@@ -4,6 +4,7 @@ import com.browserstack.local.Local;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
@@ -67,7 +68,7 @@ class BrowserStackSetup {
     static MutableCapabilities updateBrowserStackCapabilities(MutableCapabilities capabilities) {
 
         String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
-        String platformName = Setup.getPlatform().name();
+        String platformName = Platform.web.name();
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
