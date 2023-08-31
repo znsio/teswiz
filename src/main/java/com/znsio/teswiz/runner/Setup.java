@@ -50,8 +50,6 @@ class Setup {
     static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
     static final String BROWSER_CONFIG_FILE_CONTENTS = "BROWSER_CONFIG_FILE_CONTENTS";
     static final String DEFAULT_BROWSER_CONFIG_FILE = "/default_browser_config.json";
-    static final String CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION =
-            "CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION";
     static final String PLUGIN = "--plugin";
     static final String APP_PATH = "APP_PATH";
     static final String CLOUD_UPLOAD_APP = "CLOUD_UPLOAD_APP";
@@ -350,11 +348,6 @@ class Setup {
         configs.put(CAPS, getOverriddenStringValue(CAPS,
                                                    getStringValueFromPropertiesIfAvailable(CAPS,
                                                                                            NOT_SET)));
-        configsBoolean.put(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION,
-                           getOverriddenBooleanValue(CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION,
-                                                     getBooleanValueFromPropertiesIfAvailable(
-                                                             CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION,
-                                                             true)));
         configs.put(CLOUD_KEY, getOverriddenStringValue(CLOUD_KEY,
                                                         getStringValueFromPropertiesIfAvailable(
                                                                 CLOUD_KEY, NOT_SET)));

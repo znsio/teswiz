@@ -22,7 +22,6 @@ RUN_IN_CI=<true/false>
 TARGET_ENVIRONMENT=<sit/eat/prod>
 LAUNCH_NAME_SUFFIX= on <environment> Environment
 TEST_DATA_FILE=./src/test/resources/testData.json
-CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=false
 ```
 
 ## Sample API scenario Example:
