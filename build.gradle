@@ -5,24 +5,24 @@ buildscript {
         gradleVersion = '8.3'
         assertJVersion = '3.24.2'
         atdVersion = '13.1.2'
-        applitoolsAppiumVersion = '5.64.4'
+        applitoolsAppiumVersion = '5.64.5'
         seleniumVersion = "4.12.0"
         commonsLang3Version = '3.13.0'
         unirestVersion = '3.14.5'
         jadbVersion = '1.2.1'
         junitVersion = '5.10.0'
-        slf4jVersion = '2.0.7'
+        slf4jVersion = '2.0.9'
         fasterxmlJacksonVersion = '2.15.2'
         jodaTimeVersion = '2.12.5'
         masterThoughtVersion = '5.7.6'
         browserStackLocalVersion = '1.1.0'
         jetbrainsAnnotationsVersion = '24.0.1'
-        aspectJVersion = '1.9.20'
+        aspectJVersion = '1.9.20.1'
     }
 }
 
 plugins {
-    id "org.sonarqube" version "4.3.0.3225"
+    id "org.sonarqube" version "4.3.1.3277"
     id "java"
     id "idea"
     id "com.github.johnrengelman.shadow" version '8.1.1'
