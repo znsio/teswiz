@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -270,14 +271,17 @@ class DeviceSetup {
     }
 
     private static void isAppUrlValid(String appPathUrl) {
-        int responseCode;
+        int responseCode=999;
+        String responseMessage=NOT_SET;
         HttpURLConnection connection;
         try {
             connection = (HttpURLConnection) new URL(appPathUrl).openConnection();
             connection.setRequestMethod("HEAD");
+            responseMessage = connection.getResponseMessage();
             responseCode = connection.getResponseCode();
             connection.disconnect();
         } catch (IOException e) {
+            LOGGER.info(MessageFormat.format("isAppUrlValid response message: {0}'', responseCode: {1}", responseMessage, responseCode));
             throw new InvalidTestDataException(String.format("Failed to make a connection using url: '%s'", appPathUrl) + e);
         }
 

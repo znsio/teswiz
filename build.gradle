@@ -6,7 +6,7 @@ buildscript {
         assertJVersion = '3.24.2'
         atdVersion = '13.1.2'
         applitoolsAppiumVersion = '5.64.5'
-        seleniumVersion = "4.12.0"
+        seleniumVersion = "4.12.1"
         commonsLang3Version = '3.13.0'
         unirestVersion = '3.14.5'
         jadbVersion = '1.2.1'
@@ -64,8 +64,8 @@ idea {
 
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    implementation files("$buildDir/classes/main")
-    implementation files("$buildDir/classes/test")
+    implementation files(layout.buildDirectory.files("/classes/main"))
+    implementation files(layout.buildDirectory.files("/classes/test"))
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
@@ -139,7 +139,7 @@ tasks.register('run', JavaExec) {
     doFirst {
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
-        System.setProperty "LOG_DIR", "$logDirectory"
+        environment "LOG_DIR", "$logDirectory"
 
         def configFile = System.getenv("CONFIG")
         if (null == configFile || !file(configFile).exists()) {
