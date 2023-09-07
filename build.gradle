@@ -140,7 +140,6 @@ tasks.register('run', JavaExec) {
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
-        environment "LOG_DIR", "$logDirectory"
 
         def configFile = System.getenv("CONFIG")
         if (null == configFile || !file(configFile).exists()) {
