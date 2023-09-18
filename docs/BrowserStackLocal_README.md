@@ -2,7 +2,7 @@
 
 With below BrowserStack Local configurations, we can test the mobile apps those hosted on localhost, behind proxies and firewalls efficiently.
 
-### Use the Teswiz version: 2665b0d517 or latest testwiz version from https://jitpack.io/#znsio/teswiz
+### Use the Teswiz version: [![0.0.86](https://jitpack.io/v/znsio/teswiz.svg)](https://jitpack.io/#znsio/teswiz) or latest testwiz version from [![Latest Commit](https://img.shields.io/badge/commit-568dd4ffb4-blue.svg)](https://jitpack.io/#znsio/teswiz)
 
 #### Put these capabilities and config files in capabilities and config folder as per the project requirements.
 
