@@ -48,11 +48,11 @@ jobs:
             echo "No local changes."
           fi
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          PAT_TOKEN: ${{ secrets.TESWIZ_PAT }}
       - name: Trigger Workflow in getting-started-with-teswiz
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.REPO_DISPATCH_TOKEN }}
+          token: ${{ secrets.TESWIZ_REPO_DISPATCH }}
           repository: znsio/getting-started-with-teswiz
           event-type: UpdateREADME
           client-payload: '{"teswiz_commit_id":"teswiz updated" }'
