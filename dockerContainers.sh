@@ -19,23 +19,24 @@ FIREFOX_REPO="node-firefox"
 SELENIUM_HUB_REPO="hub"
 
 if [[ "$arch" = x86_64* ]]; then
-    if [[ "$(uname -a)" = *ARM64* ]]; then
-        echo 'a64'
-        DOCKER_REGISTRY="seleniarm"
-        CHROME_REPO="node-chromium"
-    else
-        echo 'x64'
-    fi
-elif [[ "$arch" = i*86 ]]; then
-    echo 'x32'
-elif [[ "$arch" = arm* ]]; then
-    echo 'a32'
-    DOCKER_REGISTRY="seleniarm"
-    CHROME_REPO="node-chromium"
-elif test "$arch" = aarch64; then
+  if [[ "$(uname -a)" = *ARM64* ]]; then
     echo 'a64'
     DOCKER_REGISTRY="seleniarm"
     CHROME_REPO="node-chromium"
+  else
+    echo "Unknown architecture. Exiting"
+    echo 'x64'
+  fi
+elif [[ "$arch" = i*86 ]]; then
+  echo 'x32'
+elif [[ "$arch" = arm* ]]; then
+  echo 'a32'
+  DOCKER_REGISTRY="seleniarm"
+  CHROME_REPO="node-chromium"
+elif test "$arch" = aarch64; then
+  echo 'a64'
+  DOCKER_REGISTRY="seleniarm"
+  CHROME_REPO="node-chromium"
 else
     exit 1
 fi
@@ -91,19 +92,19 @@ DOCKER_COMPOSE_DOWN_CMD="docker-compose -f $DOCKER_COMPOSE_FILE_NAME -p ${PROJEC
 DOCKER_COMPOSE_UP_CMD="docker-compose -f $DOCKER_COMPOSE_FILE_NAME -p ${PROJECT_NAME} up --force-recreate -d"
 
 if [[ ( $1 == "up" ) || ( $1 == "start" ) ]]; then
-    echo "Start docker containers using command: '${DOCKER_COMPOSE_UP_CMD}'"
-    ${DOCKER_COMPOSE_UP_CMD}
-    ./wait_for_containers_to_be_up.sh
+  echo "Start docker containers using command: '${DOCKER_COMPOSE_UP_CMD}'"
+  ${DOCKER_COMPOSE_UP_CMD}
+  ./wait_for_containers_to_be_up.sh
 elif [[ ( $1 == "down" ) || ( $1 == "stop" ) ]]; then
-    echo "Stop docker containers using command: '${DOCKER_COMPOSE_DOWN_CMD}'"
-    ${DOCKER_COMPOSE_DOWN_CMD}
+  echo "Stop docker containers using command: '${DOCKER_COMPOSE_DOWN_CMD}'"
+  ${DOCKER_COMPOSE_DOWN_CMD}
 elif [[ ( $1 == "restart" ) ]]; then
-    echo "Restarting docker containers using command: '${DOCKER_COMPOSE_DOWN_CMD}' and then '${DOCKER_COMPOSE_UP_CMD}'"
-    ${DOCKER_COMPOSE_DOWN_CMD}
-    sleep 2
-    ${DOCKER_COMPOSE_UP_CMD}
-    ./wait_for_containers_to_be_up.sh
+  echo "Restarting docker containers using command: '${DOCKER_COMPOSE_DOWN_CMD}' and then '${DOCKER_COMPOSE_UP_CMD}'"
+  ${DOCKER_COMPOSE_DOWN_CMD}
+  sleep 2
+  ${DOCKER_COMPOSE_UP_CMD}
+  ./wait_for_containers_to_be_up.sh
 else
-    echo "Invalid command provided. Pass either 'up/start' or 'down/stop' as a parameter"
-    exit 1
+  echo "Invalid command provided. Pass either 'up/start' or 'down/stop' as a parameter"
+  exit 1
 fi
