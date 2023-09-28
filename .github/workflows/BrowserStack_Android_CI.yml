@@ -28,7 +28,6 @@ jobs:
       - name: Install Appium 2.0 and dependencies
         run: |
           node -v
-          npm list
           npm install
           npm list
       - name: Run Android tests against Browserstack
