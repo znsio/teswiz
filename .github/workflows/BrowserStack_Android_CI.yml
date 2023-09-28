@@ -28,7 +28,9 @@ jobs:
       - name: Install Appium 2.0 and dependencies
         run: |
           node -v
+          npm list
           npm install
+          npm list
       - name: Run Android tests against Browserstack
         run: |
           RUN_IN_CI=true APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/theapp_browserstack_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=android TAG="@theapp and @invalidLogin1 and @browserstack" ./gradlew run
