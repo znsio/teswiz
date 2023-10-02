@@ -14,7 +14,7 @@ buildscript {
         slf4jVersion = '2.0.9'
         fasterxmlJacksonVersion = '2.15.2'
         jodaTimeVersion = '2.12.5'
-        masterThoughtVersion = '5.7.6'
+        masterThoughtVersion = '5.7.7'
         browserStackLocalVersion = '1.1.0'
         jetbrainsAnnotationsVersion = '24.0.1'
         aspectJVersion = '1.9.20.1'
