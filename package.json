@@ -6,7 +6,7 @@
     "appium-dashboard": "^2.0.2",
     "appium-device-farm": "^8.2.6",
     "appium-uiautomator2-driver": "^2.29.10",
-    "appium-xcuitest-driver": "^5.4.0",
+    "appium-xcuitest-driver": "^5.5.0",
     "go-ios": "^1.0.117"
   },
   "name": "teswiz-appium2.0",
