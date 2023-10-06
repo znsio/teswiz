@@ -37,6 +37,7 @@ class Setup {
     static final String APP_NAME = "APP_NAME";
     static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
     static final String IS_VISUAL = "IS_VISUAL";
+    static final String FAIL_TEST_ON_VISUAL_DIFFERENCE = "FAIL_TEST_ON_VISUAL_DIFFERENCE";
     static final String BROWSER = "BROWSER";
     static final String CONFIG_FILE = "CONFIG_FILE";
     static final String LAUNCH_NAME = "LAUNCH_NAME";
@@ -373,6 +374,9 @@ class Setup {
         configsBoolean.put(IS_VISUAL, getOverriddenBooleanValue(IS_VISUAL,
                                                                 getBooleanValueFromPropertiesIfAvailable(
                                                                         IS_VISUAL, false)));
+        configsBoolean.put(FAIL_TEST_ON_VISUAL_DIFFERENCE, getOverriddenBooleanValue(FAIL_TEST_ON_VISUAL_DIFFERENCE,
+                                                                getBooleanValueFromPropertiesIfAvailable(
+                                                                        FAIL_TEST_ON_VISUAL_DIFFERENCE, true)));
         configs.put(LOG_DIR, getOverriddenStringValue(LOG_DIR,
                                                       getStringValueFromPropertiesIfAvailable(
                                                               LOG_DIR, DEFAULT_LOG_DIR)));

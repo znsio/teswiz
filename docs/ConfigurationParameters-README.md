@@ -30,6 +30,9 @@ These can be overridden by providing the same either as environment variables or
     CLOUD_USE_LOCAL_TESTING=false -> If we want to enable local testing (currently only in BrowserStack) -  
     ENVIRONMENT_CONFIG_FILE=./src/test/resources/environments.json -> Environment specific configuration file
     IS_VISUAL=false -> Should enable Applitools Visual Testing? If yes, set to true
+    FAIL_TEST_ON_VISUAL_DIFFERENCE=true -> 
+        If visual testing is enabled, and this is set to true, then the test will fail if there are any visual differences found
+        If this is set to false, then a message will be logged about the visual differences, and the test will not fail for this reason 
     LOG_DIR=target -> Where should logs be created?
     LOG_PROPERTIES_FILE=./src/test/resources/log4j.properties -> log4j configuration file
     MAX_NUMBER_OF_APPIUM_DRIVERS -> The max number of drivers on cloud to create for multiuser android tests, default value is 5
