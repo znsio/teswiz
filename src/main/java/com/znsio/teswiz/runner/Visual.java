@@ -547,7 +547,7 @@ public class Visual {
                                 "results here: ",
                         userPersona, onPlatform, context.getTestName()) + result.getUrl()).isFalse();
             } else {
-                ReportPortalLogger.logDebugMessage("Not failing the tests because FAIL_TEST_ON_VISUAL_DIFFERENCE=false");
+                ReportPortalLogger.logInfoMessage("Not failing the tests because FAIL_TEST_ON_VISUAL_DIFFERENCE=false");
             }
         } else {
             ReportPortalLogger.logInfoMessage(
