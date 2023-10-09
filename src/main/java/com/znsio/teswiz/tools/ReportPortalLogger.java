@@ -18,6 +18,7 @@ public class ReportPortalLogger {
     public static void attachFileInReportPortal(String message, File destinationFile) {
         boolean isEmitLogSuccessful = ReportPortal.emitLog(message, DEBUG, new Date(),
                                                            destinationFile);
+        LOGGER.info(message);
         if(isEmitLogSuccessful) {
             LOGGER.debug(
                     String.format("'%s' - Upload of file: '%s'::'%s' to ReportPortal succeeded",
@@ -33,14 +34,17 @@ public class ReportPortalLogger {
     }
 
     public static void logDebugMessage(String message) {
+        LOGGER.debug(message);
         logMessage(message, DEBUG);
     }
 
     public static void logWarningMessage(String message) {
+        LOGGER.warn(message);
         logMessage(message, WARN);
     }
 
     public static void logInfoMessage(String message) {
+        LOGGER.info(message);
         logMessage(message, INFO);
     }
 
