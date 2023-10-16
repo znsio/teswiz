@@ -5,6 +5,8 @@ import org.apache.commons.rng.simple.RandomSource;
 
 public class Randomizer {
 
+    private Randomizer() {}
+
     public static String randomize(int size) {
         return RandomStringUtils.randomNumeric(size);
     }
