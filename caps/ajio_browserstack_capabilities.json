@@ -50,14 +50,7 @@
           "cloud": {
             "cloudName": "browserstack",
             "url": "https://hub.browserstack.com",
-            "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
-            "devices": [
-              {
-                "os_version": "16",
-                "deviceName": "iPhone 14 Pro Max",
-                "platform": "ios"
-              }
-            ]
+            "apiUrl": "https://api-cloud.browserstack.com/app-automate/"
           }
         }
       }
