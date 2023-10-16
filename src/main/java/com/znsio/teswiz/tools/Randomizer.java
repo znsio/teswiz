@@ -1,7 +1,7 @@
 package com.znsio.teswiz.tools;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.rng.simple.RandomSource;
 
 public class Randomizer {
 
@@ -14,7 +14,7 @@ public class Randomizer {
         try {
             Long.parseLong(randomizeTestData);
             randomizedValue = "80" + RandomStringUtils.randomNumeric(8);
-        } catch(NumberFormatException nfe) {
+        } catch (NumberFormatException nfe) {
             randomizedValue = "e2e_" + RandomStringUtils.randomAlphanumeric(10) + "@getnada.com";
         }
         return randomizedValue;
@@ -29,10 +29,10 @@ public class Randomizer {
     }
 
     public static int getRandomNumberBetween(int min, int max) {
-        return RandomUtils.nextInt(min, max);
+        return RandomSource.XO_RO_SHI_RO_128_PP.create().nextInt(min, max);
     }
 
     public static long getRandomNumberBetween(long min, long max) {
-        return RandomUtils.nextLong(min, max);
+        return RandomSource.XO_RO_SHI_RO_128_PP.create().nextLong(min, max);
     }
 }

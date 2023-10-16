@@ -8,7 +8,7 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.HidesKeyboard;
-import io.appium.java_client.MobileBy;
+import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.HasNotifications;
 import io.appium.java_client.android.StartsActivity;
@@ -150,7 +150,7 @@ public class Driver {
     }
 
     public WebElement scrollToAnElementByText(String text) {
-        return driver.findElement(MobileBy.AndroidUIAutomator(
+        return driver.findElement(AppiumBy.androidUIAutomator(
                 "new UiScrollable(new UiSelector())" + ".scrollIntoView(new UiSelector().text(\"" + text + "\"));"));
     }
 
