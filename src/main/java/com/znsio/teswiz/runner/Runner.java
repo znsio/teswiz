@@ -108,6 +108,10 @@ public class Runner {
         return Setup.getBooleanValueFromConfigs(Setup.IS_VISUAL);
     }
 
+    public static boolean shouldFailTestOnVisualDifference() {
+        return Setup.getBooleanValueFromConfigs(Setup.FAIL_TEST_ON_VISUAL_DIFFERENCE);
+    }
+
     public static String getFromEnvironmentConfiguration(String key) {
         try {
             return Setup.getFromEnvironmentConfiguration(key);

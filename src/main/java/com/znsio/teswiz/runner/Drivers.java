@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import static com.context.SessionContext.getTestExecutionContext;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
-import static io.appium.java_client.remote.MobileCapabilityType.DEVICE_NAME;
+import static io.appium.java_client.remote.options.SupportsDeviceNameOption.DEVICE_NAME_OPTION;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
 public class Drivers {
@@ -151,7 +151,7 @@ public class Drivers {
     }
 
     public static String getNameOfDeviceUsedByUser(String userPersona) {
-        return getDeviceOrBrowserNameFromCapabilitiesForUser(userPersona, DEVICE_NAME);
+        return getDeviceOrBrowserNameFromCapabilitiesForUser(userPersona, DEVICE_NAME_OPTION);
     }
 
     static String getBrowserNameForUser(String userPersona) {

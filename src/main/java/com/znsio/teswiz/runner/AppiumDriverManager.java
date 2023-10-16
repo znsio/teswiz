@@ -493,7 +493,7 @@ class AppiumDriverManager {
         LOGGER.info(String.format("Appium will quit the driver for persona: '%s'", userPersona));
         LOGGER.info("Close the app");
         IOSDriver iOSDriver = (IOSDriver) appiumDriver;
-        iOSDriver.closeApp();
+        iOSDriver.quit();
     }
 
     static void quitDriver(AppiumDriver appiumDriver, String userPersona) {
