@@ -9,9 +9,9 @@ name: BrowserStack_Android_CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, atd14_javaclient9 ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, atd14_javaclient9 ]
 
 jobs:
   build:
