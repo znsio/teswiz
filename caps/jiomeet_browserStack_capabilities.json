@@ -4,6 +4,7 @@
     "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/com.jio.rilconferences_v4.21.6.7-421607_Android-5.0.apk",
     "appActivity": "org.jio.meet.introduction.views.SplashActivity",
     "appPackage": "com.jio.rilconferences",
+    "appiumVersion" : "2.0.1",
     "automationName": "UIAutomator2",
     "os_version": "12",
     "platformName": "Android",
@@ -23,7 +24,7 @@
     "browserstack.networkLogs": "true",
     "browserstack.acceptInsecureCerts": "true",
     "browserstack.locale": "IN",
-    "browserstack.appium_version": "2.0.0",
+    "browserstack.appium_version": "2.0.1",
     "project": "teswiz"
   },
   "serverConfig" : {

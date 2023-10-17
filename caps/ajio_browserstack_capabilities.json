@@ -3,6 +3,7 @@
     "adbExecTimeout": 45000,
     "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/ajio-8-3-4.apk",
     "appActivity": "com.ril.ajio.launch.activity.SplashScreenActivity",
+    "appiumVersion" : "2.0.1",
     "appPackage": "com.ril.ajio",
     "appWaitDuration": 45000,
     "automationName": "UiAutomator2",
@@ -18,7 +19,14 @@
     "printPageSourceOnFindFailure": true,
     "skipUnlock": true,
     "noReset": false,
-    "browserstack.appium_version": "2.0.0"
+    "browserstack.appium_version": "2.0.1",
+    "browserstack.enableCameraImageInjection": true,
+    "browserstack.debug": true,
+    "browserstack.geoLocation": "IN",
+    "browserstack.timezone": "Kolkata",
+    "browserstack.networkLogs": "true",
+    "browserstack.gpsLocation": "22,75",
+    "browserstack.locale": "IN"
   },
   "iOS": {
     "platformName": "iOS",

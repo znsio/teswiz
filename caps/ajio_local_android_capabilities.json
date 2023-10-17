@@ -4,6 +4,7 @@
     "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/ajio-8-3-4.apk",
     "appActivity": "com.ril.ajio.launch.activity.SplashScreenActivity",
     "appPackage": "com.ril.ajio",
+    "appiumVersion" : "2.0.0",
     "appWaitDuration": 45000,
     "automationName": "UiAutomator2",
     "autoGrantPermissions": true,

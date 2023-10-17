@@ -3,6 +3,7 @@
     "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
     "appPackage": "com.appiumpro.the_app",
     "appActivity": "com.appiumpro.the_app.MainActivity",
+    "appiumVersion": "2.0.1",
     "autoAcceptAlerts": true,
     "autoGrantPermissions": true,
     "automationName": "UIAutomator2",
@@ -35,9 +36,11 @@
       "networkLogs": "true"
     }
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "android",
