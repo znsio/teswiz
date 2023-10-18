@@ -5,7 +5,7 @@
     "appium": "2.1.3",
     "appium-dashboard": "2.0.2",
     "appium-device-farm": "github:AppiumTestDistribution/appium-device-farm#jsonStringify",
-    "appium-uiautomator2-driver": "2.31.3",
+    "appium-uiautomator2-driver": "2.32.1",
     "appium-xcuitest-driver": "5.7.0",
     "go-ios": "1.0.117"
   },
