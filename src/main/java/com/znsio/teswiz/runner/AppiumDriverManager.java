@@ -51,13 +51,13 @@ class AppiumDriverManager {
                                              TestExecutionContext context) {
         LOGGER.info(String.format(
                 "createAndroidDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of "
-                + "appiumDrivers: '%d'%n",
+                        + "appiumDrivers: '%d'%n",
                 userPersona, forPlatform.name(), numberOfAppiumDriversUsed));
         Driver currentDriver;
-        if(numberOfAppiumDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        if (numberOfAppiumDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
             throw new InvalidTestDataException(String.format(
                     "Unable to create more than '%d' drivers for user persona: '%s' on platform: "
-                    + "'%s'",
+                            + "'%s'",
                     numberOfAppiumDriversUsed, userPersona, forPlatform.name()));
         }
 
@@ -66,9 +66,9 @@ class AppiumDriverManager {
                 "createAndroidDriverForUser: done: userPersona: '%s', Platform: '%s', Number of " + "appiumDrivers: '%d'%n",
                 userPersona, forPlatform.name(), numberOfAppiumDriversUsed));
         disableNotificationsAndToastsOnDevice(currentDriver,
-                                              context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON),
-                                              (String) Drivers.getCapabilitiesFor(userPersona)
-                                                              .getCapability("udid"));
+                context.getTestStateAsString(TEST_CONTEXT.DEVICE_ON),
+                (String) Drivers.getCapabilitiesFor(userPersona)
+                        .getCapability("udid"));
         return currentDriver;
     }
 
@@ -79,11 +79,11 @@ class AppiumDriverManager {
         File capabilityFileToUseForDriverCreation = getCapabilityFileToUseForDriverCreation(
                 appName);
         Driver currentDriver;
-        if(numberOfAppiumDriversUsed == 0) {
+        if (numberOfAppiumDriversUsed == 0) {
             currentDriver = setupFirstAppiumDriver(userPersona, forPlatform, context, appName);
         } else {
             currentDriver = createNewAppiumDriver(userPersona, forPlatform, context, appName,
-                                                  capabilityFileToUseForDriverCreation);
+                    capabilityFileToUseForDriverCreation);
         }
         numberOfAppiumDriversUsed++;
         return currentDriver;
@@ -93,7 +93,7 @@ class AppiumDriverManager {
     private static File getCapabilityFileToUseForDriverCreation(String appName) {
         String capabilityFileNameToUseForDriverCreation = System.getProperty(CAPS);
 
-        if(!appName.equalsIgnoreCase(DEFAULT)) {
+        if (!appName.equalsIgnoreCase(DEFAULT)) {
             String capabilityFileDirectory = new File(
                     capabilityFileNameToUseForDriverCreation).getParent();
             capabilityFileNameToUseForDriverCreation =
@@ -102,7 +102,7 @@ class AppiumDriverManager {
         File capabilityFileToUseForDriverCreation = new File(
                 capabilityFileNameToUseForDriverCreation);
         LOGGER.info(String.format("capabilityFileToUseForDriverCreation: %s",
-                                  capabilityFileToUseForDriverCreation.getAbsolutePath()));
+                capabilityFileToUseForDriverCreation.getAbsolutePath()));
         return capabilityFileToUseForDriverCreation;
     }
 
@@ -122,37 +122,37 @@ class AppiumDriverManager {
             addDeviceLogFileNameFor(userPersona, forPlatform.name(), deviceLogFileName);
 
             currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform,
-                                       userPersona, appName, appiumDriver);
+                    userPersona, appName, appiumDriver);
             Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
             LOGGER.info(CAPABILITIES + appiumDriverCapabilities);
             appiumDriverCapabilities.getCapabilityNames().forEach(key -> LOGGER.info(
                     String.format("\t%s:: %s", key, appiumDriverCapabilities.getCapability(key))));
 
             Drivers.addUserPersonaDriverCapabilities(userPersona, appiumDriverCapabilities);
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new EnvironmentSetupException(
                     String.format("Unable to create Android driver '#%d' for user persona: '%s'",
-                                  numberOfAppiumDriversUsed, userPersona));
+                            numberOfAppiumDriversUsed, userPersona));
         }
         return currentDriver;
     }
 
     private static String startDataCapture(Integer scenarioRunCount,
-                                    String deviceLogFileDirectory) {
+                                           String deviceLogFileDirectory) {
         String fileName = String.format("/run-%s", scenarioRunCount);
         if (AppiumDeviceManager.getAppiumDevice().getPlatformName().equalsIgnoreCase("android")) {
             try {
                 fileName = String.format("/%s-run-%s",
                         AppiumDeviceManager.getAppiumDevice().getUdid(), scenarioRunCount);
                 File logFile = createFile(deviceLogFileDirectory
-                                                  + FileLocations.DEVICE_LOGS_DIRECTORY,
+                                + FileLocations.DEVICE_LOGS_DIRECTORY,
                         fileName);
                 fileName = logFile.getAbsolutePath();
                 LOGGER.debug("Capturing device logs here: " + fileName);
                 PrintStream logFileStream = null;
                 logFileStream = new PrintStream(logFile);
                 LogEntries logcatOutput = com.appium.manager.AppiumDriverManager.getDriver()
-                                                  .manage().logs().get("logcat");
+                        .manage().logs().get("logcat");
                 StreamSupport.stream(logcatOutput.spliterator(), false)
                         .forEach(logFileStream::println);
             } catch (FileNotFoundException e) {
@@ -180,16 +180,16 @@ class AppiumDriverManager {
         LOGGER.info(CAPABILITIES + appiumDriverCapabilities);
         Drivers.addUserPersonaDriverCapabilities(userPersona, appiumDriverCapabilities);
         Drivers.addUserPersonaDeviceLogFileName(userPersona,
-                                                context.getTestStateAsString("deviceLog"),
-                                                forPlatform);
+                context.getTestStateAsString("deviceLog"),
+                forPlatform);
         currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform,
-                                   userPersona, appName, appiumDriver);
+                userPersona, appName, appiumDriver);
         return currentDriver;
     }
 
     private static void disableNotificationsAndToastsOnDevice(Driver currentDriver, String deviceOn,
                                                               String udid) {
-        if(Runner.isRunningInCI()) {
+        if (Runner.isRunningInCI()) {
             disableNotificationsForDeviceInDeviceFarm(currentDriver, deviceOn);
         } else {
             disableNotificationsForLocalDevice(udid);
@@ -198,11 +198,11 @@ class AppiumDriverManager {
 
     private static void disableNotificationsForLocalDevice(String udid) {
         String[] disableToastsCommand = new String[]{"adb", "-s", udid, "shell", "appops", "set",
-                                                     Runner.getAppPackageName(), "TOAST_WINDOW",
-                                                     "deny"};
+                Runner.getAppPackageName(), "TOAST_WINDOW",
+                "deny"};
         String[] disableNotificationsCommand = new String[]{"adb", "-s", udid, "shell", "settings",
-                                                            "put", "global",
-                                                            "heads_up_notifications_enabled", "0"};
+                "put", "global",
+                "heads_up_notifications_enabled", "0"};
 
         CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(
                 disableToastsCommand);
@@ -211,34 +211,33 @@ class AppiumDriverManager {
         CommandLineResponse disableNotificationsCommandResponse = CommandLineExecutor.execCommand(
                 disableNotificationsCommand);
         LOGGER.info(String.format("disableNotificationsCommandResponse: %s",
-                                  disableNotificationsCommandResponse));
+                disableNotificationsCommandResponse));
     }
 
     private static void disableNotificationsForDeviceInDeviceFarm(Driver currentDriver,
                                                                   String deviceOn) {
-        if(deviceOn.equalsIgnoreCase("pCloudy")) {
+        if (deviceOn.equalsIgnoreCase("pCloudy")) {
             Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript(
                     "pCloudy_executeAdbCommand",
                     "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW " +
-                    "deny");
+                            "deny");
             LOGGER.info(String.format("@disableToastsCommandResponse: %s", disableToasts));
             Object disableNotifications =
                     ((AppiumDriver) currentDriver.getInnerDriver()).executeScript(
-                    "pCloudy_executeAdbCommand",
-                    "adb shell settings put global heads_up_notifications_enabled 0");
+                            "pCloudy_executeAdbCommand",
+                            "adb shell settings put global heads_up_notifications_enabled 0");
             LOGGER.info("@disableNotificationsCommandResponse: " + disableNotifications);
         }
     }
 
     static void closeAppiumDriver(String userPersona, Driver driver) {
-        if(Runner.getPlatform().equals(Platform.windows)) {
+        if (Runner.getPlatform().equals(Platform.windows)) {
             closeWindowsAppOnMachine(userPersona, driver);
-        } else if(Runner.getPlatform().equals(Platform.android)){
+        } else if (Runner.getPlatform().equals(Platform.android)) {
             closeAndroidAppOnDevice(userPersona, driver);
-        } else if(Runner.getPlatform().equals(Platform.iOS)){
+        } else if (Runner.getPlatform().equals(Platform.iOS)) {
             closeIOSAppOnDevice(userPersona, driver);
-        }
-        else {
+        } else {
             throw new InvalidTestDataException(String.format("No implementation for platform: %s", Runner.getPlatform()));
         }
     }
@@ -251,14 +250,14 @@ class AppiumDriverManager {
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
         --numberOfAppiumDriversUsed;
         LOGGER.info(String.format("numberOfAppiumDriversUsed: %d", numberOfAppiumDriversUsed));
-        if(null == appiumDriver) {
+        if (null == appiumDriver) {
             logMessage = String.format("Strange. But WindowsDriver for user '%s' already closed",
-                                       userPersona);
+                    userPersona);
             LOGGER.info(logMessage);
             ReportPortalLogger.logDebugMessage(logMessage);
         } else {
             logMessage = String.format("Closing WindowsDriver for App '%s' for user '%s'",
-                                       appPackageName, userPersona);
+                    appPackageName, userPersona);
             LOGGER.info(logMessage);
             // todo - fix for appium 2.0, test terminateApp() on windows app in windows OS
             AndroidDriver androidDriver = (AndroidDriver) appiumDriver;
@@ -267,8 +266,8 @@ class AppiumDriverManager {
                     Thread.currentThread().getId());
             AppiumDriver atdAppiumDriver =
                     (AppiumDriver) context.getTestState(
-                    TEST_CONTEXT.APPIUM_DRIVER);
-            if(appiumDriver.equals(atdAppiumDriver)) {
+                            TEST_CONTEXT.APPIUM_DRIVER);
+            if (appiumDriver.equals(atdAppiumDriver)) {
                 LOGGER.info(
                         String.format("ATD will quit the driver for persona: '%s'", userPersona));
             } else {
@@ -289,9 +288,9 @@ class AppiumDriverManager {
         --numberOfAppiumDriversUsed;
         LOGGER.info(String.format("numberOfAppiumDriversUsed: %d", numberOfAppiumDriversUsed));
         AppiumDriver appiumDriver = (AppiumDriver) driver.getInnerDriver();
-        if(null == appiumDriver) {
+        if (null == appiumDriver) {
             logMessage = String.format("Strange. But AppiumDriver for user '%s' already closed",
-                                       userPersona);
+                    userPersona);
             LOGGER.info(logMessage);
             ReportPortalLogger.logDebugMessage(logMessage);
         } else {
@@ -299,8 +298,8 @@ class AppiumDriverManager {
                     Thread.currentThread().getId());
             AppiumDriver atdAppiumDriver =
                     (AppiumDriver) context.getTestState(
-                    TEST_CONTEXT.APPIUM_DRIVER);
-            if(appiumDriver.equals(atdAppiumDriver)) {
+                            TEST_CONTEXT.APPIUM_DRIVER);
+            if (appiumDriver.equals(atdAppiumDriver)) {
                 LOGGER.info(
                         String.format("ATD will quit the driver for persona: '%s'", userPersona));
                 LOGGER.info("Close the app");
@@ -324,16 +323,16 @@ class AppiumDriverManager {
             applicationState = androidDriver.queryAppState(appPackageName);
 
             logMessage = String.format("App: '%s' Application state before closing app: '%s'%n",
-                                       appPackageName, applicationState);
+                    appPackageName, applicationState);
             LOGGER.info(logMessage);
             ReportPortalLogger.logDebugMessage(logMessage);
 
             androidDriver.terminateApp(appPackageName);
             applicationState = androidDriver.queryAppState(appPackageName);
             logMessage = String.format("App: '%s' Application state after closing app: '%s'%n",
-                                       appPackageName, applicationState);
+                    appPackageName, applicationState);
             LOGGER.info(logMessage);
-        } catch(NoSuchSessionException e) {
+        } catch (NoSuchSessionException e) {
             logMessage = e.getMessage();
             LOGGER.info(logMessage);
         }
@@ -345,8 +344,8 @@ class AppiumDriverManager {
         File destinationFile = new File(deviceLogFileName);
 
         String adbLogMessage = String.format("ADB Logs for %s, file name: %s",
-                                             Drivers.getNameOfDeviceUsedByUser(userPersona),
-                                             destinationFile.getName());
+                Drivers.getNameOfDeviceUsedByUser(userPersona),
+                destinationFile.getName());
         LOGGER.info(adbLogMessage);
         ReportPortalLogger.attachFileInReportPortal(adbLogMessage, destinationFile);
     }
@@ -365,7 +364,7 @@ class AppiumDriverManager {
     }
 
     static void freeDevices() {
-        for(DriverSession additionalDevice : additionalDevices) {
+        for (DriverSession additionalDevice : additionalDevices) {
             LOGGER.info(
                     String.format("Freeing device: %s", additionalDevice.getDeviceName()));
         }
@@ -377,13 +376,13 @@ class AppiumDriverManager {
                                              TestExecutionContext context) {
         LOGGER.info(String.format(
                 "createWindowsDriverForUser: begin: userPersona: '%s', Platform: '%s', Number of "
-                + "webdrivers: '%d'%n",
+                        + "webdrivers: '%d'%n",
                 userPersona, forPlatform.name(), numberOfAppiumDriversUsed));
 
-        if(numberOfAppiumDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        if (numberOfAppiumDriversUsed == MAX_NUMBER_OF_APPIUM_DRIVERS) {
             throw new InvalidTestDataException(String.format(
                     "Unable to create more than '%d' drivers for user persona: '%s' on platform: "
-                    + "'%s'",
+                            + "'%s'",
                     numberOfAppiumDriversUsed, userPersona, forPlatform.name()));
         }
         return createWindowsDriver(userPersona, forPlatform, context);
@@ -393,28 +392,28 @@ class AppiumDriverManager {
     private static Driver createWindowsDriver(String userPersona, Platform forPlatform,
                                               TestExecutionContext context) {
         Driver currentDriver;
-        if(numberOfAppiumDriversUsed < MAX_NUMBER_OF_APPIUM_DRIVERS) {
+        if (numberOfAppiumDriversUsed < MAX_NUMBER_OF_APPIUM_DRIVERS) {
             AppiumDriver windowsDriver =
                     (AppiumDriver) context.getTestState(
-                    TEST_CONTEXT.APPIUM_DRIVER);
+                            TEST_CONTEXT.APPIUM_DRIVER);
             String appName = Drivers.getAppNamefor(userPersona);
 
             String runningOn = Runner.isRunningInCI() ? "CI" : "local";
             context.addTestState(TEST_CONTEXT.WINDOWS_DEVICE_ON, runningOn);
             currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform,
-                                       userPersona, appName, windowsDriver);
+                    userPersona, appName, windowsDriver);
             Capabilities windowsDriverCapabilities = windowsDriver.getCapabilities();
             LOGGER.info(CAPABILITIES + windowsDriverCapabilities);
             Drivers.addUserPersonaDriverCapabilities(userPersona, windowsDriverCapabilities);
             LOGGER.info(
                     "deviceLog for windows driver: " + context.getTestStateAsString("deviceLog"));
             Drivers.addUserPersonaDeviceLogFileName(userPersona,
-                                                    context.getTestStateAsString("deviceLog"),
-                                                    forPlatform);
+                    context.getTestStateAsString("deviceLog"),
+                    forPlatform);
         } else {
             throw new InvalidTestDataException(String.format(
                     "Current number of WindowsDriver instances used: '%d'. " + "Unable to create "
-                    + "more than '%d' drivers for user persona: '%s' " + "on platform: '%s'",
+                            + "more than '%d' drivers for user persona: '%s' " + "on platform: '%s'",
                     numberOfAppiumDriversUsed, MAX_NUMBER_OF_APPIUM_DRIVERS, userPersona,
                     forPlatform.name()));
         }
@@ -480,20 +479,16 @@ class AppiumDriverManager {
             AppiumDriver iOSAppiumDriver = (AppiumDriver) context.getTestState(TEST_CONTEXT.APPIUM_DRIVER);
 
             if (appiumDriver.equals(iOSAppiumDriver)) {
-                closeIOSDriver(appiumDriver, userPersona);
+                LOGGER.info(String.format("Appium will quit the driver for persona: '%s'", userPersona));
+                LOGGER.info("Close the app");
+                IOSDriver iosDriver = (IOSDriver) appiumDriver;
+                iosDriver.terminateApp(appBundleId);
             } else {
                 quitDriver(appiumDriver, userPersona);
                 attachDeviceLogsToReportPortal(userPersona);
                 terminateIOSAppOnDevice(appBundleId, appiumDriver);
             }
         }
-    }
-
-    static void closeIOSDriver(AppiumDriver appiumDriver, String userPersona) {
-        LOGGER.info(String.format("Appium will quit the driver for persona: '%s'", userPersona));
-        LOGGER.info("Close the app");
-        IOSDriver iOSDriver = (IOSDriver) appiumDriver;
-        iOSDriver.quit();
     }
 
     static void quitDriver(AppiumDriver appiumDriver, String userPersona) {
