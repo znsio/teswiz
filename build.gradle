@@ -19,7 +19,7 @@ buildscript {
         browserStackLocalVersion = "1.1.0"
         jetbrainsAnnotationsVersion = "24.0.1"
         aspectJVersion = "1.9.20.1"
-        specmaticVersion = '0.81.0'
+        specmaticVersion = '0.81.1'
     }
 }
 
