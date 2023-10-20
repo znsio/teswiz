@@ -12,6 +12,10 @@ Set the **usePrebuiltWDA** capability to false in a capabilities file, you can u
     
     "usePrebuiltWDA": false
 
+Add the capability **iosDeviceType** to run testcases on browserstack and set it to real in browserstack capabilities file:
+
+    "iosDeviceType": real
+
 ## Start Appium
 
 To start Appium manually, run the following command:
