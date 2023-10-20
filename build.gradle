@@ -19,6 +19,7 @@ buildscript {
         browserStackLocalVersion = "1.1.0"
         jetbrainsAnnotationsVersion = "24.0.1"
         aspectJVersion = "1.9.20.1"
+        specmaticVersion = '0.81.0'
     }
 }
 
@@ -88,6 +89,7 @@ dependencies {
     }
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
     implementation "org.aspectj:aspectjrt:$project.aspectJVersion"
+    implementation "in.specmatic:specmatic-core:${project.specmaticVersion}"
 }
 
 shadowJar {
@@ -170,6 +172,7 @@ tasks.register('run', JavaExec) {
 
         println("Debug mode: " + System.getProperty('debug', 'false'))
         // attach debugger
+        // example: ./gradlew run -Ddebug=true
         if (System.getProperty('debug', 'false') == 'true') {
             println("In debug mode")
             jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,' +
