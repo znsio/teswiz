@@ -9,7 +9,7 @@
 [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)
 
 ## Latest successful build id:
-[![Latest Commit](https://img.shields.io/badge/commit-01e1fb3ca2-blue.svg)](https://jitpack.io/#znsio/teswiz)
+[![Latest Commit](https://img.shields.io/badge/commit-878711de91-blue.svg)](https://jitpack.io/#znsio/teswiz)
 
 # To Build
 `./gradlew clean build`
