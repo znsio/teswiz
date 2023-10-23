@@ -18,6 +18,9 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 
+import static com.znsio.teswiz.runner.Runner.USER_NAME;
+import static com.znsio.teswiz.runner.Runner.getHostName;
+
 class BrowserStackSetup {
     private static final Logger LOGGER = Logger.getLogger(BrowserStackSetup.class.getName());
     private static final String DEVICE = "device";
@@ -42,6 +45,8 @@ class BrowserStackSetup {
         loadedPlatformCapability.put("app", appIdFromBrowserStack);
         loadedPlatformCapability.put("browserstack.user", authenticationUser);
         loadedPlatformCapability.put("browserstack.key", authenticationKey);
+        loadedPlatformCapability.put("browserstack.LoggedInUser", USER_NAME);
+        loadedPlatformCapability.put("browserstack.MachineName", getHostName());
         setupLocalTesting(authenticationKey, loadedPlatformCapability);
         String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "")
                                      .replace("\\", "");

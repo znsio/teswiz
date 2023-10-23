@@ -123,6 +123,7 @@ public class Visual {
         appEyes.setIgnoreCaret(true);
         appName = appName + "-" + platform;
         appEyes.addProperty("USER_PERSONA", userPersona);
+        appEyes.addProperty("HOST_NAME", Runner.getHostName());
         appEyes.addProperty(Setup.BRANCH_NAME,
                             String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
         appEyes.addProperty(Setup.PLATFORM, platform.name());
@@ -208,6 +209,7 @@ public class Visual {
 
         appName = appName + "-" + platform;
         webEyes.addProperty("USER_PERSONA", userPersona);
+        webEyes.addProperty("HOST_NAME", Runner.getHostName());
         webEyes.addProperty(Setup.BRANCH_NAME,
                             String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
         webEyes.addProperty(Setup.PLATFORM, platform.name());

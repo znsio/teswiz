@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,6 +65,7 @@ class Setup {
     static final String REPORTS_DIR = "reports";
     static final String CLOUD_USE_PROXY = "CLOUD_USE_PROXY";
     static final String CLOUD_USE_LOCAL_TESTING = "CLOUD_USE_LOCAL_TESTING";
+    static final String HOST_NAME = "HOST_NAME";
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
@@ -428,6 +431,16 @@ class Setup {
                                                                  getStringValueFromPropertiesIfAvailable(
                                                                          RP_DESCRIPTION, RP_DEFAULT_DESCRIPTION)));
         configs.put(APP_VERSION, NOT_SET);
+        configs.put(HOST_NAME, getHostMachineName());
+    }
+
+    private static String getHostMachineName() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            LOGGER.debug("Error fetching machine name: " + e.getMessage());
+            return NOT_SET;
+        }
     }
 
     private static List<String> listOfDirectoriesToCreate() {

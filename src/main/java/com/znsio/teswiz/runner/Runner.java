@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
+import static com.znsio.teswiz.runner.Setup.HOST_NAME;
 
 public class Runner {
     public static final String OS_NAME = System.getProperty("os.name");
@@ -53,6 +54,10 @@ public class Runner {
 
     public static Platform getPlatformForUser(String userPersona) {
         return Drivers.getPlatformForUser(userPersona);
+    }
+
+    public static String getHostName() {
+        return Setup.getFromConfigs(HOST_NAME);
     }
 
     public void run(List<String> args, String stepDefsDir, String featuresDir) {
