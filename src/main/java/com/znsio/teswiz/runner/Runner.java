@@ -60,7 +60,7 @@ public class Runner {
         return Setup.getFromConfigs(HOST_NAME);
     }
 
-    public void run(List<String> args, String stepDefsDir, String featuresDir) {
+    private void run(List<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);
         args.add(featuresDir);
