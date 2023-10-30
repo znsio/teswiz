@@ -6,7 +6,7 @@
     "appium-dashboard": "2.0.2",
     "appium-device-farm": "github:AppiumTestDistribution/appium-device-farm#fix-logging-cloud",
     "appium-uiautomator2-driver": "2.32.3",
-    "appium-xcuitest-driver": "5.7.0",
+    "appium-xcuitest-driver": "5.8.0",
     "go-ios": "1.0.118",
     "appium-idb": "1.8.5"
   },
