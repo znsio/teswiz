@@ -4,7 +4,6 @@ import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.businessLayer.search.SearchBL;
 import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import io.cucumber.java.en.When;
 import org.apache.log4j.Logger;
