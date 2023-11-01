@@ -7,7 +7,7 @@
     "appium-dashboard": "2.0.2",
     "appium-device-farm": "8.3.8",
     "appium-uiautomator2-driver": "2.33.0",
-    "appium-xcuitest-driver": "5.8.0",
+    "appium-xcuitest-driver": "5.8.1",
     "go-ios": "1.0.120",
     "appium-webdriveragent": "5.12.2"
   },
