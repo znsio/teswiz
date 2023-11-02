@@ -1,7 +1,7 @@
 @mobileEmulation
 Feature: Mobile Emulation on Web browser
 
-#  CONFIG=./configs/jiomeet_local_config.properties TAG="@mobileEmulation and @multiuser-web" ./gradlew run
+#  CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@mobileEmulation and @multiuser-web" ./gradlew run
   @multiuser-web
   Scenario: Verify Mobile Emulation View on 2 different browsers
     Given "someone" starts "images-web" on "chrome-mobile1"
