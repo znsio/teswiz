@@ -156,7 +156,7 @@ public class Driver {
 
     public WebElement scrollToAnElementByText(String text, int maxSwipes) {
         return driver.findElement(AppiumBy.androidUIAutomator(
-                "new UiScrollable(new UiSelector().scrollable(true)).setMaxSearchSwipes(" + maxSwipes + ")" + ".scrollIntoView(new UiSelector().text(\"" + text + "\"));"));
+                "new UiScrollable(new UiSelector().scrollable(true)).setMaxSearchSwipes(" + maxSwipes + ").scrollIntoView(new UiSelector().text(\"" + text + "\"));"));
     }
 
     public boolean isElementPresent(By locator) {
