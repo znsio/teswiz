@@ -71,8 +71,8 @@ task run(type: JavaExec) {
 //        def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
 //        println "isRunningInCI: $isRunInCI"
 //        def configFile = isRunInCI
-//                ? "./configs/theapp_pcloudy_config.properties"
-//                : "./configs/theapp_local_config.properties"
+//                ? "./configs/theapp/theapp_pcloudy_config.properties"
+//                : "./configs/theapp/theapp_local_config.properties"
 //        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
 
         systemProperties = System.properties

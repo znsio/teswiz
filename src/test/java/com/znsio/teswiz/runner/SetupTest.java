@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SetupTest {
     private static final String LOG_DIR = "./target/testLogs";
-    private static final String configFilePath = "./configs/ajio_local_android_config.properties";
+    private static final String configFilePath = "./configs/ajio/ajio_local_android_config.properties";
 
     @BeforeAll
     public static void setupBefore() {
