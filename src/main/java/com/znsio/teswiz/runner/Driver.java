@@ -154,6 +154,11 @@ public class Driver {
                 "new UiScrollable(new UiSelector())" + ".scrollIntoView(new UiSelector().text(\"" + text + "\"));"));
     }
 
+    public WebElement scrollToAnElementByText(String text, int maxSwipes) {
+        return driver.findElement(AppiumBy.androidUIAutomator(
+                "new UiScrollable(new UiSelector().scrollable(true)).setMaxSearchSwipes(" + maxSwipes + ")" + ".scrollIntoView(new UiSelector().text(\"" + text + "\"));"));
+    }
+
     public boolean isElementPresent(By locator) {
         return !driver.findElements(locator).isEmpty();
     }
