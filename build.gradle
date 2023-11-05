@@ -11,7 +11,7 @@ buildscript {
         commonsRngSimpleVersion = "1.5"
         unirestVersion = "3.14.5"
         jadbVersion = "1.2.1"
-        junitVersion = "5.10.0"
+        junitVersion = "5.10.1"
         slf4jVersion = "2.0.9"
         fasterxmlJacksonVersion = "2.15.3"
         jodaTimeVersion = "2.12.5"
