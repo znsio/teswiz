@@ -1,14 +1,15 @@
 {
   "dependencies": {
+    "appium-idb": "1.8.8",
     "@appium/doctor": "2.0.27",
     "@appium/relaxed-caps-plugin": "1.0.5",
     "appium": "2.2.1",
     "appium-dashboard": "2.0.2",
-    "appium-device-farm": "github:AppiumTestDistribution/appium-device-farm#fix-logging-cloud",
-    "appium-uiautomator2-driver": "2.32.3",
-    "appium-xcuitest-driver": "5.7.0",
-    "go-ios": "1.0.118",
-    "appium-idb": "1.8.5"
+    "appium-device-farm": "8.3.9",
+    "appium-uiautomator2-driver": "2.33.1",
+    "appium-xcuitest-driver": "5.8.1",
+    "go-ios": "1.0.120",
+    "appium-webdriveragent": "5.13.1"
   },
   "name": "teswiz-appium2.0",
   "description": "[![0.0.3](https://jitpack.io/v/znsio/teswiz.svg)](https://jitpack.io/#znsio/teswiz) [![0.0.3](https://jitci.com/gh/znsio/teswiz/svg)](https://jitci.com/gh/znsio/teswiz) [![CI](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml) [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)",

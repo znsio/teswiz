@@ -1,0 +1,29 @@
+{
+  "iOS": {
+    "platformName": "iOS",
+    "app": "https://applitoolsnmlresources.z19.web.core.windows.net/Tutorials/eyes-ios-hello-world.zip",
+    "deviceName": "iPhone",
+    "preventWDAAttachments": true,
+    "clearSystemFiles": true,
+    "automationName": "XCUITest",
+    "usePrebuiltWDA": false,
+    "appium:iPhoneOnly": true,
+    "fullReset": true,
+    "shouldUseSingletonTestManager": false,
+    "simpleIsVisibleCheck": true,
+    "maxTypingFrequency": 10
+  },
+  "serverConfig" : {
+    "server": {
+      "use-plugins": ["device-farm"],
+      "plugin": {
+        "device-farm": {
+          "platform": "iOS",
+          "skipChromeDownload": true,
+          "iosDeviceType": "simulated"
+        }
+      }
+    }
+  },
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
+}

@@ -5,7 +5,7 @@ buildscript {
         gradleVersion = "8.4"
         assertJVersion = "3.24.2"
         atdVersion = "14.0.1"
-        applitoolsAppiumVersion = "5.64.7"
+        applitoolsAppiumVersion = "5.64.8"
         seleniumVersion = "4.13.0"
         commonsLang3Version = "3.13.0"
         commonsRngSimpleVersion = "1.5"
@@ -158,8 +158,8 @@ tasks.register('run', JavaExec) {
 //        def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
 //        println "isRunningInCI: $isRunInCI"
 //        def configFile = isRunInCI
-//                ? "./configs/theapp_pcloudy_config.properties"
-//                : "./configs/theapp_local_android_config.properties"
+//                ? "./configs/theapp/theapp_pcloudy_config.properties"
+//                : "./configs/theapp/theapp_local_android_config.properties"
 //        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
 
         systemProperties = System.properties as Map<String, ?>

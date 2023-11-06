@@ -1,0 +1,38 @@
+{
+  "web": {
+    "browserName":"chrome",
+    "browserstackOptions": {
+      "deviceName": "Samsung Galaxy S20",
+      "osVersion": "13.0",
+      "projectName": "ab",
+      "buildName": "fff",
+      "sessionName": "test",
+      "appiumVersion": "2.0.1",
+      "local": "false",
+      "networkLogs": "true",
+      "consoleLogs": "info",
+      "geoLocation": "IN",
+      "timezone": "Kolkata"
+    }
+  },
+  "serverConfig" : {
+    "server": {
+      "use-plugins": ["device-farm"],
+      "plugin": {
+        "device-farm": {
+          "platform": "web",
+          "skipChromeDownload": true,
+          "cloud": {
+            "cloudName": "browserstack",
+            "url": "http://hub-cloud.browserstack.com",
+            "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
+            "devices": [
+            ],
+            "web": {}
+          }
+        }
+      }
+    }
+  },
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
+}

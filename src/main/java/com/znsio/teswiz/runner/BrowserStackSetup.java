@@ -20,6 +20,7 @@ import java.util.*;
 
 import static com.znsio.teswiz.runner.Runner.USER_NAME;
 import static com.znsio.teswiz.runner.Runner.getHostName;
+import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
 class BrowserStackSetup {
     private static final Logger LOGGER = Logger.getLogger(BrowserStackSetup.class.getName());
@@ -35,14 +36,11 @@ class BrowserStackSetup {
         String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
         String platformName = Setup.getPlatform().name();
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
-        String appPath = new File(Setup.getFromConfigs(Setup.APP_PATH)).getAbsolutePath();
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        String appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser,
-                                                                authenticationKey, appPath, deviceLabURL);
-        LOGGER.info(String.format("app Id retreived from browser stack is: %s", appIdFromBrowserStack));
-        loadedPlatformCapability.put("app", appIdFromBrowserStack);
+
+        addAppOrBrowserNameToBrowserStackCapablities(deviceLabURL, loadedPlatformCapability, authenticationUser, authenticationKey);
         loadedPlatformCapability.put("browserstack.user", authenticationUser);
         loadedPlatformCapability.put("browserstack.key", authenticationKey);
         loadedPlatformCapability.put("browserstack.LoggedInUser", USER_NAME);
@@ -55,6 +53,20 @@ class BrowserStackSetup {
         loadedPlatformCapability.put("project", Setup.getFromConfigs(Setup.APP_NAME));
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey,
                                                 loadedCapabilityFile);
+    }
+
+    private static void addAppOrBrowserNameToBrowserStackCapablities(String deviceLabURL, Map loadedPlatformCapability, String authenticationUser, String authenticationKey) {
+        Object browserName = loadedPlatformCapability.get(BROWSER_NAME);
+        if (null != browserName) {
+            LOGGER.info(String.format("app Id retreived from browser stack is: %s", browserName));
+            loadedPlatformCapability.put("browserstack.browserName", browserName);
+        } else {
+            String appPath = new File(Setup.getFromConfigs(Setup.APP_PATH)).getAbsolutePath();
+            String appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser,
+                    authenticationKey, appPath, deviceLabURL);
+            LOGGER.info(String.format("app Id retreived from browser stack is: %s", appIdFromBrowserStack));
+            loadedPlatformCapability.put("app", appIdFromBrowserStack);
+        }
     }
 
     private static void setupLocalTesting(String authenticationKey, Map loadedPlatformCapability) {
@@ -92,6 +104,7 @@ class BrowserStackSetup {
         browserstackOptions.put("buildName",
                                 Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
 
+        browserstackOptions.put("sessionName", Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestName());
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
