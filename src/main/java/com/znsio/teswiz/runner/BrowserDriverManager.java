@@ -551,7 +551,7 @@ class BrowserDriverManager {
         checkNumberOfWebDriversInstantiated(userPersona, forPlatform);
         String updatedTestName = context.getTestName() + "-" + userPersona;
         String runningOn = Runner.isRunningInCI() ? "CI" : "local";
-        context.addTestState(TEST_CONTEXT.WEB_BROWSER_ON, runningOn);
+        context.addTestState(TEST_CONTEXT.ELECTRON_BROWSER_ON, runningOn);
         JSONObject browserConfig = getBrowserConfig(context);
         LOGGER.info(String.format("Create new electrondriver instance for: %s, on: %s, with browserConfig: %s", userPersona, browserName, browserConfig));
         LOGGER.info(BrowserDriverManager.class.getName() + "-createNewElectronDriver: " + browserName.toLowerCase());
