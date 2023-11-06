@@ -104,6 +104,9 @@ public class Drivers {
             case web:
                 currentDriver = BrowserDriverManager.createWebDriverForUser(userPersona, browserName, forPlatform, context);
                 break;
+            case electron:
+                currentDriver = BrowserDriverManager.createElectronDriverForUser(userPersona, browserName, forPlatform, context);
+                break;
             default:
                 throw new InvalidTestDataException(String.format(
                         "Unexpected platform value: '%s' provided to assign Driver for user: '%s': ", forPlatform, userPersona));

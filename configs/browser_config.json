@@ -33,7 +33,8 @@
       ]
     },
     "noProxy": "localhost,127.0.0.1",
-    "proxyType": "manual"
+    "proxyType": "manual",
+    "binary": "C:\\Users\\pathTo\\electronApp.exe"
   },
   "firefox": {
     "firefoxProfile": {

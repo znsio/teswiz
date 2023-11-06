@@ -475,6 +475,10 @@ class Setup {
                 currentPlatform = Platform.web;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Web";
+            } else if (providedTags.contains("multiuser-electron")) {
+                currentPlatform = Platform.electron;
+                inferredTags = providedTags + AND_NOT_WIP;
+                launchName += " - Real User Simulation on Electron";
             } else if (providedTags.contains("multiuser-windows-web")) {
                 currentPlatform = Platform.windows;
                 inferredTags = providedTags + AND_NOT_WIP;
@@ -533,12 +537,15 @@ class Setup {
 
     private static ArrayList<String> setupPlatformExecution() {
         ArrayList<String> webCukeArgs = new ArrayList<>();
-        if(currentPlatform.equals(Platform.web)) {
+        if (currentPlatform.equals(Platform.web)) {
             configs.put(APP_PATH, configs.get(BROWSER));
             configs.put(EXECUTED_ON, "Local Browsers");
             setupListenersForWebOrAPIExecution(webCukeArgs);
-        }
-        else if(currentPlatform.equals(Platform.api)) {
+        } else if (currentPlatform.equals(Platform.electron)) {
+            configs.put(APP_PATH, configs.get(BROWSER));
+            configs.put(EXECUTED_ON, "Local Electron Application");
+            setupListenersForWebOrAPIExecution(webCukeArgs);
+        } else if (currentPlatform.equals(Platform.api)) {
             configs.put(EXECUTED_ON, currentPlatform.name());
             setupListenersForWebOrAPIExecution(webCukeArgs);
         }

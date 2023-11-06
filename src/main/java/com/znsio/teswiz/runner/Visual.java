@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.io.File;
 import java.time.Duration;
@@ -36,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.znsio.teswiz.runner.Runner.*;
 
@@ -291,12 +293,24 @@ public class Visual {
         LOGGER.info(String.format("Provided browser dimensions: %s",
                                   providedBrowserViewPortSizeFromConfig));
 
-        if(driverType.equals(Driver.APPIUM_DRIVER)) {
+        if (driverType.equals(Driver.APPIUM_DRIVER)) {
             return providedBrowserViewPortSizeFromConfig;
         } else {
             JavascriptExecutor js = (JavascriptExecutor) innerDriver;
-            Dimension actualBrowserSize = innerDriver.manage().window().getSize();
-            LOGGER.info(String.format("Actual browser dimensions: %s", actualBrowserSize));
+            if (Runner.getPlatform().equals(Platform.electron)) {
+                Set<String> windowHandles = innerDriver.getWindowHandles();
+                System.out.println("Number of windows open" + windowHandles);
+                if (windowHandles.size() > 0) {
+                    String sessionId = ((ChromeDriver) innerDriver).getSessionId().toString();
+
+                    System.out.println("Session ID: " + sessionId);
+                    innerDriver.switchTo().window((String) windowHandles.toArray()[0]);
+                    System.out.println("Switched to main window");
+                }
+            } else {
+                Dimension actualBrowserSize = innerDriver.manage().window().getSize();
+                LOGGER.info(String.format("Actual browser dimensions: %s", actualBrowserSize));
+            }
             Long actualHeight = (Long) js.executeScript("return (window.innerHeight);");
             Long actualWidth = (Long) js.executeScript("return (window.innerWidth);");
 
