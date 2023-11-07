@@ -30,6 +30,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
+import java.awt.Toolkit;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -390,7 +391,10 @@ class BrowserDriverManager {
     private static void manageWindowSizeAndHeadlessMode(WebDriver driver) {
         LOGGER.info("Reset browser window size");
         if (shouldBrowserBeMaximized && !isRunInHeadlessMode) {
-            driver.manage().window().maximize();
+            Toolkit toolkit = Toolkit.getDefaultToolkit();
+            int width = toolkit.getScreenSize().width;
+            int height = toolkit.getScreenSize().height;
+            driver.manage().window().setSize(new Dimension(width, height));
         } else if (isRunInHeadlessMode) {
             driver.manage().window().setSize(new Dimension(1920, 1080));
         }
