@@ -14,7 +14,6 @@
 # To Build
 `./gradlew clean build`
 
-
 # What is this repository about?
 
 This repository implements automated tests for Android & iOS apps, specified using cucumber-jvm and intelligently run
