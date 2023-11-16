@@ -13,11 +13,11 @@ buildscript {
         jadbVersion = "1.2.1"
         junitVersion = "5.10.1"
         slf4jVersion = "2.0.9"
-        fasterxmlJacksonVersion = "2.15.3"
+        fasterxmlJacksonVersion = "2.16.0"
         jodaTimeVersion = "2.12.5"
         masterThoughtVersion = "5.7.7"
         browserStackLocalVersion = "1.1.0"
-        jetbrainsAnnotationsVersion = "24.0.1"
+        jetbrainsAnnotationsVersion = "24.1.0"
         aspectJVersion = "1.9.20.1"
         specmaticVersion = '0.81.2'
     }
