@@ -209,7 +209,7 @@ class BrowserDriverManager {
         chromeOptions.setAcceptInsecureCerts(chromeConfiguration.getBoolean(ACCEPT_INSECURE_CERTS));
 
         if (Runner.getPlatform().equals(Platform.electron)) {
-            chromeOptions.setBrowserVersion(chromeConfiguration.getString("binary"));
+            chromeOptions.setBrowserVersion(chromeConfiguration.getString("browserVersion"));
             Toolkit toolkit = Toolkit.getDefaultToolkit();
             int width = toolkit.getScreenSize().width;
             int height = toolkit.getScreenSize().height;
