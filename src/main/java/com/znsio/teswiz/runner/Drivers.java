@@ -4,9 +4,12 @@ import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import kong.unirest.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 
 import java.util.Map;
 import java.util.Set;
@@ -82,8 +85,21 @@ public class Drivers {
         userPersonaDetails.addDriver(userPersona, currentDriver);
         LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n",
                                   userPersona, forPlatform.name()));
-
+        updateTestNameInCloud(currentDriver.getInnerDriver(), context.getTestName());
         return currentDriver;
+    }
+
+    private static void updateTestNameInCloud(WebDriver driver, String testName) {
+        LOGGER.info(String.format("updateTestNameInCloud: '%s'", testName));
+        if (Runner.getCloudName().equalsIgnoreCase("browserstack")) {
+            final JavascriptExecutor jse = (JavascriptExecutor) driver;
+            JSONObject executorObject = new JSONObject();
+            JSONObject argumentsObject = new JSONObject();
+            argumentsObject.put("name", testName);
+            executorObject.put("action", "setSessionName");
+            executorObject.put("arguments", argumentsObject);
+            jse.executeScript(String.format("browserstack_executor: %s", executorObject));
+        }
     }
 
     @NotNull
