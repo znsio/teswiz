@@ -206,7 +206,10 @@ class BrowserDriverManager {
     private static ChromeOptions getChromeOptions(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject chromeConfiguration) {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setAcceptInsecureCerts(chromeConfiguration.getBoolean(ACCEPT_INSECURE_CERTS));
-
+        if (Runner.getPlatform().equals(Platform.electron)) {
+            chromeOptions.setBinary(chromeConfiguration.getString("binary"));
+            chromeOptions.addArguments("window-size=1366,768");
+        }
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
         setPreferencesInChromeOptions(chromeConfiguration, chromeOptions);
         setLoggingPrefsInChromeOptions(chromeConfiguration.getBoolean(VERBOSE_LOGGING), chromeOptions);
@@ -388,11 +391,13 @@ class BrowserDriverManager {
     }
 
     private static void manageWindowSizeAndHeadlessMode(WebDriver driver) {
-        LOGGER.info("Reset browser window size");
-        if (shouldBrowserBeMaximized && !isRunInHeadlessMode) {
-            driver.manage().window().maximize();
-        } else if (isRunInHeadlessMode) {
-            driver.manage().window().setSize(new Dimension(1920, 1080));
+        if (!Runner.getPlatform().equals(Platform.electron)) {
+            LOGGER.info("Reset browser window size");
+            if (shouldBrowserBeMaximized && !isRunInHeadlessMode) {
+                driver.manage().window().maximize();
+            } else if (isRunInHeadlessMode) {
+                driver.manage().window().setSize(new Dimension(1920, 1080));
+            }
         }
     }
 
@@ -531,4 +536,42 @@ class BrowserDriverManager {
         return userPersonaDetails.getBrowserLogFileNameFor(userPersona, forPlatform, browserType);
     }
 
+    @NotNull
+    static Driver createElectronDriverForUser(String userPersona, String browserName,
+                                              Platform forPlatform, TestExecutionContext context) {
+        LOGGER.info(String.format(
+                "createElectronDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: " + "'%s', Number of ElectronDrivers: '%d'%n",
+                userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
+        LOGGER.info("Active thread count: " + Thread.activeCount());
+
+        String baseUrl = getBaseUrl(userPersona);
+        String appName = Drivers.getAppNamefor(userPersona);
+
+        checkConnectivityToBaseUrl(baseUrl);
+        checkNumberOfWebDriversInstantiated(userPersona, forPlatform);
+        String updatedTestName = context.getTestName() + "-" + userPersona;
+        String runningOn = Runner.isRunningInCI() ? "CI" : "local";
+        context.addTestState(TEST_CONTEXT.ELECTRON_BROWSER_ON, runningOn);
+        JSONObject browserConfig = getBrowserConfig(context);
+        LOGGER.info(String.format("Create new electrondriver instance for: %s, on: %s, with browserConfig: %s", userPersona, browserName, browserConfig));
+        LOGGER.info(BrowserDriverManager.class.getName() + "-createNewElectronDriver: " + browserName.toLowerCase());
+        JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
+        ChromeOptions chromeOptions = getChromeOptions(userPersona, context, browserConfigForBrowserType);
+        shouldBrowserBeMaximized = browserConfigForBrowserType.getBoolean(MAXIMIZE);
+
+        WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions)
+                : new ChromeDriver(chromeOptions);
+        LOGGER.info("Electron driver created");
+        Capabilities capabilities =
+                Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
+                        : ((ChromeDriver) driver).getCapabilities();
+        Drivers.addUserPersonaDriverCapabilities(userPersona, capabilities);
+        LOGGER.info("Electron driver capabilities extracted for further use");
+        loadBaseUrl(baseUrl, driver);
+        Driver currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName, driver, isRunInHeadlessMode);
+        numberOfWebDriversUsed++;
+        LOGGER.info(String.format("createElectronDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', Number of ElectronDrivers: '%d'",
+                userPersona, forPlatform.name(), appName, numberOfWebDriversUsed));
+        return currentDriver;
+    }
 }
