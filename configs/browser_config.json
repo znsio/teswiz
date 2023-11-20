@@ -34,7 +34,8 @@
     },
     "noProxy": "localhost,127.0.0.1",
     "proxyType": "manual",
-    "binary": "C:\\Users\\pathTo\\electronApp.exe"
+    "binary": "/Applications/JioMeet-Lite.app/Contents/MacOS/JioMeet-Lite",
+    "browserVersion": "116.0.5845.96"
   },
   "firefox": {
     "firefoxProfile": {

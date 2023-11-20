@@ -9,6 +9,7 @@ import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -30,6 +31,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
+import java.awt.Toolkit;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -206,9 +208,13 @@ class BrowserDriverManager {
     private static ChromeOptions getChromeOptions(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject chromeConfiguration) {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setAcceptInsecureCerts(chromeConfiguration.getBoolean(ACCEPT_INSECURE_CERTS));
+
         if (Runner.getPlatform().equals(Platform.electron)) {
             chromeOptions.setBinary(chromeConfiguration.getString("binary"));
-            chromeOptions.addArguments("window-size=1366,768");
+            Toolkit toolkit = Toolkit.getDefaultToolkit();
+            int width = toolkit.getScreenSize().width;
+            int height = toolkit.getScreenSize().height;
+            chromeOptions.addArguments(String.format("window-size=%s,%s", width, height));
         }
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
         setPreferencesInChromeOptions(chromeConfiguration, chromeOptions);
@@ -396,7 +402,10 @@ class BrowserDriverManager {
             if (shouldBrowserBeMaximized && !isRunInHeadlessMode) {
                 driver.manage().window().maximize();
             } else if (isRunInHeadlessMode) {
-                driver.manage().window().setSize(new Dimension(1920, 1080));
+                Toolkit toolkit = Toolkit.getDefaultToolkit();
+                int width = toolkit.getScreenSize().width;
+                int height = toolkit.getScreenSize().height;
+                driver.manage().window().setSize(new Dimension(width * 90 / 100, height * 90 / 100));
             }
         }
     }
@@ -559,6 +568,7 @@ class BrowserDriverManager {
         ChromeOptions chromeOptions = getChromeOptions(userPersona, context, browserConfigForBrowserType);
         shouldBrowserBeMaximized = browserConfigForBrowserType.getBoolean(MAXIMIZE);
 
+        WebDriverManager.chromedriver().clearDriverCache().driverVersion(browserConfigForBrowserType.getString("browserVersion")).setup();
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions)
                 : new ChromeDriver(chromeOptions);
         LOGGER.info("Electron driver created");
