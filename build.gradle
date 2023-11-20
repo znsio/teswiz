@@ -146,7 +146,6 @@ tasks.register('run', JavaExec) {
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
-        environment "APPLITOOLS_API_KEY", "aWfX0b26105wzwQu778WdAiyS94vOkCQL48ZGspUNli1k110"
         def configFile = System.getenv("CONFIG")
         if (null == configFile || !file(configFile).exists()) {
             println("CONFIG file not provided, or does not exist")
