@@ -402,10 +402,7 @@ class BrowserDriverManager {
             if (shouldBrowserBeMaximized && !isRunInHeadlessMode) {
                 driver.manage().window().maximize();
             } else if (isRunInHeadlessMode) {
-                Toolkit toolkit = Toolkit.getDefaultToolkit();
-                int width = toolkit.getScreenSize().width;
-                int height = toolkit.getScreenSize().height;
-                driver.manage().window().setSize(new Dimension(width * 90 / 100, height * 90 / 100));
+                driver.manage().window().setSize(new Dimension(1920, 1080));
             }
         }
     }
