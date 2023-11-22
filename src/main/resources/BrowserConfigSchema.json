@@ -46,7 +46,8 @@
             "disable-gpu"
           ]
         },
-        "binary": "C:\\path\\to\\chrome.exe"
+        "binary": "C:\\path\\to\\chrome.exe",
+        "browserVersion": "116.0.5845.96"
       },
       "firefox": {
         "firefoxProfile": {
