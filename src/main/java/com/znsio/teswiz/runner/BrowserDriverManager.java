@@ -43,6 +43,8 @@ import java.util.logging.Level;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
+import static com.appium.utils.OverriddenVariable.*;
+
 class BrowserDriverManager {
     private static final Logger LOGGER = Logger.getLogger(BrowserDriverManager.class.getName());
     private static final int MAX_NUMBER_OF_WEB_DRIVERS = Runner.getMaxNumberOfWebDrivers();
@@ -51,6 +53,7 @@ class BrowserDriverManager {
     private static final String VERBOSE_LOGGING = "verboseLogging";
     private static final String MAXIMIZE = "maximize";
     private static final String EXCLUDE_SWITCHES = "excludeSwitches";
+    private static final String BROWSER_VERSION = "BROWSER_VERSION";
     private static int numberOfWebDriversUsed = 0;
     private static boolean shouldBrowserBeMaximized = false;
     private static boolean isRunInHeadlessMode = false;
@@ -565,7 +568,9 @@ class BrowserDriverManager {
         ChromeOptions chromeOptions = getChromeOptions(userPersona, context, browserConfigForBrowserType);
         shouldBrowserBeMaximized = browserConfigForBrowserType.getBoolean(MAXIMIZE);
 
-        WebDriverManager.chromedriver().clearDriverCache().driverVersion(browserConfigForBrowserType.getString("browserVersion")).setup();
+        WebDriverManager.chromedriver().clearDriverCache().driverVersion(getOverriddenStringValue(BROWSER_VERSION,
+                browserConfigForBrowserType.getString("browserVersion"))).setup();
+
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions)
                 : new ChromeDriver(chromeOptions);
         LOGGER.info("Electron driver created");
