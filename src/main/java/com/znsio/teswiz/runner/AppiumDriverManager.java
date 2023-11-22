@@ -303,13 +303,22 @@ class AppiumDriverManager {
                 LOGGER.info(
                         String.format("ATD will quit the driver for persona: '%s'", userPersona));
                 LOGGER.info("Close the app");
-                AndroidDriver androidDriver = (AndroidDriver) appiumDriver;
-                androidDriver.terminateApp(appPackageName);
+                terminateApp((AndroidDriver) appiumDriver, appPackageName);
             } else {
                 LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
                 attachDeviceLogsToReportPortal(userPersona);
                 terminateAndroidAppOnDevice(appPackageName, appiumDriver);
             }
+        }
+    }
+
+    private static void terminateApp(AndroidDriver androidDriver, String appPackageName) {
+        Object deviceAPILevel = androidDriver.getCapabilities().getCapability("deviceApiLevel");
+        LOGGER.info(String.format("Current API level: '%s'", deviceAPILevel));
+        if (null!=deviceAPILevel && deviceAPILevel.toString().equals("33")) {
+            androidDriver.quit();
+        } else {
+            androidDriver.terminateApp(appPackageName);
         }
     }
 

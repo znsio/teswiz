@@ -8,7 +8,6 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.HidesKeyboard;
-import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.HasNotifications;
 import io.appium.java_client.android.StartsActivity;
@@ -762,5 +761,13 @@ public class Driver {
         } else {
             throw new NotImplementedException("relaunchApp method is not implemented for " + Runner.getPlatform());
         }
+    }
+
+    public boolean waitTillElementIsInvisible(By elementId) {
+        return waitTillElementIsInvisible(elementId, 10);
+    }
+
+    public boolean waitTillElementIsInvisible(By elementId, int numberOfSecondsToWait) {
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.invisibilityOfElementLocated(elementId)));
     }
 }
