@@ -56,7 +56,7 @@ public class Hooks {
         long threadId = Thread.currentThread().getId();
         LOGGER.info(String.format("Hooks: ThreadId: %d In RunCukes - afterScenario: %s", threadId,
                                   scenario.getName()));
-        Drivers.attachLogsAndCloseAllDrivers();
+        Drivers.attachLogsAndCloseAllDrivers(scenario);
         SoftAssertions softly = Runner.getSoftAssertion(threadId);
         LOGGER.info("Hooks: Assert all soft assertions");
         softly.assertAll();
