@@ -256,11 +256,11 @@ public class Drivers {
 
         if (!softly.errorsCollected().isEmpty()) {
             scenarioStatus = "failed";
-            String scenarioSoftFailureReasons = "'%d' Soft Assertion failure(s)".formatted(softly.errorsCollected().size());
+            String scenarioSoftFailureReasons = String.format("'%d' Soft Assertion failure(s)", softly.errorsCollected().size());
             scenarioFailureReasons = scenarioFailureReasons.toLowerCase().contains("failure") ? scenarioFailureReasons + ", and " + scenarioSoftFailureReasons : scenarioSoftFailureReasons;
         }
 
-        LOGGER.info("Scenario status: '%s' :: '%s'".formatted(scenarioStatus, scenarioFailureReasons));
+        LOGGER.info(String.format("Scenario status: '%s' :: '%s'", scenarioStatus, scenarioFailureReasons));
 
         if (Runner.getCloudName().equalsIgnoreCase("browserstack")) {
             updateTestStatusInBrowserStack((JavascriptExecutor) driver, scenarioStatus, scenarioFailureReasons);
