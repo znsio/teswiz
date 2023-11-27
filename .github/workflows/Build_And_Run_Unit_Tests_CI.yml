@@ -26,7 +26,7 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
       - name: Build with Gradle and run unit tests
-        uses: gradle/gradle-build-action@375481748bf6d66f045ed675f6ab9387068ab66d
+        uses: gradle/gradle-build-action@87a9a15658c426a54dd469d4fc7dc1a73ca9d4a6
         with:
           arguments: build --refresh-dependencies
       - name: Get Latest Commit ID and save in GITHUB_ENV
