@@ -219,6 +219,12 @@ class BrowserDriverManager {
             int height = toolkit.getScreenSize().height;
             chromeOptions.addArguments(String.format("window-size=%s,%s", width, height));
         }
+
+        String browserVersion = getOverriddenStringValue(BROWSER_VERSION,
+                chromeConfiguration.getString("browserVersion"));
+        if(Runner.getPlatform().equals(Platform.web) && !browserVersion.equalsIgnoreCase("latest"))
+            chromeOptions.setBrowserVersion(browserVersion);
+
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
         setPreferencesInChromeOptions(chromeConfiguration, chromeOptions);
         setLoggingPrefsInChromeOptions(chromeConfiguration.getBoolean(VERBOSE_LOGGING), chromeOptions);
