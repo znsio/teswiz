@@ -113,7 +113,7 @@ class DeviceSetup {
     }
 
     public static String downloadAppToDirectoryIfNeeded(String appPath, String saveToLocalDirectory) {
-        String fileName = appPath.split(File.separator)[appPath.split(File.separator).length - 1];
+        String fileName = new File(appPath).getName();
         String localFilePath = saveToLocalDirectory + File.separator + fileName;
         if (isAppPathAUrl(appPath)) {
             LOGGER.info(String.format("App url '%s' is provided in capabilities. Download it, if " +
