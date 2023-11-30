@@ -20,6 +20,7 @@ buildscript {
         jetbrainsAnnotationsVersion = "24.1.0"
         aspectJVersion = "1.9.20.1"
         specmaticVersion = '0.81.2'
+        webDriverManager = '5.5.3'
     }
 }
 
@@ -90,7 +91,7 @@ dependencies {
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
     implementation "org.aspectj:aspectjrt:$project.aspectJVersion"
     implementation "in.specmatic:specmatic-core:${project.specmaticVersion}"
-    implementation 'io.github.bonigarcia:webdrivermanager:5.5.3'
+    implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManager"
 }
 
 shadowJar {

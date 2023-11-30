@@ -47,7 +47,7 @@
           ]
         },
         "binary": "C:\\path\\to\\chrome.exe",
-        "browserVersion": "116.0.5845.96"
+        "browserVersion": "latest"
       },
       "firefox": {
         "firefoxProfile": {
