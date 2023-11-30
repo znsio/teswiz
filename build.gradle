@@ -5,9 +5,9 @@ buildscript {
         gradleVersion = "8.4"
         assertJVersion = "3.24.2"
         atdVersion = "14.0.1"
-        applitoolsAppiumVersion = "5.64.10"
+        applitoolsAppiumVersion = "5.65.0"
         seleniumVersion = "4.13.0"
-        commonsLang3Version = "3.13.0"
+        commonsLang3Version = "3.14.0"
         commonsRngSimpleVersion = "1.5"
         unirestVersion = "3.14.5"
         jadbVersion = "1.2.1"
@@ -19,7 +19,7 @@ buildscript {
         browserStackLocalVersion = "1.1.0"
         jetbrainsAnnotationsVersion = "24.1.0"
         aspectJVersion = "1.9.20.1"
-        specmaticVersion = '0.81.2'
+        specmaticVersion = '1.0.2'
     }
 }
 
@@ -33,7 +33,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.89'
+version '0.0.90'
 
 repositories {
     mavenLocal()
