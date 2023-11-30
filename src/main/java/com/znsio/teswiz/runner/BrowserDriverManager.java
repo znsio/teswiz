@@ -9,6 +9,7 @@ import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -30,6 +31,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
+import java.awt.Toolkit;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -41,6 +43,8 @@ import java.util.logging.Level;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 
+import static com.appium.utils.OverriddenVariable.*;
+
 class BrowserDriverManager {
     private static final Logger LOGGER = Logger.getLogger(BrowserDriverManager.class.getName());
     private static final int MAX_NUMBER_OF_WEB_DRIVERS = Runner.getMaxNumberOfWebDrivers();
@@ -49,6 +53,7 @@ class BrowserDriverManager {
     private static final String VERBOSE_LOGGING = "verboseLogging";
     private static final String MAXIMIZE = "maximize";
     private static final String EXCLUDE_SWITCHES = "excludeSwitches";
+    private static final String BROWSER_VERSION = "BROWSER_VERSION";
     private static int numberOfWebDriversUsed = 0;
     private static boolean shouldBrowserBeMaximized = false;
     private static boolean isRunInHeadlessMode = false;
@@ -206,10 +211,20 @@ class BrowserDriverManager {
     private static ChromeOptions getChromeOptions(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject chromeConfiguration) {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setAcceptInsecureCerts(chromeConfiguration.getBoolean(ACCEPT_INSECURE_CERTS));
+
         if (Runner.getPlatform().equals(Platform.electron)) {
             chromeOptions.setBinary(chromeConfiguration.getString("binary"));
-            chromeOptions.addArguments("window-size=1366,768");
+            Toolkit toolkit = Toolkit.getDefaultToolkit();
+            int width = toolkit.getScreenSize().width;
+            int height = toolkit.getScreenSize().height;
+            chromeOptions.addArguments(String.format("window-size=%s,%s", width, height));
         }
+
+        String browserVersion = getOverriddenStringValue(BROWSER_VERSION,
+                chromeConfiguration.getString("browserVersion"));
+        if(Runner.getPlatform().equals(Platform.web) && !browserVersion.equalsIgnoreCase("latest"))
+            chromeOptions.setBrowserVersion(browserVersion);
+
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
         setPreferencesInChromeOptions(chromeConfiguration, chromeOptions);
         setLoggingPrefsInChromeOptions(chromeConfiguration.getBoolean(VERBOSE_LOGGING), chromeOptions);
@@ -558,6 +573,9 @@ class BrowserDriverManager {
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
         ChromeOptions chromeOptions = getChromeOptions(userPersona, context, browserConfigForBrowserType);
         shouldBrowserBeMaximized = browserConfigForBrowserType.getBoolean(MAXIMIZE);
+
+        WebDriverManager.chromedriver().clearDriverCache().driverVersion(getOverriddenStringValue(BROWSER_VERSION,
+                browserConfigForBrowserType.getString("browserVersion"))).setup();
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions)
                 : new ChromeDriver(chromeOptions);

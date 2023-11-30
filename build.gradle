@@ -19,7 +19,8 @@ buildscript {
         browserStackLocalVersion = "1.1.0"
         jetbrainsAnnotationsVersion = "24.1.0"
         aspectJVersion = "1.9.20.1"
-        specmaticVersion = '1.0.2'
+        specmaticVersion = '0.81.2'
+        webDriverManager = '5.5.3'
     }
 }
 
@@ -90,6 +91,7 @@ dependencies {
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
     implementation "org.aspectj:aspectjrt:$project.aspectJVersion"
     implementation "in.specmatic:specmatic-core:${project.specmaticVersion}"
+    implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManager"
 }
 
 shadowJar {
@@ -145,7 +147,6 @@ tasks.register('run', JavaExec) {
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
-
         def configFile = System.getenv("CONFIG")
         if (null == configFile || !file(configFile).exists()) {
             println("CONFIG file not provided, or does not exist")

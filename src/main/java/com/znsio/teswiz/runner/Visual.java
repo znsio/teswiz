@@ -299,13 +299,8 @@ public class Visual {
             JavascriptExecutor js = (JavascriptExecutor) innerDriver;
             if (Runner.getPlatform().equals(Platform.electron)) {
                 Set<String> windowHandles = innerDriver.getWindowHandles();
-                System.out.println("Number of windows open" + windowHandles);
                 if (windowHandles.size() > 0) {
-                    String sessionId = ((ChromeDriver) innerDriver).getSessionId().toString();
-
-                    System.out.println("Session ID: " + sessionId);
                     innerDriver.switchTo().window((String) windowHandles.toArray()[0]);
-                    System.out.println("Switched to main window");
                 }
             } else {
                 Dimension actualBrowserSize = innerDriver.manage().window().getSize();

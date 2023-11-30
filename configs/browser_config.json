@@ -34,7 +34,8 @@
     },
     "noProxy": "localhost,127.0.0.1",
     "proxyType": "manual",
-    "binary": "C:\\Users\\pathTo\\electronApp.exe"
+    "binary": "/Applications/SampleApp.app/Contents/MacOS/SampleApp",
+    "browserVersion": "latest"
   },
   "firefox": {
     "firefoxProfile": {
