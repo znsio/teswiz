@@ -65,11 +65,15 @@ public class JioMeetSteps {
 
     @And("{string} joins the meeting from {string}")
     public void joinsTheMeetingFrom(String userPersona, String fromPlatform) {
-        Platform currentPlatform = Platform.valueOf(fromPlatform);
-        Drivers.createDriverFor(userPersona, currentPlatform, context);
         String meetingId = context.getTestStateAsString(SAMPLE_TEST_CONTEXT.MEETING_ID);
         String meetingPassword = context.getTestStateAsString(SAMPLE_TEST_CONTEXT.MEETING_PASSWORD);
-        new JoinAMeetingBL(userPersona, currentPlatform).joinMeeting(meetingId, meetingPassword);
+        if (userPersona.equalsIgnoreCase("Guest")) {
+            Platform currentPlatform = Platform.valueOf(fromPlatform);
+            Drivers.createDriverFor(userPersona, currentPlatform, context);
+            new JoinAMeetingBL(userPersona, currentPlatform).joinMeeting(meetingId, meetingPassword);
+        } else {
+            new JoinAMeetingBL(userPersona, Runner.getPlatform()).joinMeeting(meetingId, meetingPassword);
+        }
     }
 
     @Given("{string} logs-in and starts an instant meeting in {string} on {string}")
@@ -121,5 +125,42 @@ public class JioMeetSteps {
     @Then("I should be able to go back to Meeting")
     public void iShouldBeAbleToGoBackToMeeting() {
         new InAMeetingBL().verifyMeetingOpenedInJioMeetApplication();
+    }
+
+    @Then("{string} should be able to get to chat window")
+    public void shouldBeAbleToGetToChatWindow(String userPersona) {
+        new InAMeetingBL(userPersona, Runner.getPlatform()).userClicksOnChatWindow();
+    }
+
+    @When("{string} sends {string} chat message")
+    public void sendsChatMessage(String userPersona, String chatMessage) {
+        new InAMeetingBL(userPersona, Runner.getPlatform())
+                .userSendsChatMessageInAMeeting(chatMessage);
+    }
+
+    @Then("{string} should see the chat message on its chat window")
+    public void shouldSeeTheChatMessageOnItsChatWindow(String userPersona) {
+        new InAMeetingBL(userPersona, Runner.getPlatform())
+                .userChecksTheReceivedChatMessage();
+    }
+
+    @And("{string} leaves the meeting")
+    public void leavesTheMeeting(String userPersona) {
+        new InAMeetingBL(userPersona, Runner.getPlatform())
+                .userPersonaLeavesTheMeeting(userPersona);
+    }
+
+    @Then("{string} should be able to view the message sent by itself in Chats tab")
+    public void shouldBeAbleToViewTheMessageSentByItselfInChatsTab(String userPersona) {
+        new InAMeetingBL(userPersona,  Runner.getPlatform())
+                .userShouldBeAbleToViewTheMessageSentByItselfInChatsTab();
+    }
+
+    @And("{string} logs-in on {string}")
+    public void logsInOn(String userPersona, String fromPlatform) {
+        Platform currentPlatform = Platform.valueOf(fromPlatform);
+        Drivers.createDriverFor(userPersona, currentPlatform, context);
+        new AuthBL(userPersona, currentPlatform).signIn(
+                Runner.getTestDataAsMap(userPersona));
     }
 }

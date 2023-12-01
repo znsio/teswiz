@@ -17,11 +17,12 @@ public class LandingScreenWeb
     private static final By byWelcomeTextDescriptionXpath = By.xpath("//p[@class='desc']");
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
     private static final By byStartAMeetingOptionXpath = By.xpath(
-            "//div[text()='Start a Meeting']");
+            "//*[contains(text(), 'Start a Meeting')]");
     private static final By byPMIButtonXpath = By.xpath(
             "//span[contains(text(), 'Personal Meeting ID')]");
     private static final By byStartMeetingButtonXpath = By.xpath(
             "//button[contains(text(), 'Start')]");
+
     private final Driver driver;
     private final Visual visually;
 
@@ -41,7 +42,7 @@ public class LandingScreenWeb
 
     @Override
     public InAMeetingScreen startInstantMeeting() {
-        driver.waitForClickabilityOf(byStartAMeetingOptionXpath).click();
+        driver.findElement(byStartAMeetingOptionXpath).click();
         return startsTheMeeting();
     }
 

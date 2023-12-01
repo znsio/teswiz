@@ -20,10 +20,11 @@ public abstract class LandingScreen {
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
 
-        switch(platform) {
+        switch (platform) {
             case android:
                 return new LandingScreenAndroid(driver, visually);
             case web:
+            case electron:
                 return new LandingScreenWeb(driver, visually);
         }
         throw new NotImplementedException(

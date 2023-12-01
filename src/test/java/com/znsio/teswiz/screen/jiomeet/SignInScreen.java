@@ -20,10 +20,11 @@ public abstract class SignInScreen {
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
 
-        switch(platform) {
+        switch (platform) {
             case android:
                 return new SignInScreenAndroid(driver, visually);
             case web:
+            case electron:
                 return new SignInScreenWeb(driver, visually);
         }
         throw new NotImplementedException(
