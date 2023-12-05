@@ -212,14 +212,6 @@ class BrowserDriverManager {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setAcceptInsecureCerts(chromeConfiguration.getBoolean(ACCEPT_INSECURE_CERTS));
 
-        if (Runner.getPlatform().equals(Platform.electron)) {
-            chromeOptions.setBinary(chromeConfiguration.getString("binary"));
-            Toolkit toolkit = Toolkit.getDefaultToolkit();
-            int width = toolkit.getScreenSize().width;
-            int height = toolkit.getScreenSize().height;
-            chromeOptions.addArguments(String.format("window-size=%s,%s", width, height));
-        }
-
         String browserVersion = getOverriddenStringValue(BROWSER_VERSION,
                 chromeConfiguration.getString("browserVersion"));
         if(Runner.getPlatform().equals(Platform.web) && !browserVersion.equalsIgnoreCase("latest"))
@@ -233,6 +225,14 @@ class BrowserDriverManager {
         setEmulationModeInChromeOptions(testExecutionContext, chromeOptions);
         LOGGER.info(String.format("ChromeOptions: %s", chromeOptions.asMap()));
         return chromeOptions;
+    }
+
+    private static void addWindowSizeToChromeOptions(JSONObject chromeConfiguration, ChromeOptions chromeOptions) {
+        chromeOptions.setBinary(chromeConfiguration.getString("binary"));
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        int width = toolkit.getScreenSize().width;
+        int height = toolkit.getScreenSize().height;
+        chromeOptions.addArguments(String.format("window-size=%s,%s", width, height));
     }
 
     private static WebDriver createFirefoxDriver(String forUserPersona,
@@ -572,6 +572,8 @@ class BrowserDriverManager {
         LOGGER.info(BrowserDriverManager.class.getName() + "-createNewElectronDriver: " + browserName.toLowerCase());
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
         ChromeOptions chromeOptions = getChromeOptions(userPersona, context, browserConfigForBrowserType);
+        addWindowSizeToChromeOptions(browserConfigForBrowserType, chromeOptions);
+
         shouldBrowserBeMaximized = browserConfigForBrowserType.getBoolean(MAXIMIZE);
 
         WebDriverManager.chromedriver().clearDriverCache().driverVersion(getOverriddenStringValue(BROWSER_VERSION,
