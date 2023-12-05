@@ -3,7 +3,7 @@
     "appium-idb": "1.8.9",
     "@appium/doctor": "2.0.28",
     "@appium/relaxed-caps-plugin": "1.0.5",
-    "appium": "2.2.2",
+    "appium": "2.2.3",
     "appium-dashboard": "2.0.2",
     "appium-device-farm": "8.3.16",
     "appium-uiautomator2-driver": "2.34.1",
