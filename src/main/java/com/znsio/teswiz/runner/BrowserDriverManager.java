@@ -196,7 +196,7 @@ class BrowserDriverManager {
         shouldBrowserBeMaximized = chromeConfiguration.getBoolean(MAXIMIZE);
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions)
-                                   : new ChromeDriver(chromeOptions);
+                : new ChromeDriver(chromeOptions);
         LOGGER.info("Chrome driver created");
         Capabilities capabilities =
                 Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
@@ -214,7 +214,7 @@ class BrowserDriverManager {
 
         String browserVersion = getOverriddenStringValue(BROWSER_VERSION,
                 chromeConfiguration.getString("browserVersion"));
-        if(Runner.getPlatform().equals(Platform.web) && !browserVersion.equalsIgnoreCase("latest"))
+        if (Runner.getPlatform().equals(Platform.web) && !browserVersion.equalsIgnoreCase("latest"))
             chromeOptions.setBrowserVersion(browserVersion);
 
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
@@ -243,7 +243,7 @@ class BrowserDriverManager {
         shouldBrowserBeMaximized = firefoxConfiguration.getBoolean(MAXIMIZE);
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(firefoxOptions)
-                                   : new FirefoxDriver(firefoxOptions);
+                : new FirefoxDriver(firefoxOptions);
         LOGGER.info("Firefox driver created");
         Capabilities capabilities =
                 Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
@@ -423,7 +423,7 @@ class BrowserDriverManager {
         shouldBrowserBeMaximized = safariConfigurations.getBoolean(MAXIMIZE);
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(safariOptions)
-                                   : new SafariDriver(safariOptions);
+                : new SafariDriver(safariOptions);
         LOGGER.info("Safari driver created");
         Capabilities capabilities =
                 Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
@@ -499,8 +499,8 @@ class BrowserDriverManager {
                 Map hostMachines = (Map) hostMachinesList.get(0);
                 String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
                 remoteUrl = remoteServerURL.endsWith("/")
-                                    ? remoteServerURL + authenticationKey + webDriverHubSuffix
-                                    : remoteServerURL + "/" + authenticationKey + webDriverHubSuffix;
+                        ? remoteServerURL + authenticationKey + webDriverHubSuffix
+                        : remoteServerURL + "/" + authenticationKey + webDriverHubSuffix;
                 remoteUrl = remoteUrl.startsWith("https") ? remoteUrl : "https://" + remoteUrl;
             } else if (cloudName.equalsIgnoreCase("browserstack")) {
                 String authenticationUser = Runner.getCloudUser();
