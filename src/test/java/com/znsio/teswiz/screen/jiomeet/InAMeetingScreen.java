@@ -44,27 +44,4 @@ public abstract class InAMeetingScreen {
     public abstract String getMicLabelText();
 
     public abstract InAMeetingScreen openJioMeetNotification();
-
-    public abstract InAMeetingScreen userClicksOnChatWindow();
-
-    public abstract int getNumberOfMessages();
-
-    public abstract InAMeetingScreen sendsChatMessage(String chatMessage);
-
-    public abstract boolean isChatNotificationRedBubbleVisible();
-
-    public abstract InAMeetingScreen userTapsOnChatIcon();
-
-    public abstract boolean isChatMessageReceived(String chatMessage);
-
-    public abstract InAMeetingScreen userSelectsToLeaveMeeting();
-
-    public abstract InAMeetingScreen loggedInUserClosesMeetingFeedback();
-
-    public abstract InAMeetingScreen userNavigatesToChatsTab();
-
-    public abstract InAMeetingScreen userSelectsChatSection();
-
-    public abstract boolean isChatMessageReceivedInChatsTab(String chatMessage);
-
 }

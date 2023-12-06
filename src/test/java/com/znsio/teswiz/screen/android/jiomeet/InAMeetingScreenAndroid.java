@@ -66,61 +66,6 @@ public class InAMeetingScreenAndroid
     }
 
     @Override
-    public InAMeetingScreen userClicksOnChatWindow() {
-        return null;
-    }
-
-    @Override
-    public int getNumberOfMessages() {
-        return 0;
-    }
-
-    @Override
-    public InAMeetingScreen sendsChatMessage(String chatMessage) {
-        return null;
-    }
-
-    @Override
-    public boolean isChatNotificationRedBubbleVisible() {
-        return false;
-    }
-
-    @Override
-    public InAMeetingScreen userTapsOnChatIcon() {
-        return null;
-    }
-
-    @Override
-    public boolean isChatMessageReceived(String chatMessage) {
-        return false;
-    }
-
-    @Override
-    public InAMeetingScreen userSelectsToLeaveMeeting() {
-        return null;
-    }
-
-    @Override
-    public InAMeetingScreen loggedInUserClosesMeetingFeedback() {
-        return null;
-    }
-
-    @Override
-    public InAMeetingScreen userNavigatesToChatsTab() {
-        return null;
-    }
-
-    @Override
-    public InAMeetingScreen userSelectsChatSection() {
-        return null;
-    }
-
-    @Override
-    public boolean isChatMessageReceivedInChatsTab(String chatMessage) {
-        return false;
-    }
-
-    @Override
     public InAMeetingScreen unmute() {
         enableInMeetingControls("unmute");
         visually.checkWindow(SCREEN_NAME, "mic should be muted");

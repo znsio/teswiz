@@ -3,19 +3,13 @@
     "GMAIL_USER_1_EMAIL": "mytestemail@gmail.com",
     "GMAIL_USER_1_PASSWORD": "Invalid passw0rd",
     "Host": {
+      "username": "eot.testing@gmail.com",
+      "password": "eotTesting@0",
+      "firstName": "Eot",
+      "lastName": "Testing"
+    },
+    "electronHost": {
       "username": "e2e_DngJCRG9gZ@getnada.com",
-      "password": "Passw0rd!",
-      "firstName": "John",
-      "lastName": "Doe"
-    },
-    "Participant": {
-      "username": "e2e_YiJQkhhAkd@getnada.com",
-      "password": "Passw0rd!",
-      "firstName": "John",
-      "lastName": "Doe"
-    },
-    "New Participant": {
-      "username": "e2e_058zTV5WXa@emailbox.matrix.jio",
       "password": "Passw0rd!",
       "firstName": "John",
       "lastName": "Doe"

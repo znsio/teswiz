@@ -98,6 +98,7 @@ public class InAMeetingScreenWeb
         visually.checkWindow(SCREEN_NAME, "Mic is unmuted");
         return this;
     }
+
     @Override
     public InAMeetingScreen mute() {
         enableInMeetingControls("mute");
@@ -120,122 +121,6 @@ public class InAMeetingScreenWeb
     @Override
     public InAMeetingScreen openJioMeetNotification() {
         throw new NotImplementedException("Jio Meet Device Notification of Meeting is not available for Web");
-    }
-    @Override
-    public InAMeetingScreen userClicksOnChatWindow() {
-        driver.waitForClickabilityOf(byChatIconXpath).click();
-        visually.takeScreenshot(SCREEN_NAME, "tapped on Chat Icon");
-        return this;
-    }
-
-    @Override
-    public int getNumberOfMessages() {
-        Wait.waitFor(2); // to get the count of messages
-        //private chat is an overlap screen on group chat (i.e. 'To: All') - hence finding the concerned chat messages in case of private chat
-        if (driver.isElementPresent(byPrivateChatContainerCssSelector)) {
-            return driver.findElement(byPrivateChatContainerCssSelector).findElements(byChatMessageTextXpath).size();
-        } else {
-            return driver.findElements(byChatMessageTextXpath).size();
-        }
-    }
-
-    @Override
-    public InAMeetingScreen sendsChatMessage(String chatMessage) {
-        WebElement messageTextBox, container;
-
-        driver.waitTillElementIsPresent(byMessageTextBoxCssSelector);
-        //private chat is an overlap screen on group chat (i.e. 'To: All') - hence finding the concerned text box in case of private chat
-        Wait.waitFor(2);
-        if (driver.isElementPresent(byPrivateChatContainerCssSelector)) {
-            container = driver.waitTillElementIsPresent(byPrivateChatContainerCssSelector);
-        } else {
-            container = driver.waitTillElementIsPresent(byGroupChatContainerCssSelector);
-        }
-        messageTextBox = container.findElement(byMessageTextBoxCssSelector);
-        messageTextBox.clear();
-        messageTextBox.sendKeys(chatMessage);
-        visually.takeScreenshot(SCREEN_NAME, "before sending the message");
-
-        container.findElement(bySendMessageButtonCssSelector).click();
-        driver.waitTillElementIsPresent(byChatMessageTextXpath); //waiting to check appearance of message in chat panel
-        visually.takeScreenshot(SCREEN_NAME, "message sent");
-        return this;
-    }
-
-    @Override
-    public boolean isChatNotificationRedBubbleVisible() {
-        return driver.isElementPresent(byChatNotificationRedBubbleXpath);
-    }
-
-    @Override
-    public InAMeetingScreen userTapsOnChatIcon() {
-        Wait.waitFor(1);
-        enableInMeetingControls("userTapsOnChatIcon");
-        driver.waitForClickabilityOf(byChatIconXpath).click();
-        visually.takeScreenshot(SCREEN_NAME, "tapped on Chat Icon");
-        return this;
-    }
-
-    @Override
-    public boolean isChatMessageReceived(String chatMessage) {
-        driver.waitForClickabilityOf(byChatMessageTextXpath, 5);
-        By currentChatMessageXpath = By.xpath(CHAT_MESSAGE_XPATH.replace("@chatMessage", chatMessage));
-        return driver.isElementPresent(currentChatMessageXpath);
-    }
-
-    @Override
-    public InAMeetingScreen userSelectsToLeaveMeeting() {
-        enableInMeetingControls("userSelectsToLeaveMeeting");
-        {
-            driver.waitForClickabilityOf(byLeaveButtonXpath).click();
-        }
-        visually.takeScreenshot(SCREEN_NAME, "userSelectsToLeaveMeeting");
-        LOGGER.info("Leave button clicked");
-        return this;
-    }
-
-    @Override
-    public InAMeetingScreen loggedInUserClosesMeetingFeedback() {
-        try {
-            if (driver.waitForClickabilityOf(bySkipFeedbackButtonId, 2).isDisplayed()) {
-                visually.takeScreenshot(SCREEN_NAME, "Before closing meeting feedback popup");
-                driver.waitForClickabilityOf(bySkipFeedbackButtonId).click();
-            }
-        } catch (Exception e) {
-            LOGGER.info("Feedback popup did not show up");
-        }
-        return this;
-    }
-
-    @Override
-    public InAMeetingScreen userNavigatesToChatsTab() {
-        driver.waitForClickabilityOf(CHATS_TAB_XPATH).click();
-        return this;
-    }
-
-    @Override
-    public InAMeetingScreen userSelectsChatSection() {
-        driver.waitForClickabilityOf(byMostRecentChatWindowXpath).click();
-        driver.waitForClickabilityOf(bySendButtonCssSelector);
-        visually.takeScreenshot(SCREEN_NAME, "userSelectsChatSection");
-        return this;
-    }
-
-    @Override
-    public boolean isChatMessageReceivedInChatsTab(String chatMessage) {
-        driver.waitTillElementIsPresent(byChatMessagesInChatsTabXpath);
-        List<WebElement> listOfMessages = driver.findElements(byChatMessagesInChatsTabXpath);
-        LOGGER.info("Total messages found on screen: " + listOfMessages.size());
-        if (listOfMessages.isEmpty()) {
-            return false;
-        }
-        for (WebElement message : listOfMessages) {
-            LOGGER.info("Fetched message: " + message.getText());
-            if (message.getText().trim().equals(chatMessage)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void enableInMeetingControls(String calledFrom) {
