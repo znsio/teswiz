@@ -26,29 +26,17 @@ public class InAMeetingScreenWeb
     private static final By byMeetingInfoIconXpath = By.xpath("//div[@class='icon pointer']");
     private static final By byMicLabelXpath = By.xpath("//div[contains(@class, 'mic-section')]//img");
     private static final By byCurrentMeetingNumberXpath = By.xpath(
-            "//div[contains(@class, 'card-panel ng')]/descendant::li[3]/child::div/child::div[contains(text(), 'Meeting ID')]/following-sibling::div");
+            "//div[text()='Meeting ID']/following-sibling::div");
     private static final By byCurrentMeetingPinXpath = By.xpath(
-            "//div[contains(@class, 'card-panel ng')]/descendant::ul/descendant::div[contains(text(), 'Password') and contains(@class, 'name')]/following-sibling::div");
+            "//div[text()='Password']/following-sibling::div");
     private static final By byCurrentMeetingInvitationLinkXpath = By.xpath(
             "//div[text()='Invitation Link']/following-sibling::div");
-    private final By byChatIconXpath = By.xpath("//div[text()='Chat']");
-    private final By byPrivateChatContainerCssSelector = By.cssSelector("div.private-chat-container");
-    private final By byChatMessageTextXpath = By.xpath("//div[@id='msg-area']");
-    private static final String CHAT_MESSAGE_XPATH = "//div[@id='msg-area' and contains(text(), '@chatMessage')]";
-    private final By byMessageTextBoxCssSelector = By.cssSelector("div.ql-editor");
-    private final By byGroupChatContainerCssSelector = By.cssSelector("div.group-chat-conponent");
-    private final By bySendMessageButtonCssSelector = By.cssSelector("div.sendBtn");
-    private final By byChatNotificationRedBubbleXpath = By.xpath("//img[contains(@src, 'chat_recievied')]");
-    private final By byLeaveButtonXpath = By.cssSelector("div.close-btn");
-    private final By bySkipFeedbackButtonId = By.id("skipButton");
-    private final By CHATS_TAB_XPATH = By.xpath("//span[contains(@class, 'header') and contains(text(), 'Chats')]");
-    private final By byMostRecentChatWindowXpath = By.xpath("//div[@id='chats']/div");
-    private final By bySendButtonCssSelector = By.cssSelector("div.sendBtn>img");
-    private final By byChatMessagesInChatsTabXpath = By.xpath("//div[contains(@class, 'item-text')]");
+    private static final By microPhoneButtonXpath = By.xpath("//div[@id = 'toggleMicButton']//div[contains(@class, 'img-holder')]");
     private final Driver driver;
     private final Visual visually;
     private final WebDriver innerDriver;
     private final TestExecutionContext context;
+
 
     public InAMeetingScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
@@ -70,10 +58,10 @@ public class InAMeetingScreenWeb
         JavascriptExecutor js = (JavascriptExecutor) innerDriver;
         js.executeScript("arguments[0].click()", infoIcon);
         visually.takeScreenshot(SCREEN_NAME, "getCurrentMeetingDetails");
-        String meetingId = driver.waitForClickabilityOf(byCurrentMeetingNumberXpath).getText();
+        String meetingId = driver.findElements(byCurrentMeetingNumberXpath).get(0).getText();
         meetingId = meetingId.replaceAll("\\s", "");
-        String pin = driver.waitForClickabilityOf(byCurrentMeetingPinXpath).getText();
-        String invitationLink = driver.waitForClickabilityOf(byCurrentMeetingInvitationLinkXpath)
+        String pin = driver.findElements(byCurrentMeetingPinXpath).get(0).getText();
+        String invitationLink = driver.findElements(byCurrentMeetingInvitationLinkXpath).get(0)
                 .getText();
         js.executeScript("arguments[0].click()", infoIcon);//to close the meeting info frame
         visually.takeScreenshot(SCREEN_NAME, "After closing meeting info icon");
@@ -94,7 +82,7 @@ public class InAMeetingScreenWeb
     @Override
     public InAMeetingScreen unmute() {
         enableInMeetingControls("unmute");
-        driver.waitTillElementIsPresent(By.xpath("//div[contains(@class,'mic-section')]/div[contains(@class, 'img-holder')]")).click();
+        driver.waitTillElementIsPresent(microPhoneButtonXpath).click();
         visually.checkWindow(SCREEN_NAME, "Mic is unmuted");
         return this;
     }
@@ -102,7 +90,7 @@ public class InAMeetingScreenWeb
     @Override
     public InAMeetingScreen mute() {
         enableInMeetingControls("mute");
-        driver.waitTillElementIsPresent(By.xpath("//div[contains(@class,'mic-section')]/div[contains(@class, 'img-holder')]")).click();
+        driver.waitTillElementIsPresent(microPhoneButtonXpath).click();
         visually.checkWindow(SCREEN_NAME, "Mic is muted");
         return this;
     }

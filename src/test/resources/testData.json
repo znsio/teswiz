@@ -8,12 +8,6 @@
       "firstName": "Eot",
       "lastName": "Testing"
     },
-    "electronHost": {
-      "username": "e2e_DngJCRG9gZ@getnada.com",
-      "password": "Passw0rd!",
-      "firstName": "John",
-      "lastName": "Doe"
-    },
     "image": {
       "IMAGE_FILE_LOCATION": "/src/test/resources/images/handbag.jpg",
       "UPLOAD_IMAGE_LOCATION": "/sdcard/Images/handbag.jpg"

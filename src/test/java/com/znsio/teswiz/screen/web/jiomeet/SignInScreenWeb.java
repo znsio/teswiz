@@ -6,12 +6,10 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiomeet.InAMeetingScreen;
 import com.znsio.teswiz.screen.jiomeet.LandingScreen;
 import com.znsio.teswiz.screen.jiomeet.SignInScreen;
-import com.znsio.teswiz.tools.Wait;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.Select;
 
 public class SignInScreenWeb
         extends SignInScreen {
@@ -29,6 +27,9 @@ public class SignInScreenWeb
     private static final By byProceedButtonId = By.id("proceedButton");
     private static final By byPasswordId = By.id("password");
     private static final By bySigninButtonId = By.id("signinButton");
+    private static final By welcomeBackImageXpath = By.xpath("//img[contains(@class, 'signin-banner')]");
+
+
     private final Driver driver;
     private final Visual visually;
 
@@ -42,17 +43,7 @@ public class SignInScreenWeb
 
         driver.waitTillElementIsPresent(bySignInXpath).click();
         visually.checkWindow(SCREEN_NAME, "Start signin");
-        if (driver.isElementPresent(By.xpath("//*[contains(@class, 'signin-banner ng-star-inserted')]"))) {
-            for (int i = 0; i < 5; i++) {
-                driver.waitTillElementIsPresent(By.xpath("//*[contains(@class, 'signin-banner ng-star-inserted')]")).click();
-            }
-            if (driver.isElementPresent(By.xpath("//*[contains(@class,'env-select ng')]"))) {
-                driver.waitTillElementIsPresent(By.xpath("//*[contains(@class,'env-select ng')]")).click();
-                WebElement dropdownElement = driver.findElement(By.xpath("//*[contains(@class,'env-select ng')]"));
-                Select select = new Select(dropdownElement);
-                select.selectByVisibleText("RC");
-            }
-        }
+        driver.waitTillElementIsPresent(welcomeBackImageXpath);
 
         WebElement usernameElement = driver.waitTillElementIsPresent(byUsernameId);
         usernameElement.clear();
@@ -73,46 +64,30 @@ public class SignInScreenWeb
     @Override
     public InAMeetingScreen joinAMeeting(String meetingId, String meetingPassword,
                                          String currentUserPersona) {
-        Wait.waitFor(5);
-        if (driver.isElementPresent(bySignInXpath)) {
-            driver.waitTillElementIsPresent(bySignInXpath).click();
-            if (driver.isElementPresent(By.xpath("//*[contains(@class, 'signin-banner')]"))) {
-                for (int i = 0; i < 5; i++) {
-                    driver.waitTillElementIsPresent(By.xpath("//*[contains(@class, 'signin-banner')]")).click();
-                }
-                if (driver.isElementPresent(By.xpath("//*[contains(@class,'env-select ng')]"))) {
-                    driver.waitTillElementIsPresent(By.xpath("//*[contains(@class,'env-select ng')]")).click();
-                    WebElement dropdownElement = driver.findElement(By.xpath("//*[contains(@class,'env-select ng')]"));
-                    Select select = new Select(dropdownElement);
-                    select.selectByVisibleText("RC");
-                }
-            }
+        WebElement joinMeetingElement = driver.waitTillElementIsPresent(byJoinMeetingButtonId);
+        visually.checkWindow(SCREEN_NAME, "Landing screen");
+        joinMeetingElement.click();
 
-            WebElement joinMeetingElement = driver.waitTillElementIsPresent(byJoinMeetingButtonId);
-            visually.checkWindow(SCREEN_NAME, "Landing screen");
-            joinMeetingElement.click();
+        WebElement enterMeetingIdElement = driver.waitTillElementIsPresent(byEnterMeetingId);
+        enterMeetingIdElement.clear();
+        enterMeetingIdElement.sendKeys(meetingId);
 
-            WebElement enterMeetingIdElement = driver.waitTillElementIsPresent(byEnterMeetingId);
-            enterMeetingIdElement.clear();
-            enterMeetingIdElement.sendKeys(meetingId);
+        WebElement enterPasswordElement = driver.waitTillElementIsPresent(byEnterPasswordId);
+        enterPasswordElement.clear();
+        enterPasswordElement.sendKeys(meetingPassword);
 
-            WebElement enterPasswordElement = driver.waitTillElementIsPresent(byEnterPasswordId);
-            enterPasswordElement.clear();
-            enterPasswordElement.sendKeys(meetingPassword);
+        WebElement enterNameElement = driver.waitTillElementIsPresent(byNameId);
+        enterNameElement.clear();
+        enterNameElement.sendKeys(currentUserPersona);
 
-            WebElement enterNameElement = driver.waitTillElementIsPresent(byNameId);
-            enterNameElement.clear();
-            enterNameElement.sendKeys(currentUserPersona);
+        visually.check(SCREEN_NAME, "After entering meeting details",
+                Target.window().strict().layout(byEnterPasswordId).layout(byNameId));
 
-            visually.check(SCREEN_NAME, "After entering meeting details",
-                    Target.window().strict().layout(byEnterPasswordId).layout(byNameId));
+        visually.takeScreenshot(SCREEN_NAME, "Before clicking on Join button");
+        ((JavascriptExecutor) driver.getInnerDriver()).executeScript("arguments[0].click()",
+                driver.waitForClickabilityOf(
+                        byJoinMeetingButtonXpath));
 
-            visually.takeScreenshot(SCREEN_NAME, "Before clicking on Join button");
-            ((JavascriptExecutor) driver.getInnerDriver()).executeScript("arguments[0].click()",
-                    driver.waitForClickabilityOf(
-                            byJoinMeetingButtonXpath));
-
-        }
         return this.waitForInAMeetingScreenToLoad();
     }
 

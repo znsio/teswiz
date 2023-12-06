@@ -31,8 +31,6 @@ public class JioMeetSteps {
 
     @Given("I sign in as a registered {string}")
     public void iSignInAsARegistered(String userSuffix) {
-        if(Runner.getPlatform().equals(Platform.electron))
-                userSuffix = Platform.electron.toString() + userSuffix;
         Map userDetails = Runner.getTestDataAsMap(userSuffix);
         LOGGER.info(System.out.printf(
                 "iSignInAsARegistered - Persona:'%s', User details: '%s', Platform: '%s'",
