@@ -7,7 +7,6 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiomeet.InAMeetingScreen;
 import com.znsio.teswiz.tools.ReportPortalLogger;
-import com.znsio.teswiz.tools.Wait;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -15,8 +14,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-
-import java.util.List;
 
 public class InAMeetingScreenWeb
         extends InAMeetingScreen {
