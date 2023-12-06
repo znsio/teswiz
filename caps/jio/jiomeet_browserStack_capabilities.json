@@ -18,7 +18,6 @@
     "noSign": true,
     "autoAcceptAlerts": true,
     "browserstack.enableCameraImageInjection": true,
-    "browserstack.geoLocation": "IN",
     "browserstack.timezone": "Kolkata",
     "browserstack.debug": "false",
     "browserstack.networkLogs": "true",

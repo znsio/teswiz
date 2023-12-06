@@ -22,7 +22,6 @@
     "browserstack.appium_version": "2.0.1",
     "browserstack.enableCameraImageInjection": true,
     "browserstack.debug": true,
-    "browserstack.geoLocation": "IN",
     "browserstack.timezone": "Kolkata",
     "browserstack.networkLogs": "true",
     "browserstack.gpsLocation": "22,75",
