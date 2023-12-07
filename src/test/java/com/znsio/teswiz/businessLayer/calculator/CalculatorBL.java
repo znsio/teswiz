@@ -5,6 +5,7 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.screen.calculator.CalculatorScreen;
+import com.znsio.teswiz.screen.calculator.NewCalculatorScreen;
 import org.apache.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 
@@ -37,13 +38,27 @@ public class CalculatorBL {
         return this;
     }
 
+    public CalculatorBL startNewCalculator() {
+        NewCalculatorScreen.get().launch();
+        return this;
+    }
+
     public CalculatorBL selectNumber(String number) {
         CalculatorScreen.get().selectNumber(number);
+        return this;
+    }
+    public CalculatorBL selectNumberInNewCalculator(String number) {
+        NewCalculatorScreen.get().selectNumber(number);
         return this;
     }
 
     public CalculatorBL pressOperation(String operation) {
         CalculatorScreen.get().pressOperation(operation);
+        return this;
+    }
+
+    public CalculatorBL pressOperationInNewCalculator(String operation) {
+        NewCalculatorScreen.get().pressOperation(operation);
         return this;
     }
 }

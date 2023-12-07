@@ -28,6 +28,10 @@ public class CalculatorSteps {
     public void iSelect(String number) {
         new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectNumber(number);
     }
+    @Given("I select {string} in the new calculator")
+    public void iSelectInTheNewCalculator(String number) {
+        new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).selectNumberInNewCalculator(number);
+    }
 
     @And("{string} select {string}")
     public void select(String userPersona, String action) {
@@ -40,6 +44,11 @@ public class CalculatorSteps {
         new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).pressOperation(operation);
     }
 
+    @When("I press {string} in the new calculator")
+    public void iPressInTheNewCalculator(String operation) {
+        new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).pressOperationInNewCalculator(operation);
+    }
+
     @Then("I should see {string}")
     public void iShouldSee(String finalResult) {
     }
@@ -50,6 +59,14 @@ public class CalculatorSteps {
                 System.out.printf("iStartTheCalculator - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).startCalculator();
+    }
+
+    @Given("I start the new calculator")
+    public void iStartTheNewCalculator() {
+        LOGGER.info(
+                System.out.printf("iStartTheCalculator - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
+        new CalculatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).startNewCalculator();
     }
 
     @And("{string} press {string}")
