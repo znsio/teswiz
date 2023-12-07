@@ -115,6 +115,7 @@ public class Visual {
         appEyes.setMatchLevel(
                 (MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
         appEyes.setIsDisabled(!isVisualTestingEnabled);
+        appEyes.setSaveNewTests(getValueFromConfig(APPLITOOLS.SAVE_NEW_TESTS_AS_BASELINE, true));
 
         String applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
         appEyes.setLogHandler(
@@ -197,6 +198,8 @@ public class Visual {
                       .toUpperCase()));
         configuration.setForceFullPageScreenshot(
                 getValueFromConfig(APPLITOOLS.TAKE_FULL_PAGE_SCREENSHOT, true));
+        configuration.setSaveNewTests(
+                getValueFromConfig(APPLITOOLS.SAVE_NEW_TESTS_AS_BASELINE, true));
 
         addBrowserAndDeviceConfigForUFG(isUFG, configuration);
 
