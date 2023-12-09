@@ -145,6 +145,7 @@ tasks.register('run', JavaExec) {
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
+        environment "APPLITOOLS_API_KEY", System.getenv("teswiz_APPLITOOLS_API_KEY")
         environment "APPLITOOLS_LOG_DIR", "$logDirectory/applitools_logs"
 
         def configFile = System.getenv("CONFIG")
