@@ -32,6 +32,7 @@ import static com.znsio.teswiz.runner.Runner.*;
 class Setup {
     static final String RUN_IN_CI = "RUN_IN_CI";
     static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
+    static final String REPOSITORY_NAME = "REPOSITORY_NAME";
     static final String BRANCH_NAME = "BRANCH_NAME";
     static final String CAPS = "CAPS";
     static final String CLOUD_KEY = "CLOUD_KEY";
@@ -584,6 +585,7 @@ class Setup {
         batchInfo.addProperty(PLATFORM, currentPlatform.name());
         batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
         batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
+        batchInfo.addProperty(REPOSITORY_NAME, new File(System.getProperty("user.dir")).getName());
         return batchInfo;
     }
 
