@@ -21,17 +21,19 @@ public class InAMeetingScreenWeb
     private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
     private static final By byMeetingInfoIconXpath = By.xpath("//div[@class='icon pointer']");
-    private static final By byMicLabelXpath = By.xpath("//div[contains(@class,'mic-section')]");
+    private static final By byMicLabelXpath = By.xpath("//div[contains(@class, 'mic-section')]//img");
     private static final By byCurrentMeetingNumberXpath = By.xpath(
             "//div[text()='Meeting ID']/following-sibling::div");
     private static final By byCurrentMeetingPinXpath = By.xpath(
             "//div[text()='Password']/following-sibling::div");
     private static final By byCurrentMeetingInvitationLinkXpath = By.xpath(
-            "//div[text()='Invitation Link']/following-sibling::div");
+            "//div[text()='Invitation Link']/following-sibling::div[1]");
+    private static final By microPhoneButtonXpath = By.xpath("//div[@id = 'toggleMicButton']//div[contains(@class, 'img-holder')]");
     private final Driver driver;
     private final Visual visually;
     private final WebDriver innerDriver;
     private final TestExecutionContext context;
+
 
     public InAMeetingScreenWeb(Driver driver, Visual visually) {
         this.driver = driver;
@@ -53,11 +55,13 @@ public class InAMeetingScreenWeb
         JavascriptExecutor js = (JavascriptExecutor) innerDriver;
         js.executeScript("arguments[0].click()", infoIcon);
         visually.takeScreenshot(SCREEN_NAME, "getCurrentMeetingDetails");
-        String meetingId = driver.waitForClickabilityOf(byCurrentMeetingNumberXpath).getText();
+        String meetingId = (String) js.executeScript("return arguments[0].innerText",
+                driver.waitTillElementIsPresent(byCurrentMeetingNumberXpath));
         meetingId = meetingId.replaceAll("\\s", "");
-        String pin = driver.waitForClickabilityOf(byCurrentMeetingPinXpath).getText();
-        String invitationLink = driver.waitForClickabilityOf(byCurrentMeetingInvitationLinkXpath)
-                .getText();
+        String pin = (String) js.executeScript("return arguments[0].innerText",
+                driver.waitTillElementIsPresent(byCurrentMeetingPinXpath));
+        String invitationLink =  (String) js.executeScript("return arguments[0].innerText",
+                driver.waitTillElementIsPresent(byCurrentMeetingInvitationLinkXpath));
         js.executeScript("arguments[0].click()", infoIcon);//to close the meeting info frame
         visually.takeScreenshot(SCREEN_NAME, "After closing meeting info icon");
         LOGGER.info("On Web the meeting id: " + meetingId + " Password: " + pin);
@@ -77,7 +81,7 @@ public class InAMeetingScreenWeb
     @Override
     public InAMeetingScreen unmute() {
         enableInMeetingControls("unmute");
-        driver.waitTillElementIsPresent(By.xpath("//div[contains(text(),'Unmute')]")).click();
+        driver.waitTillElementIsPresent(microPhoneButtonXpath).click();
         visually.checkWindow(SCREEN_NAME, "Mic is unmuted");
         return this;
     }
@@ -85,10 +89,11 @@ public class InAMeetingScreenWeb
     @Override
     public InAMeetingScreen mute() {
         enableInMeetingControls("mute");
-        driver.waitTillElementIsPresent(By.xpath("//div[contains(text(),'Mute')]")).click();
+        driver.waitTillElementIsPresent(microPhoneButtonXpath).click();
         visually.checkWindow(SCREEN_NAME, "Mic is muted");
         return this;
     }
+
 
     @Override
     public String getMicLabelText() {
@@ -111,7 +116,7 @@ public class InAMeetingScreenWeb
             Actions actions = new Actions(innerDriver);
             actions.moveToElement(driver.waitForClickabilityOf(byMeetingInfoIconXpath))
                     .moveByOffset(25, 25).perform();
-        } catch(Exception e) {
+        } catch (Exception e) {
             String logMessage = String.format(
                     "Exception occurred : enableInMeetingControls%nException: %s",
                     e.getLocalizedMessage());

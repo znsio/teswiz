@@ -20,10 +20,11 @@ public abstract class InAMeetingScreen {
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
 
-        switch(platform) {
+        switch (platform) {
             case android:
                 return new InAMeetingScreenAndroid(driver, visually);
             case web:
+            case electron:
                 return new InAMeetingScreenWeb(driver, visually);
         }
         throw new NotImplementedException(
@@ -43,5 +44,4 @@ public abstract class InAMeetingScreen {
     public abstract String getMicLabelText();
 
     public abstract InAMeetingScreen openJioMeetNotification();
-
 }
