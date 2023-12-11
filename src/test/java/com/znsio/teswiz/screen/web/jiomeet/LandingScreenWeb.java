@@ -42,7 +42,7 @@ public class LandingScreenWeb
 
     @Override
     public InAMeetingScreen startInstantMeeting() {
-        driver.findElement(byStartAMeetingOptionXpath).click();
+        driver.waitForClickabilityOf(byStartAMeetingOptionXpath).click();
         return startsTheMeeting();
     }
 

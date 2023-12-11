@@ -27,7 +27,7 @@ public class InAMeetingScreenWeb
     private static final By byCurrentMeetingPinXpath = By.xpath(
             "//div[text()='Password']/following-sibling::div");
     private static final By byCurrentMeetingInvitationLinkXpath = By.xpath(
-            "//div[text()='Invitation Link']/following-sibling::div");
+            "//div[text()='Invitation Link']/following-sibling::div[1]");
     private static final By microPhoneButtonXpath = By.xpath("//div[@id = 'toggleMicButton']//div[contains(@class, 'img-holder')]");
     private final Driver driver;
     private final Visual visually;
@@ -55,11 +55,13 @@ public class InAMeetingScreenWeb
         JavascriptExecutor js = (JavascriptExecutor) innerDriver;
         js.executeScript("arguments[0].click()", infoIcon);
         visually.takeScreenshot(SCREEN_NAME, "getCurrentMeetingDetails");
-        String meetingId = driver.findElements(byCurrentMeetingNumberXpath).get(0).getText();
+        String meetingId = (String) js.executeScript("return arguments[0].innerText",
+                driver.waitTillElementIsPresent(byCurrentMeetingNumberXpath));
         meetingId = meetingId.replaceAll("\\s", "");
-        String pin = driver.findElements(byCurrentMeetingPinXpath).get(0).getText();
-        String invitationLink = driver.findElements(byCurrentMeetingInvitationLinkXpath).get(0)
-                .getText();
+        String pin = (String) js.executeScript("return arguments[0].innerText",
+                driver.waitTillElementIsPresent(byCurrentMeetingPinXpath));
+        String invitationLink =  (String) js.executeScript("return arguments[0].innerText",
+                driver.waitTillElementIsPresent(byCurrentMeetingInvitationLinkXpath));
         js.executeScript("arguments[0].click()", infoIcon);//to close the meeting info frame
         visually.takeScreenshot(SCREEN_NAME, "After closing meeting info icon");
         LOGGER.info("On Web the meeting id: " + meetingId + " Password: " + pin);
