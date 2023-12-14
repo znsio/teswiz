@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "appium-idb": "1.8.9",
-    "@appium/doctor": "2.0.28",
+    "@appium/doctor": "2.0.29",
     "@appium/relaxed-caps-plugin": "1.0.5",
-    "appium": "2.2.2",
+    "appium": "2.2.3",
     "appium-dashboard": "2.0.2",
     "appium-device-farm": "8.3.16",
-    "appium-uiautomator2-driver": "2.34.1",
-    "appium-xcuitest-driver": "5.11.0",
+    "appium-uiautomator2-driver": "2.34.2",
+    "appium-xcuitest-driver": "5.12.0",
     "go-ios": "1.0.120",
     "appium-webdriveragent": "5.15.3"
   },
