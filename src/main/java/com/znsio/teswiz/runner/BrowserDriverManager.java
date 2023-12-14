@@ -35,9 +35,11 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
@@ -196,7 +198,7 @@ class BrowserDriverManager {
         shouldBrowserBeMaximized = chromeConfiguration.getBoolean(MAXIMIZE);
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions)
-                                   : new ChromeDriver(chromeOptions);
+                : new ChromeDriver(chromeOptions);
         LOGGER.info("Chrome driver created");
         Capabilities capabilities =
                 Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
@@ -212,17 +214,9 @@ class BrowserDriverManager {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setAcceptInsecureCerts(chromeConfiguration.getBoolean(ACCEPT_INSECURE_CERTS));
 
-        if (Runner.getPlatform().equals(Platform.electron)) {
-            chromeOptions.setBinary(chromeConfiguration.getString("binary"));
-            Toolkit toolkit = Toolkit.getDefaultToolkit();
-            int width = toolkit.getScreenSize().width;
-            int height = toolkit.getScreenSize().height;
-            chromeOptions.addArguments(String.format("window-size=%s,%s", width, height));
-        }
-
         String browserVersion = getOverriddenStringValue(BROWSER_VERSION,
                 chromeConfiguration.getString("browserVersion"));
-        if(Runner.getPlatform().equals(Platform.web) && !browserVersion.equalsIgnoreCase("latest"))
+        if (Runner.getPlatform().equals(Platform.web) && !browserVersion.equalsIgnoreCase("latest"))
             chromeOptions.setBrowserVersion(browserVersion);
 
         setLogFileName(forUserPersona, testExecutionContext, "Chrome");
@@ -235,6 +229,14 @@ class BrowserDriverManager {
         return chromeOptions;
     }
 
+    private static void addWindowSizeToChromeOptions(JSONObject chromeConfiguration, ChromeOptions chromeOptions) {
+        chromeOptions.setBinary(chromeConfiguration.getString("binary"));
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        int width = toolkit.getScreenSize().width;
+        int height = toolkit.getScreenSize().height;
+        chromeOptions.addArguments(String.format("window-size=%s,%s", width, height));
+    }
+
     private static WebDriver createFirefoxDriver(String forUserPersona,
                                                  TestExecutionContext testExecutionContext,
                                                  JSONObject firefoxConfiguration) {
@@ -243,7 +245,7 @@ class BrowserDriverManager {
         shouldBrowserBeMaximized = firefoxConfiguration.getBoolean(MAXIMIZE);
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(firefoxOptions)
-                                   : new FirefoxDriver(firefoxOptions);
+                : new FirefoxDriver(firefoxOptions);
         LOGGER.info("Firefox driver created");
         Capabilities capabilities =
                 Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
@@ -423,7 +425,7 @@ class BrowserDriverManager {
         shouldBrowserBeMaximized = safariConfigurations.getBoolean(MAXIMIZE);
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(safariOptions)
-                                   : new SafariDriver(safariOptions);
+                : new SafariDriver(safariOptions);
         LOGGER.info("Safari driver created");
         Capabilities capabilities =
                 Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
@@ -499,8 +501,8 @@ class BrowserDriverManager {
                 Map hostMachines = (Map) hostMachinesList.get(0);
                 String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
                 remoteUrl = remoteServerURL.endsWith("/")
-                                    ? remoteServerURL + authenticationKey + webDriverHubSuffix
-                                    : remoteServerURL + "/" + authenticationKey + webDriverHubSuffix;
+                        ? remoteServerURL + authenticationKey + webDriverHubSuffix
+                        : remoteServerURL + "/" + authenticationKey + webDriverHubSuffix;
                 remoteUrl = remoteUrl.startsWith("https") ? remoteUrl : "https://" + remoteUrl;
             } else if (cloudName.equalsIgnoreCase("browserstack")) {
                 String authenticationUser = Runner.getCloudUser();
@@ -572,6 +574,8 @@ class BrowserDriverManager {
         LOGGER.info(BrowserDriverManager.class.getName() + "-createNewElectronDriver: " + browserName.toLowerCase());
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
         ChromeOptions chromeOptions = getChromeOptions(userPersona, context, browserConfigForBrowserType);
+        addWindowSizeToChromeOptions(browserConfigForBrowserType, chromeOptions);
+
         shouldBrowserBeMaximized = browserConfigForBrowserType.getBoolean(MAXIMIZE);
 
         WebDriverManager.chromedriver().clearDriverCache().driverVersion(getOverriddenStringValue(BROWSER_VERSION,
@@ -586,6 +590,16 @@ class BrowserDriverManager {
         Drivers.addUserPersonaDriverCapabilities(userPersona, capabilities);
         LOGGER.info("Electron driver capabilities extracted for further use");
         loadBaseUrl(baseUrl, driver);
+
+        String parentWindowHandle = driver.getWindowHandle();
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(50));
+        Set<String> windowHandles = driver.getWindowHandles();
+        for (String handle : windowHandles) {
+            if (!handle.equals(parentWindowHandle)) {
+                driver.switchTo().window(handle);
+                break;
+            }
+        }
         Driver currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName, driver, isRunInHeadlessMode);
         numberOfWebDriversUsed++;
         LOGGER.info(String.format("createElectronDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', Number of ElectronDrivers: '%d'",

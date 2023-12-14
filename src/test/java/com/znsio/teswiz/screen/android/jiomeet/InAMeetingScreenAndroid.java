@@ -64,6 +64,7 @@ public class InAMeetingScreenAndroid
         driver.selectNotificationFromNotificationDrawer(byMeetingNotificationXpath);
         return this;
     }
+
     @Override
     public InAMeetingScreen unmute() {
         enableInMeetingControls("unmute");

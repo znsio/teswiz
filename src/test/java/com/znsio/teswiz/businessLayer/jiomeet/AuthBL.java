@@ -45,21 +45,22 @@ public class AuthBL {
         String password = String.valueOf(userDetails.get("password"));
         String firstName = String.valueOf(userDetails.get("firstName"));
         String lastName = String.valueOf(userDetails.get("lastName"));
+
         String expectedWelcomeMessageAndroid = "Hello " + firstName + " \n" + "what would you " +
-                                               "like to do?";
+                "like to do?";
         String expectedWelcomeMessageWeb = "Hello " + firstName + " " + lastName + ", what would " +
-                                           "you like to do?";
+                "you like to do?";
         String expectedWelcomeMessage =
-                currentPlatform.equals(Platform.web) ? expectedWelcomeMessageWeb
-                                                     : expectedWelcomeMessageAndroid;
+                currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.electron) ? expectedWelcomeMessageWeb
+                        : expectedWelcomeMessageAndroid;
 
         String signedInWelcomeMessage = SignInScreen.get().signIn(username, password)
-                                                    .getSignedInWelcomeMessage();
+                .getSignedInWelcomeMessage();
 
         LOGGER.info(String.format("signedInWelcomeMessage: '%s'", signedInWelcomeMessage));
 
         assertThat(signedInWelcomeMessage).as("Welcome message is incorrect")
-                                          .isEqualTo(expectedWelcomeMessage);
+                .isEqualTo(expectedWelcomeMessage);
         return new LandingBL(currentUserPersona, currentPlatform);
     }
 }
