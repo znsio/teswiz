@@ -5,7 +5,7 @@ buildscript {
         gradleVersion = "8.5"
         assertJVersion = "3.24.2"
         atdVersion = "14.0.1"
-        applitoolsAppiumVersion = "5.66.0"
+        applitoolsAppiumVersion = "5.66.1"
         seleniumVersion = "4.13.0"
         commonsLang3Version = "3.14.0"
         commonsRngSimpleVersion = "1.5"
@@ -18,8 +18,8 @@ buildscript {
         masterThoughtVersion = "5.7.7"
         browserStackLocalVersion = "1.1.0"
         jetbrainsAnnotationsVersion = "24.1.0"
-        aspectJVersion = "1.9.20.1"
-        specmaticVersion = '1.0.3'
+        aspectJVersion = "1.9.21"
+        specmaticVersion = '1.1.0'
     }
 }
 
