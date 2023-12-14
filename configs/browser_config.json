@@ -37,7 +37,7 @@
     "binary": "/Applications/JioMeet-Lite.app/Contents/MacOS/JioMeet-Lite",
     "browserVersion": "118.0.5993.70",
     "electronAppLoadingPage": true,
-    "electronAppLoadTime": "70"
+    "electronAppLoadTime": 70
   },
   "firefox": {
     "firefoxProfile": {
