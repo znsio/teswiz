@@ -592,14 +592,21 @@ class BrowserDriverManager {
         loadBaseUrl(baseUrl, driver);
 
         String parentWindowHandle = driver.getWindowHandle();
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(50));
-        Set<String> windowHandles = driver.getWindowHandles();
-        for (String handle : windowHandles) {
-            if (!handle.equals(parentWindowHandle)) {
-                driver.switchTo().window(handle);
-                break;
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(Long.parseLong(browserConfigForBrowserType.getString("electronAppLoadTime"))));
+        System.out.println("XXXXX"+browserConfigForBrowserType.getBoolean("electronAppLoadingPage"));
+        if (browserConfigForBrowserType.getBoolean("electronAppLoadingPage")) {
+            System.out.println("XXXXX"+browserConfigForBrowserType.getBoolean("electronAppLoadingPage"));
+            System.out.println("XXXXX"+ parentWindowHandle);
+            Set<String> windowHandles = driver.getWindowHandles();
+            System.out.println("XXXXX"+ windowHandles);
+            for (String handle : windowHandles) {
+                if (!handle.equals(parentWindowHandle)) {
+                    driver.switchTo().window(handle);
+                    break;
+                }
             }
         }
+
         Driver currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName, driver, isRunInHeadlessMode);
         numberOfWebDriversUsed++;
         LOGGER.info(String.format("createElectronDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', Number of ElectronDrivers: '%d'",

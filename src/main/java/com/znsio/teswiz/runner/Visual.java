@@ -31,6 +31,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.awt.Toolkit;
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -298,8 +299,10 @@ public class Visual {
         } else {
             JavascriptExecutor js = (JavascriptExecutor) innerDriver;
             Dimension actualBrowserSize;
-            if(Runner.getPlatform().equals(Platform.electron))
-                actualBrowserSize = new Dimension(100, 100);
+            if(Runner.getPlatform().equals(Platform.electron)){
+                Toolkit toolkit = Toolkit.getDefaultToolkit();
+                actualBrowserSize = new Dimension(toolkit.getScreenSize().width, toolkit.getScreenSize().height);
+            }
             else
                 actualBrowserSize = innerDriver.manage().window().getSize();
             LOGGER.info(String.format("Actual browser dimensions: %s", actualBrowserSize));
