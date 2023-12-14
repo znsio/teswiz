@@ -593,12 +593,8 @@ class BrowserDriverManager {
 
         String parentWindowHandle = driver.getWindowHandle();
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(Long.parseLong(browserConfigForBrowserType.getString("electronAppLoadTime"))));
-        System.out.println("XXXXX"+browserConfigForBrowserType.getBoolean("electronAppLoadingPage"));
         if (browserConfigForBrowserType.getBoolean("electronAppLoadingPage")) {
-            System.out.println("XXXXX"+browserConfigForBrowserType.getBoolean("electronAppLoadingPage"));
-            System.out.println("XXXXX"+ parentWindowHandle);
             Set<String> windowHandles = driver.getWindowHandles();
-            System.out.println("XXXXX"+ windowHandles);
             for (String handle : windowHandles) {
                 if (!handle.equals(parentWindowHandle)) {
                     driver.switchTo().window(handle);
