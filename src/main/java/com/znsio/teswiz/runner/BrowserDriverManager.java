@@ -36,7 +36,10 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
@@ -601,7 +604,7 @@ class BrowserDriverManager {
 
     private static void handleWindowForElectronApplication(WebDriver driver, JSONObject browserConfigForBrowserType) {
         LOGGER.info("Handle loading window for electron application");
-        Set<String> windowHandles = new HashSet<>();
+        Set<String> windowHandles = new java.util.HashSet<>();
         String parentWindowHandle = driver.getWindowHandle();
         LOGGER.info(String.format("Current window handle %s", parentWindowHandle));
         long startTime = System.currentTimeMillis();
