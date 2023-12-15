@@ -50,11 +50,12 @@ static def getCurrentTimestamp() {
     return df.format(today)
 }
 
-task run(type: JavaExec) {
+tasks.register('run', JavaExec) {
     doFirst {
         def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
+        environment "APPLITOOLS_LOG_DIR", "$logDirectory/applitools_logs"
 
         def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
         println "isRunningInCI: $isRunInCI"
@@ -75,13 +76,22 @@ task run(type: JavaExec) {
 //                : "./configs/theapp/theapp_local_config.properties"
 //        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
 
-        systemProperties = System.properties
+        systemProperties = System.properties as Map<String, ?>
         def runnerArgs = [
                 "${configFile}",
                 "<pathToStepDef>",
                 "<pathToFeaturesDir>"
         ]
         args = runnerArgs
+
+        println("Debug mode: " + System.getProperty('debug', 'false'))
+        // attach debugger
+        // example: ./gradlew run -Ddebug=true
+        if (System.getProperty('debug', 'false') == 'true') {
+            println("In debug mode")
+            jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,' +
+                    'address=*:5005'
+        }
     }
     mainClass = "com.znsio.teswiz.runner.Runner"
 
