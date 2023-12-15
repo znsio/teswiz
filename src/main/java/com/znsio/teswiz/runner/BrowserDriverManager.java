@@ -14,7 +14,12 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.MutableCapabilities;
+import org.openqa.selenium.Proxy;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -567,6 +572,7 @@ class BrowserDriverManager {
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
         ChromeOptions chromeOptions = getChromeOptions(userPersona, context, browserConfigForBrowserType);
         addWindowSizeToChromeOptions(browserConfigForBrowserType, chromeOptions);
+        chromeOptions.setExperimentalOption("w3c", true);
 
         shouldBrowserBeMaximized = browserConfigForBrowserType.getBoolean(MAXIMIZE);
 
@@ -582,8 +588,9 @@ class BrowserDriverManager {
         Drivers.addUserPersonaDriverCapabilities(userPersona, capabilities);
         LOGGER.info("Electron driver capabilities extracted for further use");
 
-        if (browserConfigForBrowserType.getBoolean("electronAppLoadingPage"))
+        if (browserConfigForBrowserType.getBoolean("electronAppLoadingPage")) {
             handleWindowForElectronApplication(driver, browserConfigForBrowserType);
+        }
 
         Driver currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName, driver, isRunInHeadlessMode);
         numberOfWebDriversUsed++;
@@ -593,18 +600,23 @@ class BrowserDriverManager {
     }
 
     private static void handleWindowForElectronApplication(WebDriver driver, JSONObject browserConfigForBrowserType) {
+        LOGGER.info("Handle loading window for electron application");
         Set<String> windowHandles = new HashSet<>();
         String parentWindowHandle = driver.getWindowHandle();
+        LOGGER.info(String.format("Current window handle %s", parentWindowHandle));
         long startTime = System.currentTimeMillis();
 
         while (windowHandles.size() <= 1) {
             windowHandles = driver.getWindowHandles();
-            if(System.currentTimeMillis() - startTime > browserConfigForBrowserType.getInt("electronAppLoadTime") * 1000L)
-                throw new TimeoutException("Only one window handle is available");
+            if (System.currentTimeMillis() - startTime > browserConfigForBrowserType.getInt("electronAppLoadTime") * 1000L)
+                throw new TimeoutException("No Loading page window available, disable the electronAppLoadingPage parameter");
         }
+
+        LOGGER.info(String.format("All the window handles available %s", windowHandles));
         for (String handle : windowHandles) {
             if (!handle.equals(parentWindowHandle)) {
                 driver.switchTo().window(handle);
+                LOGGER.info(String.format("Current window handle after switching %s", driver.getWindowHandle()));
                 break;
             }
         }
