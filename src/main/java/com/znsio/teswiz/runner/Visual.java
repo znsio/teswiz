@@ -31,6 +31,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.awt.Toolkit;
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -297,15 +298,14 @@ public class Visual {
             return providedBrowserViewPortSizeFromConfig;
         } else {
             JavascriptExecutor js = (JavascriptExecutor) innerDriver;
-            if (Runner.getPlatform().equals(Platform.electron)) {
-                Set<String> windowHandles = innerDriver.getWindowHandles();
-                if (windowHandles.size() > 0) {
-                    innerDriver.switchTo().window((String) windowHandles.toArray()[0]);
-                }
-            } else {
-                Dimension actualBrowserSize = innerDriver.manage().window().getSize();
-                LOGGER.info(String.format("Actual browser dimensions: %s", actualBrowserSize));
+            Dimension actualBrowserSize;
+            if(Runner.getPlatform().equals(Platform.electron)){
+                Toolkit toolkit = Toolkit.getDefaultToolkit();
+                actualBrowserSize = new Dimension(toolkit.getScreenSize().width, toolkit.getScreenSize().height);
             }
+            else
+                actualBrowserSize = innerDriver.manage().window().getSize();
+            LOGGER.info(String.format("Actual browser dimensions: %s", actualBrowserSize));
             Long actualHeight = (Long) js.executeScript("return (window.innerHeight);");
             Long actualWidth = (Long) js.executeScript("return (window.innerWidth);");
 
