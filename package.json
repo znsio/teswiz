@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "appium-idb": "1.8.9",
-    "@appium/doctor": "2.0.29",
+    "@appium/doctor": "2.0.30",
     "@appium/relaxed-caps-plugin": "1.0.5",
     "appium": "2.2.3",
     "appium-dashboard": "2.0.2",
