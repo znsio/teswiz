@@ -4,8 +4,8 @@ buildscript {
     ext {
         gradleVersion = "8.5"
         assertJVersion = "3.24.2"
-        atdVersion = "02322d6f1f"
-        applitoolsAppiumVersion = "5.66.3"
+        atdVersion = "5ea3c727de"
+        applitoolsAppiumVersion = "5.66.2"
         seleniumVersion = "4.13.0"
         commonsLang3Version = "3.14.0"
         commonsRngSimpleVersion = "1.5"
@@ -21,7 +21,6 @@ buildscript {
         aspectJVersion = "1.9.20.1"
         webDriverManager = '5.5.3'
         specmaticVersion = '1.0.4'
-        log4jVersion = '2.22.0'
     }
 }
 
@@ -72,13 +71,7 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion") {
-        exclude group: 'log4j', module: 'log4j'
-    }
-    // Migrating from Log4j 1.x to 2.x - https://logging.apache.org/log4j/2.x/manual/migration.html
-    implementation "org.apache.logging.log4j:log4j-1.2-api:$project.log4jVersion"
-    implementation "org.apache.logging.log4j:log4j-api:$project.log4jVersion"
-    implementation "org.apache.logging.log4j:log4j-core:$project.log4jVersion"
+    implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
     implementation "org.seleniumhq.selenium:selenium-http-jdk-client:$project.seleniumVersion"
 //    implementation "org.seleniumhq.selenium:selenium-java:$project.seleniumVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
