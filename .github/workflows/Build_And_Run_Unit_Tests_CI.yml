@@ -37,18 +37,22 @@ jobs:
           git config --global user.email "actions@github.com"
           git status
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-          echo "Running on branch: $BRANCH_NAME"
-          git pull --rebase origin "$BRANCH_NAME"
-          echo "COMMIT_ID=$COMMIT_ID"
-          awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md
-          mv README_new.md README.md
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "There are changes. Update README"
-            git add README.md
-            git commit -m "Update README with latest commit ID - $COMMIT_ID"
-            git push -u origin "$BRANCH_NAME"
+          echo "Running on branch: '$BRANCH_NAME'"
+          if [[ "$BRANCH_NAME" = "main" ]]; then
+            git pull --rebase origin main
+            echo "COMMIT_ID=$COMMIT_ID"
+            awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md
+            mv README_new.md README.md
+            if [ -n "$(git status --porcelain)" ]; then
+              echo "There are changes in 'main'. Update README"
+              git add README.md
+              git commit -m "Update README with latest commit ID - $COMMIT_ID"
+              git push -u origin main
+            else
+              echo "No local changes in 'main'. Nothing to update in the README."
+            fi
           else
-            echo "No local changes."
+            echo "Not running in 'main'. No need to update README for branch: '$BRANCH_NAME'"
           fi
         env:
           PAT_TOKEN: ${{ secrets.TESWIZ_PAT }}
