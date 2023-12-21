@@ -36,7 +36,9 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git status
-          # git pull --rebase origin main
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          echo "Running on branch: $BRANCH_NAME"
+          git pull --rebase origin "$BRANCH_NAME"
           echo "COMMIT_ID=$COMMIT_ID"
           awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md
           mv README_new.md README.md
@@ -44,7 +46,7 @@ jobs:
             echo "There are changes. Update README"
             git add README.md
             git commit -m "Update README with latest commit ID - $COMMIT_ID"
-            git push -u origin main
+            git push -u origin "$BRANCH_NAME"
           else
             echo "No local changes."
           fi
