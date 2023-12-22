@@ -2,8 +2,8 @@ import java.text.SimpleDateFormat
 
 buildscript {
     ext {
-        gradleVersion = '8.3'
-        atdVersion = "0d571ecd56" // ATD from log4jIssue branch - added log4j plugin processor
+        gradleVersion = "8.5"
+        teswizVersion = '0.0.90'
     }
     repositories {
         mavenLocal()
