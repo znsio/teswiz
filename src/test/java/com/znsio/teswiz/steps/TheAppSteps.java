@@ -9,6 +9,7 @@ import com.znsio.teswiz.businessLayer.theapp.EchoBL;
 import com.znsio.teswiz.businessLayer.theapp.FileUploadBL;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
+import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import io.cucumber.java.en.And;
@@ -32,6 +33,7 @@ public class TheAppSteps {
                 "iLoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', " +
                 "Platform: '%s'",
                 SAMPLE_TEST_CONTEXT.ME, username, password, Runner.getPlatform()));
+        context.addTestState(TEST_CONTEXT.UPDATED_BASE_URL_FOR_WEB, "BASE_URL");
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         context.addTestState(SAMPLE_TEST_CONTEXT.ME, username);
         new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).provideInvalidDetailsForSignup(username,

@@ -21,4 +21,5 @@ public class TEST_CONTEXT {
     public static final String TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT =
             "tagsToExcludeFromCucumberReport";
     public static final String CURRENT_USER_PERSONA_DETAILS = "currentUserPersonaDetails";
+    public static final String UPDATED_BASE_URL_FOR_WEB = "updatedBaseUrlForWeb";
 }

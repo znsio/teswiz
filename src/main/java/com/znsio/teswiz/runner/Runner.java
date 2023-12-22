@@ -182,7 +182,14 @@ public class Runner {
     }
 
     public static String getBaseURLForWeb() {
-        return Setup.getFromConfigs(Setup.BASE_URL_FOR_WEB);
+        String baseUrlToBeUsed = Setup.getFromConfigs(Setup.BASE_URL_FOR_WEB);
+        LOGGER.info(String.format("Using baseUrl KEY in configs for web: '%s'", baseUrlToBeUsed));
+        Object updatedBaseUrlForWeb = getTestExecutionContext(Thread.currentThread().getId()).getTestState(TEST_CONTEXT.UPDATED_BASE_URL_FOR_WEB);
+        if (null!= updatedBaseUrlForWeb) {
+            baseUrlToBeUsed = updatedBaseUrlForWeb.toString();
+            LOGGER.info(String.format("Using updated baseUrl key for web: '%s'", baseUrlToBeUsed));
+        }
+        return baseUrlToBeUsed;
     }
 
     public static String getAppPackageName() {
