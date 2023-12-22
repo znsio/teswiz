@@ -4,7 +4,7 @@ buildscript {
     ext {
         gradleVersion = "8.5"
         assertJVersion = "3.24.2"
-        atdVersion = "74c6f09ffc" // ATD from log4jIssue branch - added log4j plugin processor, reverted reportportal dependency versions
+        atdVersion = "14.0.1"
         applitoolsAppiumVersion = "5.66.3"
         seleniumVersion = "4.13.0"
         commonsLang3Version = "3.14.0"
