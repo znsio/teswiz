@@ -183,11 +183,11 @@ public class Runner {
 
     public static String getBaseURLForWeb() {
         String baseUrlToBeUsed = Setup.getFromConfigs(Setup.BASE_URL_FOR_WEB);
-        LOGGER.info("Using baseUrl KEY in configs for web: '%s'".formatted(baseUrlToBeUsed));
+        LOGGER.info(String.format("Using baseUrl KEY in configs for web: '%s'", baseUrlToBeUsed));
         Object updatedBaseUrlForWeb = getTestExecutionContext(Thread.currentThread().getId()).getTestState(TEST_CONTEXT.UPDATED_BASE_URL_FOR_WEB);
         if (null!= updatedBaseUrlForWeb) {
             baseUrlToBeUsed = updatedBaseUrlForWeb.toString();
-            LOGGER.info("Using updated baseUrl key for web: '%s'".formatted(baseUrlToBeUsed));
+            LOGGER.info(String.format("Using updated baseUrl key for web: '%s'", baseUrlToBeUsed));
         }
         return baseUrlToBeUsed;
     }
