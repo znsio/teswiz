@@ -32,16 +32,12 @@ jobs:
       - name: Get Latest Commit ID and save in GITHUB_ENV
         run: |
           echo "COMMIT_ID=$(git rev-parse HEAD | head -c 10)" >> "$GITHUB_ENV"
-          branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-          echo "branch: $branch"
-          branch1=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
-          echo "branch1: $branch1"
       - name: Update README with latest commit id and push to repo
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git status
-          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          BRANCH_NAME=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
           echo "Running on branch: '$BRANCH_NAME'"
           if [[ "$BRANCH_NAME" = "main" ]]; then
             git pull --rebase origin main
