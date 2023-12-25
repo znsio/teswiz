@@ -42,6 +42,7 @@ public class Runner {
     }
 
     public Runner(String configFilePath, String stepDefDirName, String featuresDirName) {
+        setLog4jCompatibility();
         Path path = Paths.get(configFilePath);
         if(!Files.exists(path)) {
             throw new InvalidTestDataException(
@@ -50,6 +51,11 @@ public class Runner {
         Setup.load(configFilePath);
         List<String> cukeArgs = Setup.getExecutionArguments();
         run(cukeArgs, stepDefDirName, featuresDirName);
+    }
+
+    private static void setLog4jCompatibility() {
+        // Migrating from Log4j 1.x to 2.x - https://logging.apache.org/log4j/2.x/manual/migration.html
+        System.setProperty("log4j1.compatibility", "true");
     }
 
     public static Platform getPlatformForUser(String userPersona) {
