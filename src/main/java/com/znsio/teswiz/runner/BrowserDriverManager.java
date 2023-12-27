@@ -105,7 +105,6 @@ class BrowserDriverManager {
             browserConfig = getBrowserConfig();
             context.addTestState(com.znsio.teswiz.entities.TEST_CONTEXT.BROWSER_CONFIG, browserConfig);
         }
-        context.addTestState(com.znsio.teswiz.entities.TEST_CONTEXT.BROWSER_CONFIG, browserConfig);
         return browserConfig;
     }
 
