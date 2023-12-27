@@ -8,7 +8,7 @@
     "appium-device-farm": "8.4.5",
     "appium-uiautomator2-driver": "2.35.0",
     "appium-xcuitest-driver": "5.12.2",
-    "go-ios": "1.0.120",
+    "go-ios": "1.0.121",
     "appium-webdriveragent": "5.15.5"
   },
   "name": "teswiz-appium2.0",
