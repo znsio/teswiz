@@ -100,10 +100,10 @@ class BrowserDriverManager {
 
     @org.jetbrains.annotations.NotNull
     private static JSONObject getBrowserConfig(TestExecutionContext context) {
-        JSONObject browserConfig = (JSONObject) context.getTestState(com.znsio.teswiz.entities.TEST_CONTEXT.BROWSER_CONFIG);
+        JSONObject browserConfig = (JSONObject) context.getTestState(TEST_CONTEXT.BROWSER_CONFIG);
         if (null == browserConfig) {
             browserConfig = getBrowserConfig();
-            context.addTestState(com.znsio.teswiz.entities.TEST_CONTEXT.BROWSER_CONFIG, browserConfig);
+            context.addTestState(TEST_CONTEXT.BROWSER_CONFIG, browserConfig);
         }
         return browserConfig;
     }
