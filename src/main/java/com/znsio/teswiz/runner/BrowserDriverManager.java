@@ -107,13 +107,15 @@ class BrowserDriverManager {
 
     @org.jetbrains.annotations.NotNull
     private static JSONObject getBrowserConfig(TestExecutionContext context) {
-        JSONObject browserConfig = (JSONObject) context.getTestState(com.znsio.teswiz.entities.TEST_CONTEXT.BROWSER_CONFIG);
-        if (null == browserConfig) {
-            browserConfig = getBrowserConfig();
-            context.addTestState(com.znsio.teswiz.entities.TEST_CONTEXT.BROWSER_CONFIG, browserConfig);
+        String browserConfigFile = Runner.getBrowserConfigFile();
+        String updatedBrowserConfigFileForThisTest = context.getTestStateAsString(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST);
+        if (null != updatedBrowserConfigFileForThisTest) {
+            browserConfigFile = updatedBrowserConfigFileForThisTest;
         }
-        context.addTestState(com.znsio.teswiz.entities.TEST_CONTEXT.BROWSER_CONFIG, browserConfig);
-        return browserConfig;
+        JSONObject browserConfig = Runner.getBrowserConfigFileContents(browserConfigFile);
+        return JsonSchemaValidator.validateJsonFileAgainstSchema(browserConfigFile,
+                browserConfig.toString(),
+                BROWSER_CONFIG_SCHEMA_FILE);
     }
 
     private static String getBaseUrl(String userPersona) {
@@ -132,14 +134,6 @@ class BrowserDriverManager {
                 Runner.getFromEnvironmentConfiguration(providedBaseUrlKey));
         LOGGER.info(String.format("baseUrl: %s", retrievedBaseUrl));
         return retrievedBaseUrl;
-    }
-
-    private static JSONObject getBrowserConfig() {
-        String browserConfigFileContents = Runner.getBrowserConfigFileContents();
-        String browserConfigFile = Runner.getBrowserConfigFile();
-        return JsonSchemaValidator.validateJsonFileAgainstSchema(browserConfigFile,
-                browserConfigFileContents,
-                BROWSER_CONFIG_SCHEMA_FILE);
     }
 
     private static void checkConnectivityToBaseUrl(String baseUrl) {

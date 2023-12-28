@@ -52,7 +52,6 @@ class Setup {
     static final String REMOTE_WEBDRIVER_GRID_PORT = "REMOTE_WEBDRIVER_GRID_PORT";
     static final String REMOTE_WEBDRIVER_GRID_HOST_NAME = "REMOTE_WEBDRIVER_GRID_HOST_NAME";
     static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
-    static final String BROWSER_CONFIG_FILE_CONTENTS = "BROWSER_CONFIG_FILE_CONTENTS";
     static final String DEFAULT_BROWSER_CONFIG_FILE = "/default_browser_config.json";
     static final String PLUGIN = "--plugin";
     static final String APP_PATH = "APP_PATH";
@@ -62,7 +61,6 @@ class Setup {
     static final String PARALLEL = "PARALLEL";
     static final String TAG = "TAG";
     static final String APP_VERSION = "APP_VERSION";
-    static final String APPIUM_UI_AUTOMATOR2_SERVER = "io.appium.uiautomator2.server";
     static final String REPORTS_DIR = "reports";
     static final String CLOUD_USE_PROXY = "CLOUD_USE_PROXY";
     static final String CLOUD_USE_LOCAL_TESTING = "CLOUD_USE_LOCAL_TESTING";
@@ -451,7 +449,6 @@ class Setup {
         return files;
     }
 
-    // todo - reduce complexity and simplify
     private static void getPlatformTagsAndLaunchName() {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME);

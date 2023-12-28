@@ -11,7 +11,6 @@ import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -216,23 +215,25 @@ public class Runner {
         return proxyURL;
     }
 
-    public static String getBrowserConfigFileContents() {
-        InputStream inputStream;
-        String browserConfigFile = Setup.getFromConfigs(Setup.BROWSER_CONFIG_FILE);
+    public static JSONObject getBrowserConfigFileContents() {
+        return getBrowserConfigFileContents(Setup.getFromConfigs(Setup.BROWSER_CONFIG_FILE));
+    }
+
+    public static JSONObject getBrowserConfigFileContents(String browserConfigFile) {
         try {
+            InputStream inputStream;
             if(browserConfigFile.contains(DEFAULT)) {
                 inputStream = Runner.class.getResourceAsStream(Setup.DEFAULT_BROWSER_CONFIG_FILE);
             } else {
                 inputStream = Files.newInputStream(Paths.get(browserConfigFile));
             }
+            assert inputStream != null;
+            return new JSONObject(new JSONTokener(inputStream));
         } catch(Exception e) {
             throw new InvalidTestDataException(
                     String.format("There was a problem while setting browser config file '%s'",
                                   browserConfigFile));
         }
-        Setup.addToConfigs(Setup.BROWSER_CONFIG_FILE_CONTENTS,
-                           new JSONObject(new JSONTokener(inputStream)).toString());
-        return Setup.getFromConfigs(Setup.BROWSER_CONFIG_FILE_CONTENTS);
     }
 
     public static String getBrowserConfigFile() {

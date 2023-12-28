@@ -49,3 +49,25 @@ These can be overridden by providing the same either as environment variables or
     TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE
     TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
     BROWSER_CONFIG_FILE=./src/test/resources/com/znsio/teswiz/features/configs/browser_config.json -> json containing browser configurations
+
+# Overriding the BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE for Web execution
+The BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE once set, cannot be changed for the test execution.
+However, there may be reasons when you need to use a different BASE_URL_FOR_WEB or a different BROWSER_CONFIG_FILE for specific tests.
+
+To allow for that, **before the driver is created** for a test, you can add the following data to the TestExecutionContext.  
+
+Example:
+
+    @When("I login with invalid credentials - {string}, {string}")
+    public void iLoginWithInvalidCredentials(String username, String password) {
+        LOGGER.info(System.out.printf(
+                "iLoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', " +
+                "Platform: '%s'",
+                SAMPLE_TEST_CONTEXT.ME, username, password, Runner.getPlatform()));
+        context.addTestState(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST, "./configs/browser_headless_config.json");
+        context.addTestState(TEST_CONTEXT.UPDATED_BASE_URL_FOR_WEB, "BASE_URL");
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
+        context.addTestState(SAMPLE_TEST_CONTEXT.ME, username);
+        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).provideInvalidDetailsForSignup(username,
+                                                                                               password);
+    }
