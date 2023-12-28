@@ -15,10 +15,12 @@ public class TEST_CONTEXT {
     public static final String SOFT_ASSERTIONS = "softAssertions";
     public static final String WEB_BROWSER_ON = "webBrowserOn";
     public static final String WINDOWS_DEVICE_ON = "windowsDeviceOn";
-    public static final String BROWSER_CONFIG = "browserConfig";
     public static final String MOBILE_EMULATION_DEVICE = "mobileEmulationDevice";
     public static final String TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT =
             "tagsToExcludeFromCucumberReport";
     public static final String CURRENT_USER_PERSONA_DETAILS = "currentUserPersonaDetails";
     public static final String UPDATED_BASE_URL_FOR_WEB = "updatedBaseUrlForWeb";
+    public static final String UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST = "updatedBrowserConfigFileForThisTest";
+
+    private TEST_CONTEXT() {}
 }
