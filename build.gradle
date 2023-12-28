@@ -13,7 +13,7 @@ buildscript {
         jadbVersion = "1.2.1"
         junitVersion = "5.10.1"
         slf4jVersion = "2.0.9"
-        fasterxmlJacksonVersion = "2.16.0"
+        fasterxmlJacksonVersion = "2.16.1"
         jodaTimeVersion = "2.12.5"
         masterThoughtVersion = "5.7.8"
         browserStackLocalVersion = "1.1.0"
