@@ -609,7 +609,7 @@ class Setup {
     }
 
     private static String getBranchNameUsingGitCommand() {
-        String[] getBranchNameCommand = new String[]{"git branch | sed -n -e 's/^\\* \\(.*\\)/\\1/p'"};
+        String[] getBranchNameCommand = new String[]{"git rev-parse --abbrev-ref HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(getBranchNameCommand);
         String branchName = response.getStdOut();
         LOGGER.info(String.format("\tBranch name from git command: '%s': '%s'", Arrays.toString(getBranchNameCommand), branchName));
