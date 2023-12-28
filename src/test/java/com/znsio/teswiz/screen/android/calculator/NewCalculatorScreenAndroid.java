@@ -1,5 +1,6 @@
 package com.znsio.teswiz.screen.android.calculator;
 
+import com.applitools.eyes.appium.AppiumCheckSettings;
 import com.applitools.eyes.appium.Target;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
@@ -53,7 +54,7 @@ public class NewCalculatorScreenAndroid
 
     @Override
     public NewCalculatorScreen launch() {
-        visually.check(SCREEN_NAME, "New Calculator Launched", Target.window().fully());
+        visually.check(SCREEN_NAME, "New Calculator Launched", (AppiumCheckSettings) Target.window().fully().ignoreCaret());
         return this;
     }
 }
