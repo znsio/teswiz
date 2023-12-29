@@ -4,7 +4,7 @@ buildscript {
     ext {
         gradleVersion = "8.5"
         assertJVersion = "3.24.2"
-        atdVersion = "5ea3c727de" // log4j 2.x and latest reportportal dependencies
+        atdVersion = "5ea3c727de" // log4j 2.x and latest reportportal dependencies (14.0.2)
         applitoolsAppiumVersion = "5.66.3"
         seleniumVersion = "4.13.0"
         commonsLang3Version = "3.14.0"
@@ -12,7 +12,7 @@ buildscript {
         unirestVersion = "3.14.5"
         jadbVersion = "1.2.1"
         junitVersion = "5.10.1"
-        slf4jVersion = "2.0.9"
+        slf4jVersion = "2.1.0"
         fasterxmlJacksonVersion = "2.16.1"
         jodaTimeVersion = "2.12.5"
         masterThoughtVersion = "5.7.8"
