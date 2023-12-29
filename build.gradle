@@ -12,7 +12,6 @@ buildscript {
         unirestVersion = "3.14.5"
         jadbVersion = "1.2.1"
         junitVersion = "5.10.1"
-        slf4jVersion = "2.1.0"
         fasterxmlJacksonVersion = "2.16.1"
         jodaTimeVersion = "2.12.5"
         masterThoughtVersion = "5.7.8"
@@ -72,20 +71,15 @@ dependencies {
     implementation "org.assertj:assertj-core:$project.assertJVersion"
     implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
     implementation "org.seleniumhq.selenium:selenium-http-jdk-client:$project.seleniumVersion"
-//    implementation "org.seleniumhq.selenium:selenium-java:$project.seleniumVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "org.apache.commons:commons-rng-simple:$project.commonsRngSimpleVersion"
-
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
     implementation "org.jetbrains:annotations:$project.jetbrainsAnnotationsVersion"
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
-    implementation "org.slf4j:slf4j-api:$project.slf4jVersion"
     implementation "joda-time:joda-time:$project.jodaTimeVersion"
     implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
     implementation ("com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion") {
         exclude group: 'io.appium', module: 'java-client'
-//        exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
-//        exclude group: 'org.seleniumhq.selenium', module: 'selenium-http-jdk-client'
     }
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
     implementation "org.aspectj:aspectjrt:$project.aspectJVersion"
