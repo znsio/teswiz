@@ -111,7 +111,9 @@ class BrowserDriverManager {
         String updatedBrowserConfigFileForThisTest = context.getTestStateAsString(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST);
         if (null != updatedBrowserConfigFileForThisTest) {
             browserConfigFile = updatedBrowserConfigFileForThisTest;
+            LOGGER.info("Using UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST (instead of default BROWSER_CONFIG_FILE): " + browserConfigFile);
         }
+        LOGGER.info("Using BROWSER_CONFIG_FILE: " + browserConfigFile);
         JSONObject browserConfig = Runner.getBrowserConfigFileContents(browserConfigFile);
         return JsonSchemaValidator.validateJsonFileAgainstSchema(browserConfigFile,
                 browserConfig.toString(),

@@ -33,7 +33,7 @@ public class TheAppSteps {
                 "iLoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', " +
                 "Platform: '%s'",
                 SAMPLE_TEST_CONTEXT.ME, username, password, Runner.getPlatform()));
-        context.addTestState(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST, "./configs/browser_headless_config.json");
+        context.addTestState(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST, "./configs/second_browser_config.json");
         context.addTestState(TEST_CONTEXT.UPDATED_BASE_URL_FOR_WEB, "BASE_URL");
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         context.addTestState(SAMPLE_TEST_CONTEXT.ME, username);

@@ -21,13 +21,12 @@
       "jhb": true
     },
     "arguments": [
-      "use-fake-device-for-media-stream"
     ],
-    "maximize": true,
+    "maximize": false,
     "acceptInsecureCerts": true,
     "verboseLogging": false,
     "headlessOptions": {
-      "headless": true,
+      "headless": false,
       "include": [
         "disable-gpu"
       ]
