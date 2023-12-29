@@ -33,7 +33,8 @@
       ]
     },
     "noProxy": "localhost,127.0.0.1",
-    "proxyType": "manual"
+    "proxyType": "manual",
+    "browserVersion": "118.0.5993.70"
   },
   "firefox": {
     "firefoxProfile": {
