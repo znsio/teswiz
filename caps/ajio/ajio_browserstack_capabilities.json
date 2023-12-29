@@ -20,7 +20,6 @@
     "skipUnlock": true,
     "noReset": false,
     "browserstack.appium_version": "2.0.1",
-    "browserstack.enableCameraImageInjection": true,
     "browserstack.debug": true,
     "browserstack.networkLogs": "true",
     "browserstack.gpsLocation": "22,75",

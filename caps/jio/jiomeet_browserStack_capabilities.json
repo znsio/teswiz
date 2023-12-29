@@ -17,7 +17,6 @@
     "noReset": false,
     "noSign": true,
     "autoAcceptAlerts": true,
-    "browserstack.enableCameraImageInjection": true,
     "browserstack.debug": "false",
     "browserstack.networkLogs": "true",
     "browserstack.acceptInsecureCerts": "true",
