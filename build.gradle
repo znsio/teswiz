@@ -12,7 +12,7 @@ buildscript {
         unirestVersion = "3.14.5"
         jadbVersion = "1.2.1"
         junitVersion = "5.10.1"
-        slf4jVersion = "2.0.9"
+        slf4jVersion = "2.0.10"
         fasterxmlJacksonVersion = "2.16.1"
         jodaTimeVersion = "2.12.5"
         masterThoughtVersion = "5.7.8"
