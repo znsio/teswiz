@@ -3,7 +3,7 @@ import java.text.SimpleDateFormat
 buildscript {
     ext {
         gradleVersion = "8.5"
-        assertJVersion = "3.24.2"
+        assertJVersion = "3.25.1"
         atdVersion = "5ea3c727de" // log4j 2.x and latest reportportal dependencies (14.0.2)
         applitoolsAppiumVersion = "5.66.3"
         seleniumVersion = "4.13.0"
