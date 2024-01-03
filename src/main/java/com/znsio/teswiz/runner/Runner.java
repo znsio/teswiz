@@ -6,7 +6,8 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import io.cucumber.core.cli.Main;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -33,7 +34,7 @@ public class Runner {
     public static final String INFO = "INFO";
     public static final String WARN = "WARN";
 
-    private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Runner.class.getName());
     private static final String INVALID_KEY_MESSAGE = "Invalid key name ('%s') provided";
 
     public Runner() {

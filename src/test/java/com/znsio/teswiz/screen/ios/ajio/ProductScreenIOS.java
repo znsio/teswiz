@@ -4,7 +4,8 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.ajio.CartScreen;
 import com.znsio.teswiz.screen.ajio.ProductScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -15,7 +16,7 @@ import static com.znsio.teswiz.tools.Wait.waitFor;
 public class ProductScreenIOS
         extends ProductScreen {
     private static final String SCREEN_NAME = ProductScreenIOS.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final By byProductNameId = By.id("V2Pdp_brand_ProductName");
     private static final By byAddToCartButtonId = By.id("Add To Bag");
     private static final By byViewBagButtonId = By.id("V2PDP_BottomFloatingView_ATC");

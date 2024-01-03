@@ -1,7 +1,8 @@
 package com.znsio.teswiz.tools;
 
 import com.epam.reportportal.service.ReportPortal;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.util.Date;
@@ -9,7 +10,7 @@ import java.util.Date;
 import static com.znsio.teswiz.runner.Runner.*;
 
 public class ReportPortalLogger {
-    private static final Logger LOGGER = Logger.getLogger(ReportPortalLogger.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ReportPortalLogger.class.getName());
 
     private ReportPortalLogger() {
         LOGGER.debug("ReportPortalLogger - private constructor");

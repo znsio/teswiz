@@ -3,14 +3,15 @@ package com.znsio.teswiz.screen.web.theapp;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.theapp.FileUploadScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 
 import java.util.Map;
 
 public class FileUploadScreenWeb
         extends FileUploadScreen {
-    private static final Logger LOGGER = Logger.getLogger(FileUploadScreenWeb.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(FileUploadScreenWeb.class.getName());
     private final Driver driver;
     private final Visual visually;
     private final String SCREEN_NAME = FileUploadScreenWeb.class.getSimpleName();

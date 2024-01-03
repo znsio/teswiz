@@ -17,7 +17,8 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.appmanagement.ApplicationState;
 import io.appium.java_client.ios.IOSDriver;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.NoSuchSessionException;
@@ -38,7 +39,7 @@ import static com.znsio.teswiz.runner.Setup.CAPS;
 class AppiumDriverManager {
     private static final int MAX_NUMBER_OF_APPIUM_DRIVERS = Runner.getMaxNumberOfAppiumDrivers();
     private static final List<DriverSession> additionalDevices = new ArrayList<>();
-    private static final Logger LOGGER = Logger.getLogger(AppiumDriverManager.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AppiumDriverManager.class.getName());
     private static final String CAPABILITIES = "CAPABILITIES: ";
     private static int numberOfAppiumDriversUsed = 0;
 

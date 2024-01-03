@@ -6,7 +6,8 @@ import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -16,7 +17,7 @@ import java.io.IOException;
 
 public class ScreenShotManager {
 
-    private static final Logger LOGGER = Logger.getLogger(ScreenShotManager.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ScreenShotManager.class.getName());
     private final TestExecutionContext context;
     private final String directoryPath;
     private int counter;

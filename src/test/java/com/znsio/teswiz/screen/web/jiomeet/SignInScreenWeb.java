@@ -6,7 +6,8 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiomeet.InAMeetingScreen;
 import com.znsio.teswiz.screen.jiomeet.LandingScreen;
 import com.znsio.teswiz.screen.jiomeet.SignInScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -14,7 +15,7 @@ import org.openqa.selenium.WebElement;
 public class SignInScreenWeb
         extends SignInScreen {
     private static final String SCREEN_NAME = SignInScreenWeb.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
     private static final By byEnterMeetingId = By.id("meetingId");
     private static final By byJoinMeetingButtonId = By.id("headerJoinMeetingButton");

@@ -1,9 +1,10 @@
 package com.znsio.teswiz.tools;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Wait {
-    private static final Logger LOGGER = Logger.getLogger(Wait.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Wait.class.getName());
 
     public synchronized static void waitFor(int seconds) {
         LOGGER.info("Wait for " + seconds + " seconds");

@@ -12,7 +12,8 @@ import io.cucumber.plugin.event.TestCaseFinished;
 import io.cucumber.plugin.event.TestCaseStarted;
 import io.cucumber.plugin.event.TestRunFinished;
 import io.cucumber.plugin.event.TestRunStarted;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ import java.util.Map;
 
 public class CucumberPlatformScenarioListener
         implements ConcurrentEventListener {
-    private static final Logger LOGGER = Logger.getLogger(
+    private static final Logger LOGGER = LogManager.getLogger(
             CucumberPlatformScenarioListener.class.getName());
     private final Map<String, Integer> scenarioRunCounts = new HashMap<>();
 

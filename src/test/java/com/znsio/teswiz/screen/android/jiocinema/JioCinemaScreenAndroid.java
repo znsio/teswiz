@@ -7,12 +7,13 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiocinema.JioCinemaScreen;
 import io.appium.java_client.AppiumBy;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 public class JioCinemaScreenAndroid extends JioCinemaScreen {
-    private static final Logger LOGGER = Logger.getLogger(JioCinemaScreenAndroid.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(JioCinemaScreenAndroid.class.getName());
     private final Driver driver;
     private final Visual visually;
     private final String SCREEN_NAME = JioCinemaScreenAndroid.class.getSimpleName();

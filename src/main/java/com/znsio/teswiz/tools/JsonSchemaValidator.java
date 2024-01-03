@@ -1,7 +1,8 @@
 package com.znsio.teswiz.tools;
 
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
 import org.everit.json.schema.loader.SchemaLoader;
@@ -11,7 +12,7 @@ import org.json.JSONTokener;
 import java.io.InputStream;
 
 public class JsonSchemaValidator {
-    private static final Logger LOGGER = Logger.getLogger(JsonSchemaValidator.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(JsonSchemaValidator.class.getName());
 
     public static JSONObject validateJsonFileAgainstSchema(String jsonFilePath, String jsonContents,
                                                            String schemaFile) {

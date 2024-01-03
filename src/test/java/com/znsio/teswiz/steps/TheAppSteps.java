@@ -16,10 +16,11 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class TheAppSteps {
-    private static final Logger LOGGER = Logger.getLogger(TheAppSteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(TheAppSteps.class.getName());
     private final TestExecutionContext context;
 
     public TheAppSteps() {

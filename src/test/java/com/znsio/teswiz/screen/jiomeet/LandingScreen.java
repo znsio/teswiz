@@ -8,11 +8,12 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.android.jiomeet.LandingScreenAndroid;
 import com.znsio.teswiz.screen.web.jiomeet.LandingScreenWeb;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public abstract class LandingScreen {
     private static final String SCREEN_NAME = LandingScreen.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
 
     public static LandingScreen get() {
         Driver driver = Drivers.getDriverForCurrentUser(Thread.currentThread().getId());

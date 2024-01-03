@@ -2,7 +2,8 @@ package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import se.vidstige.jadb.JadbConnection;
 import se.vidstige.jadb.JadbDevice;
@@ -23,7 +24,7 @@ import static com.znsio.teswiz.runner.Setup.EXECUTED_ON;
 import static com.znsio.teswiz.runner.Setup.PARALLEL;
 
 class LocalDevicesSetup {
-    private static final Logger LOGGER = Logger.getLogger(LocalDevicesSetup.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(LocalDevicesSetup.class.getName());
     private static final String APPIUM_SETTINGS = "io.appium.settings";
     private static final String UNINSTALL = "uninstall";
     private static final String GETPROP = "getprop";

@@ -10,7 +10,8 @@ import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -48,7 +49,7 @@ import static com.znsio.teswiz.runner.Setup.CAPS;
 import static com.appium.utils.OverriddenVariable.*;
 
 class BrowserDriverManager {
-    private static final Logger LOGGER = Logger.getLogger(BrowserDriverManager.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(BrowserDriverManager.class.getName());
     private static final int MAX_NUMBER_OF_WEB_DRIVERS = Runner.getMaxNumberOfWebDrivers();
     private static final String BROWSER_CONFIG_SCHEMA_FILE = "BrowserConfigSchema.json";
     private static final String ACCEPT_INSECURE_CERTS = "acceptInsecureCerts";

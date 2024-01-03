@@ -23,7 +23,8 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.exceptions.VisualTestSetupException;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Dimension;
@@ -43,7 +44,7 @@ import java.util.Set;
 import static com.znsio.teswiz.runner.Runner.*;
 
 public class Visual {
-    private static final Logger LOGGER = Logger.getLogger(Visual.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Visual.class.getName());
     private static final String DEFAULT_APPLITOOLS_SERVER_URL = "https://eyesapi.applitools.com";
     private final com.applitools.eyes.selenium.Eyes eyesOnWeb;
     private final com.applitools.eyes.appium.Eyes eyesOnApp;

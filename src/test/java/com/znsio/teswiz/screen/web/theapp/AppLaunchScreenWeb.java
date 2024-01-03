@@ -6,13 +6,14 @@ import com.znsio.teswiz.screen.theapp.AppLaunchScreen;
 import com.znsio.teswiz.screen.theapp.ClipboardDemoScreen;
 import com.znsio.teswiz.screen.theapp.EchoScreen;
 import com.znsio.teswiz.screen.theapp.LoginScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 
 public class AppLaunchScreenWeb
         extends AppLaunchScreen {
     private static final String NOT_YET_IMPLEMENTED = "NOT_YET_IMPLEMENTED";
-    private static final Logger LOGGER = Logger.getLogger(AppLaunchScreenWeb.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AppLaunchScreenWeb.class.getName());
     private static final By loginFormLinkText = By.linkText("Form Authentication");
     private final Driver driver;
     private final Visual visually;

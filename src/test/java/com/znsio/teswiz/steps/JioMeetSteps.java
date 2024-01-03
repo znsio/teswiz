@@ -15,13 +15,14 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Locale;
 import java.util.Map;
 
 public class JioMeetSteps {
-    private static final Logger LOGGER = Logger.getLogger(JioMeetSteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(JioMeetSteps.class.getName());
     private final TestExecutionContext context;
 
     public JioMeetSteps() {

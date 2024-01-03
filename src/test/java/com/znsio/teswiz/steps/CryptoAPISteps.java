@@ -7,12 +7,13 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class CryptoAPISteps {
 
     private HttpResponse<JsonNode> jsonResponse;
-    private static final Logger LOGGER = Logger.getLogger(CryptoAPISteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(CryptoAPISteps.class.getName());
     private final TestExecutionContext context;
 
     public CryptoAPISteps() {

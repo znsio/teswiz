@@ -6,14 +6,15 @@ import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
 import io.appium.java_client.AppiumBy;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 
 public class WebViewScreenAndroid extends WebViewScreen {
     private final Driver driver;
     private final Visual visually;
     private static final String SCREEN_NAME = WebViewScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
 
     private static final By byWebViewScreenHeaderXpath = AppiumBy.xpath("//android.widget.TextView[@text = 'Webview']");
     private static final By byLoginOptionWebviewXpath = By.xpath("//a[text()='login']");

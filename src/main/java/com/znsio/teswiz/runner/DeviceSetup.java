@@ -6,7 +6,8 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -38,7 +39,7 @@ import static com.znsio.teswiz.runner.Setup.PLUGIN;
 import static com.znsio.teswiz.runner.Setup.RUN_IN_CI;
 
 class DeviceSetup {
-    private static final Logger LOGGER = Logger.getLogger(DeviceSetup.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(DeviceSetup.class.getName());
     private static final String DEFAULT_TEMP_SAMPLE_APP_DIRECTORY =
             System.getProperty("user.dir") + File.separator +
                     "temp" + File.separator + "sampleApps";
