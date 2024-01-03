@@ -11,7 +11,8 @@ import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.Randomizer;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.MutableCapabilities;
 
 import java.io.File;
@@ -23,7 +24,7 @@ import static com.znsio.teswiz.runner.Runner.getHostName;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
 class BrowserStackSetup {
-    private static final Logger LOGGER = Logger.getLogger(BrowserStackSetup.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(BrowserStackSetup.class.getName());
     private static final String DEVICE = "device";
     private static Local bsLocal;
 

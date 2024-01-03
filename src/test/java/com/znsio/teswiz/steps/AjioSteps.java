@@ -12,10 +12,11 @@ import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class AjioSteps {
-    private static final Logger LOGGER = Logger.getLogger(AjioSteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AjioSteps.class.getName());
     private final TestExecutionContext context;
 
     public AjioSteps() {

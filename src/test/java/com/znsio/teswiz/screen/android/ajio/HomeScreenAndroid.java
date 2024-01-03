@@ -5,7 +5,8 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.ajio.HomeScreen;
 import com.znsio.teswiz.screen.ajio.ProductScreen;
 import com.znsio.teswiz.screen.ajio.SearchScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.Map;
 public class HomeScreenAndroid
         extends HomeScreen {
     private static final String SCREEN_NAME = HomeScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final By byStartSearchBoxId = By.id("com.ril.ajio:id/llpsTvSearch");
     private static final By byUploadPhotoButtonId = By.id("com.ril.ajio:id/layout_select_photo");
     private static final By byImageDirectoryXpath = By.xpath(

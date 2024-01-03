@@ -7,7 +7,8 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.Status;
 import kong.unirest.json.JSONObject;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
@@ -25,7 +26,7 @@ import static io.appium.java_client.remote.options.SupportsDeviceNameOption.DEVI
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
 public class Drivers {
-    private static final Logger LOGGER = Logger.getLogger(Drivers.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Drivers.class.getName());
     private static final String NO_DRIVER_FOUND_FOR_USER_PERSONA = "No Driver found for user " +
                                                                    "persona: '%s'";
 

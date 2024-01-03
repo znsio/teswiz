@@ -6,13 +6,14 @@ import com.znsio.teswiz.screen.theapp.AppLaunchScreen;
 import com.znsio.teswiz.screen.theapp.ClipboardDemoScreen;
 import com.znsio.teswiz.screen.theapp.EchoScreen;
 import com.znsio.teswiz.screen.theapp.LoginScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 
 public class AppLaunchScreenAndroid
         extends AppLaunchScreen {
     private static final String SCREEN_NAME = AppLaunchScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final By byGoBackToHomeScreenButtonXpath = By.xpath(
             "//android.widget.ImageButton[@content-desc=\"Navigate Up\"]");
     private static final By byEchoMessageXpath = By.xpath(

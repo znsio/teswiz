@@ -1,7 +1,8 @@
 package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.entities.Platform;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
 
@@ -10,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class UserPersonaDetails {
-    private final Logger LOGGER = Logger.getLogger(UserPersonaDetails.class.getName());
+    private final Logger LOGGER = LogManager.getLogger(UserPersonaDetails.class.getName());
     private final ConcurrentHashMap<String, Capabilities> capabilities = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> apps = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Driver> drivers = new ConcurrentHashMap<>();

@@ -14,7 +14,8 @@ import io.appium.java_client.android.StartsActivity;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.remote.SupportsContextSwitching;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -50,7 +51,7 @@ import static java.util.Arrays.asList;
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
     public static final String APPIUM_DRIVER = "AppiumDriver";
-    private static final Logger LOGGER = Logger.getLogger(Driver.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Driver.class.getName());
     private final String type;
     private final WebDriver driver;
     private final String userPersona;

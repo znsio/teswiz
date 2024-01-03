@@ -7,10 +7,11 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import io.cucumber.java.en.Given;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class ConfEngineSteps {
-    private static final Logger LOGGER = Logger.getLogger(ConfEngineSteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ConfEngineSteps.class.getName());
     private final TestExecutionContext context;
 
     public ConfEngineSteps() {

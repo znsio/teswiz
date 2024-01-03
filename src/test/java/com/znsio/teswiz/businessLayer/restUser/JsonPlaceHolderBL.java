@@ -6,13 +6,14 @@ import com.znsio.teswiz.services.UnirestService;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.json.JSONObject;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JsonPlaceHolderBL {
 
-    private static final Logger LOGGER = Logger.getLogger(WeatherAPIBL.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(WeatherAPIBL.class.getName());
     private final Map<String, Object> testData = Runner.getTestDataAsMap("RestUser_API");
     private final String base_URL = testData.get("url").toString();
 

@@ -4,7 +4,8 @@ import com.applitools.eyes.appium.Target;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.ajio.CartScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -13,7 +14,7 @@ import static com.znsio.teswiz.tools.Wait.waitFor;
 public class CartScreenIOS
         extends CartScreen {
     private static final String SCREEN_NAME = CartScreenIOS.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final By byProductTitleId = By.id("cart_cartController_cartCell_productNameLabel");
     private static final By byWishlistPopUp = By.id("OK");
     private final Driver driver;

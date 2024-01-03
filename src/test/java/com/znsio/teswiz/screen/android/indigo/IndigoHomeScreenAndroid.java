@@ -6,14 +6,15 @@ import com.znsio.teswiz.screen.indigo.IndigoFlightSearchResultsScreen;
 import com.znsio.teswiz.screen.indigo.IndigoGiftVouchersScreen;
 import com.znsio.teswiz.screen.indigo.IndigoHomeScreen;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 public class IndigoHomeScreenAndroid
         extends IndigoHomeScreen {
     private static final String SCREEN_NAME = IndigoHomeScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
     private static final By byContinueAsGuestId = By.id("in.goindigo.android:id/button_as_guest");
     private static final By byGiftVoucherXpath = By.xpath(

@@ -5,14 +5,15 @@ import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.autoscroll.AutoScrollScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class AutoScrollBL {
 
-    private static final Logger LOGGER = Logger.getLogger(AutoScrollBL.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AutoScrollBL.class.getName());
     private final TestExecutionContext context;
     private final String currentUserPersona;
     private final Platform currentPlatform;

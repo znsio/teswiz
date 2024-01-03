@@ -5,7 +5,8 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.exceptions.jiomeet.InAMeetingException;
 import com.znsio.teswiz.screen.jiomeet.InAMeetingScreen;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -14,7 +15,7 @@ import static com.znsio.teswiz.tools.Wait.waitFor;
 public class InAMeetingScreenAndroid
         extends InAMeetingScreen {
     private static final String SCREEN_NAME = InAMeetingScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final By byMicStatusId = By.id("com.jio.rilconferences:id/mic_status_label");
     private static final By byMeetingId = By.id("com.jio.rilconferences:id/caller_number");
     private static final By byMeetingPasswordId = By.id(

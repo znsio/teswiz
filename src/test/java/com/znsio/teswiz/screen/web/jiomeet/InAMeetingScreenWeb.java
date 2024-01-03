@@ -8,7 +8,8 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiomeet.InAMeetingScreen;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -18,7 +19,7 @@ import org.openqa.selenium.interactions.Actions;
 public class InAMeetingScreenWeb
         extends InAMeetingScreen {
     private static final String SCREEN_NAME = InAMeetingScreenWeb.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
     private static final By byMeetingInfoIconXpath = By.xpath("//div[@class='icon pointer']");
     private static final By byMicLabelXpath = By.xpath("//div[contains(@class, 'mic-section')]//img");

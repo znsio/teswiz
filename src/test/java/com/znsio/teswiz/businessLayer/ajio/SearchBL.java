@@ -8,7 +8,8 @@ import com.znsio.teswiz.screen.ajio.CartScreen;
 import com.znsio.teswiz.screen.ajio.HomeScreen;
 import com.znsio.teswiz.screen.ajio.ProductScreen;
 import com.znsio.teswiz.screen.ajio.SearchScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
 
 import java.util.Map;
@@ -16,7 +17,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SearchBL {
-    private static final Logger LOGGER = Logger.getLogger(SearchBL.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(SearchBL.class.getName());
     private final TestExecutionContext context;
     private final SoftAssertions softly;
     private final String currentUserPersona;

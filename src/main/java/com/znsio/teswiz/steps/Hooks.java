@@ -9,14 +9,15 @@ import com.znsio.teswiz.runner.UserPersonaDetails;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import io.cucumber.java.Scenario;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
 
 import java.util.Map;
 import java.util.Properties;
 
 public class Hooks {
-    private static final Logger LOGGER = Logger.getLogger(Hooks.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Hooks.class.getName());
 
     public void beforeScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();

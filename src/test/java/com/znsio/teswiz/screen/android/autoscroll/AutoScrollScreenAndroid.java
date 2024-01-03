@@ -6,14 +6,15 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.autoscroll.AutoScrollScreen;
 import io.appium.java_client.AppiumBy;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 
 public class AutoScrollScreenAndroid extends AutoScrollScreen {
     private static final String SCREEN_NAME = AutoScrollScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private final Driver driver;
     private final Visual visually;
     private final By byAddNewAppButton = AppiumBy.id("com.tafayor.autoscroll2:id/add");

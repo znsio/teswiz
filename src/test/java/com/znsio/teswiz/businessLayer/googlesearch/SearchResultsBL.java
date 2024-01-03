@@ -3,11 +3,12 @@ package com.znsio.teswiz.businessLayer.googlesearch;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Runner;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
 
 public class SearchResultsBL {
-    private static final Logger LOGGER = Logger.getLogger(SearchResultsBL.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(SearchResultsBL.class.getName());
     private final TestExecutionContext context;
     private final SoftAssertions softly;
     private final String currentUserPersona;
