@@ -10,7 +10,8 @@ import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import io.appium.java_client.AppiumBy;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
@@ -20,7 +21,7 @@ public class VodqaScreenAndroid extends VodqaScreen {
     private final Driver driver;
     private final Visual visually;
     private final String SCREEN_NAME = VodqaScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(VodqaScreenAndroid.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(VodqaScreenAndroid.class.getName());
     private final By byLoginButton = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='login']/android.widget.Button");
     private final By byVerticalSwipeViewGroup = AppiumBy.xpath("//android.view.ViewGroup[@content-desc='verticalSwipe']");
     private final By byCLanguageTextView = AppiumBy.xpath("//android.widget.TextView[@text=' C']");

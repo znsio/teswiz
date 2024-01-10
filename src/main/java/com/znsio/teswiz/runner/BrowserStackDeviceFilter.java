@@ -6,7 +6,8 @@ import com.jayway.jsonpath.JsonPath;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 import static com.znsio.teswiz.runner.Setup.getCurlProxyCommand;
 
 class BrowserStackDeviceFilter {
-    private static final Logger LOGGER = Logger.getLogger(BrowserStackDeviceFilter.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(BrowserStackDeviceFilter.class.getName());
 
     private BrowserStackDeviceFilter() {
         LOGGER.debug("BrowserStackDeviceFilter - private constructor");

@@ -7,11 +7,12 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import kong.unirest.json.JSONObject;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class WeatherAPISteps {
     private JSONObject jsonObject;
-    private static final Logger LOGGER = Logger.getLogger(WeatherAPISteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(WeatherAPISteps.class.getName());
     private final TestExecutionContext context;
     private String latitude;
     private String longitude;

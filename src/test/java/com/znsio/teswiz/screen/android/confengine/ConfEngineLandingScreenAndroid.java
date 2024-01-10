@@ -4,7 +4,8 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.confengine.ConfEngineLandingScreen;
 import io.appium.java_client.AppiumDriver;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
 public class ConfEngineLandingScreenAndroid
         extends ConfEngineLandingScreen {
     private static final String SCREEN_NAME = ConfEngineLandingScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
     private final Driver driver;
     private final Visual visually;

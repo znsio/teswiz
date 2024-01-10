@@ -1,13 +1,13 @@
 package com.znsio.teswiz.aspect;
 
-import org.apache.log4j.*;
+import org.apache.logging.log4j.*;
 import org.aspectj.lang.*;
 
 import java.lang.reflect.*;
 import java.util.stream.*;
 
 public class AspectJMethodLoggers {
-    private static final Logger LOGGER = Logger.getLogger(AspectJMethodLoggers.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AspectJMethodLoggers.class.getName());
 
     private AspectJMethodLoggers() {
     }

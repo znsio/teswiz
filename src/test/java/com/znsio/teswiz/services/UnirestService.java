@@ -3,14 +3,15 @@ package com.znsio.teswiz.services;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class UnirestService {
 
-    private static final Logger LOGGER = Logger.getLogger(UnirestService.class);
+    private static final Logger LOGGER = LogManager.getLogger(UnirestService.class);
     private static final Unirest unirest = new Unirest();
 
     private static Unirest getUnirestObj(){

@@ -2,13 +2,14 @@ package com.znsio.teswiz.aspect;
 
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 
 @Aspect
 public class AspectLogging {
-    private static final Logger LOGGER = Logger.getLogger(AspectLogging.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AspectLogging.class.getName());
     private final TestExecutionContext context;
 
     public AspectLogging() {

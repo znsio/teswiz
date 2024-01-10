@@ -1,7 +1,8 @@
 package com.znsio.teswiz.runner;
 
 import io.appium.java_client.android.AndroidDriver;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -15,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BrowserStackImageInjectionTest {
     private static final String LOG_DIR = "./target/testLogs";
 
-    private static final Logger LOGGER = Logger.getLogger(
+    private static final Logger LOGGER = LogManager.getLogger(
             BrowserStackImageInjectionTest.class.getName());
 
     static AndroidDriver driver;

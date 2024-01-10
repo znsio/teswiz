@@ -11,7 +11,8 @@ import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.jetbrains.annotations.NotNull;
 
@@ -84,7 +85,7 @@ class Setup {
     static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
-    private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Setup.class.getName());
     private static final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
     private static final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private static final String DEFAULT_WEBDRIVER_GRID_HOST_NAME = "localhost";

@@ -3,7 +3,8 @@ package com.znsio.teswiz.tools;
 import com.google.gson.*;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class JsonFile {
-    private static final Logger LOGGER = Logger.getLogger(JsonFile.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(JsonFile.class.getName());
 
     private JsonFile() {
     }
