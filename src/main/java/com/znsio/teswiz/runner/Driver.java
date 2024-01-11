@@ -770,4 +770,9 @@ public class Driver {
     public boolean waitTillElementIsInvisible(By elementId, int numberOfSecondsToWait) {
         return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.invisibilityOfElementLocated(elementId)));
     }
+
+    public boolean isElementDisplayed(By locator) {
+        List<WebElement> elementList = driver.findElements(locator);
+        return !elementList.isEmpty() && elementList.get(0).isDisplayed();
+    }
 }
