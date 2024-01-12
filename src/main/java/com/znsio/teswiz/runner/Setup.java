@@ -31,6 +31,7 @@ import static com.znsio.teswiz.runner.Runner.*;
 
 class Setup {
     static final String RUN_IN_CI = "RUN_IN_CI";
+    static final String BUILD_INITIATION_REASON = "BUILD_INITIATION_REASON";
     static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
     static final String REPOSITORY_NAME = "REPOSITORY_NAME";
     static final String BRANCH_NAME = "BRANCH_NAME";
@@ -255,11 +256,11 @@ class Setup {
         String rpAttributes = String.format(
                 "AutomationBranch:%s; ExecutedOn:%s; Installer:%s; OS:%s; ParallelCount:%d; " +
                 "Platform:%s; RunInCI:%s; Tags:%s; TargetEnvironment:%s; Username:%s; " +
-                "VisualEnabled:%s; ",
+                "VisualEnabled:%s; BuildInitiationReason:%s; ",
                 configs.get(BRANCH_NAME), configs.get(EXECUTED_ON), configs.get(APP_PATH), OS_NAME,
                 configsInteger.get(PARALLEL), currentPlatform.name(), configsBoolean.get(RUN_IN_CI),
                 configs.get(TAG), configs.get(TARGET_ENVIRONMENT), USER_NAME,
-                configsBoolean.get(IS_VISUAL));
+                configsBoolean.get(IS_VISUAL), configs.get(BUILD_INITIATION_REASON));
 
         if(!configs.get(APP_VERSION).equals(NOT_SET)) {
             rpAttributes += String.format("AppVersion: %s; ", configs.get(APP_VERSION));
@@ -348,6 +349,10 @@ class Setup {
                                                        getStringValueFromPropertiesIfAvailable(
                                                                BUILD_ID, NOT_SET)));
         configs.put(BUILD_ID, getOverriddenStringValue(configs.get(BUILD_ID), NOT_SET));
+        configs.put(BUILD_INITIATION_REASON, getOverriddenStringValue(BUILD_INITIATION_REASON,
+                getStringValueFromPropertiesIfAvailable(
+                        BUILD_INITIATION_REASON, NOT_SET)));
+        configs.put(BUILD_INITIATION_REASON, getOverriddenStringValue(configs.get(BUILD_INITIATION_REASON), NOT_SET));
         configs.put(CAPS, getOverriddenStringValue(CAPS,
                                                    getStringValueFromPropertiesIfAvailable(CAPS,
                                                                                            NOT_SET)));
