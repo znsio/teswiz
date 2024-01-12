@@ -141,9 +141,6 @@ class BrowserStackSetup {
         HashMap<String, String> bsLocalArgs = new HashMap<>();
         bsLocalArgs.put("key", authenticationKey);
         bsLocalArgs.put("v", "true");
-//        if(!Runner.getPlatform().name().equalsIgnoreCase("web")) {
-//            bsLocalArgs.put("localIdentifier", id);
-//        }
         bsLocalArgs.put("localIdentifier", id);
         bsLocalArgs.put("forcelocal", "true");
         bsLocalArgs.put("verbose", "3");
