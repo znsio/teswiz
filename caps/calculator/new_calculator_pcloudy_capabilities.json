@@ -1,8 +1,8 @@
 {
   "android": {
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk",
-    "appActivity": "com.android2.calculator3.Calculator",
-    "appPackage": "com.android2.calculator3",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/Calculator_8.4.1.apk",
+    "appPackage": "com.google.android.calculator",
+    "appActivity": "com.android.calculator2.Calculator",
     "appiumVersion" : "2.0.0",
     "automationName": "UIAutomator2",
     "autoGrantPermissions": true,
@@ -36,7 +36,7 @@
           "cloud": {
             "cloudName": "pCloudy",
             "apiUrl": "https://device.pcloudy.com",
-            "url": "https://device.pcloudy.com/appiumcloud/wd/hub",
+            "url": "https://device.pcloudy/appiumcloud",
             "devices": [
             ]
           }
