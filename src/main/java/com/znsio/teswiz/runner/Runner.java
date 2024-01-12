@@ -64,13 +64,19 @@ public class Runner {
         args.add("--glue");
         args.add(stepDefsDir);
         args.add(featuresDir);
-        LOGGER.info("Begin running tests...");
-        LOGGER.info(String.format("Args: %s", args));
+        LOGGER.info("Begin running tests with args: {}", args);
         String[] array = args.toArray(String[]::new);
-        byte status = Main.run(array);
-        Setup.cleanUpExecutionEnvironment();
-        CustomReports.generateReport();
-        System.exit(status);
+        try {
+            byte status = Main.run(array);
+            LOGGER.info("Execution status: {}", status);
+            Setup.cleanUpExecutionEnvironment();
+            CustomReports.generateReport();
+            System.exit(status);
+        } catch (Exception e) {
+            LOGGER.error("EXCEPTION: {}", e.getMessage());
+            LOGGER.error(e);
+            System.exit(1);
+        }
     }
 
     public static Platform getPlatform() {
