@@ -4,7 +4,7 @@ buildscript {
     ext {
         gradleVersion = "8.5"
         assertJVersion = "3.25.1"
-        atdVersion = "5b7b0a2f83" // latest main
+        atdVersion = "14.0.4" // latest main
         applitoolsAppiumVersion = "5.66.4"
         seleniumVersion = "4.13.0"
         commonsLang3Version = "3.14.0"
