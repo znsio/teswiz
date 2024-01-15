@@ -19,7 +19,7 @@
   },
   "serverConfig" : {
     "server": {
-      "use-plugins": ["device-farm", "appium-dashboard"],
+      "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
           "platform": "android",

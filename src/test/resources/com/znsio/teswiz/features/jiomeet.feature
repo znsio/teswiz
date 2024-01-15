@@ -1,10 +1,12 @@
 @jiomeet @prod @inMeeting
 Feature: In a meeting scenarios
 
+#  CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@test" PLATFORM=android ./gradlew run
 #  CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @single-user" PLATFORM=android ./gradlew run
 #  CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @single-user" PLATFORM=web ./gradlew run
 #  IS_VISUAL=false CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @single-user" PLATFORM=electron ./gradlew run
-  @android @web @single-user @electron
+#  IS_VISUAL=false CONFIG=./configs/jio/jiomeet_pcloudy_config.properties TAG="@jiomeet and @test" CLOUD_USERNAME=$PCLOUDY_CLOUD_USERNAME CLOUD_KEY=$PCLOUDY_CLOUD_KEY PLATFORM=android ./gradlew run
+  @android @web @single-user @electron @test
   Scenario: User should be able to change the mic settings
     Given I sign in as a registered "Host"
     And I start an instant meeting

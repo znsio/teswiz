@@ -45,7 +45,7 @@
     "server": {
       "port": 31337,
       "use-plugins": [
-        "device-farm","appium-dashboard"
+        "device-farm"
       ],
       "plugin": {
         "device-farm": {

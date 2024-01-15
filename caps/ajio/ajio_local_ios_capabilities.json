@@ -15,7 +15,7 @@
   },
   "serverConfig" : {
     "server": {
-      "use-plugins": ["device-farm", "appium-dashboard","relaxed-caps-plugin"],
+      "use-plugins": ["device-farm", "relaxed-caps-plugin"],
       "plugin": {
         "device-farm": {
           "platform": "iOS",
