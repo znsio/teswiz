@@ -1,8 +1,11 @@
 {
   "android": {
-    "device": "Samsung",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/com.jio.rilconferences_v4.21.6.7-421607_Android-5.0.apk",
+    "appium:appActivity": "org.jio.meet.introduction.views.SplashActivity",
+    "appium:appPackage": "com.jio.rilconferences",
+    "appium:printPageSourceOnFindFailure": true,
+    "device": "Google",
     "os_version": "13.0.0",
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk",
     "automationName": "UiAutomator2",
     "appium:newCommandTimeout": 600,
     "appium:launchTimeout": 90000,
@@ -17,8 +20,6 @@
       "pCloudy_Username": "user",
       "pCloudy_ApiKey": "key"
     },
-    "appium:appPackage": "com.android2.calculator3",
-    "appium:appActivity": "com.android2.calculator3.Calculator",
     "appium:appiumVersion": "2.0.0",
     "platformVersion": "13.0.0"
   },

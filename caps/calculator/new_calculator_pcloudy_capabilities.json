@@ -3,25 +3,25 @@
     "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/Calculator_8.4.1.apk",
     "appium:appPackage": "com.google.android.calculator",
     "appium:appActivity": "com.android.calculator2.Calculator",
-    "device": "Google",
-    "os_version": "13.0",
+    "device": "GOOGLE",
+    "os_version": "13.0.0",
     "automationName": "UiAutomator2",
     "appium:newCommandTimeout": 600,
     "appium:launchTimeout": 90000,
     "platformName": "Android",
     "appium:autoGrantPermissions": true,
+    "appium:no_reset": true,
     "pcloudy:options" : {
       "pCloudy_DurationInMinutes": 10,
       "pCloudy_WildNet": "false",
       "pCloudy_EnableVideo": "true",
       "pCloudy_EnablePerformanceData": "true",
       "pCloudy_EnableDeviceLogs": "true",
-      "pCloudy_ApplicationName": "AndroidCalculator.apk",
       "pCloudy_Username": "user",
       "pCloudy_ApiKey": "key"
     },
     "appium:appiumVersion": "2.0.0",
-    "platformVersion": "13.0"
+    "platformVersion": "13.0.0"
   },
   "serverConfig" : {
     "server": {
@@ -34,7 +34,7 @@
           "cloud": {
             "cloudName": "pCloudy",
             "apiUrl": "https://device.pcloudy.com",
-            "url": "https://device.pcloudy/appiumcloud",
+            "url": "https://device.pcloudy.com/appiumcloud",
             "devices": [
             ]
           }

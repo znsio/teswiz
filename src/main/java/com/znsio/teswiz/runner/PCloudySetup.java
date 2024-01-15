@@ -44,13 +44,13 @@ class PCloudySetup {
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         String platformName = Setup.getPlatform().name();
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
+        String deviceVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
         loadedPlatformCapability.remove("app");
         Map pCloudyOptions = (Map) loadedPlatformCapability.get("pcloudy:options");
         pCloudyOptions.put("pCloudy_Username", emailID);
         pCloudyOptions.put("pCloudy_ApiKey", authenticationKey);
         pCloudyOptions.put("pCloudy_ApplicationName", getAppName(appPath));
-        pCloudyOptions.put("pCloudy_DeviceVersion", osVersion);
+        pCloudyOptions.put("pCloudy_DeviceVersion", deviceVersion);
 
         updateCapabilities(loadedCapabilityFile);
     }
