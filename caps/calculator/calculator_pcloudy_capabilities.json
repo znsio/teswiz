@@ -6,6 +6,7 @@
     "automationName": "UiAutomator2",
     "appium:newCommandTimeout": 600,
     "appium:launchTimeout": 90000,
+    "appium:printPageSourceOnFindFailure": true,
     "platformName": "Android",
     "appium:autoGrantPermissions": true,
     "pcloudy:options" : {
