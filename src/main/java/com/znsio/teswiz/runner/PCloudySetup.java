@@ -46,10 +46,11 @@ class PCloudySetup {
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
         loadedPlatformCapability.remove("app");
-        loadedPlatformCapability.put("pCloudy_Username", emailID);
-        loadedPlatformCapability.put("pCloudy_ApiKey", authenticationKey);
-        loadedPlatformCapability.put("pCloudy_ApplicationName", getAppName(appPath));
-        loadedPlatformCapability.put("pCloudy_DeviceVersion", osVersion);
+        Map pCloudyOptions = (Map) loadedPlatformCapability.get("pcloudy:options");
+        pCloudyOptions.put("pCloudy_Username", emailID);
+        pCloudyOptions.put("pCloudy_ApiKey", authenticationKey);
+        pCloudyOptions.put("pCloudy_ApplicationName", getAppName(appPath));
+        pCloudyOptions.put("pCloudy_DeviceVersion", osVersion);
 
         updateCapabilities(loadedCapabilityFile);
     }
