@@ -189,21 +189,17 @@ class Setup {
     }
 
     private static void setLogPropertiesFile() {
-        //InputStream inputStream;
-        File file = new File(LOG_PROPERTIES_FILE);
+        File file;
         try {
             LoggerContext context = (LoggerContext) LogManager.getContext(false);
             if(properties.containsKey(LOG_PROPERTIES_FILE)) {
                 Path logFilePath = Paths.get(properties.get(LOG_PROPERTIES_FILE).toString());
                 configs.put(LOG_PROPERTIES_FILE, logFilePath.toString());
-//                inputStream = Files.newInputStream(logFilePath);
                 file = new File(LOG_PROPERTIES_FILE);
             } else {
                 configs.put(LOG_PROPERTIES_FILE, DEFAULT_LOG_PROPERTIES_FILE);
-                //inputStream = Setup.class.getResourceAsStream(DEFAULT_LOG_PROPERTIES_FILE);
                 file = new File(DEFAULT_LOG_PROPERTIES_FILE);
             }
-            //PropertyConfigurator.configure(inputStream);
             context.setConfigLocation(file.toURI());
         } catch(Exception e) {
             throw new InvalidTestDataException(
