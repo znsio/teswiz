@@ -304,7 +304,9 @@ class AppiumDriverManager {
                 LOGGER.info(
                         String.format("ATD will quit the driver for persona: '%s'", userPersona));
                 LOGGER.info("Close the app");
-                terminateApp((AndroidDriver) appiumDriver, appPackageName);
+                if (!Runner.isRunningInCI()) {
+                    terminateApp((AndroidDriver) appiumDriver, appPackageName);
+                }
             } else {
                 LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
                 attachDeviceLogsToReportPortal(userPersona);
