@@ -4,7 +4,7 @@ buildscript {
     ext {
         gradleVersion = "8.5"
         assertJVersion = "3.25.1"
-        atdVersion = "d3a3732a6a" // revertDeviceFarmUrl branch
+        atdVersion = "70c9e51052" // revertDeviceFarmUrl branch
         applitoolsAppiumVersion = "5.66.4"
         seleniumVersion = "4.13.0"
         commonsLang3Version = "3.14.0"
