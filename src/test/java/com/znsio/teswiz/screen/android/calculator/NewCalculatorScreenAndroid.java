@@ -54,7 +54,7 @@ public class NewCalculatorScreenAndroid
 
     @Override
     public NewCalculatorScreen launch() {
-        visually.check(SCREEN_NAME, "New Calculator Launched", (AppiumCheckSettings) Target.window().fully().ignoreCaret());
+        visually.check(SCREEN_NAME, "New Calculator Launched", (AppiumCheckSettings) Target.window().fully().ignoreCaret(true));
         return this;
     }
 }
