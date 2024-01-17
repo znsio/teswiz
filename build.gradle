@@ -5,8 +5,7 @@ buildscript {
         gradleVersion = "8.5"
         assertJVersion = "3.25.1"
         atdVersion = "revertDeviceFarmUrl-SNAPSHOT" // revertDeviceFarmUrl branch (70c9e51052)
-        applitoolsAppiumVersion = "5.66.4"
-        seleniumVersion = "4.13.0"
+        applitoolsAppiumVersion = "5.66.5"
         commonsLang3Version = "3.14.0"
         commonsRngSimpleVersion = "1.5"
         unirestVersion = "3.14.5"
@@ -71,7 +70,6 @@ dependencies {
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
     implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion")
-    implementation "org.seleniumhq.selenium:selenium-http-jdk-client:$project.seleniumVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "org.apache.commons:commons-rng-simple:$project.commonsRngSimpleVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
