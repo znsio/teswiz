@@ -30,11 +30,7 @@ jobs:
           node -v
           npm install
           npm list
-      - name: Run theApp Android tests against Browserstack
+      - name: Run TheApp Android tests against Browserstack
         run: |
           echo "Run theApp Tests"
           RUN_IN_CI=true APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/theapp/theapp_browserstack_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=android TAG="@theapp and @invalidLogin1 and @browserstack" ./gradlew run
-      - name: Run New Calculator Android tests against Browserstack
-        run: |
-          echo "Run New Calculator Tests"
-          RUN_IN_CI=true APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/calculator/new_calculator_browserstack_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }}  PLATFORM=android TAG="@new_calculator and @browserstack" ./gradlew run
