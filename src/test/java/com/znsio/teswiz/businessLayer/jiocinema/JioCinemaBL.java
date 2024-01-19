@@ -5,13 +5,14 @@ import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.jiocinema.JioCinemaScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JioCinemaBL {
-    private static final Logger LOGGER = Logger.getLogger(JioCinemaBL.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(JioCinemaBL.class.getName());
     private final TestExecutionContext context;
     private final SoftAssertions softly;
     private final String currentUserPersona;

@@ -6,11 +6,12 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.screen.calculator.CalculatorScreen;
 import com.znsio.teswiz.screen.calculator.NewCalculatorScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 
 public class CalculatorBL {
-    private static final Logger LOGGER = Logger.getLogger(CalculatorBL.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(CalculatorBL.class.getName());
     private final TestExecutionContext context;
     private final SoftAssertions softly;
     private final String currentUserPersona;

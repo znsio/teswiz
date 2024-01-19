@@ -4,7 +4,8 @@ import com.znsio.teswiz.entities.TEST_CONTEXT;
 import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -16,7 +17,7 @@ import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Setup.*;
 
 class CustomReports {
-    private static final Logger LOGGER = Logger.getLogger(CustomReports.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(CustomReports.class.getName());
 
     private CustomReports() {
         LOGGER.debug("CustomReports - private constructor");

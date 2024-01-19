@@ -6,14 +6,15 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.googlesearch.GoogleSearchLandingScreen;
 import com.znsio.teswiz.screen.googlesearch.GoogleSearchResultsScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 
 public class GoogleSearchLandingScreenAndroid extends GoogleSearchLandingScreen {
     private static final String URL = "https://google.com";
     private static final String SCREEN_NAME = GoogleSearchLandingScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final By SEARCH_INPUT = By.name("q");
 
     private final Driver driver;

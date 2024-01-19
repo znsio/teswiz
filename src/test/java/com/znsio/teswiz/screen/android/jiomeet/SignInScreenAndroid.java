@@ -5,7 +5,8 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiomeet.InAMeetingScreen;
 import com.znsio.teswiz.screen.jiomeet.LandingScreen;
 import com.znsio.teswiz.screen.jiomeet.SignInScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -14,7 +15,7 @@ import static com.znsio.teswiz.tools.Wait.waitFor;
 public class SignInScreenAndroid
         extends SignInScreen {
     private static final String SCREEN_NAME = SignInScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final By bySignInId = By.id("com.jio.rilconferences:id/signIn");
     private static final By byUserNameId = By.id("com.jio.rilconferences:id/edit_mobile_number");
     private static final By byProceedButtonId = By.id("com.jio.rilconferences:id/btn_otp_next");

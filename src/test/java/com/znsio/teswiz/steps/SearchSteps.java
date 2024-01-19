@@ -6,10 +6,11 @@ import com.znsio.teswiz.businessLayer.search.SearchBL;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Runner;
 import io.cucumber.java.en.When;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class SearchSteps {
-    private static final Logger LOGGER = Logger.getLogger(SearchSteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(SearchSteps.class.getName());
     private final TestExecutionContext context;
 
     public SearchSteps() {

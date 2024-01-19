@@ -34,7 +34,7 @@ These can be overridden by providing the same either as environment variables or
         If visual testing is enabled, and this is set to true, then the test will fail if there are any visual differences found
         If this is set to false, then a message will be logged about the visual differences, and the test will not fail for this reason 
     LOG_DIR=target -> Where should logs be created?
-    LOG_PROPERTIES_FILE=./src/test/resources/log4j.properties -> log4j configuration file
+    LOG_PROPERTIES_FILE=./src/test/resources/log4j2.properties -> log4j configuration file
     MAX_NUMBER_OF_APPIUM_DRIVERS -> The max number of drivers on cloud to create for multiuser android tests, default value is 5
     MAX_NUMBER_OF_WEB_DRIVERS -> The max number of web drivers on cloud to create for multiuser web tests, default value is 5
     PLATFORM=android -> Run tests against? Supported: android | iOS | windows | web | api

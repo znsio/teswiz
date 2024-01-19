@@ -1,0 +1,53 @@
+{
+  "android": {
+    "adbExecTimeout": 45000,
+    "app": {
+      "local": "src/test/resources/sampleApps/dineout.book_2022-10-18.apk"
+    },
+    "appActivity": "com.dineout.book.splash.presentation.view.NewSplashActivity",
+    "appPackage": "com.dineout.book",
+    "automationName": "UiAutomator2",
+    "platformVersion": "10",
+    "platformName": "Android",
+    "device": "Samsung",
+    "autoGrantPermissions": true,
+    "newCommandTimeout": 300,
+    "launchTimeout": 90000,
+    "unicodeKeyboard": true,
+    "resetKeyboard": true,
+    "noReset": false,
+    "autoAcceptAlerts": true,
+    "browserstack.enableCameraImageInjection": true,
+    "browserstack.geoLocation": "IN",
+    "browserstack.timezone": "Kolkata",
+    "browserstack.debug": "false",
+    "browserstack.networkLogs": "true",
+    "browserstack.acceptInsecureCerts": "true",
+    "browserstack.locale": "IN",
+    "project": "teswiz",
+    "percy.enabled": "true",
+    "percy.ignoreErrors": "true"
+  },
+  "cloud": {
+    "android": [
+    ]
+  },
+  "hostMachines": [
+    {
+      "machineIP": "hub.browserstack.com",
+      "isCloud": true,
+      "cloudName": "browserstack"
+    }
+  ],
+  "web": {
+    "browserName": "chrome",
+    "browserstackOptions": {
+      "os": "Windows",
+      "osVersion": "11",
+      "browserVersion": "latest",
+      "seleniumVersion": "3.14.0",
+      "debug": "true",
+      "networkLogs": "true"
+    }
+  }
+}

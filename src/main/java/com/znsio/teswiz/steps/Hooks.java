@@ -9,14 +9,19 @@ import com.znsio.teswiz.runner.UserPersonaDetails;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import io.cucumber.java.Scenario;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 public class Hooks {
-    private static final Logger LOGGER = Logger.getLogger(Hooks.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Hooks.class.getName());
+    private static final List<String> excludeLoggingSystemProperties = Arrays.asList("java.class.path", "java.library.path");
+    private static final List<String> excludeLoggingEnvVariables = Arrays.asList("KEY", "PASSWORD");
 
     public void beforeScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();
@@ -37,19 +42,39 @@ public class Hooks {
     }
 
     private void addEnvironmentVariablesToReportPortal() {
-        Map<String, String> env = System.getenv();
-        final String[] envVars = {""};
-        env.forEach((k, v) -> envVars[0] += ("\t" + k + ":" + v + "\n"));
+        Map<String, String> envVars = System.getenv();
+        StringBuilder envVarInfo = new StringBuilder();
+
+        envVars.entrySet().stream()
+                .filter(entry -> excludeLoggingEnvVariables.stream().noneMatch(excludedKey ->
+                        entry.getKey().toLowerCase().contains(excludedKey.toLowerCase())))
+                .forEach(entry -> envVarInfo.append("\t").append(entry.getKey()).append(":").append(entry.getValue()).append("\n"));
+
+        envVars.entrySet().stream()
+                .filter(entry -> excludeLoggingEnvVariables.stream().anyMatch(excludedKey ->
+                        entry.getKey().toLowerCase().contains(excludedKey.toLowerCase())))
+                .forEach(entry -> envVarInfo.append("\t").append(entry.getKey()).append(":").append("*****").append("\n"));
+
         ReportPortalLogger.logDebugMessage(
-                String.format("Hooks: Environment Variables:%n%s", envVars[0]));
+                String.format("Hooks: Environment Variables:%n%s", envVarInfo));
     }
 
     private void addSystemPropertiesToReportPortal() {
         Properties props = System.getProperties();
-        final String[] propVars = {""};
-        props.forEach((k, v) -> propVars[0] += ("\t" + k + ":" + v + "\n"));
+        StringBuilder propVars = new StringBuilder();
+
+        props.entrySet().stream()
+                .filter(entry -> excludeLoggingSystemProperties.stream().noneMatch(excludedKey ->
+                        entry.getKey().toString().toLowerCase().contains(excludedKey.toLowerCase())))
+                .forEach(entry -> propVars.append("\t").append(entry.getKey()).append(":").append(entry.getValue()).append("\n"));
+
+        props.entrySet().stream()
+                .filter(entry -> excludeLoggingSystemProperties.stream().anyMatch(excludedKey ->
+                        entry.getKey().toString().toLowerCase().contains(excludedKey.toLowerCase())))
+                .forEach(entry -> propVars.append("\t").append(entry.getKey()).append(":").append("*****").append("\n"));
+
         ReportPortalLogger.logDebugMessage(
-                String.format("Hooks: System Properties:%n%s", propVars[0]));
+                String.format("Hooks: System Properties:%n%s", propVars));
     }
 
     public void afterScenario(Scenario scenario) {

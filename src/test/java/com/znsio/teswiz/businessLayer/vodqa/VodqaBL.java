@@ -7,14 +7,15 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.vodqa.DragAndDropScreen;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.Dimension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VodqaBL {
-    private static final Logger LOGGER = Logger.getLogger(VodqaBL.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(VodqaBL.class.getName());
     private final TestExecutionContext context;
     private final SoftAssertions softly;
     private final String currentUserPersona;

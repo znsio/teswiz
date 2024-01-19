@@ -17,7 +17,7 @@
   "serverConfig" : {
     "server": {
       "port": 31337,
-      "use-plugins": ["device-farm", "appium-dashboard"],
+      "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
           "platform": "android",

@@ -1,31 +1,27 @@
 {
   "android": {
-    "adbExecTimeout": 45000,
     "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/ajio-8-3-4.apk",
-    "appActivity": "com.ril.ajio.launch.activity.SplashScreenActivity",
-    "appPackage": "com.ril.ajio",
-    "appiumVersion" : "2.0.0",
-    "automationName": "UIAutomator2",
-    "autoGrantPermissions": true,
-    "launchTimeout": 90000,
-    "newCommandTimeout": 600,
-    "platformName": "android",
-    "os_version": "10",
+    "appium:appActivity": "com.ril.ajio.launch.activity.SplashScreenActivity",
+    "appium:appPackage": "com.ril.ajio",
     "device": "Samsung",
-    "pCloudy_Username": "pcloudy_username",
-    "pCloudy_ApiKey": "pcloudy_key",
-    "pCloudy_DurationInMinutes": 10,
-    "pCloudy_DeviceManufacturer": "SAMSUNG",
-    "pCloudy_DeviceVersion": "13.0.0",
-    "pCloudy_ApplicationName": "TheApp-release.apk",
-    "pCloudy_WildNet": "true",
-    "pCloudy_EnableVideo": "true",
-    "pCloudy_EnablePerformanceData": "true",
-    "pCloudy_EnableDeviceLogs": "true",
-    "appium:platformVersion": "13",
-    "unicodeKeyboard": true,
-    "resetKeyboard": true,
-    "noReset": false
+    "os_version": "13.0.0",
+    "automationName": "UiAutomator2",
+    "appium:newCommandTimeout": 600,
+    "appium:launchTimeout": 90000,
+    "appium:printPageSourceOnFindFailure": true,
+    "platformName": "Android",
+    "appium:autoGrantPermissions": true,
+    "pcloudy:options" : {
+      "pCloudy_DurationInMinutes": 10,
+      "pCloudy_WildNet": "false",
+      "pCloudy_EnableVideo": "true",
+      "pCloudy_EnablePerformanceData": "true",
+      "pCloudy_EnableDeviceLogs": "true",
+      "pCloudy_Username": "user",
+      "pCloudy_ApiKey": "key"
+    },
+    "appium:appiumVersion": "2.0.0",
+    "platformVersion": "13.0.0"
   },
   "iOS": {
     "app": "./temp/AJIO_test_9_8_29.ipa",
@@ -44,13 +40,10 @@
     "pCloudy_EnableDeviceLogs": "true",
     "appiumVersion": "2.0.0"
   },
-  "serverConfig": {
+  "serverConfig" : {
     "server": {
       "port": 31337,
-      "use-plugins": [
-        "device-farm",
-        "appium-dashboard"
-      ],
+      "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
           "platform": "iOS",
@@ -59,7 +52,7 @@
           "cloud": {
             "cloudName": "pCloudy",
             "apiUrl": "https://device.pcloudy.com",
-            "url": "https://device.pcloudy.com/appiumcloud/wd/hub",
+            "url": "https://device.pcloudy.com/appiumcloud",
             "devices": [
             ]
           }

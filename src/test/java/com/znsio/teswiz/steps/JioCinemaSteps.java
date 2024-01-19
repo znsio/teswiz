@@ -10,10 +10,11 @@ import com.znsio.teswiz.runner.Runner;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class JioCinemaSteps {
-    private static final Logger LOGGER = Logger.getLogger(JioCinemaSteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(JioCinemaSteps.class.getName());
     private final TestExecutionContext context;
 
     public JioCinemaSteps() {

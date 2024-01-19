@@ -7,7 +7,8 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.indigo.IndigoFlightSearchResultsScreen;
 import com.znsio.teswiz.screen.indigo.IndigoGiftVouchersScreen;
 import com.znsio.teswiz.screen.indigo.IndigoHomeScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -18,7 +19,7 @@ import static com.znsio.teswiz.tools.Wait.waitFor;
 public class IndigoHomeScreenWeb
         extends IndigoHomeScreen {
     private static final String SCREEN_NAME = IndigoHomeScreenWeb.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final String NOT_YET_IMPLEMENTED = " not yet implemented";
     private static final By byFromXpath = By.xpath("//input[@placeholder='From']");
     private static final By byToXpath = By.xpath("//input[@placeholder='To']");

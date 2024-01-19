@@ -5,5 +5,6 @@ public enum Platform {
     iOS,
     windows,
     web,
-    api
+    api,
+    electron
 }

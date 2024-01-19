@@ -21,7 +21,7 @@
     "server": {
       "use-plugins": [
         "device-farm",
-        "appium-dashboard"
+
       ],
       "plugin": {
         "device-farm": {

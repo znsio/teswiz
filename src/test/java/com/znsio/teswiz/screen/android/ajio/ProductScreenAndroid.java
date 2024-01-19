@@ -7,14 +7,15 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.ajio.CartScreen;
 import com.znsio.teswiz.screen.ajio.ProductScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 public class ProductScreenAndroid
         extends ProductScreen {
     private static final String SCREEN_NAME = ProductScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final By byProductNameId = By.id("com.ril.ajio:id/product_name");
     private static final By byAddToCartButtonId = By.id("com.ril.ajio:id/add_to_cart_tv");
     private static final By byViewBagButtonXpath = By.xpath(

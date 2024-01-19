@@ -5,7 +5,8 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.ajio.HomeScreen;
 import com.znsio.teswiz.screen.ajio.ProductScreen;
 import com.znsio.teswiz.screen.ajio.SearchScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -16,7 +17,7 @@ import static com.znsio.teswiz.tools.Wait.waitFor;
 public class HomeScreenIOS
         extends HomeScreen {
     private static final String SCREEN_NAME = HomeScreenIOS.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final By byStartSearchBoxId = By.id("Home_Search_Label");
     private static final By byUploadPhotoButtonId = By.id("Upload a Photo");
     private static final By byImageId = By.xpath("//XCUIElementTypeImage[contains(@name,'Photo, October 10')]");

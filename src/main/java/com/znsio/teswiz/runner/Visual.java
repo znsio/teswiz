@@ -23,24 +23,28 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.exceptions.VisualTestSetupException;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.awt.Toolkit;
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.znsio.teswiz.runner.Runner.*;
 
 public class Visual {
-    private static final Logger LOGGER = Logger.getLogger(Visual.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Visual.class.getName());
     private static final String DEFAULT_APPLITOOLS_SERVER_URL = "https://eyesapi.applitools.com";
     private final com.applitools.eyes.selenium.Eyes eyesOnWeb;
     private final com.applitools.eyes.appium.Eyes eyesOnApp;
@@ -294,11 +298,17 @@ public class Visual {
         LOGGER.info(String.format("Provided browser dimensions: %s",
                                   providedBrowserViewPortSizeFromConfig));
 
-        if(driverType.equals(Driver.APPIUM_DRIVER)) {
+        if (driverType.equals(Driver.APPIUM_DRIVER)) {
             return providedBrowserViewPortSizeFromConfig;
         } else {
             JavascriptExecutor js = (JavascriptExecutor) innerDriver;
-            Dimension actualBrowserSize = innerDriver.manage().window().getSize();
+            Dimension actualBrowserSize;
+            if(Runner.getPlatform().equals(Platform.electron)){
+                Toolkit toolkit = Toolkit.getDefaultToolkit();
+                actualBrowserSize = new Dimension(toolkit.getScreenSize().width, toolkit.getScreenSize().height);
+            }
+            else
+                actualBrowserSize = innerDriver.manage().window().getSize();
             LOGGER.info(String.format("Actual browser dimensions: %s", actualBrowserSize));
             Long actualHeight = (Long) js.executeScript("return (window.innerHeight);");
             Long actualWidth = (Long) js.executeScript("return (window.innerWidth);");

@@ -16,10 +16,11 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class TheAppSteps {
-    private static final Logger LOGGER = Logger.getLogger(TheAppSteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(TheAppSteps.class.getName());
     private final TestExecutionContext context;
 
     public TheAppSteps() {
@@ -33,7 +34,7 @@ public class TheAppSteps {
                 "iLoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', " +
                 "Platform: '%s'",
                 SAMPLE_TEST_CONTEXT.ME, username, password, Runner.getPlatform()));
-        context.addTestState(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST, "./configs/browser_headless_config.json");
+        context.addTestState(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST, "./configs/browser_config.json");
         context.addTestState(TEST_CONTEXT.UPDATED_BASE_URL_FOR_WEB, "BASE_URL");
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         context.addTestState(SAMPLE_TEST_CONTEXT.ME, username);

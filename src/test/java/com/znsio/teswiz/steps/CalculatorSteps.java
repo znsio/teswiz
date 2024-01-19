@@ -11,12 +11,13 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
 
 public class CalculatorSteps {
-    private static final Logger LOGGER = Logger.getLogger(CalculatorSteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(CalculatorSteps.class.getName());
     private final TestExecutionContext context;
 
     public CalculatorSteps() {

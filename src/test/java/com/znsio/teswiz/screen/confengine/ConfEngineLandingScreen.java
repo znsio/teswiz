@@ -8,11 +8,12 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.android.confengine.ConfEngineLandingScreenAndroid;
 import com.znsio.teswiz.screen.web.confengine.ConfEngineLandingScreenWeb;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public abstract class ConfEngineLandingScreen {
     private static final String SCREEN_NAME = ConfEngineLandingScreen.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
 
     public static ConfEngineLandingScreen get() {
         Driver driver = Drivers.getDriverForCurrentUser(Thread.currentThread().getId());

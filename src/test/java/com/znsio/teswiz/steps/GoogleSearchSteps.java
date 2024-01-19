@@ -8,12 +8,13 @@ import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import io.cucumber.java.en.Given;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Locale;
 
 public class GoogleSearchSteps {
-    private static final Logger LOGGER = Logger.getLogger(GoogleSearchSteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(GoogleSearchSteps.class.getName());
     private final TestExecutionContext context;
 
     public GoogleSearchSteps() {

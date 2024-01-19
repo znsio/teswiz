@@ -45,7 +45,9 @@
           "include": [
             "disable-gpu"
           ]
-        }
+        },
+        "binary": "C:\\path\\to\\chrome.exe",
+        "browserVersion": "latest"
       },
       "firefox": {
         "firefoxProfile": {

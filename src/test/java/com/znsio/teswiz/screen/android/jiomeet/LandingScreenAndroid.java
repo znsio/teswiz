@@ -4,7 +4,8 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiomeet.InAMeetingScreen;
 import com.znsio.teswiz.screen.jiomeet.LandingScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
@@ -12,7 +13,7 @@ import static com.znsio.teswiz.tools.Wait.waitFor;
 public class LandingScreenAndroid
         extends LandingScreen {
     private static final String SCREEN_NAME = LandingScreenAndroid.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private static final By byWelcomeMessageId = By.id("com.jio.rilconferences:id/textUserName");
     private static final By byStartInstantMeetingId = By.id(
             "com.jio.rilconferences:id/buttonStartMeeting");

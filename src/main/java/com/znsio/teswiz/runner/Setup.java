@@ -11,8 +11,10 @@ import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -85,7 +87,7 @@ class Setup {
     static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
-    private static final Logger LOGGER = Logger.getLogger(Setup.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Setup.class.getName());
     private static final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
     private static final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private static final String DEFAULT_WEBDRIVER_GRID_HOST_NAME = "localhost";
@@ -187,17 +189,18 @@ class Setup {
     }
 
     private static void setLogPropertiesFile() {
-        InputStream inputStream;
+        File file;
         try {
+            LoggerContext context = (LoggerContext) LogManager.getContext(false);
             if(properties.containsKey(LOG_PROPERTIES_FILE)) {
                 Path logFilePath = Paths.get(properties.get(LOG_PROPERTIES_FILE).toString());
                 configs.put(LOG_PROPERTIES_FILE, logFilePath.toString());
-                inputStream = Files.newInputStream(logFilePath);
+                file = new File(LOG_PROPERTIES_FILE);
             } else {
                 configs.put(LOG_PROPERTIES_FILE, DEFAULT_LOG_PROPERTIES_FILE);
-                inputStream = Setup.class.getResourceAsStream(DEFAULT_LOG_PROPERTIES_FILE);
+                file = new File(DEFAULT_LOG_PROPERTIES_FILE);
             }
-            PropertyConfigurator.configure(inputStream);
+            context.setConfigLocation(file.toURI());
         } catch(Exception e) {
             throw new InvalidTestDataException(
                     "There was a problem while setting log properties file");
@@ -271,11 +274,6 @@ class Setup {
         }
 
         LOGGER.info(String.format("ReportPortal Test Execution Attributes: %s", rpAttributes));
-
-        // Set the system property to indicate that Java 11+ Http client needs to be used.
-        // By default, it uses the AsyncHttpClient.
-        // https://www.selenium.dev/blog/2022/using-java11-httpclient/
-        System.setProperty("webdriver.http.factory", "jdk-http-client");
 
         // properties needed for atd
         System.setProperty(CLOUD_USERNAME, configs.get(CLOUD_USERNAME));
@@ -478,6 +476,10 @@ class Setup {
                 currentPlatform = Platform.web;
                 inferredTags = providedTags + AND_NOT_WIP;
                 launchName += " - Real User Simulation on Web";
+            } else if (providedTags.contains("multiuser-electron")) {
+                currentPlatform = Platform.electron;
+                inferredTags = providedTags + AND_NOT_WIP;
+                launchName += " - Real User Simulation on Electron";
             } else if (providedTags.contains("multiuser-windows-web")) {
                 currentPlatform = Platform.windows;
                 inferredTags = providedTags + AND_NOT_WIP;
@@ -536,12 +538,15 @@ class Setup {
 
     private static ArrayList<String> setupPlatformExecution() {
         ArrayList<String> webCukeArgs = new ArrayList<>();
-        if(currentPlatform.equals(Platform.web)) {
+        if (currentPlatform.equals(Platform.web)) {
             configs.put(APP_PATH, configs.get(BROWSER));
             configs.put(EXECUTED_ON, "Local Browsers");
             setupListenersForWebOrAPIExecution(webCukeArgs);
-        }
-        else if(currentPlatform.equals(Platform.api)) {
+        } else if (currentPlatform.equals(Platform.electron)) {
+            configs.put(APP_PATH, configs.get(BROWSER));
+            configs.put(EXECUTED_ON, "Local Electron Application");
+            setupListenersForWebOrAPIExecution(webCukeArgs);
+        } else if (currentPlatform.equals(Platform.api)) {
             configs.put(EXECUTED_ON, currentPlatform.name());
             setupListenersForWebOrAPIExecution(webCukeArgs);
         }
@@ -607,7 +612,7 @@ class Setup {
     }
 
     private static String getBranchNameUsingGitCommand() {
-        String[] getBranchNameCommand = new String[]{"git", "rev-parse", "--abbrev-ref", "HEAD"};
+        String[] getBranchNameCommand = new String[]{"git rev-parse --abbrev-ref HEAD"};
         CommandLineResponse response = CommandLineExecutor.execCommand(getBranchNameCommand);
         String branchName = response.getStdOut();
         LOGGER.info(String.format("\tBranch name from git command: '%s': '%s'", Arrays.toString(getBranchNameCommand), branchName));

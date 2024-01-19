@@ -8,7 +8,8 @@ import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -22,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.znsio.teswiz.runner.Setup.*;
 
 class PCloudySetup {
-    private static final Logger LOGGER = Logger.getLogger(PCloudySetup.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(PCloudySetup.class.getName());
     private static final String CURL_INSECURE = "curl --insecure";
     private static final String RESULT = "result";
 
@@ -43,12 +44,13 @@ class PCloudySetup {
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         String platformName = Setup.getPlatform().name();
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        String osVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
+        String deviceVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
         loadedPlatformCapability.remove("app");
-        loadedPlatformCapability.put("pCloudy_Username", emailID);
-        loadedPlatformCapability.put("pCloudy_ApiKey", authenticationKey);
-        loadedPlatformCapability.put("pCloudy_ApplicationName", getAppName(appPath));
-        loadedPlatformCapability.put("pCloudy_DeviceVersion", osVersion);
+        Map pCloudyOptions = (Map) loadedPlatformCapability.get("pcloudy:options");
+        pCloudyOptions.put("pCloudy_Username", emailID);
+        pCloudyOptions.put("pCloudy_ApiKey", authenticationKey);
+        pCloudyOptions.put("pCloudy_ApplicationName", getAppName(appPath));
+        pCloudyOptions.put("pCloudy_DeviceVersion", deviceVersion);
 
         updateCapabilities(loadedCapabilityFile);
     }

@@ -6,7 +6,8 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 
 class HeadSpinSetup {
-    private static final Logger LOGGER = Logger.getLogger(HeadSpinSetup.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(HeadSpinSetup.class.getName());
     private static final String PLATFORM_VERSION = "platformVersion";
 
     private HeadSpinSetup() {

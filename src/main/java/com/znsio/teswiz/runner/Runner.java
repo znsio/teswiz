@@ -6,7 +6,8 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import io.cucumber.core.cli.Main;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -33,7 +34,7 @@ public class Runner {
     public static final String INFO = "INFO";
     public static final String WARN = "WARN";
 
-    private static final Logger LOGGER = Logger.getLogger(Runner.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Runner.class.getName());
     private static final String INVALID_KEY_MESSAGE = "Invalid key name ('%s') provided";
 
     public Runner() {
@@ -41,7 +42,6 @@ public class Runner {
     }
 
     public Runner(String configFilePath, String stepDefDirName, String featuresDirName) {
-        setLog4jCompatibility();
         Path path = Paths.get(configFilePath);
         if(!Files.exists(path)) {
             throw new InvalidTestDataException(
@@ -50,11 +50,6 @@ public class Runner {
         Setup.load(configFilePath);
         List<String> cukeArgs = Setup.getExecutionArguments();
         run(cukeArgs, stepDefDirName, featuresDirName);
-    }
-
-    private void setLog4jCompatibility() {
-        // Migrating from Log4j 1.x to 2.x - https://logging.apache.org/log4j/2.x/manual/migration.html
-        System.setProperty("log4j1.compatibility", "true");
     }
 
     public static Platform getPlatformForUser(String userPersona) {
@@ -69,13 +64,19 @@ public class Runner {
         args.add("--glue");
         args.add(stepDefsDir);
         args.add(featuresDir);
-        LOGGER.info("Begin running tests...");
-        LOGGER.info(String.format("Args: %s", args));
+        LOGGER.info("Begin running tests with args: {}", args);
         String[] array = args.toArray(String[]::new);
-        byte status = Main.run(array);
-        Setup.cleanUpExecutionEnvironment();
-        CustomReports.generateReport();
-        System.exit(status);
+        try {
+            byte status = Main.run(array);
+            LOGGER.info("Execution status: {}", status);
+            Setup.cleanUpExecutionEnvironment();
+            CustomReports.generateReport();
+            System.exit(status);
+        } catch (Exception e) {
+            LOGGER.error("EXCEPTION: {}", e.getMessage());
+            LOGGER.error(e);
+            System.exit(1);
+        }
     }
 
     public static Platform getPlatform() {

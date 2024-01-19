@@ -8,11 +8,12 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.android.jiomeet.InAMeetingScreenAndroid;
 import com.znsio.teswiz.screen.web.jiomeet.InAMeetingScreenWeb;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public abstract class InAMeetingScreen {
     private static final String SCREEN_NAME = InAMeetingScreen.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
 
     public static InAMeetingScreen get() {
         Driver driver = Drivers.getDriverForCurrentUser(Thread.currentThread().getId());
@@ -20,10 +21,11 @@ public abstract class InAMeetingScreen {
         LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
         Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
 
-        switch(platform) {
+        switch (platform) {
             case android:
                 return new InAMeetingScreenAndroid(driver, visually);
             case web:
+            case electron:
                 return new InAMeetingScreenWeb(driver, visually);
         }
         throw new NotImplementedException(
@@ -43,5 +45,4 @@ public abstract class InAMeetingScreen {
     public abstract String getMicLabelText();
 
     public abstract InAMeetingScreen openJioMeetNotification();
-
 }

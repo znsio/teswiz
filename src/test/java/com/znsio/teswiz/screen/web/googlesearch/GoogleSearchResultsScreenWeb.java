@@ -5,7 +5,8 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.googlesearch.GoogleSearchResultsScreen;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class GoogleSearchResultsScreenWeb extends GoogleSearchResultsScreen {
     private static final String SCREEN_NAME = GoogleSearchResultsScreenWeb.class.getSimpleName();
-    private static final Logger LOGGER = Logger.getLogger(SCREEN_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private final Driver driver;
     private final Visual visually;
     private final TestExecutionContext context;

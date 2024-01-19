@@ -8,13 +8,14 @@ import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
 import java.util.Locale;
 
 public class AppLaunchSteps {
-    private static final Logger LOGGER = Logger.getLogger(AppLaunchSteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AppLaunchSteps.class.getName());
     private final TestExecutionContext context;
 
     public AppLaunchSteps() {

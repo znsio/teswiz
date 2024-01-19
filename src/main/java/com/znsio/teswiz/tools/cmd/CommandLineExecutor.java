@@ -3,14 +3,15 @@ package com.znsio.teswiz.tools.cmd;
 import com.znsio.teswiz.exceptions.CommandLineExecutorException;
 import com.znsio.teswiz.runner.Runner;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 public class CommandLineExecutor {
-    private static final Logger LOGGER = Logger.getLogger(CommandLineExecutor.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(CommandLineExecutor.class.getName());
     private static final int DEFAULT_COMMAND_TIMEOUT = 60;
 
     private CommandLineExecutor() {}

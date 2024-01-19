@@ -9,10 +9,11 @@ import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class AutoScrollSteps {
-    private static final Logger LOGGER = Logger.getLogger(AutoScrollSteps.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AutoScrollSteps.class.getName());
     private final TestExecutionContext context;
 
     public AutoScrollSteps() {
