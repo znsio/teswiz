@@ -69,7 +69,7 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion")
+    implementation "com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion"
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "org.apache.commons:commons-rng-simple:$project.commonsRngSimpleVersion"
     implementation "com.github.vidstige:jadb:$project.jadbVersion"
