@@ -10,6 +10,9 @@ Follow these steps:
 1. For `web` automation
    * Add `<>_BASE_URL` in environments.json - example: `THEAPP_BASE_URL=http://the-internet.herokuapp.com`
    * Update `BASE_URL` with the above in config.properties - example: `BASE_URL=THEAPP_BASE_URL`
+1. For `electron` automation
+   * Add `binary` path in browser_config.json - example: `"binary": "C:\\path\\to\\chrome.exe"`
+   * Add `browserVersion` in browser_config.json - example: `"browserVersion": "latest"`
 1. Create config.properties in some folder - ex: `./configs` and provide default values - refer to src/test/resources/com/znsio/e2e/features/android/configs/theapp_local_config.properties
 1. Create capabilities.json in some folder - ex: `./caps` - refer to src/test/resources/com/znsio/e2e/features/android/caps/theapp_local_capabilities.json
 1. Update `reportportal.properties` file
