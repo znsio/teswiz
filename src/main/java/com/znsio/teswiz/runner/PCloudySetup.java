@@ -44,7 +44,7 @@ class PCloudySetup {
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         String platformName = Setup.getPlatform().name();
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        String deviceVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
+        String deviceVersion = String.valueOf(loadedPlatformCapability.get("os_version"));
         String deviceManufacturer = String.valueOf(loadedPlatformCapability.get("device"));
         String appiumVersion;
         if (loadedPlatformCapability.containsKey("appiumVersion")) {
