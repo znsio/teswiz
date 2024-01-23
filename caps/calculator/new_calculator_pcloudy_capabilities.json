@@ -12,6 +12,7 @@
     "platformName": "Android",
     "appium:autoGrantPermissions": true,
     "appium:no_reset": true,
+    "appium:appiumVersion": "2.0.0",
     "pcloudy:options" : {
       "pCloudy_DurationInMinutes": 10,
       "pCloudy_WildNet": "false",
@@ -20,9 +21,7 @@
       "pCloudy_EnableDeviceLogs": "true",
       "pCloudy_Username": "user",
       "pCloudy_ApiKey": "key"
-    },
-    "appium:appiumVersion": "2.0.0",
-    "platformVersion": "13.0.0"
+    }
   },
   "serverConfig" : {
     "server": {

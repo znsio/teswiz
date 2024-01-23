@@ -1,14 +1,18 @@
 {
   "android": {
-    "device": "Samsung",
-    "os_version": "13.0.0",
     "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/AndroidCalculator.apk",
+    "appium:appPackage": "com.android2.calculator3",
+    "appium:appActivity": "com.android2.calculator3.Calculator",
+    "device": "GOOGLE",
+    "os_version": "13.0.0",
     "automationName": "UiAutomator2",
     "appium:newCommandTimeout": 600,
     "appium:launchTimeout": 90000,
     "appium:printPageSourceOnFindFailure": true,
     "platformName": "Android",
     "appium:autoGrantPermissions": true,
+    "appium:no_reset": true,
+    "appium:appiumVersion": "2.0.0",
     "pcloudy:options" : {
       "pCloudy_DurationInMinutes": 10,
       "pCloudy_WildNet": "false",
@@ -17,11 +21,7 @@
       "pCloudy_EnableDeviceLogs": "true",
       "pCloudy_Username": "user",
       "pCloudy_ApiKey": "key"
-    },
-    "appium:appPackage": "com.android2.calculator3",
-    "appium:appActivity": "com.android2.calculator3.Calculator",
-    "appium:appiumVersion": "2.0.0",
-    "platformVersion": "13.0.0"
+    }
   },
   "serverConfig" : {
     "server": {
