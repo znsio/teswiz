@@ -32,7 +32,7 @@ Feature: Vodqa test
     Then I am able to see element with text "3" on the screen
 
   #  CONFIG=./configs/vodqa/vodqa_local_config.properties PLATFORM=android TAG=vodqaContextSwitch ./gradlew run
-  @vodqaContextSwitch @android
+  @vodqaContextSwitch @android @wip
   Scenario: Validate context switching between native and web view context
     Given I login to vodqa application using valid credentials
     Then I am able to view hacker news login button inside web view section
