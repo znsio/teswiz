@@ -58,7 +58,7 @@ jobs:
         env:
           PAT_TOKEN: ${{ secrets.TESWIZ_PAT }}
       - name: Trigger Workflow in getting-started-with-teswiz
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.TESWIZ_REPO_DISPATCH }}
           repository: znsio/getting-started-with-teswiz
