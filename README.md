@@ -22,7 +22,8 @@ them against
 * Android
 * iOS
 * Windows Apps
-* Web
+* Web 
+* Electron
 
 Applitools (https://applitools.com/) Visual AI, and Applitools Ultrafast Grid (https://applitools.com/product-ultrafast-test-cloud/) is integrated with this framework, to provide
 Visual AI testing as part of functional automation.

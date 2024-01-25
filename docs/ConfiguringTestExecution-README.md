@@ -41,6 +41,10 @@ For other cloud configurations, refer here: https://github.com/AppiumTestDistrib
 
     PLATFORM=web ./gradlew run
 
+### Run electron app tests
+
+    PLATFORM=electron ./gradlew run
+
 ### Run Api
 
     PLATFORM=api ./gradlew run
