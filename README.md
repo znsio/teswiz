@@ -56,6 +56,8 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 
 ## [Running the sample tests](docs/SampleTests-README.md)
 
+## [Writing the first test](docs/WritingFirstTest-README.md)
+
 ## Additional configurations
 
 ### [Running Visual Tests using Applitools Visual AI](docs/RunningVisualTests-README.md)
