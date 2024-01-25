@@ -62,3 +62,6 @@ With Visual Testing enabled:
 
     CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android and @multi-app" IS_VISUAL=true ./gradlew run
 
+### Electron tests
+
+    IS_VISUAL=false CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @single-user" PLATFORM=electron ./gradlew run
