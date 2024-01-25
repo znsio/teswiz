@@ -716,7 +716,6 @@ public class Driver {
     }
 
     public void multiTouchOnElements (WebElement firstElement, WebElement SecondElement){
-            
         LOGGER.info("Determining x and y co-ordinates of WebElements to perform multi touch action");
         Dimension screenSize = driver.manage().window().getSize();
         int xCoordinate_firstElement = (screenSize.width - 40) / 2;
@@ -725,7 +724,6 @@ public class Driver {
         int xCoordinate_secondElement = (screenSize.width - 40) / 2;
         int yCoordinate_secondElement = SecondElement.getLocation().y;
         multiTouch(xCoordinate_firstElement, yCoordinate_firstElement, xCoordinate_secondElement, yCoordinate_secondElement);
-
      }
 
      private void multiTouch(int x_element1, int y_element1, int x_element2, int y_element2){

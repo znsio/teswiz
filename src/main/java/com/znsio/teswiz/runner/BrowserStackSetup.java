@@ -21,6 +21,7 @@ import java.util.*;
 
 import static com.znsio.teswiz.runner.Runner.USER_NAME;
 import static com.znsio.teswiz.runner.Runner.getHostName;
+import static org.openqa.selenium.remote.CapabilityType.ACCEPT_INSECURE_CERTS;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
 class BrowserStackSetup {
@@ -111,6 +112,7 @@ class BrowserStackSetup {
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
                     browserStackLocalIdentifier));
             startBrowserStackLocal(authenticationKey, browserStackLocalIdentifier);
+            browserstackOptions.put(ACCEPT_INSECURE_CERTS, "true");
             browserstackOptions.put("local", "true");
         }
         capabilities.setCapability("bstack:options", browserstackOptions);

@@ -3,7 +3,7 @@
     "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/ajio-8-3-4.apk",
     "appium:appActivity": "com.ril.ajio.launch.activity.SplashScreenActivity",
     "appium:appPackage": "com.ril.ajio",
-    "device": "Samsung",
+    "device": "GOOGLE",
     "os_version": "13.0.0",
     "automationName": "UiAutomator2",
     "appium:newCommandTimeout": 600,
@@ -11,6 +11,8 @@
     "appium:printPageSourceOnFindFailure": true,
     "platformName": "Android",
     "appium:autoGrantPermissions": true,
+    "appium:no_reset": true,
+    "appium:appiumVersion": "2.0.0",
     "pcloudy:options" : {
       "pCloudy_DurationInMinutes": 10,
       "pCloudy_WildNet": "false",
@@ -19,9 +21,7 @@
       "pCloudy_EnableDeviceLogs": "true",
       "pCloudy_Username": "user",
       "pCloudy_ApiKey": "key"
-    },
-    "appium:appiumVersion": "2.0.0",
-    "platformVersion": "13.0.0"
+    }
   },
   "iOS": {
     "app": "./temp/AJIO_test_9_8_29.ipa",

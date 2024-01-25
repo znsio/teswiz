@@ -44,14 +44,25 @@ class PCloudySetup {
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         String platformName = Setup.getPlatform().name();
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        String deviceVersion = String.valueOf(loadedPlatformCapability.get("platformVersion"));
+        String deviceVersion = String.valueOf(loadedPlatformCapability.get("os_version"));
+        String deviceManufacturer = String.valueOf(loadedPlatformCapability.get("device"));
+        String appiumVersion;
+        if (loadedPlatformCapability.containsKey("appiumVersion")) {
+            appiumVersion = String.valueOf(loadedPlatformCapability.get("appiumVersion"));
+            loadedPlatformCapability.remove("appiumVersion");
+        } else {
+            appiumVersion = String.valueOf(loadedPlatformCapability.get("appium:appiumVersion"));
+            loadedPlatformCapability.remove("appium:appiumVersion");
+        }
         loadedPlatformCapability.remove("app");
+        loadedPlatformCapability.put("platformVersion", loadedPlatformCapability.get("os_version"));
         Map pCloudyOptions = (Map) loadedPlatformCapability.get("pcloudy:options");
         pCloudyOptions.put("pCloudy_Username", emailID);
         pCloudyOptions.put("pCloudy_ApiKey", authenticationKey);
         pCloudyOptions.put("pCloudy_ApplicationName", getAppName(appPath));
         pCloudyOptions.put("pCloudy_DeviceVersion", deviceVersion);
-
+        pCloudyOptions.put("pCloudy_DeviceManufacturer", deviceManufacturer.toUpperCase());
+        pCloudyOptions.put("appiumVersion", appiumVersion);
         updateCapabilities(loadedCapabilityFile);
     }
 
