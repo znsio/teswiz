@@ -9,9 +9,9 @@ name: BrowserStack_Android_Calculator_CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pCloudyAppium2 ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, pCloudyAppium2 ]
 
 jobs:
   build:
