@@ -9,9 +9,9 @@ name: Build_And_Run_Unit_Tests
 
 on:
   push:
-    branches: [ main, pCloudyAppium2 ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, pCloudyAppium2 ]
+    branches: [ main ]
 
 jobs:
   build:

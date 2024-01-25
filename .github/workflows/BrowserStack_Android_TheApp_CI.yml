@@ -9,9 +9,9 @@ name: BrowserStack_Android_TheAPP_CI
 
 on:
   push:
-    branches: [ main, pCloudyAppium2 ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, pCloudyAppium2 ]
+    branches: [ main ]
 
 jobs:
   build:
