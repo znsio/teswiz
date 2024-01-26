@@ -18,7 +18,7 @@ buildscript {
         jetbrainsAnnotationsVersion = "24.1.0"
         aspectJVersion = "1.9.20.1"
         webDriverManager = '5.6.3'
-        specmaticVersion = '1.0.4'
+        specmaticVersion = '1.2.13'
     }
 }
 
