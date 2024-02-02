@@ -2,7 +2,7 @@ import java.text.SimpleDateFormat
 
 buildscript {
     ext {
-        gradleVersion = "8.5"
+        gradleVersion = "8.6"
         assertJVersion = "3.25.2"
         atdVersion = "revertDeviceFarmUrl-SNAPSHOT" // revertDeviceFarmUrl branch (70c9e51052)
         applitoolsAppiumVersion = "5.66.6"
