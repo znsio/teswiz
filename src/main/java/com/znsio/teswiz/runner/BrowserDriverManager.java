@@ -474,7 +474,7 @@ class BrowserDriverManager {
         ReportPortalLogger.logDebugMessage(logMessage);
         System.setProperty("webdriver." + browserType + ".logfile", logFile);
         Platform plaform = Runner.getPlatform();
-        addBrowserLogFileNameFor(forUserPersona, plaform, browserType, logFile);
+        addBrowserLogFileNameFor(forUserPersona, plaform.name(), browserType, logFile);
     }
 
     private static void addBrowserLogFileNameFor(String userPersona, String forPlatform,
