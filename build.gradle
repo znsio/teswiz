@@ -33,6 +33,7 @@ plugins {
 
 group = 'com.github.znsio'
 version '0.0.91'
+def buildDirectory=rootProject.layout.buildDirectory.get()
 
 repositories {
     mavenLocal()
@@ -205,8 +206,8 @@ test {
     reports {
         html.required.set(true)
         junitXml.required.set(true)
-        html.outputLocation.set(file("$buildDir/unit-test-results"))
-        junitXml.outputLocation.set(file("$buildDir/unit-test-results"))
+        html.outputLocation.set(file("$buildDirectory/unit-test-results"))
+        junitXml.outputLocation.set(file("$buildDirectory/unit-test-results"))
     }
 }
 
