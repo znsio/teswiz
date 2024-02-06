@@ -32,7 +32,7 @@ public class UserPersonaDetails {
     private void replaceLogFileNameFor(String userPersona, String newUserPersona) {
         Platform currentPlatform = platforms.get(keyForCurrentThread(newUserPersona));
         String currentKey = getKeyNameForDeviceLogs(userPersona, currentPlatform.name());
-        if(currentPlatform.equals(Platform.web)) {
+        if(currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.electron)) {
             currentKey = getKeyNameForBrowserLogs(userPersona, currentPlatform.name(),
                                                   Drivers.getBrowserNameForUser(newUserPersona));
         }
@@ -41,7 +41,7 @@ public class UserPersonaDetails {
                 currentKey);
 
         String newKey = getKeyNameForDeviceLogs(newUserPersona, currentPlatform.name());
-        if(currentPlatform.equals(Platform.web)) {
+        if(currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.electron)) {
             newKey = getKeyNameForBrowserLogs(newUserPersona, currentPlatform.name(),
                                                   Drivers.getBrowserNameForUser(newUserPersona));
         }
@@ -231,5 +231,4 @@ public class UserPersonaDetails {
     Map<String, Driver> getAllAssignedUserPersonasAndDrivers() {
         return drivers;
     }
-
 }

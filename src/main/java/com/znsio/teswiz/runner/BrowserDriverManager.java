@@ -213,7 +213,7 @@ class BrowserDriverManager {
 
         String browserVersion = getOverriddenStringValue(BROWSER_VERSION,
                 chromeConfiguration.getString("browserVersion"));
-        if (Runner.getPlatform().equals(Platform.web) && !browserVersion.equalsIgnoreCase("latest")) {
+        if ((Runner.getPlatform().equals(Platform.web) || Runner.getPlatform().equals(Platform.electron)) && !browserVersion.equalsIgnoreCase("latest")) {
             chromeOptions.setBrowserVersion(browserVersion);
         }
 
@@ -473,7 +473,8 @@ class BrowserDriverManager {
         LOGGER.info(logMessage);
         ReportPortalLogger.logDebugMessage(logMessage);
         System.setProperty("webdriver." + browserType + ".logfile", logFile);
-        addBrowserLogFileNameFor(forUserPersona, Platform.web.name(), browserType, logFile);
+        Platform plaform = Runner.getPlatform();
+        addBrowserLogFileNameFor(forUserPersona, plaform.name(), browserType, logFile);
     }
 
     private static void addBrowserLogFileNameFor(String userPersona, String forPlatform,
@@ -521,7 +522,8 @@ class BrowserDriverManager {
                                @NotNull
                                Driver driver) {
         String browserNameForUser = Drivers.getBrowserNameForUser(userPersona);
-        String logFileName = getBrowserLogFileNameFor(userPersona, Platform.web.name(),
+        String platformName = Runner.getPlatform().name();
+        String logFileName = getBrowserLogFileNameFor(userPersona, platformName,
                 browserNameForUser);
         --numberOfWebDriversUsed;
         LOGGER.info(String.format("Reduced numberOfWebDriversUsed: %d", numberOfWebDriversUsed));
