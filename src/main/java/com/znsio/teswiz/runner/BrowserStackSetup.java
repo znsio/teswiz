@@ -114,6 +114,7 @@ class BrowserStackSetup {
             startBrowserStackLocal(authenticationKey, browserStackLocalIdentifier);
             browserstackOptions.put(ACCEPT_INSECURE_CERTS, "true");
             browserstackOptions.put("local", "true");
+            browserstackOptions.put("localIdentifier", browserStackLocalIdentifier);
         }
         capabilities.setCapability("bstack:options", browserstackOptions);
 
@@ -146,6 +147,7 @@ class BrowserStackSetup {
         bsLocalArgs.put("localIdentifier", id);
         bsLocalArgs.put("forcelocal", "true");
         bsLocalArgs.put("verbose", "3");
+        bsLocalArgs.put("force", "true");
         try {
             LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
             if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_PROXY)) {

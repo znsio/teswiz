@@ -2,19 +2,19 @@ import java.text.SimpleDateFormat
 
 buildscript {
     ext {
-        gradleVersion = "8.5"
-        assertJVersion = "3.25.2"
+        gradleVersion = "8.6"
+        assertJVersion = "3.25.3"
         atdVersion = "revertDeviceFarmUrl-SNAPSHOT" // revertDeviceFarmUrl branch (70c9e51052)
         applitoolsAppiumVersion = "5.66.6"
         commonsLang3Version = "3.14.0"
         commonsRngSimpleVersion = "1.5"
         unirestVersion = "3.14.5"
         jadbVersion = "1.2.1"
-        junitVersion = "5.10.1"
+        junitVersion = "5.10.2"
         fasterxmlJacksonVersion = "2.16.1"
-        jodaTimeVersion = "2.12.6"
+        jodaTimeVersion = "2.12.7"
         masterThoughtVersion = "5.7.8"
-        browserStackLocalVersion = "1.1.0"
+        browserStackLocalVersion = "1.1.1"
         jetbrainsAnnotationsVersion = "24.1.0"
         aspectJVersion = "1.9.20.1"
         webDriverManager = '5.6.3'
@@ -202,11 +202,13 @@ test {
     if (System.getProperty('debug', 'false') == 'true') {
         jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
     }
+    def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
+    println "Using LOG_DIR: $logDirectory"
     reports {
         html.required.set(true)
         junitXml.required.set(true)
-        html.outputLocation.set(file("$buildDir/unit-test-results"))
-        junitXml.outputLocation.set(file("$buildDir/unit-test-results"))
+        html.outputLocation.set(file("$logDirectory/unit-test-results"))
+        junitXml.outputLocation.set(file("$logDirectory/unit-test-results"))
     }
 }
 
