@@ -114,6 +114,7 @@ class BrowserStackSetup {
             startBrowserStackLocal(authenticationKey, browserStackLocalIdentifier);
             browserstackOptions.put(ACCEPT_INSECURE_CERTS, "true");
             browserstackOptions.put("local", "true");
+            browserstackOptions.put("localIdentifier", browserStackLocalIdentifier);
         }
         capabilities.setCapability("bstack:options", browserstackOptions);
 
