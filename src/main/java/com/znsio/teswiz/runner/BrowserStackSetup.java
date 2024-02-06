@@ -147,6 +147,7 @@ class BrowserStackSetup {
         bsLocalArgs.put("localIdentifier", id);
         bsLocalArgs.put("forcelocal", "true");
         bsLocalArgs.put("verbose", "3");
+        bsLocalArgs.put("force", "true");
         try {
             LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
             if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_PROXY)) {
