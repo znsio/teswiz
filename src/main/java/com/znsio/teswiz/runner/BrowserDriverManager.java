@@ -213,7 +213,7 @@ class BrowserDriverManager {
 
         String browserVersion = getOverriddenStringValue(BROWSER_VERSION,
                 chromeConfiguration.getString("browserVersion"));
-        if (Runner.getPlatform().equals(Platform.web) && !browserVersion.equalsIgnoreCase("latest")) {
+        if ((Runner.getPlatform().equals(Platform.web) || Runner.getPlatform().equals(Platform.electron)) && !browserVersion.equalsIgnoreCase("latest")) {
             chromeOptions.setBrowserVersion(browserVersion);
         }
 
@@ -522,7 +522,8 @@ class BrowserDriverManager {
                                @NotNull
                                Driver driver) {
         String browserNameForUser = Drivers.getBrowserNameForUser(userPersona);
-        String logFileName = getBrowserLogFileNameFor(userPersona, Platform.web.name(),
+        String platformName = Runner.getPlatform().name();
+        String logFileName = getBrowserLogFileNameFor(userPersona, platformName,
                 browserNameForUser);
         --numberOfWebDriversUsed;
         LOGGER.info(String.format("Reduced numberOfWebDriversUsed: %d", numberOfWebDriversUsed));
