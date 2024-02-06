@@ -87,7 +87,7 @@ class BrowserStackSetup {
     static MutableCapabilities updateBrowserStackCapabilities(MutableCapabilities capabilities) {
 
         String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
-        String platformName = Runner.getPlatform().name();
+        String platformName = Platform.web.name();
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
