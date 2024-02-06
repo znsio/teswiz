@@ -33,7 +33,6 @@ plugins {
 
 group = 'com.github.znsio'
 version '0.0.91'
-def buildDirectory=rootProject.layout.buildDirectory.get()
 
 repositories {
     mavenLocal()
@@ -203,11 +202,13 @@ test {
     if (System.getProperty('debug', 'false') == 'true') {
         jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
     }
+    def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
+    println "Using LOG_DIR: $logDirectory"
     reports {
         html.required.set(true)
         junitXml.required.set(true)
-        html.outputLocation.set(file("$buildDirectory/unit-test-results"))
-        junitXml.outputLocation.set(file("$buildDirectory/unit-test-results"))
+        html.outputLocation.set(file("$logDirectory/unit-test-results"))
+        junitXml.outputLocation.set(file("$logDirectory/unit-test-results"))
     }
 }
 
