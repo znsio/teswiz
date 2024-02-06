@@ -231,5 +231,4 @@ public class UserPersonaDetails {
     Map<String, Driver> getAllAssignedUserPersonasAndDrivers() {
         return drivers;
     }
-
 }
