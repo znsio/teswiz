@@ -78,4 +78,9 @@ public class CalculatorSteps {
             waitFor(10);
         }
     }
+
+    @Then("I switch back to the calculator")
+    public void iSwitchBackToTheCalculator() {
+        new CalculatorBL().switchBackToCalculator();
+    }
 }

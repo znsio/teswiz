@@ -4,8 +4,10 @@ import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
+import com.znsio.teswiz.screen.ScreenShotScreen;
 import com.znsio.teswiz.screen.calculator.CalculatorScreen;
 import com.znsio.teswiz.screen.calculator.NewCalculatorScreen;
+import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
@@ -62,4 +64,13 @@ public class CalculatorBL {
         NewCalculatorScreen.get().pressOperation(operation);
         return this;
     }
+
+    public CalculatorBL switchBackToCalculator() {
+        LOGGER.info("Restart calculator");
+        String[] packageName = new String[] {"adb shell am start com.android2.calculator3/com.android2.calculator3.Calculator"};
+        CommandLineExecutor.execCommand(packageName);
+        ScreenShotScreen.get().takeScreenshot();
+        return this;
+    }
+
 }

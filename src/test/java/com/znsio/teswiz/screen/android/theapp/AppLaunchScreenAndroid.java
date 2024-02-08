@@ -6,6 +6,7 @@ import com.znsio.teswiz.screen.theapp.AppLaunchScreen;
 import com.znsio.teswiz.screen.theapp.ClipboardDemoScreen;
 import com.znsio.teswiz.screen.theapp.EchoScreen;
 import com.znsio.teswiz.screen.theapp.LoginScreen;
+import io.appium.java_client.AppiumBy;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.openqa.selenium.By;
@@ -21,7 +22,7 @@ public class AppLaunchScreenAndroid
     private final Driver driver;
     private final Visual visually;
     private final String byClipboardDemoAccessibilityId = "Clipboard Demo";
-    private final String loginScreenAccessibilityId = "Login Screen";
+    private final By byLoginScreenAccessibilityId = AppiumBy.accessibilityId("Login Screen");
 
     public AppLaunchScreenAndroid(Driver driver, Visual visually) {
         this.driver = driver;
@@ -30,7 +31,7 @@ public class AppLaunchScreenAndroid
 
     @Override
     public LoginScreen selectLogin() {
-        driver.findElementByAccessibilityId(loginScreenAccessibilityId).click();
+        driver.findElement(byLoginScreenAccessibilityId).click();
         return LoginScreen.get();
     }
 

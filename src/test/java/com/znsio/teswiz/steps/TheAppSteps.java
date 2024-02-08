@@ -162,8 +162,24 @@ public class TheAppSteps {
         new AppBL(userPersona, currentPlatform).provideInvalidDetailsForSignup(username, password);
     }
 
+
+    @And("I login to the switched TheApp with invalid credentials - {string}, {string}")
+    public void loginToTheSwitchedTheAppWithInvalidCredentials(String username, String password) {
+        new AppBL().provideInvalidDetailsForSignup(username, password);
+    }
+
     @When("{string} changed to {string}")
     public void changedTo(String oldUserPersona, String newUserPersona) {
         Drivers.assignNewPersonaToExistingDriver(oldUserPersona,newUserPersona,context);
+    }
+
+    @When("I switch to theapp")
+    public void iSwitchToTheapp() {
+        new AppBL().stopTheAppAndLaunchItAgain();
+    }
+
+    @And("I force stop theapp")
+    public void iForceStopTheapp() {
+        new AppBL().forceStopTheApp();
     }
 }
