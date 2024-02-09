@@ -1,7 +1,11 @@
 package com.znsio.teswiz.runner;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
+import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
@@ -79,57 +83,44 @@ class LocalDevicesSetup {
         return adbCommandOutput;
     }
 
-    private static List<String> getBootedIOSSimulators()  {
-        List<String> bootedSimulators = getListOfSimulators();
-        if (bootedSimulators.isEmpty()) {
-            throw new EnvironmentSetupException("Failed to fetch iOS Simulators");
-        }
-        return bootedSimulators;
+    private static int getBootedIOSSimulators()  {
+        String[] xcrunCommand = {"xcrun simctl list devices | grep Booted"};
+        return getListOfIOSDevices(xcrunCommand, false);
     }
 
-    private static List<String> getListOfSimulators() {
-        List<String> bootedSimulators = new ArrayList<>();
-        try {
-            ProcessBuilder processBuilder = new ProcessBuilder("xcrun", "simctl", "list", "devices");
-            processBuilder.redirectErrorStream(true); // Merge error and input streams
-
-            Process process = processBuilder.start();
-            readOutputOfXCRunCommand(process, bootedSimulators);
-
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                throw new EnvironmentSetupException(String.format("Failed to fetch iOS Simulators. Exit code: %d", exitCode));
-            }
-
-            return bootedSimulators;
-        } catch (IOException | InterruptedException e) {
-            throw new EnvironmentSetupException("No simulators detected to run the tests", e);
-        }
+    private static int getConnectedIOSDevices()  {
+        String[] xcrunCommand = {"ios", "list"};
+        return getListOfIOSDevices(xcrunCommand, true);
     }
 
-    private static void readOutputOfXCRunCommand(Process process, List<String> bootedSimulators) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Matcher matcher = Pattern.compile("(.*)Booted").matcher(line);
-                if (matcher.find()) {
-                    bootedSimulators.add(matcher.group(1));
-                }
-            }
+    private static int getListOfIOSDevices(String[] xcrunCommand, boolean isReal) {
+        int numberOfDevices = 0;
+        CommandLineResponse commandLineResponse = CommandLineExecutor.execCommand(xcrunCommand);
+        String commandOutput = commandLineResponse.getStdOut();
+        if (isReal) {
+            JsonObject asJsonObject = JsonParser.parseString(commandOutput).getAsJsonObject();
+            JsonArray deviceList = asJsonObject.get("deviceList").getAsJsonArray();
+            numberOfDevices = deviceList.size();
+            LOGGER.info("Number of real devices: %d".formatted(numberOfDevices));
+            LOGGER.debug(deviceList);
+        } else  {
+            numberOfDevices = commandOutput.split("\n").length;
+            LOGGER.info("Number of simulators: %d".formatted(numberOfDevices));
         }
+        return numberOfDevices;
     }
-
 
     static void setupLocalIOSExecution() {
-        int numberOfDevicesForParallelExecution = getBootedIOSSimulators().size();
-        if (numberOfDevicesForParallelExecution == 0) {
+        int numberOfRealDevicesForParallelExecution = getConnectedIOSDevices();
+        int numberOfSimulatorsForParallelExecution = getBootedIOSSimulators();
+        if ((numberOfSimulatorsForParallelExecution + numberOfRealDevicesForParallelExecution) == 0) {
             throw new EnvironmentSetupException("No devices available to run the tests");
         }
         Integer providedParallelCount = Setup.getIntegerValueFromConfigs(PARALLEL);
-        if (numberOfDevicesForParallelExecution < providedParallelCount) {
+        if (numberOfSimulatorsForParallelExecution < providedParallelCount) {
             throw new EnvironmentSetupException(String.format(
                     "Fewer devices (%d) available to run the tests in parallel (Expected more " + "than: %d)",
-                    numberOfDevicesForParallelExecution, providedParallelCount));
+                    numberOfSimulatorsForParallelExecution, providedParallelCount));
         }
         Setup.addIntegerValueToConfigs(PARALLEL, providedParallelCount);
         Setup.addToConfigs(EXECUTED_ON, "Local Devices");
