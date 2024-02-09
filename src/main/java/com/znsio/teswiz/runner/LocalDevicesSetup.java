@@ -101,11 +101,11 @@ class LocalDevicesSetup {
             JsonObject asJsonObject = JsonParser.parseString(commandOutput).getAsJsonObject();
             JsonArray deviceList = asJsonObject.get("deviceList").getAsJsonArray();
             numberOfDevices = deviceList.size();
-            LOGGER.info(String.format("Number of real devices: %d", numberOfDevices));
+            LOGGER.info(String.format("Number of iOS real devices: %d", numberOfDevices));
             LOGGER.debug(deviceList);
         } else {
             numberOfDevices = commandOutput.split("\n").length;
-            LOGGER.info(String.format("Number of simulators: %d", numberOfDevices));
+            LOGGER.info(String.format("Number of iOS simulators: %d", numberOfDevices));
         }
         return numberOfDevices;
     }
