@@ -39,11 +39,11 @@ class LocalDevicesSetup {
 
     static void setupLocalExecution() {
         int numberOfDevicesForParallelExecution = setupLocalDevices().size();
-        if(numberOfDevicesForParallelExecution == 0) {
+        if (numberOfDevicesForParallelExecution == 0) {
             throw new EnvironmentSetupException("No devices available to run the tests");
         }
         Integer providedParallelCount = Setup.getIntegerValueFromConfigs(PARALLEL);
-        if(numberOfDevicesForParallelExecution < providedParallelCount) {
+        if (numberOfDevicesForParallelExecution < providedParallelCount) {
             throw new EnvironmentSetupException(String.format(
                     "Fewer devices (%d) available to run the tests in parallel (Expected more " + "than: %d)",
                     numberOfDevicesForParallelExecution, providedParallelCount));
@@ -74,21 +74,21 @@ class LocalDevicesSetup {
     @NotNull
     private static String getAdbCommandOutputFromLocalDevice(JadbDevice device, String command,
                                                              String args) throws IOException,
-                                                                                 JadbException {
+            JadbException {
         InputStream inputStream = device.executeShell(command, args);
         LOGGER.info("\tadb command: '" + command + "', args: '" + args + "', ");
         String adbCommandOutput = Stream.readAll(inputStream, StandardCharsets.UTF_8)
-                                        .replaceAll("\n$", "");
+                .replaceAll("\n$", "");
         LOGGER.info("\tOutput: " + adbCommandOutput);
         return adbCommandOutput;
     }
 
-    private static int getBootedIOSSimulators()  {
+    private static int getBootedIOSSimulators() {
         String[] xcrunCommand = {"xcrun simctl list devices | grep Booted"};
         return getListOfIOSDevices(xcrunCommand, false);
     }
 
-    private static int getConnectedIOSDevices()  {
+    private static int getConnectedIOSDevices() {
         String[] xcrunCommand = {"ios", "list"};
         return getListOfIOSDevices(xcrunCommand, true);
     }
@@ -101,11 +101,11 @@ class LocalDevicesSetup {
             JsonObject asJsonObject = JsonParser.parseString(commandOutput).getAsJsonObject();
             JsonArray deviceList = asJsonObject.get("deviceList").getAsJsonArray();
             numberOfDevices = deviceList.size();
-            LOGGER.info("Number of real devices: %d".formatted(numberOfDevices));
+            LOGGER.info(String.format("Number of real devices: %d", numberOfDevices));
             LOGGER.debug(deviceList);
-        } else  {
+        } else {
             numberOfDevices = commandOutput.split("\n").length;
-            LOGGER.info("Number of simulators: %d".formatted(numberOfDevices));
+            LOGGER.info(String.format("Number of simulators: %d", numberOfDevices));
         }
         return numberOfDevices;
     }
