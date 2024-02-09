@@ -11,6 +11,10 @@
 ## Latest successful build id:
 [![Latest Commit](https://img.shields.io/badge/commit-a540e3a7c8-blue.svg)](https://jitpack.io/#znsio/teswiz)
 
+# NOTE
+  
+    Use appium-device-farm v8.4.7-rc.8 or later
+
 # To Build
 `./gradlew clean build`
 
