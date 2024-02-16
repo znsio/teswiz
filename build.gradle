@@ -16,7 +16,7 @@ buildscript {
         masterThoughtVersion = "5.7.8"
         browserStackLocalVersion = "1.1.1"
         jetbrainsAnnotationsVersion = "24.1.0"
-        aspectJVersion = "1.9.20.1"
+        aspectJVersion = "1.9.21.1"
         webDriverManager = '5.6.3'
         specmaticVersion = '1.0.4'
     }
