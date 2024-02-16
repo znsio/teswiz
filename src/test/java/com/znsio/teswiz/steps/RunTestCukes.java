@@ -7,7 +7,9 @@ import com.applitools.eyes.visualgrid.model.ScreenOrientation;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.APPLITOOLS;
+import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
+import com.znsio.teswiz.runner.Runner;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
@@ -43,12 +45,14 @@ public class RunTestCukes
         LOGGER.info(String.format("RunTestCukes: ThreadId: %d: in overridden beforeTestScenario%n",
                                   Thread.currentThread().getId()));
         new Hooks().beforeScenario(scenario);
-        Configuration ufgConfig = new Configuration();
-        ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
-        ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
-        ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
-        ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
-        context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
+        if (Runner.getPlatform().equals(Platform.web)) {
+            Configuration ufgConfig = new Configuration();
+            ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
+            ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
+            ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
+            ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
+            context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
+        }
     }
 
     @After
