@@ -5,7 +5,7 @@ buildscript {
         gradleVersion = "8.6"
         assertJVersion = "3.25.3"
         atdVersion = "b313941325" // ATD main branch
-        applitoolsAppiumVersion = "5.66.7"
+        applitoolsAppiumVersion = "5.66.8"
         commonsLang3Version = "3.14.0"
         commonsRngSimpleVersion = "1.5"
         unirestVersion = "3.14.5"
@@ -16,7 +16,7 @@ buildscript {
         masterThoughtVersion = "5.7.8"
         browserStackLocalVersion = "1.1.1"
         jetbrainsAnnotationsVersion = "24.1.0"
-        aspectJVersion = "1.9.20.1"
+        aspectJVersion = "1.9.21.1"
         webDriverManager = '5.6.3'
         specmaticVersion = '1.0.4'
     }
@@ -28,7 +28,7 @@ plugins {
     id "idea"
     id "com.github.johnrengelman.shadow" version '8.1.1'
     id "maven-publish"
-    id "io.freefair.aspectj.post-compile-weaving" version "8.4"
+    id "io.freefair.aspectj.post-compile-weaving" version "8.6"
 }
 
 group = 'com.github.znsio'

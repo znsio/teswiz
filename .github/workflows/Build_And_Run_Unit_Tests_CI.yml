@@ -26,9 +26,9 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
       - name: Build with Gradle and run unit tests
-        uses: gradle/gradle-build-action@0706ab3a3c20483a3f37c3d9de1b0d95297e3743
+        uses: gradle/gradle-build-action@585b565652cefbba63202a7f927df0ff99f34001
         with:
-          arguments: build --refresh-dependencies
+          arguments: clean build --refresh-dependencies
       - name: Get Latest Commit ID and save in GITHUB_ENV
         run: |
           echo "COMMIT_ID=$(git rev-parse HEAD | head -c 10)" >> "$GITHUB_ENV"
