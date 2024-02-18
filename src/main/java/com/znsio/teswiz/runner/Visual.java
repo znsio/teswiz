@@ -286,7 +286,7 @@ public class Visual {
                 ufgConfig = (Configuration) context.getTestState(APPLITOOLS.UFG_CONFIG);
                 LOGGER.info(String.format("Using UFG_CONFIG provided by test: %s", ufgConfig));
             } else {
-                ufgConfig = defaultApplitoolsUFGConfig(ufgConfig);
+                ufgConfig = defaultApplitoolsUFGConfig();
                 LOGGER.info(String.format("UFG_CONFIG NOT provided by test. Using default UFG_CONFIG: %s", ufgConfig));
             }
             List<RenderBrowserInfo> browsersInfo = ufgConfig.getBrowsersInfo();
@@ -336,26 +336,22 @@ public class Visual {
     }
 
     @NotNull
-    private Configuration defaultApplitoolsUFGConfig(Configuration ufgConfig) {
-        String applitoolsUFGConfigMessage = "Using browser & device configuration provided for " +
-                                            "Applitools Ultrafast Grid";
-        if(null == ufgConfig) {
-            applitoolsUFGConfigMessage = "Using default browser & device configuration for " +
+    private Configuration defaultApplitoolsUFGConfig() {
+        String applitoolsUFGConfigMessage = "Using default browser & device configuration for " +
                                          "Applitools Ultrafast Grid: ";
-            ufgConfig = new Configuration();
-            ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
-            ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
-            ufgConfig.addBrowser(1024, 1024, BrowserType.SAFARI);
-            ufgConfig.addBrowser(1024, 1024, BrowserType.EDGE_CHROMIUM);
-            ufgConfig.addBrowser(1600, 1200, BrowserType.CHROME);
-            ufgConfig.addBrowser(1600, 1200, BrowserType.FIREFOX);
-            ufgConfig.addBrowser(1600, 1200, BrowserType.SAFARI);
-            ufgConfig.addBrowser(1600, 1200, BrowserType.EDGE_CHROMIUM);
-            ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
-            ufgConfig.addDeviceEmulation(DeviceName.iPad_Pro, ScreenOrientation.LANDSCAPE);
-            ufgConfig.addDeviceEmulation(DeviceName.Nexus_5X, ScreenOrientation.PORTRAIT);
-            ufgConfig.addDeviceEmulation(DeviceName.Nexus_6P, ScreenOrientation.LANDSCAPE);
-        }
+        Configuration ufgConfig = new Configuration();
+        ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
+        ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
+        ufgConfig.addBrowser(1024, 1024, BrowserType.SAFARI);
+        ufgConfig.addBrowser(1024, 1024, BrowserType.EDGE_CHROMIUM);
+        ufgConfig.addBrowser(1600, 1200, BrowserType.CHROME);
+        ufgConfig.addBrowser(1600, 1200, BrowserType.FIREFOX);
+        ufgConfig.addBrowser(1600, 1200, BrowserType.SAFARI);
+        ufgConfig.addBrowser(1600, 1200, BrowserType.EDGE_CHROMIUM);
+        ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
+        ufgConfig.addDeviceEmulation(DeviceName.iPad_Pro, ScreenOrientation.LANDSCAPE);
+        ufgConfig.addDeviceEmulation(DeviceName.Nexus_5X, ScreenOrientation.PORTRAIT);
+        ufgConfig.addDeviceEmulation(DeviceName.Nexus_6P, ScreenOrientation.LANDSCAPE);
         LOGGER.info(applitoolsUFGConfigMessage);
         ReportPortalLogger.logDebugMessage(applitoolsUFGConfigMessage + ufgConfig);
         return ufgConfig;
