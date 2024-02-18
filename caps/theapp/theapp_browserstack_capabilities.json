@@ -15,7 +15,7 @@
     "device": "Samsung",
     "launchTimeout": 90000,
     "newCommandTimeout": 300,
-    "noReset": true,
+    "fullReset": true,
     "noSign": true,
     "os_version": "12",
     "platformName": "Android",
