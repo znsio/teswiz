@@ -281,8 +281,14 @@ public class Visual {
 
     private void addBrowserAndDeviceConfigForUFG(boolean isUFG, Configuration configuration) {
         if(isUFG) {
-            Configuration ufgConfig = (Configuration) context.getTestState(APPLITOOLS.UFG_CONFIG);
-            ufgConfig = defaultApplitoolsUFGConfig(ufgConfig);
+            Configuration ufgConfig = null;
+            if (null != context.getTestState(APPLITOOLS.UFG_CONFIG)) {
+                ufgConfig = (Configuration) context.getTestState(APPLITOOLS.UFG_CONFIG);
+                LOGGER.info(String.format("Using UFG_CONFIG provided by test: %s", ufgConfig));
+            } else {
+                ufgConfig = defaultApplitoolsUFGConfig(ufgConfig);
+                LOGGER.info(String.format("UFG_CONFIG NOT provided by test. Using default UFG_CONFIG: %s", ufgConfig));
+            }
             List<RenderBrowserInfo> browsersInfo = ufgConfig.getBrowsersInfo();
             browsersInfo.forEach(configuration::addBrowser);
         }
