@@ -235,7 +235,7 @@ class DeviceSetup {
         String deviceLabURL;
         switch (cloudName.toLowerCase()) {
             case "headspin":
-                deviceLabURL = getCloudUrlFromCapabilities();
+                deviceLabURL = getCloudApiUrlFromCapabilities();
                 HeadSpinSetup.updateHeadspinCapabilities(deviceLabURL);
                 break;
             case "pcloudy":

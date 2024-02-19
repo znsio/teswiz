@@ -3,6 +3,7 @@
     "automationName": "UiAutomator2",
     "appPackage": "com.appiumpro.the_app",
     "appActivity": "com.appiumpro.the_app.MainActivity",
+    "device": "Samsung",
     "platformVersion": "10",
     "platformName": "Android",
     "autoGrantPermissions": true,
@@ -12,6 +13,8 @@
     "resetKeyboard": true,
     "noReset": true,
     "autoAcceptAlerts": true,
+    "headspin:capture.video": true,
+    "headspin:appiumVersion": "2.0.0",
     "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk"
   },
   "serverConfig" : {
@@ -24,8 +27,8 @@
           "skipChromeDownload": true,
           "cloud": {
             "cloudName": "headspin",
-            "url": "appium-dev.headspin.io/v0/",
-            "apiUrl": "appium-dev.headspin.io/v0/",
+            "url": "https://appium-dev.headspin.io:443/v0/token/wd/hub",
+            "apiUrl": "api-dev.headspin.io/v1",
             "devices": [
             ]
           }
