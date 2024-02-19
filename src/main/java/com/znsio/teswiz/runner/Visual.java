@@ -181,7 +181,9 @@ public class Visual {
         com.applitools.eyes.selenium.Eyes webEyes = new com.applitools.eyes.selenium.Eyes(
                 seleniumEyesRunner);
         Configuration configuration = webEyes.getConfiguration();
-        addBrowserAndDeviceConfigForUFG(isUFG, configuration);
+        if (isUFG) {
+            configuration.setBrowsersInfo(addBrowserAndDeviceConfigForUFG(isUFG, configuration));
+        }
         configuration.setServerUrl(
                 getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         configuration.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
@@ -276,18 +278,15 @@ public class Visual {
                                          : convertValueFromConfigToInt(valueFromConfig);
     }
 
-    private void addBrowserAndDeviceConfigForUFG(boolean isUFG, Configuration configuration) {
-        if(isUFG) {
-            Configuration ufgConfig = null;
-            if (null != context.getTestState(APPLITOOLS.UFG_CONFIG)) {
-                ufgConfig = (Configuration) context.getTestState(APPLITOOLS.UFG_CONFIG);
-                LOGGER.info(String.format("Using UFG_CONFIG provided by test: %s", ufgConfig.getBrowsersInfo()));
-            } else {
-                ufgConfig = defaultApplitoolsUFGConfig(configuration);
-                List<RenderBrowserInfo> browsersInfo = ufgConfig.getBrowsersInfo();
-                browsersInfo.forEach(configuration::addBrowser);
-                LOGGER.info(String.format("UFG_CONFIG NOT provided by test. Using default UFG_CONFIG: %s", ufgConfig.getBrowsersInfo()));
-            }
+    private List<RenderBrowserInfo> addBrowserAndDeviceConfigForUFG(boolean isUFG, Configuration ufgConfig) {
+        if (null != context.getTestState(APPLITOOLS.UFG_CONFIG)) {
+            ufgConfig = (Configuration) context.getTestState(APPLITOOLS.UFG_CONFIG);
+            LOGGER.info(String.format("Using Browsers and devices in UFG_CONFIG provided by test: %s", ufgConfig.getBrowsersInfo()));
+            return ufgConfig.getBrowsersInfo();
+        } else {
+            List<RenderBrowserInfo> defaultBrowserInfo = defaultApplitoolsUFGConfig();
+            LOGGER.info(String.format("UFG_CONFIG NOT provided by test. Using default Browsers and devices in UFG_CONFIG: %s", defaultBrowserInfo));
+            return defaultBrowserInfo;
         }
     }
 
@@ -332,8 +331,8 @@ public class Visual {
         }
     }
 
-    @NotNull
-    private Configuration defaultApplitoolsUFGConfig(Configuration ufgConfig) {
+    private List<RenderBrowserInfo> defaultApplitoolsUFGConfig() {
+        Configuration ufgConfig = new Configuration();
         String applitoolsUFGConfigMessage = "Using default browser & device configuration for " +
                                          "Applitools Ultrafast Grid: ";
         ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
@@ -349,8 +348,8 @@ public class Visual {
         ufgConfig.addDeviceEmulation(DeviceName.Nexus_5X, ScreenOrientation.PORTRAIT);
         ufgConfig.addDeviceEmulation(DeviceName.Nexus_6P, ScreenOrientation.LANDSCAPE);
         LOGGER.info(applitoolsUFGConfigMessage);
-        ReportPortalLogger.logDebugMessage(applitoolsUFGConfigMessage + ufgConfig);
-        return ufgConfig;
+        ReportPortalLogger.logDebugMessage(applitoolsUFGConfigMessage + ufgConfig.getBrowsersInfo());
+        return ufgConfig.getBrowsersInfo();
     }
 
     public Visual checkWindow(String fromScreen, String tag) {

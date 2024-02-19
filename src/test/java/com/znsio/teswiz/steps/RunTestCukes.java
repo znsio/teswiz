@@ -50,6 +50,7 @@ public class RunTestCukes
         ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
         ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
         ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
+        LOGGER.info("Use the following Browsers and devices in UFG config: " + ufgConfig.getBrowsersInfo());
         context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
     }
 
