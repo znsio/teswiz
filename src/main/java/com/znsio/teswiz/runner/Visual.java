@@ -30,7 +30,6 @@ import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.awt.Toolkit;
 import java.io.File;
@@ -39,7 +38,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.znsio.teswiz.runner.Runner.*;
 
@@ -183,6 +181,7 @@ public class Visual {
         com.applitools.eyes.selenium.Eyes webEyes = new com.applitools.eyes.selenium.Eyes(
                 seleniumEyesRunner);
         Configuration configuration = webEyes.getConfiguration();
+        addBrowserAndDeviceConfigForUFG(isUFG, configuration);
         configuration.setServerUrl(
                 getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         configuration.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
@@ -204,8 +203,6 @@ public class Visual {
                 getValueFromConfig(APPLITOOLS.TAKE_FULL_PAGE_SCREENSHOT, true));
         configuration.setSaveNewTests(
                 getValueFromConfig(APPLITOOLS.SAVE_NEW_TESTS_AS_BASELINE, true));
-
-        addBrowserAndDeviceConfigForUFG(isUFG, configuration);
 
         webEyes.setConfiguration(configuration);
 
@@ -286,11 +283,11 @@ public class Visual {
                 ufgConfig = (Configuration) context.getTestState(APPLITOOLS.UFG_CONFIG);
                 LOGGER.info(String.format("Using UFG_CONFIG provided by test: %s", ufgConfig));
             } else {
-                ufgConfig = defaultApplitoolsUFGConfig();
+                ufgConfig = defaultApplitoolsUFGConfig(configuration);
+                List<RenderBrowserInfo> browsersInfo = ufgConfig.getBrowsersInfo();
+                browsersInfo.forEach(configuration::addBrowser);
                 LOGGER.info(String.format("UFG_CONFIG NOT provided by test. Using default UFG_CONFIG: %s", ufgConfig));
             }
-            List<RenderBrowserInfo> browsersInfo = ufgConfig.getBrowsersInfo();
-            browsersInfo.forEach(configuration::addBrowser);
         }
     }
 
@@ -336,10 +333,9 @@ public class Visual {
     }
 
     @NotNull
-    private Configuration defaultApplitoolsUFGConfig() {
+    private Configuration defaultApplitoolsUFGConfig(Configuration ufgConfig) {
         String applitoolsUFGConfigMessage = "Using default browser & device configuration for " +
                                          "Applitools Ultrafast Grid: ";
-        Configuration ufgConfig = new Configuration();
         ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
         ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
         ufgConfig.addBrowser(1024, 1024, BrowserType.SAFARI);
