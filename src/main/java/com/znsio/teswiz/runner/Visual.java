@@ -281,12 +281,12 @@ public class Visual {
             Configuration ufgConfig = null;
             if (null != context.getTestState(APPLITOOLS.UFG_CONFIG)) {
                 ufgConfig = (Configuration) context.getTestState(APPLITOOLS.UFG_CONFIG);
-                LOGGER.info(String.format("Using UFG_CONFIG provided by test: %s", ufgConfig));
+                LOGGER.info(String.format("Using UFG_CONFIG provided by test: %s", ufgConfig.getBrowsersInfo()));
             } else {
                 ufgConfig = defaultApplitoolsUFGConfig(configuration);
                 List<RenderBrowserInfo> browsersInfo = ufgConfig.getBrowsersInfo();
                 browsersInfo.forEach(configuration::addBrowser);
-                LOGGER.info(String.format("UFG_CONFIG NOT provided by test. Using default UFG_CONFIG: %s", ufgConfig));
+                LOGGER.info(String.format("UFG_CONFIG NOT provided by test. Using default UFG_CONFIG: %s", ufgConfig.getBrowsersInfo()));
             }
         }
     }
