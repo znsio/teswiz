@@ -1,10 +1,21 @@
 package com.znsio.teswiz.runner;
 
-import com.applitools.eyes.*;
+import com.applitools.eyes.BatchInfo;
+import com.applitools.eyes.EyesException;
+import com.applitools.eyes.EyesRunner;
+import com.applitools.eyes.FileLogger;
+import com.applitools.eyes.MatchLevel;
+import com.applitools.eyes.ProxySettings;
+import com.applitools.eyes.RectangleSize;
+import com.applitools.eyes.TestResultContainer;
+import com.applitools.eyes.TestResults;
+import com.applitools.eyes.TestResultsStatus;
+import com.applitools.eyes.TestResultsSummary;
 import com.applitools.eyes.appium.AppiumCheckSettings;
 import com.applitools.eyes.selenium.BrowserType;
 import com.applitools.eyes.selenium.ClassicRunner;
 import com.applitools.eyes.selenium.Configuration;
+import com.applitools.eyes.selenium.Eyes;
 import com.applitools.eyes.selenium.StitchMode;
 import com.applitools.eyes.selenium.fluent.SeleniumCheckSettings;
 import com.applitools.eyes.selenium.fluent.Target;
@@ -108,39 +119,12 @@ public class Visual {
                                   isVisualTestingEnabled));
         com.applitools.eyes.appium.Eyes appEyes = new com.applitools.eyes.appium.Eyes();
 
-        appEyes.setServerUrl(
-                getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
-        appEyes.setApiKey(getApplitoolsAPIKey(isVisualTestingEnabled));
-        appEyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
-        appEyes.setBranchName(String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
-        appEyes.setEnvName(targetEnvironment);
-        appEyes.setMatchLevel(
-                (MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
-        appEyes.setIsDisabled(!isVisualTestingEnabled);
-        appEyes.setSaveNewTests(getValueFromConfig(APPLITOOLS.SAVE_NEW_TESTS_AS_BASELINE, true));
+        configureExecutionForApp(isVisualTestingEnabled, appEyes);
 
-        String applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
-        appEyes.setLogHandler(
-                new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
-
-        appEyes.setIgnoreCaret(true);
         appName = appName + "-" + platform;
-        appEyes.addProperty("USER_PERSONA", userPersona);
-        appEyes.addProperty("HOST_NAME", Runner.getHostName());
-        appEyes.addProperty(Setup.BRANCH_NAME,
-                            String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
-        appEyes.addProperty(Setup.PLATFORM, platform.name());
-        appEyes.addProperty(Setup.RUN_IN_CI, String.valueOf(getValueFromConfig(Setup.RUN_IN_CI)));
-        appEyes.addProperty(Setup.TARGET_ENVIRONMENT,
-                            String.valueOf(getValueFromConfig(Setup.TARGET_ENVIRONMENT)));
-        appEyes.addProperty("USER_NAME", USER_NAME);
-        appEyes.setIgnoreDisplacements(getValueFromConfig(APPLITOOLS.IGNORE_DISPLACEMENT, true));
+        addCustomPropertiesInAppTestExecution(platform, appEyes);
         try {
-            String proxyUrl = (String) applitoolsConfig.get(APPLITOOLS.PROXY_URL);
-            if (null != proxyUrl) {
-                LOGGER.info(String.format("Set proxyUrl for appEyes: %s", proxyUrl));
-                appEyes.setProxy(new ProxySettings(proxyUrl));
-            }
+            setProxyForAppExecution(appEyes);
             appEyes.open(innerDriver, appName, testName);
             LOGGER.info(String.format(
                     "instantiateAppiumEyes: Is Applitools Visual Testing enabled? - %s",
@@ -155,6 +139,43 @@ public class Visual {
         }
 
         return appEyes;
+    }
+
+    private void setProxyForAppExecution(com.applitools.eyes.appium.Eyes appEyes) {
+        String proxyUrl = (String) applitoolsConfig.get(APPLITOOLS.PROXY_URL);
+        if (null != proxyUrl) {
+            LOGGER.info(String.format("Set proxyUrl for appEyes: %s", proxyUrl));
+            appEyes.setProxy(new ProxySettings(proxyUrl));
+        }
+    }
+
+    private void configureExecutionForApp(boolean isVisualTestingEnabled, com.applitools.eyes.appium.Eyes appEyes) {
+        appEyes.setServerUrl(
+                getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
+        appEyes.setApiKey(getApplitoolsAPIKey(isVisualTestingEnabled));
+        appEyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
+        appEyes.setBranchName(String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
+        appEyes.setEnvName(targetEnvironment);
+        appEyes.setMatchLevel(
+                (MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
+        appEyes.setIsDisabled(!isVisualTestingEnabled);
+        appEyes.setSaveNewTests(getValueFromConfig(APPLITOOLS.SAVE_NEW_TESTS_AS_BASELINE, true));
+        appEyes.setIgnoreDisplacements(getValueFromConfig(APPLITOOLS.IGNORE_DISPLACEMENT, true));
+        appEyes.setIgnoreCaret(true);
+        String applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
+        appEyes.setLogHandler(new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
+    }
+
+    private void addCustomPropertiesInAppTestExecution(Platform platform, com.applitools.eyes.appium.Eyes appEyes) {
+        appEyes.addProperty("USER_PERSONA", userPersona);
+        appEyes.addProperty("HOST_NAME", Runner.getHostName());
+        appEyes.addProperty(Setup.BRANCH_NAME,
+                            String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
+        appEyes.addProperty(Setup.PLATFORM, platform.name());
+        appEyes.addProperty(Setup.RUN_IN_CI, String.valueOf(getValueFromConfig(Setup.RUN_IN_CI)));
+        appEyes.addProperty(Setup.TARGET_ENVIRONMENT,
+                            String.valueOf(getValueFromConfig(Setup.TARGET_ENVIRONMENT)));
+        appEyes.addProperty("USER_NAME", USER_NAME);
     }
 
     private String getApplitoolsAPIKey(boolean isVisualTestingEnabled) {
@@ -174,12 +195,68 @@ public class Visual {
                                   isVisualTestingEnabled));
         boolean isUFG = getValueFromConfig(APPLITOOLS.USE_UFG, false);
 
+        configureEyesRunnerForWeb(isUFG);
+        com.applitools.eyes.selenium.Eyes webEyes = new com.applitools.eyes.selenium.Eyes(seleniumEyesRunner);
+        Configuration configuration = configureUFGExecutionForWeb(isVisualTestingEnabled, webEyes, isUFG);
+
+        webEyes.setConfiguration(configuration);
+
+        applitoolsLogFileNameForWeb = getApplitoolsLogFileNameFor("web");
+        webEyes.setIsDisabled(!isVisualTestingEnabled);
+        webEyes.setLogHandler(new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
+
+        appName = appName + "-" + platform;
+        addCustomPropertiesInWebTestExecution(platform, webEyes);
+
+        RectangleSize setBrowserViewPortSize = getBrowserViewPortSize(driverType, innerDriver);
+        LOGGER.info(String.format("Using browser dimensions for Applitools: %s",
+                                  setBrowserViewPortSize));
+
+        try {
+            setProxyForWebExecution(webEyes);
+            webEyes.open(innerDriver, appName, testName, setBrowserViewPortSize);
+            LOGGER.info(String.format("instantiateWebEyes:  Is Applitools Visual Testing enabled? - %s", !webEyes.getIsDisabled()));
+        } catch(IllegalArgumentException | EyesException e) {
+            String message = String.format(
+                    "Exception in instantiating Applitools for Web: '%s', Closing Web-driver " +
+                    "instance",
+                    e.getMessage());
+            LOGGER.error(message);
+            innerDriver.quit();
+            throw new VisualTestSetupException(message, e);
+
+        }
+        return webEyes;
+    }
+
+    private void configureEyesRunnerForWeb(boolean isUFG) {
         int ufgConcurrency = getValueFromConfig(APPLITOOLS.CONCURRENCY, DEFAULT_UFG_CONCURRENCY);
         seleniumEyesRunner = isUFG ? new VisualGridRunner(ufgConcurrency) : new ClassicRunner();
         seleniumEyesRunner.setDontCloseBatches(true);
+    }
 
-        com.applitools.eyes.selenium.Eyes webEyes = new com.applitools.eyes.selenium.Eyes(
-                seleniumEyesRunner);
+    private void setProxyForWebExecution(Eyes webEyes) {
+        String proxyUrl = (String) applitoolsConfig.get(APPLITOOLS.PROXY_URL);
+        if (null != proxyUrl) {
+            LOGGER.info(String.format("Set proxyUrl for webEyes: %s", proxyUrl));
+            webEyes.setProxy(new ProxySettings(proxyUrl));
+        }
+    }
+
+    private void addCustomPropertiesInWebTestExecution(Platform platform, Eyes webEyes) {
+        webEyes.addProperty("USER_PERSONA", userPersona);
+        webEyes.addProperty("HOST_NAME", Runner.getHostName());
+        webEyes.addProperty(Setup.BRANCH_NAME,
+                            String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
+        webEyes.addProperty(Setup.PLATFORM, platform.name());
+        webEyes.addProperty(Setup.RUN_IN_CI, String.valueOf(getValueFromConfig(Setup.RUN_IN_CI)));
+        webEyes.addProperty(Setup.TARGET_ENVIRONMENT,
+                            String.valueOf(getValueFromConfig(Setup.TARGET_ENVIRONMENT)));
+        webEyes.addProperty("USER_NAME", USER_NAME);
+    }
+
+    @NotNull
+    private Configuration configureUFGExecutionForWeb(boolean isVisualTestingEnabled, Eyes webEyes, boolean isUFG) {
         Configuration configuration = webEyes.getConfiguration();
         if (isUFG) {
             configuration.setBrowsersInfo(addBrowserAndDeviceConfigForUFG(isUFG, configuration));
@@ -205,50 +282,7 @@ public class Visual {
                 getValueFromConfig(APPLITOOLS.TAKE_FULL_PAGE_SCREENSHOT, true));
         configuration.setSaveNewTests(
                 getValueFromConfig(APPLITOOLS.SAVE_NEW_TESTS_AS_BASELINE, true));
-
-        webEyes.setConfiguration(configuration);
-
-        applitoolsLogFileNameForWeb = getApplitoolsLogFileNameFor("web");
-        webEyes.setIsDisabled(!isVisualTestingEnabled);
-        webEyes.setLogHandler(
-                new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
-
-        appName = appName + "-" + platform;
-        webEyes.addProperty("USER_PERSONA", userPersona);
-        webEyes.addProperty("HOST_NAME", Runner.getHostName());
-        webEyes.addProperty(Setup.BRANCH_NAME,
-                            String.valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
-        webEyes.addProperty(Setup.PLATFORM, platform.name());
-        webEyes.addProperty(Setup.RUN_IN_CI, String.valueOf(getValueFromConfig(Setup.RUN_IN_CI)));
-        webEyes.addProperty(Setup.TARGET_ENVIRONMENT,
-                            String.valueOf(getValueFromConfig(Setup.TARGET_ENVIRONMENT)));
-        webEyes.addProperty("USER_NAME", USER_NAME);
-
-        RectangleSize setBrowserViewPortSize = getBrowserViewPortSize(driverType, innerDriver);
-        LOGGER.info(String.format("Using browser dimensions for Applitools: %s",
-                                  setBrowserViewPortSize));
-
-        try {
-            String proxyUrl = (String) applitoolsConfig.get(APPLITOOLS.PROXY_URL);
-            if (null != proxyUrl) {
-                LOGGER.info(String.format("Set proxyUrl for webEyes: %s", proxyUrl));
-                webEyes.setProxy(new ProxySettings(proxyUrl));
-            }
-            webEyes.open(innerDriver, appName, testName, setBrowserViewPortSize);
-            LOGGER.info(
-                    String.format("instantiateWebEyes:  Is Applitools Visual Testing enabled? - %s",
-                                  !webEyes.getIsDisabled()));
-        } catch(IllegalArgumentException | EyesException e) {
-            String message = String.format(
-                    "Exception in instantiating Applitools for Web: '%s', Closing Web-driver " +
-                    "instance",
-                    e.getMessage());
-            LOGGER.error(message);
-            innerDriver.quit();
-            throw new VisualTestSetupException(message, e);
-
-        }
-        return webEyes;
+        return configuration;
     }
 
     private String getValueFromConfig(String key, String defaultValue) {
