@@ -9,13 +9,6 @@ import org.aspectj.lang.annotation.*;
 
 @Aspect
 public class AspectLogging {
-    private static final Logger LOGGER = LogManager.getLogger(AspectLogging.class.getName());
-    private final TestExecutionContext context;
-
-    public AspectLogging() {
-        long threadId = Thread.currentThread().getId();
-        context = SessionContext.getTestExecutionContext(threadId);
-    }
     @Pointcut("execution(public * *.*.*.entities.*.*(..)) " +
             "|| execution(public * *.*.*.listener.*.*(..)) " +
             "|| execution(public * *.*.*.runner.*.*(..)) " +

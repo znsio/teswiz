@@ -273,14 +273,13 @@ public class Drivers {
 
     private static void updateTestStatusInBrowserStack(JavascriptExecutor driver, String scenarioStatus, String scenarioFailureReasons) {
         LOGGER.info(String.format("updateTestStatusInCloud for BrowserStack: '%s'", scenarioStatus));
-        final JavascriptExecutor jse = driver;
         JSONObject executorObject = new JSONObject();
         JSONObject argumentsObject = new JSONObject();
         argumentsObject.put("status", scenarioStatus);
         argumentsObject.put("reason", scenarioFailureReasons);
         executorObject.put("action", "setSessionStatus");
         executorObject.put("arguments", argumentsObject);
-        jse.executeScript(String.format("browserstack_executor: %s", executorObject));
+        driver.executeScript(String.format("browserstack_executor: %s", executorObject));
     }
 
     private static void validateVisualTestResults(String userPersona, Driver driver) {

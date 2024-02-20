@@ -26,7 +26,7 @@ public class CucumberPlatformScenarioListener
             CucumberPlatformScenarioListener.class.getName());
     private final Map<String, Integer> scenarioRunCounts = new HashMap<>();
 
-    private Platform platform = Runner.getPlatform();
+    private final Platform platform = Runner.getPlatform();
 
     public CucumberPlatformScenarioListener() {
         LOGGER.info(String.format("ThreadId: %d: CucumberScenarioListener%n",

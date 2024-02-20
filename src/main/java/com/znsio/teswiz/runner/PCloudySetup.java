@@ -183,11 +183,7 @@ class PCloudySetup {
 
     @NotNull
     private static CommandLineResponse getListOfUploadedFilesInPCloudy(String authToken, String deviceLabURL) {
-        Map payload = new HashMap();
-        payload.put("\"token\"", "\"" + authToken + "\"");
-        payload.put("\"limit\"", 15);
-        payload.put("\"filter\"", "\"all\"");
-        String updatedPayload = payload.toString().replace("\"", "\\\"").replace("=", ":");
+        String updatedPayload = createPayloadToGetListOfUploadedFiles(authToken);
 
         String[] listOfUploadedFiles;
         listOfUploadedFiles = new String[]{CURL_INSECURE, getCurlProxyCommand(), "-H",
@@ -209,6 +205,16 @@ class PCloudySetup {
         }
 
         return listFilesInPCloudyResponse;
+    }
+
+    @NotNull
+    private static String createPayloadToGetListOfUploadedFiles(String authToken) {
+        Map payload = new HashMap();
+        payload.put("\"token\"", "\"" + authToken + "\"");
+        payload.put("\"limit\"", 15);
+        payload.put("\"filter\"", "\"all\"");
+        String updatedPayload = payload.toString().replace("\"", "\\\"").replace("=", ":");
+        return updatedPayload;
     }
 
 }

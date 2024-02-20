@@ -164,8 +164,7 @@ public class Driver {
     }
 
     public boolean isElementPresentByAccessibilityId(String locator) {
-        return driver.findElements(AppiumBy.accessibilityId(locator))
-                .size() > 0;
+        return !driver.findElements(AppiumBy.accessibilityId(locator)).isEmpty();
     }
 
     public boolean isElementPresentWithin(WebElement parentElement, By locator) {
