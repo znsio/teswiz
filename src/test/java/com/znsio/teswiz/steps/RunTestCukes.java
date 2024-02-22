@@ -10,6 +10,7 @@ import com.znsio.teswiz.entities.APPLITOOLS;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.tools.Heartbeat;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
@@ -17,6 +18,8 @@ import io.cucumber.testng.AbstractTestNGCucumberTests;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.testng.annotations.DataProvider;
+
+import java.util.HashMap;
 
 public class RunTestCukes
         extends AbstractTestNGCucumberTests {
@@ -58,6 +61,17 @@ public class RunTestCukes
     public void afterTestScenario(Scenario scenario) {
         LOGGER.info(String.format("RunTestCukes: ThreadId: %d: in overridden afterTestScenario%n",
                                   Thread.currentThread().getId()));
+        this.closeApiThreads();
         new Hooks().afterScenario(scenario);
+    }
+
+    private void closeApiThreads() {
+        if (null != context.getTestState(TEST_CONTEXT.HEARTBEAT_MAP)) {
+            HashMap<String, Heartbeat> heartbeatMap = (HashMap<String, Heartbeat>) context.getTestState(TEST_CONTEXT.HEARTBEAT_MAP);
+            LOGGER.info("afterScenario: closeApiThreads: heartbeatMap:\n" + heartbeatMap.toString());
+            for (Heartbeat heartbeat : heartbeatMap.values()) {
+                heartbeat.stopHeartbeat();
+            }
+        }
     }
 }

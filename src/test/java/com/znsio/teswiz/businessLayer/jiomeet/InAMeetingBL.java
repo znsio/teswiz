@@ -2,12 +2,17 @@ package com.znsio.teswiz.businessLayer.jiomeet;
 
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.screen.jiomeet.InAMeetingScreen;
+import com.znsio.teswiz.tools.Heartbeat;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
+
+import java.util.HashMap;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -55,6 +60,15 @@ public class InAMeetingBL {
         assertThat(InAMeetingScreen.get().isMeetingStarted())
                 .as("Meeting is not opened in Jio Meet Application")
                 .isTrue();
+        return this;
+    }
+
+    public InAMeetingBL startHeatbeats(String userPersona) {
+        HashMap<String, Heartbeat> heartbeatMap = (HashMap<String, Heartbeat>) context.getTestState(TEST_CONTEXT.HEARTBEAT_MAP);
+        Heartbeat currentUserHeartbeat = heartbeatMap.get(userPersona.toLowerCase());
+      //  Heartbeat currentUserHeartbeat = new Heartbeat();
+        currentUserHeartbeat.startHeartbeat(userPersona);
+        LOGGER.info("starting thread");
         return this;
     }
 }
