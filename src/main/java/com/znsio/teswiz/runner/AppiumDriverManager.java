@@ -169,7 +169,7 @@ class AppiumDriverManager {
         Driver currentDriver;
         AppiumDriver appiumDriver = (AppiumDriver) context.getTestState(
                 TEST_CONTEXT.APPIUM_DRIVER);
-        DriverSession deviceInfo = (DriverSession) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
+        // DriverSession deviceInfo = (DriverSession) context.getTestState(TEST_CONTEXT.DEVICE_INFO);
         // Do not add the device info to additionalDevices for the driver created by ATD
         // additionalDevices.add(deviceInfo);
         Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
