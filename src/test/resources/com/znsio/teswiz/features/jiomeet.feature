@@ -56,3 +56,4 @@ Feature: In a meeting scenarios
       Given "Host" logs-in and starts an instant meeting in "jiomeetLatest" on "android"
       When I open the JioMeet meeting notification from notification bar
       Then I should be able to go back to Meeting
+
