@@ -57,7 +57,8 @@ Feature: In a meeting scenarios
       When I open the JioMeet meeting notification from notification bar
       Then I should be able to go back to Meeting
 
-  @multiuser-web @test3
+#  CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@multiuser-web and @heartbeat" ./gradlew run
+  @multiuser-web @heartbeat
   Scenario: Check Heartbeat
     Given "Host" logs-in and starts an instant meeting on "web"
     When "Host" check heartbeat
