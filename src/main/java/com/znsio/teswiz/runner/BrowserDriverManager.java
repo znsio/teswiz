@@ -583,6 +583,7 @@ class BrowserDriverManager {
                                                     .driverVersion(getOverriddenStringValue(BROWSER_VERSION,browserConfigForBrowserType.getString("browserVersion")));
         String proxyUrl = Runner.getProxyURL();
         if (null != proxyUrl) {
+            LOGGER.info(String.format("Adding proxy: %s to WebDriverManager", proxyUrl));
             webDriverManager = webDriverManager.proxy(proxyUrl);
         }
         webDriverManager.setup();
