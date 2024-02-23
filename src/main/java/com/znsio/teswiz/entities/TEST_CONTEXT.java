@@ -23,4 +23,5 @@ public class TEST_CONTEXT {
     public static final String UPDATED_BASE_URL_FOR_WEB = "updatedBaseUrlForWeb";
     public static final String UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST = "updatedBrowserConfigFileForThisTest";
     public static final String HEARTBEAT_MAP = "heartbeatMap";
+    public static final String BROWSERSTACK_LOCAL_IDENTIFIER = "browserStackLocalIdentifier";
 }

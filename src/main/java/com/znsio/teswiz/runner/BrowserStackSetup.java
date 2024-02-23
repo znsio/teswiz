@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
@@ -73,7 +74,7 @@ class BrowserStackSetup {
 
     private static void setupLocalTesting(String authenticationKey, Map loadedPlatformCapability) {
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
-            String browserStackLocalIdentifier = Randomizer.randomize(10);
+            String browserStackLocalIdentifier = Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestStateAsString(TEST_CONTEXT.BROWSERSTACK_LOCAL_IDENTIFIER);
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
                     browserStackLocalIdentifier));
@@ -93,7 +94,7 @@ class BrowserStackSetup {
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
 
-        String browserStackLocalIdentifier = Randomizer.randomize(10);
+        String browserStackLocalIdentifier = Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestStateAsString(TEST_CONTEXT.BROWSERSTACK_LOCAL_IDENTIFIER);
         String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "")
                                      .replace("\\", "");
 
