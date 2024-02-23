@@ -104,8 +104,8 @@ public class WeatherAPIBL {
     }
 
     public WeatherAPIBL verifyCurrentWindDirection(JSONObject jsonObject, int maxWindDirection) {
-        LOGGER.info("Verifying maximum wind direction is less than: "+maxWindDirection);
-        assertThat((Double) jsonObject.get("winddirection"))
+        LOGGER.info("Verifying maximum wind direction is less than: "+maxWindDirection + " from response: " + jsonObject);
+        assertThat((Integer) jsonObject.get("winddirection"))
                 .as("Wind direction above maximum limit!").isLessThan(maxWindDirection);
         return this;
     }
