@@ -19,7 +19,7 @@ public class UserPersonaDetails {
     private final ConcurrentHashMap<String, String> deviceLogFileNameForUserPersonaAndPlatform =
             new ConcurrentHashMap<>();
 
-    private String keyPrefix = Thread.currentThread().getId() + "-";
+    private final String keyPrefix = Thread.currentThread().getId() + "-";
 
     void assignNewPersonaForUser(String userPersona, String newUserPersona) {
         replaceCapabilitiesFor(userPersona, newUserPersona);
