@@ -62,20 +62,20 @@ public class RunTestCukes
     public void afterTestScenario(Scenario scenario) {
         LOGGER.info(String.format("RunTestCukes: ThreadId: %d: in overridden afterTestScenario%n",
                                   Thread.currentThread().getId()));
-        this.closeApiThreads();
+        this.closeHeartBeatThreads();
         new Hooks().afterScenario(scenario);
     }
 
-    private void closeApiThreads() {
+    private void closeHeartBeatThreads() {
         if (null != context.getTestState(SAMPLE_TEST_CONTEXT.HEARTBEAT_MAP)) {
             HashMap<String, HeartBeat> heartbeatMap = (HashMap<String, HeartBeat>) context.getTestState(SAMPLE_TEST_CONTEXT.HEARTBEAT_MAP);
-            LOGGER.info(String.format("afterScenario: closeApiThreads: heartbeatMap: %d", heartbeatMap.size()));
-            LOGGER.info("Active thread count: " + Thread.activeCount());
+            LOGGER.info(String.format("afterScenario: closeHeartBeatThreads: heartbeatMap: %d", heartbeatMap.size()));
+            LOGGER.info("Active thread count before closing all heartBeats: " + Thread.activeCount());
             for (HeartBeat heartbeat : heartbeatMap.values()) {
                 heartbeat.stopHeartBeat();
             }
             heartbeatMap.clear();
-            LOGGER.info(String.format("afterScenario: closeApiThreads: heartbeatMap after closing all threads: %d", heartbeatMap.size()));
+            LOGGER.info("Active thread count after closing all heartBeats " + Thread.activeCount());
         }
     }
 }

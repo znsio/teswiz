@@ -9,35 +9,35 @@ import java.net.URL;
 public class HeartBeat implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger(HeartBeat.class.getName());
     private final String threadName;
-
     private final String apiUrl;
     private final int pollingDuration;
     private int heartBeatCounter = 0;
     private volatile boolean running = true; // Flag to control the loop
+    private Thread currentThread;
 
     public HeartBeat(String userPersona, String url, int pollingDurationInSec) {
         this.threadName = userPersona;
         this.apiUrl = url;
-        this.heartBeatCounter = 0;
         this.pollingDuration = pollingDurationInSec;
     }
 
     @Override
     public void run() {
-        Thread.currentThread().setName(threadName);
+        currentThread = Thread.currentThread();
+        currentThread.setName(threadName);
         while(running) { // Continue running as long as the flag is true
             try {
-                heartBeatCounter++;
-                if(checkHeartBeat()) {
-                    String message = String.format("HeartBeat: '%s', API is alive. Current count: '%d'", this.threadName, this.heartBeatCounter);
-                    ReportPortalLogger.logInfoMessage(message);
-                } else {
-                    String message = String.format("HeartBeat: '%s', API is down. Current count: '%d'", this.threadName, this.heartBeatCounter);
-                    ReportPortalLogger.logInfoMessage(message);
+                String message = "HeartBeat: '%s', API is '%s'. Current count: '%d'";
+                String status = "up";
+                if(!checkHeartBeat()) {
+                    status = "down";
                 }
+                heartBeatCounter++;
+                message = String.format(message, this.threadName, status, heartBeatCounter);
+                ReportPortalLogger.logInfoMessage(message);
                 Thread.sleep(this.pollingDuration * 1000); // Sleep for x seconds
             } catch(InterruptedException e) {
-                e.printStackTrace();
+                // do nothing
             }
         }
     }
@@ -63,8 +63,11 @@ public class HeartBeat implements Runnable {
 
     // Method to stop the heartbeat
     public void stopHeartBeat() {
-        String message = String.format("HeartBeat: Stopping heartbeat for user: '%s' with url: '%s' after '%d' counts", this.threadName, this.apiUrl, this.heartBeatCounter);
+        String message = String.format("HeartBeat: Stopping heartbeat for user: '%s' with url: '%s' after '%d' counts", this.threadName, this.apiUrl, heartBeatCounter);
         ReportPortalLogger.logInfoMessage(message);
         running = false;
+        if (this.currentThread != null) {
+            currentThread.interrupt(); // Interrupt the thread if it's sleeping
+        }
     }
 }
