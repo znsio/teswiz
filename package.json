@@ -5,7 +5,7 @@
     "appium": "2.5.1",
     "appium-device-farm": "8.4.7-rc.12",
     "appium-uiautomator2-driver": "3.0.1",
-    "appium-xcuitest-driver": "7.1.2"
+    "appium-xcuitest-driver": "7.2.0"
   },
   "name": "teswiz-appium2.0",
   "description": "[![0.0.3](https://jitpack.io/v/znsio/teswiz.svg)](https://jitpack.io/#znsio/teswiz) [![0.0.3](https://jitci.com/gh/znsio/teswiz/svg)](https://jitci.com/gh/znsio/teswiz) [![CI](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml) [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)",
