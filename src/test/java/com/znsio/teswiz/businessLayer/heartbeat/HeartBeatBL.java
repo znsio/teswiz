@@ -5,6 +5,7 @@ import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.tools.HeartBeat;
+import com.znsio.teswiz.tools.ReportPortalLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,10 +33,11 @@ public class HeartBeatBL {
         heartbeatMap.put(userPersona.toLowerCase(), currentUserHeartBeat);
         Thread heartbeatThread = new Thread(currentUserHeartBeat);
         heartbeatThread.start();
-        LOGGER.info(String.format("HeartBeat started for '%s' with initial heartBeat count: '%d'", userPersona, currentUserHeartBeat.getHeartBeatCounter()));
+        String message = String.format("HeartBeat started for '%s' with initial heartBeat count: '%d'", userPersona, currentUserHeartBeat.getHeartBeatCounter());
+        ReportPortalLogger.logInfoMessage(message);
         waitFor(10);
-        LOGGER.info(
-                String.format("HeartBeat after 10 seconds: '%s' with initial heartBeat count: '%d'", userPersona, currentUserHeartBeat.getHeartBeatCounter()));
+        message = String.format("HeartBeat after 10 seconds: '%s' with initial heartBeat count: '%d'", userPersona, currentUserHeartBeat.getHeartBeatCounter());
+        ReportPortalLogger.logInfoMessage(message);
         LOGGER.info("Active thread count: " + Thread.activeCount());
         return this;
     }

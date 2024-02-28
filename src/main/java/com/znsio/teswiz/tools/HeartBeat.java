@@ -29,9 +29,11 @@ public class HeartBeat implements Runnable {
             try {
                 heartBeatCounter++;
                 if(checkHeartBeat()) {
-                    LOGGER.info(String.format("HeartBeat: '%s', API is alive. Current count: '%d'", this.threadName, this.heartBeatCounter));
+                    String message = String.format("HeartBeat: '%s', API is alive. Current count: '%d'", this.threadName, this.heartBeatCounter);
+                    ReportPortalLogger.logInfoMessage(message);
                 } else {
-                    LOGGER.info(String.format("HeartBeat: '%s', API is down. Current count: '%d'", this.threadName, this.heartBeatCounter));
+                    String message = String.format("HeartBeat: '%s', API is down. Current count: '%d'", this.threadName, this.heartBeatCounter);
+                    ReportPortalLogger.logInfoMessage(message);
                 }
                 Thread.sleep(this.pollingDuration * 1000); // Sleep for x seconds
             } catch(InterruptedException e) {
@@ -61,7 +63,8 @@ public class HeartBeat implements Runnable {
 
     // Method to stop the heartbeat
     public void stopHeartBeat() {
-        LOGGER.info(String.format("HeartBeat: Stopping heartbeat for user: '%s' with url: '%s' after '%d' counts", this.threadName, this.apiUrl, this.heartBeatCounter));
+        String message = String.format("HeartBeat: Stopping heartbeat for user: '%s' with url: '%s' after '%d' counts", this.threadName, this.apiUrl, this.heartBeatCounter);
+        ReportPortalLogger.logInfoMessage(message);
         running = false;
     }
 }
