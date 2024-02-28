@@ -2,7 +2,7 @@ package com.znsio.teswiz.steps;
 
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
-import com.znsio.teswiz.businessLayer.jiomeet.AuthBL;
+import com.znsio.teswiz.businessLayer.heartbeat.HeartBeatBL;
 import com.znsio.teswiz.businessLayer.theapp.AppBL;
 import com.znsio.teswiz.businessLayer.theapp.ClipboardBL;
 import com.znsio.teswiz.businessLayer.theapp.EchoBL;
@@ -16,8 +16,8 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TheAppSteps {
     private static final Logger LOGGER = LogManager.getLogger(TheAppSteps.class.getName());
@@ -34,12 +34,13 @@ public class TheAppSteps {
                 "iLoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', " +
                 "Platform: '%s'",
                 SAMPLE_TEST_CONTEXT.ME, username, password, Runner.getPlatform()));
-        context.addTestState(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST, "./configs/browser_config.json");
+        context.addTestState(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST,
+                             "./configs/browser_config.json");
         context.addTestState(TEST_CONTEXT.UPDATED_BASE_URL_FOR_WEB, "BASE_URL");
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
         context.addTestState(SAMPLE_TEST_CONTEXT.ME, username);
-        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).provideInvalidDetailsForSignup(username,
-                                                                                               password);
+        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).provideInvalidDetailsForSignup(
+                username, password);
     }
 
     @When("I go back")
@@ -116,7 +117,8 @@ public class TheAppSteps {
     public void iSaveInTheClipboard(String content) {
         LOGGER.info(System.out.printf("iStartTheApp - Persona:'%s'", SAMPLE_TEST_CONTEXT.ME));
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
-        new ClipboardBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).saveContentInClipboard(content);
+        new ClipboardBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).saveContentInClipboard(
+                content);
     }
 
     @Given("I am on file upload page")
@@ -154,12 +156,15 @@ public class TheAppSteps {
     @And("{string} login to TheApp with invalid credentials - {string}, " + "{string}")
     public void loginToTheAppWithInvalidCredentials(String userPersona, String username,
                                                     String password) {
+        LOGGER.info("Active thread count: " + Thread.activeCount());
         LOGGER.info(System.out.printf(
                 "'%s' loginToTheAppWithInvalidCredentials - Username: '%s', Password:'%s'",
                 userPersona, username, password));
         Platform currentPlatform = Runner.getPlatform();
         Drivers.createDriverFor(userPersona, currentPlatform, context);
+        LOGGER.info("Active thread count: " + Thread.activeCount());
         new AppBL(userPersona, currentPlatform).provideInvalidDetailsForSignup(username, password);
+        new HeartBeatBL().startHeatBeat(userPersona);
     }
 
 
@@ -170,7 +175,7 @@ public class TheAppSteps {
 
     @When("{string} changed to {string}")
     public void changedTo(String oldUserPersona, String newUserPersona) {
-        Drivers.assignNewPersonaToExistingDriver(oldUserPersona,newUserPersona,context);
+        Drivers.assignNewPersonaToExistingDriver(oldUserPersona, newUserPersona, context);
     }
 
     @When("I switch to theapp")

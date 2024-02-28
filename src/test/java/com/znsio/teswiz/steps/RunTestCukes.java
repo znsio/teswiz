@@ -7,10 +7,9 @@ import com.applitools.eyes.visualgrid.model.ScreenOrientation;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.APPLITOOLS;
-import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
-import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.tools.Heartbeat;
+import com.znsio.teswiz.tools.HeartBeat;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
@@ -20,6 +19,8 @@ import org.apache.logging.log4j.LogManager;
 import org.testng.annotations.DataProvider;
 
 import java.util.HashMap;
+
+import static com.znsio.teswiz.tools.Wait.waitFor;
 
 public class RunTestCukes
         extends AbstractTestNGCucumberTests {
@@ -66,12 +67,15 @@ public class RunTestCukes
     }
 
     private void closeApiThreads() {
-        if (null != context.getTestState(TEST_CONTEXT.HEARTBEAT_MAP)) {
-            HashMap<String, Heartbeat> heartbeatMap = (HashMap<String, Heartbeat>) context.getTestState(TEST_CONTEXT.HEARTBEAT_MAP);
-            LOGGER.info("afterScenario: closeApiThreads: heartbeatMap:\n" + heartbeatMap.toString());
-            for (Heartbeat heartbeat : heartbeatMap.values()) {
-                heartbeat.stopHeartbeat();
+        if (null != context.getTestState(SAMPLE_TEST_CONTEXT.HEARTBEAT_MAP)) {
+            HashMap<String, HeartBeat> heartbeatMap = (HashMap<String, HeartBeat>) context.getTestState(SAMPLE_TEST_CONTEXT.HEARTBEAT_MAP);
+            LOGGER.info(String.format("afterScenario: closeApiThreads: heartbeatMap: %d", heartbeatMap.size()));
+            LOGGER.info("Active thread count: " + Thread.activeCount());
+            for (HeartBeat heartbeat : heartbeatMap.values()) {
+                heartbeat.stopHeartBeat();
             }
+            heartbeatMap.clear();
+            LOGGER.info(String.format("afterScenario: closeApiThreads: heartbeatMap after closing all threads: %d", heartbeatMap.size()));
         }
     }
 }

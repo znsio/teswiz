@@ -7,17 +7,16 @@ import com.znsio.teswiz.businessLayer.jiomeet.InAMeetingBL;
 import com.znsio.teswiz.businessLayer.jiomeet.JoinAMeetingBL;
 import com.znsio.teswiz.businessLayer.jiomeet.LandingBL;
 import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
-import com.znsio.teswiz.tools.Heartbeat;
+import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.runner.Drivers;
+import com.znsio.teswiz.runner.Runner;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Locale;
 import java.util.Map;
@@ -61,7 +60,6 @@ public class JioMeetSteps {
     public void logsInAndStartsAnInstantMeetingOn(String userPersona, String fromPlatform) {
         Platform currentPlatform = Platform.valueOf(fromPlatform);
         Drivers.createDriverFor(userPersona, currentPlatform, context);
-        Heartbeat.initializeHeartbeatFor(userPersona.toLowerCase(), context);
         new AuthBL(userPersona, currentPlatform).signInAndStartMeeting(
                 Runner.getTestDataAsMap(userPersona));
     }
@@ -72,7 +70,6 @@ public class JioMeetSteps {
         Drivers.createDriverFor(userPersona, currentPlatform, context);
         String meetingId = context.getTestStateAsString(SAMPLE_TEST_CONTEXT.MEETING_ID);
         String meetingPassword = context.getTestStateAsString(SAMPLE_TEST_CONTEXT.MEETING_PASSWORD);
-        Heartbeat.initializeHeartbeatFor(userPersona.toLowerCase(), context);
         new JoinAMeetingBL(userPersona, currentPlatform).joinMeeting(meetingId, meetingPassword);
     }
 
@@ -125,10 +122,5 @@ public class JioMeetSteps {
     @Then("I should be able to go back to Meeting")
     public void iShouldBeAbleToGoBackToMeeting() {
         new InAMeetingBL().verifyMeetingOpenedInJioMeetApplication();
-    }
-
-    @When("{string} check heartbeat")
-    public void checkHeartbeat(String userPersona) {
-        new InAMeetingBL().startHeatbeats(userPersona);
     }
 }
