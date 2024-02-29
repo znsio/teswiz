@@ -5,7 +5,7 @@ buildscript {
         gradleVersion = "8.6"
         assertJVersion = "3.25.3"
         atdVersion = "b313941325" // ATD main branch
-        applitoolsAppiumVersion = "5.66.8"
+        applitoolsAppiumVersion = "5.66.9"
         commonsLang3Version = "3.14.0"
         commonsRngSimpleVersion = "1.5"
         unirestVersion = "3.14.5"
