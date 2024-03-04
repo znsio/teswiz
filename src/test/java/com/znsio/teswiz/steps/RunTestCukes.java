@@ -7,9 +7,9 @@ import com.applitools.eyes.visualgrid.model.ScreenOrientation;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.APPLITOOLS;
-import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
-import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.tools.HeartBeat;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
@@ -17,6 +17,10 @@ import io.cucumber.testng.AbstractTestNGCucumberTests;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.testng.annotations.DataProvider;
+
+import java.util.HashMap;
+
+import static com.znsio.teswiz.tools.Wait.waitFor;
 
 public class RunTestCukes
         extends AbstractTestNGCucumberTests {
@@ -58,6 +62,20 @@ public class RunTestCukes
     public void afterTestScenario(Scenario scenario) {
         LOGGER.info(String.format("RunTestCukes: ThreadId: %d: in overridden afterTestScenario%n",
                                   Thread.currentThread().getId()));
+        this.closeHeartBeatThreads();
         new Hooks().afterScenario(scenario);
+    }
+
+    private void closeHeartBeatThreads() {
+        if (null != context.getTestState(SAMPLE_TEST_CONTEXT.HEARTBEAT_MAP)) {
+            HashMap<String, HeartBeat> heartbeatMap = (HashMap<String, HeartBeat>) context.getTestState(SAMPLE_TEST_CONTEXT.HEARTBEAT_MAP);
+            LOGGER.info(String.format("afterScenario: closeHeartBeatThreads: heartbeatMap: %d", heartbeatMap.size()));
+            LOGGER.info("Active thread count before closing all heartBeats: " + Thread.activeCount());
+            for (HeartBeat heartbeat : heartbeatMap.values()) {
+                heartbeat.stopHeartBeat();
+            }
+            heartbeatMap.clear();
+            LOGGER.info("Active thread count after closing all heartBeats " + Thread.activeCount());
+        }
     }
 }
