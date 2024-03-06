@@ -51,4 +51,12 @@ class BrowserStackImageInjection {
         waitFor(5);
         return mediaUrl;
     }
+
+    static void injectMediaToDriver(String browserStackMediaUrl, AppiumDriver driver) {
+        LOGGER.info(String.format("Browserstack media url provided is : '%s'", browserStackMediaUrl));
+        driver.executeScript(
+                "browserstack_executor: {\"action\":\"cameraImageInjection\"," + " \"arguments" +
+                        "\":" + " {\"imageUrl\" : \"" + browserStackMediaUrl + "\"}}");
+        waitFor(5);
+    }
 }

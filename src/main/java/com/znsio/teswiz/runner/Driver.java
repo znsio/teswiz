@@ -557,6 +557,23 @@ public class Driver {
         }
     }
 
+    /**
+     * This method injects the already uploaded media in browserstack(media url) to browserstack real device,
+     * image scanning eg: QRcode,barcode etc
+     * Throws NotImplementedException if platform is NOT android, and cloudName is NOT browserstack
+     *
+     * @param browserStackMediaUrl is a media url generated after uploading a file to browserstack cloud using BS API
+     */
+    public void injectMediaUrlToBrowserstackDevice(String browserStackMediaUrl) {
+        String cloudName = Runner.getCloudName();
+        if (Runner.getPlatform().equals(Platform.android) && cloudName.equalsIgnoreCase("browserstack")) {
+            BrowserStackImageInjection.injectMediaToDriver(browserStackMediaUrl, ((AppiumDriver) driver));
+        } else {
+            throw new NotImplementedException(
+                    "injectMediaToBrowserstackDevice is not implemented for: " + cloudName);
+        }
+    }
+
     public void scrollInDynamicLayer(Direction direction, WebElement dynamicLayerElement) {
         Dimension dimension = dynamicLayerElement.getSize();
         int width = (int) (dimension.width * 0.5);
