@@ -6,7 +6,6 @@ import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.UserPersonaDetails;
-import com.znsio.teswiz.tools.Randomizer;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import io.cucumber.java.Scenario;
@@ -23,7 +22,6 @@ public class Hooks {
     private static final Logger LOGGER = LogManager.getLogger(Hooks.class.getName());
     private static final List<String> excludeLoggingSystemProperties = Arrays.asList("java.class.path", "java.library.path");
     private static final List<String> excludeLoggingEnvVariables = Arrays.asList("KEY", "PASSWORD");
-    private static final String browserStackLocalIdentifier = Randomizer.randomize(10);
 
     public void beforeScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();
@@ -37,7 +35,6 @@ public class Hooks {
         }
         testExecutionContext.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS,
                                           new UserPersonaDetails());
-        testExecutionContext.addTestState(TEST_CONTEXT.BROWSERSTACK_LOCAL_IDENTIFIER, browserStackLocalIdentifier);
         SoftAssertions softly = new SoftAssertions();
         testExecutionContext.addTestState(TEST_CONTEXT.SOFT_ASSERTIONS, softly);
         addEnvironmentVariablesToReportPortal();

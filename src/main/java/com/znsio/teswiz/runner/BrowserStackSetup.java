@@ -29,6 +29,7 @@ class BrowserStackSetup {
     private static final Logger LOGGER = LogManager.getLogger(BrowserStackSetup.class.getName());
     private static final String DEVICE = "device";
     private static Local bsLocal;
+    private static final String BROWSERSTACK_LOCAL_IDENTIFIER = Randomizer.randomize(10);
 
     private BrowserStackSetup() {
         LOGGER.debug("BrowserStackSetup - private constructor");
@@ -74,14 +75,12 @@ class BrowserStackSetup {
 
     private static void setupLocalTesting(String authenticationKey, Map loadedPlatformCapability) {
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
-            String browserStackLocalIdentifier = Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestStateAsString(TEST_CONTEXT.BROWSERSTACK_LOCAL_IDENTIFIER);
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
-                    browserStackLocalIdentifier));
-            startBrowserStackLocal(authenticationKey, browserStackLocalIdentifier);
+                    BROWSERSTACK_LOCAL_IDENTIFIER));
+            startBrowserStackLocal(authenticationKey, BROWSERSTACK_LOCAL_IDENTIFIER);
             loadedPlatformCapability.put("browserstack.local", "true");
-            loadedPlatformCapability.put("browserstack.localIdentifier",
-                                         browserStackLocalIdentifier);
+            loadedPlatformCapability.put("browserstack.localIdentifier", BROWSERSTACK_LOCAL_IDENTIFIER);
         }
     }
 
@@ -94,7 +93,6 @@ class BrowserStackSetup {
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
 
-        String browserStackLocalIdentifier = Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestStateAsString(TEST_CONTEXT.BROWSERSTACK_LOCAL_IDENTIFIER);
         String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "")
                                      .replace("\\", "");
 
@@ -111,11 +109,11 @@ class BrowserStackSetup {
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
-                    browserStackLocalIdentifier));
-            startBrowserStackLocal(authenticationKey, browserStackLocalIdentifier);
+                    BROWSERSTACK_LOCAL_IDENTIFIER));
+            startBrowserStackLocal(authenticationKey, BROWSERSTACK_LOCAL_IDENTIFIER);
             browserstackOptions.put(ACCEPT_INSECURE_CERTS, "true");
             browserstackOptions.put("local", "true");
-            browserstackOptions.put("localIdentifier", browserStackLocalIdentifier);
+            browserstackOptions.put("localIdentifier", BROWSERSTACK_LOCAL_IDENTIFIER);
         }
         capabilities.setCapability("bstack:options", browserstackOptions);
 
