@@ -566,12 +566,16 @@ public class Driver {
      */
     public void injectMediaUrlToBrowserstackDevice(String browserStackMediaUrl) {
         String cloudName = Runner.getCloudName();
-        if (Runner.getPlatform().equals(Platform.android) && cloudName.equalsIgnoreCase("browserstack")) {
+        if (cloudName.equalsIgnoreCase("browserstack") && isMobilePlatform()) {
             BrowserStackImageInjection.injectMediaToDriver(browserStackMediaUrl, ((AppiumDriver) driver));
         } else {
             throw new NotImplementedException(
                     "injectMediaToBrowserstackDevice is not implemented for: " + cloudName);
         }
+    }
+
+    public boolean isMobilePlatform() {
+        return Runner.getPlatform().equals(Platform.android) || Runner.getPlatform().equals(Platform.iOS);
     }
 
     public void scrollInDynamicLayer(Direction direction, WebElement dynamicLayerElement) {
