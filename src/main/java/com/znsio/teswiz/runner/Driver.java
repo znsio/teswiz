@@ -58,7 +58,6 @@ public class Driver {
     private final String appName;
     private final Platform driverForPlatform;
     private static final String DIMENSION = "dimension: ";
-    private static final String FROM_HEIGHT_TO_HEIGHT = "width: %s, from height: %s, to height: %s";
     private final boolean isRunningInHeadlessMode;
     private static final String TO = "' to '";
     private Visual visually;
@@ -545,7 +544,7 @@ public class Driver {
      */
     public void injectMediaToBrowserstackDevice(String uploadFileURL) {
         String cloudName = Runner.getCloudName();
-        if (Runner.getPlatform().equals(Platform.android) && cloudName.equalsIgnoreCase(
+        if (isMobilePlatform() && cloudName.equalsIgnoreCase(
                 "browserstack")) {
             String cloudUser = Runner.getCloudUser();
             String cloudKey = Runner.getCloudKey();
