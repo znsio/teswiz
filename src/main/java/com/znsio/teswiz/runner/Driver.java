@@ -540,7 +540,7 @@ public class Driver {
      * image scanning eg: QRcode,barcode etc
      * Throws NotImplementedException if platform is NOT android, and cloudName is NOT browserstack
      *
-     * @param uploadFileURL
+     * @param uploadFileURL is an absolute path where a media file is located
      */
     public void injectMediaToBrowserstackDevice(String uploadFileURL) {
         String cloudName = Runner.getCloudName();
