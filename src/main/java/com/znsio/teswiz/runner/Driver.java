@@ -58,7 +58,6 @@ public class Driver {
     private final String appName;
     private final Platform driverForPlatform;
     private static final String DIMENSION = "dimension: ";
-    private static final String FROM_HEIGHT_TO_HEIGHT = "width: %s, from height: %s, to height: %s";
     private final boolean isRunningInHeadlessMode;
     private static final String TO = "' to '";
     private Visual visually;
@@ -541,11 +540,11 @@ public class Driver {
      * image scanning eg: QRcode,barcode etc
      * Throws NotImplementedException if platform is NOT android, and cloudName is NOT browserstack
      *
-     * @param uploadFileURL
+     * @param uploadFileURL is an absolute path where a media file is located
      */
     public void injectMediaToBrowserstackDevice(String uploadFileURL) {
         String cloudName = Runner.getCloudName();
-        if (Runner.getPlatform().equals(Platform.android) && cloudName.equalsIgnoreCase(
+        if (isMobilePlatform() && cloudName.equalsIgnoreCase(
                 "browserstack")) {
             String cloudUser = Runner.getCloudUser();
             String cloudKey = Runner.getCloudKey();
@@ -555,6 +554,27 @@ public class Driver {
             throw new NotImplementedException(
                     "injectMediaToBrowserstackDevice is not implemented for: " + cloudName);
         }
+    }
+
+    /**
+     * This method injects the already uploaded media in browserstack(media url) to browserstack real device,
+     * image scanning eg: QRcode,barcode etc
+     * Throws NotImplementedException if platform is NOT android, and cloudName is NOT browserstack
+     *
+     * @param browserStackMediaUrl is a media url generated after uploading a file to browserstack cloud using BS API
+     */
+    public void injectMediaUrlToBrowserstackDevice(String browserStackMediaUrl) {
+        String cloudName = Runner.getCloudName();
+        if (cloudName.equalsIgnoreCase("browserstack") && isMobilePlatform()) {
+            BrowserStackImageInjection.injectMediaToDriver(browserStackMediaUrl, ((AppiumDriver) driver));
+        } else {
+            throw new NotImplementedException(
+                    "injectMediaToBrowserstackDevice is not implemented for: " + cloudName);
+        }
+    }
+
+    public boolean isMobilePlatform() {
+        return Runner.getPlatform().equals(Platform.android) || Runner.getPlatform().equals(Platform.iOS);
     }
 
     public void scrollInDynamicLayer(Direction direction, WebElement dynamicLayerElement) {

@@ -45,10 +45,19 @@ class BrowserStackImageInjection {
         String mediaUrl = BrowserStackImageInjection.uploadToCloud(uploadFilePath, cloudUser,
                                                                    cloudKey);
         LOGGER.info(String.format("Inject media url in driver: '%s'", mediaUrl));
+        addMediaURLInDOM(mediaUrl, driver);
+        return mediaUrl;
+    }
+
+    static void injectMediaToDriver(String mediaUrl, AppiumDriver driver) {
+        LOGGER.info(String.format("Browserstack media url provided is : '%s'", mediaUrl));
+        addMediaURLInDOM(mediaUrl, driver);
+    }
+
+    private static void addMediaURLInDOM(String mediaUrl, AppiumDriver driver) {
         driver.executeScript(
                 "browserstack_executor: {\"action\":\"cameraImageInjection\"," + " \"arguments" +
                 "\":" + " {\"imageUrl\" : \"" + mediaUrl + "\"}}");
         waitFor(5);
-        return mediaUrl;
     }
 }
