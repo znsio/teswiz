@@ -20,7 +20,6 @@
   },
   "serverConfig" : {
     "server": {
-      "port": 31337,
       "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
