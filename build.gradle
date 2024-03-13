@@ -132,6 +132,12 @@ static def getCurrentDatestamp() {
     return df.format(today)
 }
 
+static def getMonth() {
+    Date today = new Date()
+    SimpleDateFormat df = new SimpleDateFormat("MMM-yyyy")
+    return df.format(today)
+}
+
 static def getCurrentTimestamp() {
     Date today = new Date()
     SimpleDateFormat df = new SimpleDateFormat("HH-mm-ss")
@@ -140,7 +146,7 @@ static def getCurrentTimestamp() {
 
 tasks.register('run', JavaExec) {
     doFirst {
-        def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
+        def logDirectory = "./target/" + getMonth() + "/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
         println "Using LOG_DIR: $logDirectory"
         System.setProperty "LOG_DIR", "$logDirectory"
         environment "APPLITOOLS_LOG_DIR", "$logDirectory/applitools_logs"
