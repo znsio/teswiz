@@ -11,7 +11,7 @@
     "launchTimeout": 90000,
     "unicodeKeyboard": true,
     "resetKeyboard": true,
-    "noReset": true,
+    "noReset": false,
     "autoAcceptAlerts": true,
     "headspin:capture.video": true,
     "headspin:appiumVersion": "2.0.0",
@@ -23,6 +23,7 @@
       "plugin": {
         "device-farm": {
           "platform": "android",
+          "remoteConnectionTimeout": 120000,
           "skipChromeDownload": true,
           "cloud": {
             "cloudName": "headspin",
@@ -35,5 +36,6 @@
       }
     }
   },
+  "basePath": "/",
   "appiumServerPath": "./node_modules/appium/build/lib/main.js"
 }
