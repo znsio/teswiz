@@ -146,6 +146,8 @@ public class Visual {
         if (null != proxyUrl) {
             LOGGER.info(String.format("Set proxyUrl for appEyes: %s", proxyUrl));
             appEyes.setProxy(new ProxySettings(proxyUrl));
+        } else {
+            LOGGER.info("proxyUrl is null. No proxy set for appEyes");
         }
     }
 
@@ -240,6 +242,8 @@ public class Visual {
         if (null != proxyUrl) {
             LOGGER.info(String.format("Set proxyUrl for webEyes: %s", proxyUrl));
             webEyes.setProxy(new ProxySettings(proxyUrl));
+        } else {
+            LOGGER.info("proxyUrl is null. No proxy set for webEyes");
         }
     }
 
