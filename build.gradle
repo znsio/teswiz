@@ -13,7 +13,7 @@ buildscript {
         junitVersion = "5.10.2"
         fasterxmlJacksonVersion = "2.16.1"
         jodaTimeVersion = "2.12.7"
-        masterThoughtVersion = "5.7.8"
+        masterThoughtVersion = "5.8.0"
         browserStackLocalVersion = "1.1.1"
         jetbrainsAnnotationsVersion = "24.1.0"
         aspectJVersion = "1.9.20.1"
