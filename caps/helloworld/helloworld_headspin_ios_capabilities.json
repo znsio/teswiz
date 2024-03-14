@@ -11,12 +11,9 @@
     "appium:iPhoneOnly": true,
     "noReset": false,
     "printPageSourceOnFindFailure": true,
-    "shouldUseSingletonTestManager": false,
-    "simpleIsVisibleCheck": true,
-    "maxTypingFrequency": 10,
     "headspin:capture.video": true,
     "headspin:appiumVersion": "2.0.0",
-    "headspin:newCommandTimeout/newCommandTimeout": 30000
+    "headspin:newCommandTimeout": 60000
   },
   "serverConfig" : {
     "server": {
