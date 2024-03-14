@@ -38,7 +38,6 @@ class HeadSpinSetup {
         deviceFarm.get("cloud").put("url", cloudUrl);
 
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        String osVersion = String.valueOf(loadedPlatformCapability.get(PLATFORM_VERSION));
         String appIdFromHeadspin;
         if (Setup.getBooleanValueFromConfigs(Setup.CLOUD_UPLOAD_APP)) {
             appIdFromHeadspin = uploadAPKToHeadspin(authenticationKey, appPath, deviceLabURL);
@@ -51,9 +50,10 @@ class HeadSpinSetup {
         LOGGER.info("Using appId: " + appIdFromHeadspin);
         loadedPlatformCapability.put("headspin:app.id", appIdFromHeadspin);
         loadedPlatformCapability.remove("app");
-        loadedPlatformCapability.remove(PLATFORM_VERSION);
-        String deviceManufacturer = loadedPlatformCapability.get("device").toString().toUpperCase();
+        String osVersion = String.valueOf(loadedPlatformCapability.getOrDefault(PLATFORM_VERSION, ""));
+        String deviceManufacturer = loadedPlatformCapability.getOrDefault("device", "").toString().toUpperCase();
 //        loadedPlatformCapability.put("headspin:selector", "os_version:>=" + osVersion + "+device_type:" + platformName + "+manufacturer:" + deviceManufacturer);
+        loadedPlatformCapability.remove(PLATFORM_VERSION);
         updateCapabilities(loadedCapabilityFile, osVersion, deviceManufacturer);
     }
 

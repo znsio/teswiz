@@ -1,0 +1,43 @@
+{
+  "iOS": {
+    "automationName": "xcuitest",
+    "app": "temp/sampleApps/Sample.ipa",
+    "device": "iPhone 12",
+    "platformVersion": "16.6",
+    "platformName": "ios",
+    "preventWDAAttachments": true,
+    "clearSystemFiles": true,
+    "usePrebuiltWDA": false,
+    "appium:iPhoneOnly": true,
+    "noReset": false,
+    "printPageSourceOnFindFailure": true,
+    "shouldUseSingletonTestManager": false,
+    "simpleIsVisibleCheck": true,
+    "maxTypingFrequency": 10,
+    "headspin:capture.video": true,
+    "headspin:appiumVersion": "2.0.0",
+    "headspin:newCommandTimeout/newCommandTimeout": 30000
+  },
+  "serverConfig" : {
+    "server": {
+      "use-plugins": ["device-farm"],
+      "plugin": {
+        "device-farm": {
+          "platform": "iOS",
+          "skipChromeDownload": true,
+          "remoteConnectionTimeout": 300000,
+          "iosDeviceType": "real",
+          "cloud": {
+            "cloudName": "headspin",
+            "url": "https://appium-dev.headspin.io:443/v0/token/wd/hub",
+            "apiUrl": "api-dev.headspin.io/v1",
+            "devices": [
+            ]
+          }
+        }
+      }
+    }
+  },
+  "basePath": "/",
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
+}
