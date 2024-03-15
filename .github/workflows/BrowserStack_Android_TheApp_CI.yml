@@ -30,8 +30,6 @@ jobs:
           node -v
           npm install
           npm list
-          pwd
-          ls -l node_modules
       - name: Run TheApp Android tests against Browserstack
         run: |
           echo "Run theApp Tests"
