@@ -28,6 +28,8 @@ jobs:
       - name: Install Appium 2.0 and dependencies
         run: |
           node -v
+          npm cache clean --force
+          npm install appium-device-farm@8.4.7-rc.18
           npm install
           npm list
       - name: Run New Calculator Android tests against Browserstack

@@ -28,7 +28,10 @@ jobs:
       - name: Install Appium 2.0 and dependencies
         run: |
           node -v
+          npm cache clean --force
+          npm install appium-device-farm@8.4.7-rc.18
           npm install
+          npm list
       - name: Run Web tests against Browserstack
         run: |
           RUN_IN_CI=true APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=web TAG="@theapp and @invalidLogin1 and @browserstack" ./gradlew run
