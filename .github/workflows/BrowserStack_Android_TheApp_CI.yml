@@ -28,7 +28,6 @@ jobs:
       - name: Install Appium 2.0 and dependencies
         run: |
           node -v
-          npm list
           npm install
           npm list
           ./node_modules/.bin/appium server --use-plugins device-farm -pa /wd/hub &
