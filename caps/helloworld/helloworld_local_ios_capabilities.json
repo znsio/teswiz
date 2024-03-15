@@ -1,21 +1,23 @@
 {
   "iOS": {
-    "platformName": "iOS",
-    "app": "https://applitoolsnmlresources.z19.web.core.windows.net/Tutorials/eyes-ios-hello-world.zip",
-    "deviceName": "iPhone",
-    "preventWDAAttachments": true,
-    "clearSystemFiles": true,
-    "automationName": "XCUITest",
-    "usePrebuiltWDA": false,
+    "app": "temp/sampleApps/eyes-ios-hello-world.zip",
     "appium:iPhoneOnly": true,
-    "fullReset": true,
+    "automationName": "XCUITest",
+    "clearSystemFiles": true,
+    "deviceName": "iPhone 14 Pro",
+    "maxTypingFrequency": 10,
+    "noReset": true,
+    "platformName": "iOS",
+    "platformVersion": "16.4",
+    "preventWDAAttachments": true,
+    "printPageSourceOnFindFailure": true,
     "shouldUseSingletonTestManager": false,
     "simpleIsVisibleCheck": true,
-    "maxTypingFrequency": 10
+    "usePrebuiltWDA": false
   },
   "serverConfig" : {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": ["device-farm", "relaxed-caps"],
       "plugin": {
         "device-farm": {
           "platform": "iOS",

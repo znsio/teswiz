@@ -1,19 +1,22 @@
 {
   "iOS": {
-    "automationName": "xcuitest",
     "app": "temp/sampleApps/Sample.ipa",
-    "device": "iPhone 12",
-    "platformVersion": "16.6",
-    "platformName": "ios",
-    "preventWDAAttachments": true,
-    "clearSystemFiles": true,
-    "usePrebuiltWDA": false,
     "appium:iPhoneOnly": true,
-    "noReset": false,
-    "printPageSourceOnFindFailure": true,
-    "headspin:capture.video": true,
+    "automationName": "xcuitest",
+    "clearSystemFiles": true,
+    "device": "iPhone 12",
     "headspin:appiumVersion": "2.0.0",
-    "headspin:newCommandTimeout": 60000
+    "headspin:capture.video": true,
+    "headspin:newCommandTimeout": 60000,
+    "maxTypingFrequency": 10,
+    "noReset": false,
+    "platformName": "ios",
+    "platformVersion": "16.6",
+    "preventWDAAttachments": true,
+    "printPageSourceOnFindFailure": true,
+    "shouldUseSingletonTestManager": false,
+    "simpleIsVisibleCheck": true,
+    "usePrebuiltWDA": false
   },
   "serverConfig" : {
     "server": {
