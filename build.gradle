@@ -1,3 +1,5 @@
+import org.codehaus.groovy.runtime.GStringImpl
+
 import java.text.SimpleDateFormat
 
 buildscript {
@@ -144,12 +146,13 @@ static def getCurrentTimestamp() {
     return df.format(today)
 }
 
+project.ext.logDir = "./target/" + getMonth() + "/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
+
 tasks.register('run', JavaExec) {
     doFirst {
-        def logDirectory = "./target/" + getMonth() + "/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
-        println "Using LOG_DIR: $logDirectory"
-        System.setProperty "LOG_DIR", "$logDirectory"
-        environment "APPLITOOLS_LOG_DIR", "$logDirectory/applitools_logs"
+        println "Using LOG_DIR: ${project.logDir}"
+        System.setProperty "LOG_DIR", "${project.logDir}"
+        environment "APPLITOOLS_LOG_DIR", "${project.logDir}/applitools_logs"
 
         def configFile = System.getenv("CONFIG")
         if (null == configFile || !file(configFile).exists()) {
@@ -208,13 +211,12 @@ test {
     if (System.getProperty('debug', 'false') == 'true') {
         jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
     }
-    def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
-    println "Using LOG_DIR: $logDirectory"
+    println "Using LOG_DIR: ${project.logDir}"
     reports {
         html.required.set(true)
         junitXml.required.set(true)
-        html.outputLocation.set(file("$logDirectory/unit-test-results"))
-        junitXml.outputLocation.set(file("$logDirectory/unit-test-results"))
+        html.outputLocation.set(file("$project.logDir/unit-test-results"))
+        junitXml.outputLocation.set(file("$project.logDir/unit-test-results"))
     }
 }
 

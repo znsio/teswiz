@@ -13,10 +13,11 @@ Feature: Scenarios for "The App"
 #  CONFIG=./configs/theapp/theapp_local_android_config.properties PLATFORM=android TAG="@theapp and @invalidLogin1" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=web TAG="@theapp and @invalidLogin1 and @browserstack" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=android TAG="@theapp and @invalidLogin1 and @browserstack" ./gradlew run
-  @android @web @browserstack @invalidLogin @invalidLogin1 @theapp
+#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_headspin_android_config.properties CLOUD_KEY=$HEADSPIN_CLOUD_KEY PLATFORM=android TAG="@theapp and @invalidLogin1 and @headspin" ./gradlew run
+  @android @web @headspin @browserstack @invalidLogin @invalidLogin1 @theapp
   Scenario: Verify error message on invalid login
     Given I login with invalid credentials - "znsio1", "invalid password"
-#    Then I try to login again with invalid credentials - "znsio2", "another invalid password"
+    Then I try to login again with invalid credentials - "znsio2", "another invalid password"
 
 #  CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@theapp and @invalidLogin2" ./gradlew run
 #  CONFIG=./configs/theapp/theapp_local_android_config.properties PLATFORM=android TAG="@theapp and @invalidLogin2" ./gradlew run
