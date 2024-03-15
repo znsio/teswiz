@@ -30,6 +30,7 @@ jobs:
           node -v
           npm install
           npm list
+          appium server —use-plugin=device-farm -pa /wd/hub
       - name: Run TheApp Android tests against Browserstack
         run: |
           echo "Run theApp Tests"
