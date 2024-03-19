@@ -24,7 +24,7 @@ public class AppLaunchScreenIOS
     private final Driver driver;
     private final Visual visually;
     private final String byClipboardDemoAccessibilityId = "Clipboard Demo";
-    private final By byLoginScreenXPath = AppiumBy.xpath("//XCUIElementTypeStaticText[@label=\"Login Screen\"]");
+    private final By byLoginScreenXPath = AppiumBy.xpath("//*[@label=\"Login Screen\"]");
 
     public AppLaunchScreenIOS(Driver driver, Visual visually) {
         this.driver = driver;
@@ -34,7 +34,7 @@ public class AppLaunchScreenIOS
     @Override
     public LoginScreen selectLogin() {
         waitFor(3);
-        driver.findElement(byLoginScreenXPath).click();
+        driver.waitForClickabilityOf(byLoginScreenXPath).click();
         return LoginScreen.get();
     }
 

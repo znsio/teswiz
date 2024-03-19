@@ -1,6 +1,6 @@
 {
   "iOS": {
-    "app": "temp/sampleApps/TheApp.app",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp.zip",
     "appium:iPhoneOnly": true,
     "automationName": "XCUITest",
     "clearSystemFiles": true,

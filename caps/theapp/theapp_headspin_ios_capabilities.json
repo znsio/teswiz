@@ -1,6 +1,6 @@
 {
   "iOS": {
-    "app": "temp/sampleApps/TheApp.ipa",
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp.ipa",
     "automationName": "xcuitest",
     "device": "iPhone 12",
     "headspin:appiumVersion": "2.0.0",

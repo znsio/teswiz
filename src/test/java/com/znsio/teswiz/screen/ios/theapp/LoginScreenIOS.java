@@ -20,8 +20,8 @@ public class LoginScreenIOS
     private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
     private final By byUserNameXpath = AppiumBy.xpath("(//XCUIElementTypeOther[@name=\"username\"])[2]");
     private final By byPasswordXpath = AppiumBy.xpath("(//XCUIElementTypeOther[@name=\"password\"])[2]");
-    private final By byOKButtonXpath = AppiumBy.xpath("(//XCUIElementTypeButton[@name=\"OK\"])");
-    private final By byAlertBoxXpath = AppiumBy.xpath("(//XCUIElementTypeStaticText[@label=\"Invalid login credentials, please try again\"])");
+    private final By byOKButtonXpath = AppiumBy.xpath("(//*[@name=\"OK\"])");
+    private final By byAlertBoxXpath = AppiumBy.xpath("(//*[contains(@label,\"Invalid login credentials\")])");
     private final String loginButtonId = "loginBtn";
 
     public LoginScreenIOS(Driver driver, Visual visually) {
