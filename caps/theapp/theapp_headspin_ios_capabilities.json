@@ -1,13 +1,15 @@
 {
   "iOS": {
-    "app": "temp/sampleApps/Sample.ipa",
+    "app": "temp/sampleApps/TheApp.ipa",
     "automationName": "xcuitest",
     "device": "iPhone 12",
     "headspin:appiumVersion": "2.0.0",
     "headspin:capture.video": true,
     "noReset": false,
     "platformName": "ios",
-    "platformVersion": "16.6"
+    "platformVersion": "16.6",
+    "printPageSourceOnFindFailure": true,
+    "autoAcceptAlerts": true
   },
   "serverConfig" : {
     "server": {

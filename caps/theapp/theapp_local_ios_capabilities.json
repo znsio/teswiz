@@ -1,12 +1,12 @@
 {
   "iOS": {
-    "app": "temp/sampleApps/eyes-ios-hello-world.zip",
+    "app": "temp/sampleApps/TheApp.app",
     "appium:iPhoneOnly": true,
     "automationName": "XCUITest",
     "clearSystemFiles": true,
     "deviceName": "iPhone 15 Pro",
     "maxTypingFrequency": 10,
-    "noReset": true,
+    "noReset": false,
     "platformName": "iOS",
     "platformVersion": "17.4",
     "preventWDAAttachments": true,
