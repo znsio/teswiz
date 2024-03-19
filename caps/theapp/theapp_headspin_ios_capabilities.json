@@ -9,7 +9,8 @@
     "platformName": "ios",
     "platformVersion": "16.6",
     "printPageSourceOnFindFailure": true,
-    "autoAcceptAlerts": true
+    "autoAcceptAlerts": true,
+    "headspin:newCommandTimeout": 120000
   },
   "serverConfig" : {
     "server": {
