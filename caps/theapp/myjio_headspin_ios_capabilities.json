@@ -1,0 +1,37 @@
+{
+  "iOS": {
+    "app": "./temp/sampleApps/MyJio.ipa",
+    "automationName": "xcuitest",
+    "device": "iPhone 12",
+    "headspin:appiumVersion": "2.0.0",
+    "headspin:capture.video": true,
+    "noReset": false,
+    "platformName": "ios",
+    "platformVersion": "16.6",
+    "printPageSourceOnFindFailure": true,
+    "autoAcceptAlerts": true,
+    "headspin:newCommandTimeout": 120000
+  },
+  "serverConfig" : {
+    "server": {
+      "use-plugins": ["device-farm"],
+      "plugin": {
+        "device-farm": {
+          "platform": "iOS",
+          "skipChromeDownload": true,
+          "remoteConnectionTimeout": 300000,
+          "iosDeviceType": "real",
+          "cloud": {
+            "cloudName": "headspin",
+            "url": "https://appium-dev.headspin.io:443/v0/token/wd/hub",
+            "apiUrl": "api-dev.headspin.io/v1",
+            "devices": [
+            ]
+          }
+        }
+      }
+    }
+  },
+  "basePath": "/",
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
+}
