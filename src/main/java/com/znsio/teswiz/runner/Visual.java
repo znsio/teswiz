@@ -125,6 +125,7 @@ public class Visual {
         addCustomPropertiesInAppTestExecution(platform, appEyes);
         try {
             setProxyForAppExecution(appEyes);
+            LOGGER.info("Applitools (app) configuration: %s".formatted(appEyes.getConfiguration()));
             appEyes.open(innerDriver, appName, testName);
             LOGGER.info(String.format(
                     "instantiateAppiumEyes: Is Applitools Visual Testing enabled? - %s",
@@ -216,6 +217,7 @@ public class Visual {
 
         try {
             setProxyForWebExecution(webEyes);
+            LOGGER.info("Applitools (web) configuration: %s".formatted(webEyes.getConfiguration()));
             webEyes.open(innerDriver, appName, testName, setBrowserViewPortSize);
             LOGGER.info(String.format("instantiateWebEyes:  Is Applitools Visual Testing enabled? - %s", !webEyes.getIsDisabled()));
         } catch(IllegalArgumentException | EyesException e) {
