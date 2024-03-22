@@ -15,6 +15,8 @@
   
     Use appium-device-farm v8.4.7-rc.8 or later
 
+    Use JDK v17 or higher
+
 # To Build
 `./gradlew clean build`
 
@@ -40,6 +42,7 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 
 ## Tech stack used
 
+* **JDK 17**
 * cucumber-jvm (https://cucumber.io)
 * AppiumTestDistribution (https://github.com/AppiumTestDistribution/AppiumTestDistribution) -manages Android and iOS
   devices, and Appium
