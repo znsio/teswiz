@@ -3,7 +3,7 @@
 ## Pre-requisites:
 
         1. Intellij (install cucumber JVM plugin)
-        2. Java JDK 11 (JAVA_HOME Path Set)
+        2. Java JDK 17 (JAVA_HOME Path Set)
         3. Appium version (minimum 1.20.0)
         4. Android studio (ANDROID_HOME Path Set)
 
@@ -95,4 +95,3 @@
    ````
     
     
-            

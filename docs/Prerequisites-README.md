@@ -1,6 +1,6 @@
 ## Pre Requisites
 * JDK
-    * **Minimum JDK version: 11**
+    * **Minimum JDK version: 17**
     * **Set JAVA_HOME environment variable**
     * You can install JDK from here: https://adoptopenjdk.net/
 * Setup the Android environment for test execution:
