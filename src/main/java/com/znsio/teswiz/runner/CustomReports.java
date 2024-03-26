@@ -80,7 +80,7 @@ class CustomReports {
     private static Configuration addTestExecutionMetaDataToReportConfig(Configuration config) {
         config.addClassifications("Environment", Setup.getFromConfigs(TARGET_ENVIRONMENT));
         config.addClassifications("Platform", Setup.getFromConfigs(PLATFORM));
-        config.addClassifications("Tags", Setup.getFromConfigs(TAG));
+        config.addClassifications("Tags", Setup.getFromConfigs(TAG_FOR_REPORTPORTAL));
         config.addClassifications("RUN_IN_CI", Setup.getBooleanValueAsStringFromConfigs(RUN_IN_CI));
         config.addClassifications("CLOUD_NAME", getCloudNameFromCapabilities());
         config.addClassifications("EXECUTED_ON", Setup.getFromConfigs(EXECUTED_ON));

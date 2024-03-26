@@ -63,6 +63,7 @@ class Setup {
     static final String LOG_DIR = "LOG_DIR";
     static final String PARALLEL = "PARALLEL";
     static final String TAG = "TAG";
+    static final String TAG_FOR_REPORTPORTAL = "TAG_FOR_REPORTPORTAL";
     static final String APP_VERSION = "APP_VERSION";
     static final String REPORTS_DIR = "reports";
     static final String CLOUD_USE_PROXY = "CLOUD_USE_PROXY";
@@ -262,7 +263,7 @@ class Setup {
                 "VisualEnabled:%s; BuildInitiationReason:%s; ",
                 configs.get(BRANCH_NAME), configs.get(EXECUTED_ON), configs.get(APP_PATH), OS_NAME,
                 configsInteger.get(PARALLEL), currentPlatform.name(), configsBoolean.get(RUN_IN_CI),
-                configs.get(TAG), configs.get(TARGET_ENVIRONMENT), USER_NAME,
+                configs.get(TAG_FOR_REPORTPORTAL), configs.get(TARGET_ENVIRONMENT), USER_NAME,
                 configsBoolean.get(IS_VISUAL), configs.get(BUILD_INITIATION_REASON));
 
         if(!configs.get(APP_VERSION).equals(NOT_SET)) {
@@ -507,6 +508,7 @@ class Setup {
         configs.put(PLATFORM, currentPlatform.name());
         configs.put(LAUNCH_NAME, launchName);
         configs.put(TAG, inferredTags);
+        configs.put(TAG_FOR_REPORTPORTAL, inferredTags.replace(AND_NOT_WIP, ""));
         CUKE_ARGS.add("--tags");
         CUKE_ARGS.add(inferredTags);
     }
