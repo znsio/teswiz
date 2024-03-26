@@ -21,7 +21,6 @@ on:
     - cron: '35 23 * * 1'
 
 jobs:
-
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
