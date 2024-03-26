@@ -34,7 +34,6 @@ public class LoginScreenAndroid
         WebElement passwordElement = driver.findElementByAccessibilityId(passwordId);
         passwordElement.clear();
         passwordElement.sendKeys(password);
-        //        driver.waitForVisibilityOf(passwordId).sendKeys(username);
         visually.check(SCREEN_NAME, "Entered login details",
                        Target.window().fully().layout(userNameElement, passwordElement));
         return this;
