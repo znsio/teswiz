@@ -19,7 +19,6 @@ Follow these steps:
 1. Update `reportportal.properties` file present under 'src/test/resources' with the neccessary details for reporting
 1. Validate the presence of **package.json ** at the root directory and execute **npm install**
 1. **Implement the test**
-
    1. Define your scenario in a feature file (`src/test/resources/<package_name>/<feature_dir>`)
    2. Create your step definitions (`src/test/java/<package_name>/steps`)
    3. Implement your business layer classes/methods (`src/test/java/<package_name>/businessLayer`)
