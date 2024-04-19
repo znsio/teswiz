@@ -3,6 +3,7 @@ package com.znsio.teswiz.runner;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
+import net.masterthought.cucumber.Reportable;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -11,7 +12,11 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Setup.*;
@@ -23,7 +28,7 @@ class CustomReports {
         LOGGER.debug("CustomReports - private constructor");
     }
 
-    static void generateReport() {
+    static Reportable generateReport() {
         String reportsDir = Runner.USER_DIRECTORY + File.separator + Setup.getFromConfigs(
                 LOG_DIR) + File.separator + REPORTS_DIR;
         LOGGER.info(
@@ -36,11 +41,12 @@ class CustomReports {
         Configuration config = createCucumberReportsConfiguration(reportsDir);
 
         ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
-        reportBuilder.generateReports();
+        Reportable overviewReport = reportBuilder.generateReports();
         String generatedReportsMessage = String.format(
                 "Reports available here: file://%s/cucumber-html-reports/overview-features.html",
                 config.getReportDirectory().getAbsolutePath());
         LOGGER.info(generatedReportsMessage);
+        return overviewReport;
     }
 
     @NotNull
@@ -78,13 +84,34 @@ class CustomReports {
     }
 
     private static Configuration addTestExecutionMetaDataToReportConfig(Configuration config) {
-        config.addClassifications("Environment", Setup.getFromConfigs(TARGET_ENVIRONMENT));
-        config.addClassifications("Platform", Setup.getFromConfigs(PLATFORM));
-        config.addClassifications("Tags", Setup.getFromConfigs(TAG_FOR_REPORTPORTAL));
-        config.addClassifications("RUN_IN_CI", Setup.getBooleanValueAsStringFromConfigs(RUN_IN_CI));
-        config.addClassifications("CLOUD_NAME", getCloudNameFromCapabilities());
-        config.addClassifications("EXECUTED_ON", Setup.getFromConfigs(EXECUTED_ON));
-        config.addClassifications("IS_VISUAL", Setup.getBooleanValueAsStringFromConfigs(IS_VISUAL));
+        HashMap testRunMetadata = new HashMap<>();
+        testRunMetadata.put(TARGET_ENVIRONMENT, Setup.getFromConfigs(TARGET_ENVIRONMENT));
+        testRunMetadata.put(PLATFORM, Setup.getFromConfigs(PLATFORM));
+        testRunMetadata.put(TAG, Setup.getFromConfigs(TAG_FOR_REPORTPORTAL));
+        testRunMetadata.put(RUN_IN_CI, Setup.getBooleanValueAsStringFromConfigs(RUN_IN_CI));
+        testRunMetadata.put("CLOUD_NAME", getCloudNameFromCapabilities());
+        testRunMetadata.put(EXECUTED_ON, Setup.getFromConfigs(EXECUTED_ON));
+        testRunMetadata.put(IS_VISUAL, Setup.getBooleanValueAsStringFromConfigs(IS_VISUAL));
+        testRunMetadata.put(SET_HARD_GATE, Setup.getBooleanValueAsStringFromConfigs(SET_HARD_GATE));
+        testRunMetadata.put(IS_FAILING_TEST_SUITE, Setup.getBooleanValueAsStringFromConfigs(IS_FAILING_TEST_SUITE));
+        testRunMetadata.put(PARALLEL, Setup.getIntegerValueFromConfigs(PARALLEL));
+        testRunMetadata.put("OS", System.getProperty("os.name"));
+        testRunMetadata.put(HOST_NAME, Setup.getHostMachineName());
+        testRunMetadata.put(BUILD_ID, Setup.getFromConfigs(BUILD_ID));
+        testRunMetadata.put(BUILD_INITIATION_REASON, Setup.getFromConfigs(BUILD_INITIATION_REASON));
+
+        // Convert hashmap entries to a list
+        List<Map.Entry<String, Integer>> sortedTestMetaDataKeys = new ArrayList<>(testRunMetadata.entrySet());
+
+        // Sort the list by keys
+        Collections.sort(sortedTestMetaDataKeys, (Comparator<Map.Entry<String, Integer>>) (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+
+        LOGGER.info("Added test execution metadata to cucumber reports");
+        for (Map.Entry<String, Integer> testMetadataItem : sortedTestMetaDataKeys) {
+            LOGGER.info("\t: " + testMetadataItem.getKey() + " : " + testMetadataItem.getValue());
+            config.addClassifications(testMetadataItem.getKey(), String.valueOf(testMetadataItem.getValue()));
+        }
+
         return config;
     }
 }
