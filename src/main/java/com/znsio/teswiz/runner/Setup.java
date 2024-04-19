@@ -69,6 +69,8 @@ class Setup {
     static final String CLOUD_USE_PROXY = "CLOUD_USE_PROXY";
     static final String CLOUD_USE_LOCAL_TESTING = "CLOUD_USE_LOCAL_TESTING";
     static final String HOST_NAME = "HOST_NAME";
+    static final String IS_FAILING_TEST_SUITE = "IS_FAILING_TEST_SUITE";
+    static final String SET_HARD_GATE = "SET_HARD_GATE";
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
@@ -92,7 +94,7 @@ class Setup {
     private static final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
     private static final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private static final String DEFAULT_WEBDRIVER_GRID_HOST_NAME = "localhost";
-    private static final String BUILD_ID = "BUILD_ID";
+    static final String BUILD_ID = "BUILD_ID";
     private static Map<String, Map> environmentConfiguration;
     private static Map<String, Map> testDataForEnvironment;
     private static Map applitoolsConfiguration = new HashMap<>();
@@ -100,6 +102,8 @@ class Setup {
     private static String configFilePath;
     private static Platform currentPlatform = Platform.android;
     private static final String AND_NOT_WIP = " and not @wip";
+    private static final String AND_NOT_FAILING = " and not @failing";
+    private static final String AND_FAILING = " and @failing";
 
     private Setup() {
         LOGGER.debug("Setup - private constructor");
@@ -435,9 +439,11 @@ class Setup {
                                                                          RP_DESCRIPTION, RP_DEFAULT_DESCRIPTION)));
         configs.put(APP_VERSION, NOT_SET);
         configs.put(HOST_NAME, getHostMachineName());
+        configsBoolean.put(IS_FAILING_TEST_SUITE, getOverriddenBooleanValue(IS_FAILING_TEST_SUITE, false));
+        configsBoolean.put(SET_HARD_GATE, getOverriddenBooleanValue(SET_HARD_GATE, false));
     }
 
-    private static String getHostMachineName() {
+    static String getHostMachineName() {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
@@ -495,6 +501,18 @@ class Setup {
                 launchName += " - Real User Simulation on IOS";
             } else {
                 launchName += " - " + currentPlatform;
+            }
+        }
+
+        boolean isSetHardGate = getBooleanValueFromConfigs(SET_HARD_GATE);
+        LOGGER.info("SET_HARD_GATE is set to: " + isSetHardGate);
+        if (isSetHardGate) {
+            if (getBooleanValueFromConfigs(IS_FAILING_TEST_SUITE)) {
+                LOGGER.info("Adding '%s' to tags".formatted(AND_FAILING));
+                inferredTags += AND_FAILING;
+            } else {
+                LOGGER.info("Adding '%s' to tags".formatted(AND_NOT_FAILING));
+                inferredTags += AND_NOT_FAILING;
             }
         }
 

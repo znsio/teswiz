@@ -6,6 +6,7 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import io.cucumber.core.cli.Main;
+import net.masterthought.cucumber.Reportable;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
@@ -21,6 +22,8 @@ import java.util.Map;
 
 import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Setup.HOST_NAME;
+import static com.znsio.teswiz.runner.Setup.IS_FAILING_TEST_SUITE;
+import static com.znsio.teswiz.runner.Setup.SET_HARD_GATE;
 
 public class Runner {
     public static final String OS_NAME = System.getProperty("os.name");
@@ -43,7 +46,7 @@ public class Runner {
 
     public Runner(String configFilePath, String stepDefDirName, String featuresDirName) {
         Path path = Paths.get(configFilePath);
-        if(!Files.exists(path)) {
+        if (!Files.exists(path)) {
             throw new InvalidTestDataException(
                     String.format("Invalid path ('%s') provided for config", configFilePath));
         }
@@ -64,19 +67,57 @@ public class Runner {
         args.add("--glue");
         args.add(stepDefsDir);
         args.add(featuresDir);
+        boolean isHardGate = isHardGateSet();
+        boolean isRunningFailingTests = isRunningFailingTestSuite();
         LOGGER.info("Begin running tests with args: {}", args);
         String[] array = args.toArray(String[]::new);
         try {
             byte status = Main.run(array);
             LOGGER.info("Execution status: {}", status);
             Setup.cleanUpExecutionEnvironment();
-            CustomReports.generateReport();
+            Reportable overviewReport = CustomReports.generateReport();
+            int totalFeatures = overviewReport.getFeatures();
+            int totalScenarios = overviewReport.getScenarios();
+            int failedScenarios = overviewReport.getFailedScenarios();
+            int passedScenarios = overviewReport.getPassedScenarios();
+            LOGGER.info("Total features: {}", totalFeatures);
+            LOGGER.info("Total scenarios: {}", totalScenarios);
+            LOGGER.info("Passed scenarios: {}", passedScenarios);
+            LOGGER.info("Failed scenarios: {}", failedScenarios);
+
+            if (isHardGate) {
+                status = getStatus(isRunningFailingTests, totalFeatures, totalScenarios, passedScenarios, failedScenarios);
+                LOGGER.info("SET_HARD_GATE is '%s', and '%s' is '%s'. Returning status '%s' of hard gate".
+                        formatted(isHardGate, IS_FAILING_TEST_SUITE, isRunningFailingTests, status));
+            } else {
+                LOGGER.info("SET_HARD_GATE is '%s'. Return actual status '%s' of test execution".formatted(isHardGate, status));
+            }
             System.exit(status);
         } catch (Exception e) {
             LOGGER.error("EXCEPTION: {}", e.getMessage());
             LOGGER.error(e);
             System.exit(1);
         }
+    }
+
+    private boolean isHardGateSet() {
+        return Setup.getBooleanValueFromConfigs(SET_HARD_GATE);
+    }
+
+    static byte getStatus(boolean runningFailingTestSuite, int totalFeatures, int totalScenarios, int passedScenarios, int failedScenarios) {
+        byte status;
+        LOGGER.info("Is runningFailingTestSuite: {}", runningFailingTestSuite);
+
+        // running failing test suite - passedScenarios==0, exit 0
+        // running passing test suite - failedScenarios==0, exit 0
+        status = (runningFailingTestSuite && passedScenarios == 0) ||
+                (!runningFailingTestSuite && failedScenarios == 0) ? (byte) 0 : (byte) 1;
+        LOGGER.info("Status: {}", status);
+        return status;
+    }
+
+    private boolean isRunningFailingTestSuite() {
+        return Setup.getBooleanValueFromConfigs(IS_FAILING_TEST_SUITE);
     }
 
     public static Platform getPlatform() {
@@ -126,7 +167,7 @@ public class Runner {
     public static String getFromEnvironmentConfiguration(String key) {
         try {
             return Setup.getFromEnvironmentConfiguration(key);
-        } catch(NullPointerException npe) {
+        } catch (NullPointerException npe) {
             throw new InvalidTestDataException(String.format(INVALID_KEY_MESSAGE, key), npe);
         }
     }
@@ -134,7 +175,7 @@ public class Runner {
     public static String getTestData(String key) {
         try {
             return Setup.getTestDataValueAsStringForEnvironmentFor(key);
-        } catch(NullPointerException npe) {
+        } catch (NullPointerException npe) {
             throw new InvalidTestDataException(String.format(INVALID_KEY_MESSAGE, key), npe);
         }
     }
@@ -142,7 +183,7 @@ public class Runner {
     public static Map<String, Object> getTestDataAsMap(String key) {
         try {
             return Setup.getTestDataAsMapForEnvironmentFor(key);
-        } catch(NullPointerException npe) {
+        } catch (NullPointerException npe) {
             throw new InvalidTestDataException(String.format(INVALID_KEY_MESSAGE, key), npe);
         }
     }
@@ -152,13 +193,13 @@ public class Runner {
         System.setProperty("OUTPUT_DIRECTORY", logDir);
         LOGGER.info("teswiz Runner");
         LOGGER.info("Provided parameters:");
-        for(String arg : args) {
+        for (String arg : args) {
             LOGGER.info("\t" + arg);
         }
-        if(args.length != 3) {
+        if (args.length != 3) {
             throw new InvalidTestDataException(
                     "Expected following parameters: 'String configFilePath, String " +
-                    "stepDefDirName, String " + "featuresDirName");
+                            "stepDefDirName, String " + "featuresDirName");
         }
         new Runner(args[0], args[1], args[2]);
     }
@@ -191,7 +232,7 @@ public class Runner {
         String baseUrlToBeUsed = Setup.getFromConfigs(Setup.BASE_URL_FOR_WEB);
         LOGGER.info(String.format("Using baseUrl KEY in configs for web: '%s'", baseUrlToBeUsed));
         Object updatedBaseUrlForWeb = getTestExecutionContext(Thread.currentThread().getId()).getTestState(TEST_CONTEXT.UPDATED_BASE_URL_FOR_WEB);
-        if (null!= updatedBaseUrlForWeb) {
+        if (null != updatedBaseUrlForWeb) {
             baseUrlToBeUsed = updatedBaseUrlForWeb.toString();
             LOGGER.info(String.format("Using updated baseUrl key for web: '%s'", baseUrlToBeUsed));
         }
@@ -223,17 +264,17 @@ public class Runner {
     public static JSONObject getBrowserConfigFileContents(String browserConfigFile) {
         try {
             InputStream inputStream;
-            if(browserConfigFile.contains(DEFAULT)) {
+            if (browserConfigFile.contains(DEFAULT)) {
                 inputStream = Runner.class.getResourceAsStream(Setup.DEFAULT_BROWSER_CONFIG_FILE);
             } else {
                 inputStream = Files.newInputStream(Paths.get(browserConfigFile));
             }
             assert inputStream != null;
             return new JSONObject(new JSONTokener(inputStream));
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new InvalidTestDataException(
                     String.format("There was a problem while setting browser config file '%s'",
-                                  browserConfigFile));
+                            browserConfigFile));
         }
     }
 

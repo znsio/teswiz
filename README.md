@@ -65,6 +65,8 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 
 ## [Writing the first test](docs/WritingFirstTest-README.md)
 
+## [Setting up the Hard Gate](./docs/HardGate.md)
+
 ## Additional configurations
 
 ### [Running Visual Tests using Applitools Visual AI](docs/RunningVisualTests-README.md)
