@@ -14,7 +14,6 @@ Feature: Failing test suite - feature 1
     Given I pass "4"
     Given I now pass 4
 
-  @failing
   Scenario: Softly Fail 6
     Given I softly fail "6"
 
@@ -23,6 +22,7 @@ Feature: Failing test suite - feature 1
     Given I fail hard "7"
     And I pass "7"
 
+  @failing
   Scenario: Pass 534
     Given I pass "534"
 
