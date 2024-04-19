@@ -87,7 +87,8 @@ public class Runner {
 
             if (isHardGate) {
                 status = getStatus(isRunningFailingTests, totalFeatures, totalScenarios, passedScenarios, failedScenarios);
-                LOGGER.info("SET_HARD_GATE is '%s'. Returning status '%s' of hard gate".formatted(isHardGate, status));
+                LOGGER.info("SET_HARD_GATE is '%s', and '%s' is '%s'. Returning status '%s' of hard gate".
+                        formatted(isHardGate, IS_FAILING_TEST_SUITE, isRunningFailingTests, status));
             } else {
                 LOGGER.info("SET_HARD_GATE is '%s'. Return actual status '%s' of test execution".formatted(isHardGate, status));
             }
