@@ -9,7 +9,7 @@
 [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)
 
 ## Latest successful build id:
-[![Latest Commit](https://img.shields.io/badge/commit-83c9f1824e-blue.svg)](https://jitpack.io/#znsio/teswiz)
+[![Latest Commit](https://img.shields.io/badge/commit-3564dd18c6-blue.svg)](https://jitpack.io/#znsio/teswiz)
 
 # NOTE
   
