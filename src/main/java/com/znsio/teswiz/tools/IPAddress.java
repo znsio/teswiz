@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-class IPAddress {
+public class IPAddress {
     public static String getPublicIPAddress() {
         try {
             // Make a request to a service that echoes back the public IP address
