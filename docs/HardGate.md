@@ -40,3 +40,17 @@ To specifically execute failing tests, utilize the following parameter in your t
 
 With this parameter, only tests tagged with **@failing** will be executed. If all scenarios marked as failing indeed fail during execution, the build will be marked as **PASS**. This provides clarity on whether a previously failing test now passes due to a fix in either the test itself or the underlying product issue.
 
+### Examples:
+
+1. Command to execute all the passing tests (scenarios which do not have the @failing tag).
+
+   `SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false ./gradlew run`
+
+
+2. Command to Execute all the Failing Tests [i.e, only scenarios which have @failing tag].
+   
+    `SET_HARD_GATE=true IS_FAILING_TEST_SUITE=true ./gradlew run`
+   
+    **Note:** When all the scenarios with the @failing tag fail, the build succeeds.
+
+
