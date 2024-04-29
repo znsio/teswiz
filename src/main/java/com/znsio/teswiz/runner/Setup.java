@@ -423,17 +423,7 @@ class Setup {
             }
         }
 
-        boolean isSetHardGate = getBooleanValueFromConfigs(SET_HARD_GATE);
-        LOGGER.info("SET_HARD_GATE is set to: " + isSetHardGate);
-        if (isSetHardGate) {
-            if (getBooleanValueFromConfigs(IS_FAILING_TEST_SUITE)) {
-                LOGGER.info("Adding '%s' to tags".formatted(AND_FAILING));
-                inferredTags += AND_FAILING;
-            } else {
-                LOGGER.info("Adding '%s' to tags".formatted(AND_NOT_FAILING));
-                inferredTags += AND_NOT_FAILING;
-            }
-        }
+        inferredTags = getInferredTagsForHardGate(inferredTags);
 
         launchName += " " + configs.get(LAUNCH_NAME_SUFFIX);
 
@@ -446,6 +436,21 @@ class Setup {
         configs.put(TAG_FOR_REPORTPORTAL, inferredTags.replace(AND_NOT_WIP, ""));
         CUKE_ARGS.add("--tags");
         CUKE_ARGS.add(inferredTags);
+    }
+
+    private static String getInferredTagsForHardGate(String inferredTags) {
+        boolean isSetHardGate = getBooleanValueFromConfigs(SET_HARD_GATE);
+        LOGGER.info("SET_HARD_GATE is set to: " + isSetHardGate);
+        if (isSetHardGate) {
+            if (getBooleanValueFromConfigs(IS_FAILING_TEST_SUITE)) {
+                LOGGER.info("Adding '%s' to tags".formatted(AND_FAILING));
+                inferredTags += AND_FAILING;
+            } else {
+                LOGGER.info("Adding '%s' to tags".formatted(AND_NOT_FAILING));
+                inferredTags += AND_NOT_FAILING;
+            }
+        }
+        return inferredTags;
     }
 
     private static void addCucumberPlugsToArgs() {
