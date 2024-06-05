@@ -346,8 +346,9 @@ public class Visual {
                 Toolkit toolkit = Toolkit.getDefaultToolkit();
                 actualBrowserSize = new Dimension(toolkit.getScreenSize().width, toolkit.getScreenSize().height);
             }
-            else
+            else {
                 actualBrowserSize = innerDriver.manage().window().getSize();
+            }
             LOGGER.info(format("Actual browser dimensions: %s", actualBrowserSize));
             Long actualHeight = (Long) js.executeScript("return (window.innerHeight);");
             Long actualWidth = (Long) js.executeScript("return (window.innerWidth);");
