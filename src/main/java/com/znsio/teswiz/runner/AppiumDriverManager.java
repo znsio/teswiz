@@ -191,7 +191,7 @@ class AppiumDriverManager {
     private static void disableNotificationsAndToastsOnDevice(Driver currentDriver, String deviceOn,
                                                               String udid) {
         if (Runner.isRunningInCI()) {
-            disableNotificationsForDeviceInDeviceFarm(currentDriver, deviceOn);
+//            disableNotificationsForDeviceInDeviceFarm(currentDriver, deviceOn);
         } else {
             disableNotificationsForLocalDevice(udid);
         }
