@@ -11,10 +11,10 @@ buildscript {
         atdVersion = "b313941325" // ATD main branch
         jadbVersion = "1.2.1"
         unirestVersion = "3.14.5"
-        specmaticVersion = '1.3.24'
+        specmaticVersion = '1.3.28'
         webDriverManager = '5.8.0'
         jodaTimeVersion = "2.12.7"
-        masterThoughtVersion = "5.8.0"
+        masterThoughtVersion = "5.8.1"
         commonsLang3Version = "3.14.0"
         commonsRngSimpleVersion = "1.5"
         aspectJVersion = "1.9.22.1"
