@@ -9,18 +9,23 @@ import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.APPLITOOLS;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
+import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.services.UnirestService;
 import com.znsio.teswiz.tools.HeartBeat;
+import com.znsio.teswiz.tools.ReportPortalLogger;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.assertj.core.api.Assertions;
 import org.testng.annotations.DataProvider;
 
+import java.time.Instant;
 import java.util.HashMap;
-
-import static com.znsio.teswiz.tools.Wait.waitFor;
 
 public class RunTestCukes
         extends AbstractTestNGCucumberTests {
@@ -56,6 +61,25 @@ public class RunTestCukes
         ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
         LOGGER.info("Use the following Browsers and devices in UFG config: " + ufgConfig.getBrowsersInfo());
         context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
+        isEnvironmentHealthy(context.getTestName(), Runner.getFromEnvironmentConfiguration(SAMPLE_TEST_CONTEXT.HEALTH_CHECK_URL));
+    }
+
+    private void isEnvironmentHealthy(String testName, String healthCheckUrl) {
+        if (Runner.getTargetEnvironment().equalsIgnoreCase("prod")) {
+            LOGGER.info("Checking health of environment from: %s".formatted(healthCheckUrl));
+
+            // TODO - replace logic as per application's health check and observability capability
+            // HttpResponse<JsonNode> healthCheckResponse = UnirestService.getHttpResponse(healthCheckUrl);
+            // LOGGER.info("Health check response: %s", healthCheckResponse.getBody());
+
+            boolean isEnvironmentHealthy = Instant.now().toEpochMilli() %2 == 0;
+            LOGGER.info("Environment healthy? %s".formatted(isEnvironmentHealthy));
+
+            // ReportPortalLogger.logInfoMessage("Health check status: " + healthCheckResponse.getBody());
+            ReportPortalLogger.logInfoMessage("Health check status: " + isEnvironmentHealthy);
+
+            Assertions.assertThat(isEnvironmentHealthy).as("Health check failed").isTrue();
+        }
     }
 
     @After

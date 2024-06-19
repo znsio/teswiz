@@ -19,6 +19,11 @@ public class UnirestService {
         return unirest;
     }
 
+    public static HttpResponse<JsonNode> getHttpResponse(String completeURLPath) {
+        LOGGER.info("Processing GET call with base URL");
+        return getUnirestObj().get(completeURLPath).headers(getHeadersWithoutAuthorization()).asJson();
+    }
+
     public static HttpResponse<JsonNode> getHttpResponseWithQueryParameter(String completeURLPath, String key, String value) {
         LOGGER.info("Processing GET call with base URL and single query parameter");
         return getUnirestObj().get(completeURLPath).headers(getHeadersWithoutAuthorization()).queryString(key, value).asJson();
