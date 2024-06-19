@@ -72,7 +72,7 @@ public class RunTestCukes
             // HttpResponse<JsonNode> healthCheckResponse = UnirestService.getHttpResponse(healthCheckUrl);
             // LOGGER.info("Health check response: %s", healthCheckResponse.getBody());
 
-            boolean isEnvironmentHealthy = Instant.now().toEpochMilli() %2 == 0;
+            boolean isEnvironmentHealthy = true;
             LOGGER.info("Environment healthy? %s".formatted(isEnvironmentHealthy));
 
             // ReportPortalLogger.logInfoMessage("Health check status: " + healthCheckResponse.getBody());
