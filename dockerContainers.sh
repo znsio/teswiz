@@ -41,9 +41,14 @@ else
     exit 1
 fi
 
-echo "Using the containers from DOCKER_REGISTRY: $DOCKER_REGISTRY for architecture: $arch"
-
 export DOCKER_REGISTRY=$DOCKER_REGISTRY
+export SELENIUM_HUB_IMAGE="$DOCKER_REGISTRY/${SELENIUM_HUB_REPO}:latest"
+export CHROME_IMAGE="$DOCKER_REGISTRY/${CHROME_REPO}:latest"
+export FIREFOX_IMAGE="$DOCKER_REGISTRY/${FIREFOX_REPO}:latest"
+echo "Using the containers from DOCKER_REGISTRY: $DOCKER_REGISTRY for architecture: $arch"
+echo "Selenium-hub image: ${SELENIUM_HUB_IMAGE}"
+echo "Chrome image: ${CHROME_IMAGE}"
+echo "Firefox image: ${FIREFOX_IMAGE}"
 
 if [[ -z "${TESWIZ_GRID_PORT}" ]]; then
   echo "GRID_PORT is not set. Use default: 4444"
