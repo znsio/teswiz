@@ -5,7 +5,7 @@
     "appium": "2.10.3",
     "appium-device-farm": "8.4.7-rc.46",
     "appium-uiautomator2-driver": "3.6.1",
-    "appium-xcuitest-driver": "7.20.1",
+    "appium-xcuitest-driver": "7.21.0",
     "braces": "3.0.3",
     "fill-range": "7.1.1",
     "ws": "8.17.1"
