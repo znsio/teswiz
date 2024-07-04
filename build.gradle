@@ -34,7 +34,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.96'
+version '0.0.97'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
