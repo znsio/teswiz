@@ -3,7 +3,7 @@
     "@appium/doctor": "2.1.8",
     "@appium/relaxed-caps-plugin": "1.0.6",
     "appium": "2.11.1",
-    "appium-device-farm": "8.4.7-rc.46",
+    "appium-device-farm": "9.0.1",
     "appium-uiautomator2-driver": "3.7.1",
     "appium-xcuitest-driver": "7.22.1",
     "braces": "3.0.3",
