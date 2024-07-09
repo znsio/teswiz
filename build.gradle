@@ -18,7 +18,7 @@ buildscript {
         commonsLang3Version = "3.14.0"
         commonsRngSimpleVersion = "1.5"
         aspectJVersion = "1.9.22.1"
-        assertJVersion = "3.26.0"
+        assertJVersion = "3.26.3"
         jetbrainsAnnotationsVersion = "24.1.0"
         junitVersion = "5.11.0-M2"
     }
