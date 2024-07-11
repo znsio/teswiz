@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@appium/doctor": "2.1.8",
+    "@appium/doctor": "2.1.9",
     "@appium/relaxed-caps-plugin": "1.0.6",
     "appium": "2.11.1",
     "appium-device-farm": "9.0.1",
