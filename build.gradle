@@ -16,7 +16,7 @@ buildscript {
         jodaTimeVersion = "2.12.7"
         masterThoughtVersion = "5.8.1"
         commonsLang3Version = "3.14.0"
-        commonsRngSimpleVersion = "1.5"
+        commonsRngSimpleVersion = "1.6"
         aspectJVersion = "1.9.22.1"
         assertJVersion = "3.26.0"
         jetbrainsAnnotationsVersion = "24.1.0"
