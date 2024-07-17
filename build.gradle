@@ -14,7 +14,7 @@ buildscript {
         specmaticVersion = '1.3.35'
         webDriverManager = '5.9.1'
         jodaTimeVersion = "2.12.7"
-        masterThoughtVersion = "5.8.1"
+        masterThoughtVersion = "5.8.2"
         commonsLang3Version = "3.14.0"
         commonsRngSimpleVersion = "1.5"
         aspectJVersion = "1.9.22.1"
