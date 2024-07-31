@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "@appium/doctor": "2.1.8",
+    "@appium/doctor": "2.1.9",
     "@appium/relaxed-caps-plugin": "1.0.6",
-    "appium": "2.11.1",
+    "appium": "2.11.2",
     "appium-device-farm": "9.0.1",
-    "appium-uiautomator2-driver": "3.7.1",
-    "appium-xcuitest-driver": "7.23.0",
+    "appium-uiautomator2-driver": "3.7.4",
+    "appium-xcuitest-driver": "7.24.4",
     "braces": "3.0.3",
     "fill-range": "7.1.1",
     "ws": "8.18.0"
