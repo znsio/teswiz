@@ -20,7 +20,7 @@ buildscript {
         aspectJVersion = "1.9.22.1"
         assertJVersion = "3.26.3"
         jetbrainsAnnotationsVersion = "24.1.0"
-        junitVersion = "5.11.0-M2"
+        junitVersion = "5.11.0-RC1"
     }
 }
 
