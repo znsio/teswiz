@@ -15,7 +15,7 @@ buildscript {
         webDriverManager = '5.9.2'
         jodaTimeVersion = "2.12.7"
         masterThoughtVersion = "5.8.2"
-        commonsLang3Version = "3.15.0"
+        commonsLang3Version = "3.16.0"
         commonsRngSimpleVersion = "1.6"
         aspectJVersion = "1.9.22.1"
         assertJVersion = "3.26.3"
