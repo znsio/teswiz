@@ -28,6 +28,12 @@
       "groupName": "Security updates",
       "schedule": ["before 6am every weekday"],
       "enabled": true
+    },
+    {
+      "managers": ["github-actions"],
+      "packagePatterns": ["codeql", "quality"],
+      "groupName": "Code Scanning and Quality",
+      "schedule": ["before 6am every weekday"]
     }
   ],
   "gradle": {
