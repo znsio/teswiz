@@ -2,5 +2,32 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base"
-  ]
+  ],
+  "packageRules": [
+    {
+      "managers": ["npm"],
+      "packagePatterns": ["*"],
+      "groupName": "all npm dependencies",
+      "schedule": ["before 4am every weekday"]
+    },
+    {
+      "managers": ["gradle", "maven"],
+      "packagePatterns": ["*"],
+      "groupName": "all java dependencies",
+      "schedule": ["before 4am every weekday"]
+    }
+  ],
+  "gradle": {
+    "enabled": true
+  },
+  "maven": {
+    "enabled": true
+  },
+  "npm": {
+    "enabled": true
+  },
+  "rangeStrategy": "bump",
+  "rebaseWhen": "conflicted",
+  "timezone": "Asia/Kolkata",
+  "labels": ["dependencies", "renovate"]
 }
