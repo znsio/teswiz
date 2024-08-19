@@ -8,7 +8,9 @@
     "appium-xcuitest-driver": "7.24.16",
     "braces": "3.0.3",
     "fill-range": "7.1.1",
-    "ws": "8.18.0"
+    "ws": "8.18.0",
+    "axios": "1.7.4",
+    "ip": "2.0.1"
   },
   "name": "teswiz-appium2.0",
   "description": "[![0.0.3](https://jitpack.io/v/znsio/teswiz.svg)](https://jitpack.io/#znsio/teswiz) [![0.0.3](https://jitci.com/gh/znsio/teswiz/svg)](https://jitci.com/gh/znsio/teswiz) [![CI](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml) [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)",
