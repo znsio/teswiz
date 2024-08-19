@@ -8,13 +8,26 @@
       "managers": ["npm"],
       "packagePatterns": ["*"],
       "groupName": "all npm dependencies",
-      "schedule": ["before 4am every weekday"]
+      "schedule": ["before 6am every weekday"]
     },
     {
       "managers": ["gradle", "maven"],
       "packagePatterns": ["*"],
       "groupName": "all java dependencies",
-      "schedule": ["before 4am every weekday"]
+      "schedule": ["before 6am every weekday"]
+    },
+    {
+      "managers": ["github-actions"],
+      "packagePatterns": ["*"],
+      "groupName": "GitHub Actions updates",
+      "schedule": ["before 6am every weekday"]
+    },
+    {
+      "managers": ["regex"],
+      "matchStrings": ["(?i)security.*"],
+      "groupName": "Security updates",
+      "schedule": ["before 6am every weekday"],
+      "enabled": true
     }
   ],
   "gradle": {
@@ -24,6 +37,9 @@
     "enabled": true
   },
   "npm": {
+    "enabled": true
+  },
+  "github-actions": {
     "enabled": true
   },
   "rangeStrategy": "bump",
