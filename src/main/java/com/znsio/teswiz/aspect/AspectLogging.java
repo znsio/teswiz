@@ -1,11 +1,10 @@
 package com.znsio.teswiz.aspect;
 
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 
 @Aspect
 public class AspectLogging {
