@@ -32,17 +32,17 @@ class PCloudySetup {
     }
 
     static void updatePCloudyCapabilities(String deviceLabURL) {
-        String emailID = Setup.getFromConfigs(CLOUD_USERNAME);
-        String authenticationKey = Setup.getFromConfigs(CLOUD_KEY);
-        if(Setup.getBooleanValueFromConfigs(CLOUD_UPLOAD_APP)) {
+        String emailID = getFromConfigs(CLOUD_USERNAME);
+        String authenticationKey = getFromConfigs(CLOUD_KEY);
+        if(getBooleanValueFromConfigs(CLOUD_UPLOAD_APP)) {
             fetchAuthTokenAndUploadAPKToPCloudy(emailID, authenticationKey, deviceLabURL);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
         }
-        String capabilityFile = Setup.getFromConfigs(CAPS);
-        String appPath = Setup.getFromConfigs(APP_PATH);
+        String capabilityFile = getFromConfigs(CAPS);
+        String appPath = getFromConfigs(APP_PATH);
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
-        String platformName = Setup.getPlatform().name();
+        String platformName = getPlatform().name();
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
         String deviceVersion = String.valueOf(loadedPlatformCapability.get("os_version"));
         String deviceManufacturer = String.valueOf(loadedPlatformCapability.get("device"));
@@ -71,14 +71,14 @@ class PCloudySetup {
                                                             String deviceLabURL) {
         LOGGER.info(
                 String.format("uploadAPKTopCloudy for: '%s':'%s'%n", emailID, authenticationKey));
-        String appPath = Setup.getFromConfigs(APP_PATH);
+        String appPath = getFromConfigs(APP_PATH);
 
         String authToken = getPCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
         if(isAPKAlreadyAvailableInPCloudy(authToken, appPath, deviceLabURL)) {
             LOGGER.info("\tAPK is already available in cloud. No need to upload it again");
         } else {
             LOGGER.info("\tAPK is NOT available in cloud. Upload it");
-            Setup.addToConfigs(APP_PATH, uploadAppToPCloudy(appPath, deviceLabURL, authToken));
+            addToConfigs(APP_PATH, uploadAppToPCloudy(appPath, deviceLabURL, authToken));
         }
     }
 
@@ -87,11 +87,11 @@ class PCloudySetup {
     }
 
     static void updateCapabilities(Map<String, Map> loadedCapabilityFile) {
-        String capabilityFile = Setup.getFromConfigs(CAPS);
-        String platformName = Setup.getPlatform().name();
+        String capabilityFile = getFromConfigs(CAPS);
+        String platformName = getPlatform().name();
         ArrayList listOfAndroidDevices = new ArrayList();
         for(int numDevices = 0;
-            numDevices < Setup.getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS);
+            numDevices < getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS);
             numDevices++) {
             HashMap<String, String> deviceInfo = new HashMap();
             deviceInfo.put("pCloudy_DeviceManufacturer",
