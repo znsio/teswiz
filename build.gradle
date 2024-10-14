@@ -19,7 +19,7 @@ buildscript {
         commonsRngSimpleVersion = "1.6"
         aspectJVersion = "1.9.22.1"
         assertJVersion = "3.26.3"
-        jetbrainsAnnotationsVersion = "25.0.0"
+        jetbrainsAnnotationsVersion = "26.0.1"
         junitVersion = "5.11.2"
     }
 }
