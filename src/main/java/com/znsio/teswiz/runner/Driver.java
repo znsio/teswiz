@@ -793,4 +793,22 @@ public class Driver {
         List<WebElement> elementList = driver.findElements(locator);
         return !elementList.isEmpty() && elementList.get(0).isDisplayed();
     }
+
+    public String getClipboardText() {
+        return switch (Runner.getPlatform()) {
+            case android -> ((AndroidDriver) driver).getClipboardText();
+            case iOS -> ((IOSDriver) driver).getClipboardText();
+            default ->
+                    throw new NotImplementedException("getClipboardText method is not implemented for " + Runner.getPlatform());
+        };
+    }
+
+    public void setClipboardText(String text) {
+        switch (Runner.getPlatform()) {
+            case android -> ((AndroidDriver) driver).setClipboardText(text);
+            case iOS -> ((IOSDriver) driver).setClipboardText(text);
+            default ->
+                    throw new NotImplementedException("setClipboardText method is not implemented for " + Runner.getPlatform());
+        }
+    }
 }
