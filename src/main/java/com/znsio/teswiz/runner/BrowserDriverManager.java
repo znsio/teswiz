@@ -135,6 +135,7 @@ class BrowserDriverManager {
         }
         String retrievedBaseUrl = String.valueOf(
                 Runner.getFromEnvironmentConfiguration(providedBaseUrlKey));
+        retrievedBaseUrl = getOverriddenStringValue(providedBaseUrlKey, retrievedBaseUrl);
         LOGGER.info(String.format("baseUrl: %s", retrievedBaseUrl));
         return retrievedBaseUrl;
     }
