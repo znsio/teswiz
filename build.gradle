@@ -7,7 +7,7 @@ buildscript {
         gradleVersion = "8.10.2"
         applitoolsAppiumVersion = "5.70.0"
         browserStackLocalVersion = "1.1.4"
-        fasterxmlJacksonVersion = "2.18.0"
+        fasterxmlJacksonVersion = "2.18.1"
         atdVersion = "b313941325" // ATD main branch
         jadbVersion = "1.2.1"
         unirestVersion = "3.14.5"
@@ -34,7 +34,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.98'
+version '0.0.99'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17

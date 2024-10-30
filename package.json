@@ -1,22 +1,22 @@
 {
   "dependencies": {
-    "@appium/doctor": "2.1.11",
+    "@appium/doctor": "2.1.13",
     "@appium/relaxed-caps-plugin": "1.0.6",
-    "appium": "2.11.5",
-    "appium-device-farm": "9.4.1",
+    "appium": "2.12.1",
+    "appium-device-farm": "9.4.5",
     "appium-uiautomator2-driver": "3.8.0",
-    "appium-xcuitest-driver": "7.27.0",
+    "appium-xcuitest-driver": "7.28.3",
     "braces": "3.0.3",
     "fill-range": "7.1.1",
     "ws": "8.18.0",
     "axios": "1.7.7",
     "ip": "2.0.1",
     "micromatch": "4.0.8",
-    "rimraf": "5.0.10"
+    "rimraf": "6.0.1"
   },
   "name": "teswiz-appium2.0",
   "description": "[![0.0.3](https://jitpack.io/v/znsio/teswiz.svg)](https://jitpack.io/#znsio/teswiz) [![0.0.3](https://jitci.com/gh/znsio/teswiz/svg)](https://jitci.com/gh/znsio/teswiz) [![CI](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml) [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)",
-  "version": "0.0.98",
+  "version": "0.0.99",
   "main": "index.js",
   "directories": {
     "doc": "docs"
