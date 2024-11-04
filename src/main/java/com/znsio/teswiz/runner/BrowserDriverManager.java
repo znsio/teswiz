@@ -18,9 +18,10 @@ import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
+import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.Proxy;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -542,7 +543,15 @@ class BrowserDriverManager {
             logMessage = String.format("Closing WebDriver for user: '%s'", userPersona);
             LOGGER.info(logMessage);
             ReportPortalLogger.logDebugMessage(logMessage);
+            quitWebDriver(webDriver);
+        }
+    }
+
+    private static void quitWebDriver(WebDriver webDriver) {
+        try {
             webDriver.quit();
+        } catch (NoSuchSessionException e) {
+            LOGGER.debug("Exception while quiting WebDriver", e);
         }
     }
 

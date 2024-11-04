@@ -15,7 +15,6 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,7 +39,7 @@ public class Drivers {
                 String.format("setDriverFor: start: userPersona: '%s', Platform: '%s'", userPersona,
                               forPlatform.name()));
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
-        if(!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
+        if (!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
             String message = String.format(
                     "ERROR: Driver for user persona: '%s' DOES NOT EXIST%nAvailable drivers: '%s'",
                     userPersona, userPersonaDetails.getAllUserPersonasForAssignedDrivers());
@@ -77,7 +76,7 @@ public class Drivers {
         userPersonaDetails.addAppName(userPersona, appName);
         userPersonaDetails.addPlatform(userPersona, forPlatform);
 
-        if(userPersonaDetails.isDriverAssignedForUser(userPersona)) {
+        if (userPersonaDetails.isDriverAssignedForUser(userPersona)) {
             String message = String.format(
                     "ERROR: Driver for user persona: '%s' ALREADY EXISTS%nAvailable drivers: '%s'",
                     userPersona, userPersonaDetails.getAllUserPersonasForAssignedDrivers());
@@ -113,7 +112,7 @@ public class Drivers {
                                                   Platform forPlatform,
                                                   TestExecutionContext context) {
         Driver currentDriver;
-        switch(forPlatform) {
+        switch (forPlatform) {
             case android:
                 currentDriver = AppiumDriverManager.createAndroidDriverForUser(userPersona, forPlatform, context);
                 break;
@@ -150,7 +149,7 @@ public class Drivers {
         TestExecutionContext context = getTestExecutionContext(Thread.currentThread().getId());
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
 
-        if(!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
+        if (!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
             LOGGER.info(
                     "getDriverForUser: Drivers available for userPersonas: " + userPersonaDetails.getAllUserPersonasForAssignedDrivers());
             throw new InvalidTestDataException(
@@ -165,7 +164,7 @@ public class Drivers {
         String userPersona = context.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
 
-        if(!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
+        if (!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
             LOGGER.info(
                     "getDriverForUser: Drivers available for userPersonas: " + userPersonaDetails.getAllUserPersonasForAssignedDrivers());
             throw new InvalidTestDataException(
@@ -191,7 +190,7 @@ public class Drivers {
         Capabilities userPersonaCapabilities = userPersonaDetails.getCapabilitiesAssignedForUser(
                 userPersona);
         String deviceOrBrowserName = (String) userPersonaCapabilities.getCapability(capabilityName);
-        if(null == deviceOrBrowserName) {
+        if (null == deviceOrBrowserName) {
             LOGGER.info(
                     "Capabilities available for userPersona: '" + userPersona + "': " + userPersonaCapabilities.asMap()
                                                                                                                .keySet());
@@ -207,7 +206,7 @@ public class Drivers {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(
                 getTestExecutionContext(Thread.currentThread().getId()));
 
-        if(!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
+        if (!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
             LOGGER.info("getPlatformForUser: Platforms available for userPersonas: ");
             userPersonaDetails.getAllUserPersonasForAssignedPlatforms().forEach(key -> LOGGER.info(
                     "\tUser Persona: " + key + ": Platform: " + userPersonaDetails.getPlatformAssignedForUser(
@@ -229,11 +228,9 @@ public class Drivers {
                 userPersonaDetails.getAllAssignedUserPersonasAndDrivers();
         LOGGER.info("Closing driver for the following userPersonas: " + allAssignedUserPersonasAndDrivers.keySet());
         allAssignedUserPersonasAndDrivers.forEach((userPersona, driver) -> {
+            LOGGER.info("Closing driver for the userPersonas: " + userPersona);
             driver.getVisual().takeScreenshot("afterHooks", userPersona);
             updateTestStatusInCloud(driver.getInnerDriver(), scenario.getStatus());
-            LOGGER.info(String.format(
-                    "\tGetting visual validation results and closing driver for: User Persona: %s",
-                    userPersona));
             validateVisualTestResults(userPersona, driver);
             attachLogsAndCloseDriver(userPersona, driver);
         });
@@ -246,7 +243,7 @@ public class Drivers {
     }
 
     private static void updateTestStatusInCloud(WebDriver driver, Status cucumberScenarioStatus) {
-        LOGGER.info("Scenario status: " + cucumberScenarioStatus);
+        LOGGER.info(String.format("updateTestStatusInCloud for Scenario with status: '%s'", cucumberScenarioStatus.name()));
         long currentThreadId = Thread.currentThread().getId();
         SoftAssertions softly = Runner.getSoftAssertion(currentThreadId);
 
@@ -283,6 +280,7 @@ public class Drivers {
     }
 
     private static void validateVisualTestResults(String userPersona, Driver driver) {
+        LOGGER.info(String.format("\tGetting visual validation results for: User Persona: %s", userPersona));
         driver.getVisual().handleTestResults(userPersona, driver.getType());
     }
 
@@ -290,7 +288,7 @@ public class Drivers {
         LOGGER.info(String.format("attachLogsAndCloseDriver: %s - %s - %s", userPersona,
                                   driver.getType(),
                                   driver.getInnerDriver().getClass().getSimpleName()));
-        switch(driver.getType()) {
+        switch (driver.getType()) {
             case Driver.WEB_DRIVER:
                 BrowserDriverManager.closeWebDriver(userPersona, driver);
                 break;
@@ -316,7 +314,7 @@ public class Drivers {
                                                         TestExecutionContext context) {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
 
-        if(!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
+        if (!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
             LOGGER.info(
                     "assignNewPersonaToExistingDriver: Drivers available for userPersonas: " + userPersonaDetails.getAllUserPersonasForAssignedDrivers());
             throw new InvalidTestDataException(

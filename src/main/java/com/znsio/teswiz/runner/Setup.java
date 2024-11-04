@@ -382,7 +382,7 @@ class Setup {
         LOGGER.info("Get Platform, Tags and LaunchName");
         String launchName = configs.get(APP_NAME);
         if (Boolean.TRUE.equals(configsBoolean.get(RUN_IN_CI))) {
-            launchName += " on Device Farm";
+            launchName += " in CI";
         }
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);

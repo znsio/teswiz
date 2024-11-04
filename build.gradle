@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 buildscript {
     ext {
         gradleVersion = "8.10.2"
-        applitoolsAppiumVersion = "5.70.0"
+        applitoolsAppiumVersion = "5.71.0"
         browserStackLocalVersion = "1.1.4"
         fasterxmlJacksonVersion = "2.18.1"
         atdVersion = "b313941325" // ATD main branch
@@ -34,7 +34,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '0.0.99'
+version '1.0.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
