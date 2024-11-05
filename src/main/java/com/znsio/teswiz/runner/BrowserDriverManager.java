@@ -72,7 +72,7 @@ class BrowserDriverManager {
         LOGGER.info(String.format(
                 "createWebDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: " + "'%s', Number of WebDrivers: '%d'%n",
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
-        LOGGER.info("Active thread count: " + Thread.activeCount());
+        LOGGER.debug("Active thread count: " + Thread.activeCount());
 
         String baseUrl = getBaseUrl(userPersona);
         String appName = Drivers.getAppNamefor(userPersona);
@@ -113,7 +113,7 @@ class BrowserDriverManager {
         String updatedBrowserConfigFileForThisTest = context.getTestStateAsString(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST);
         if (null != updatedBrowserConfigFileForThisTest) {
             browserConfigFile = updatedBrowserConfigFileForThisTest;
-            LOGGER.info("Using UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST (instead of default BROWSER_CONFIG_FILE): " + browserConfigFile);
+            LOGGER.debug("Using UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST (instead of default BROWSER_CONFIG_FILE): " + browserConfigFile);
         }
         LOGGER.info("Using BROWSER_CONFIG_FILE: " + browserConfigFile);
         JSONObject browserConfig = Runner.getBrowserConfigFileContents(browserConfigFile);
@@ -155,7 +155,6 @@ class BrowserDriverManager {
         JSONObject browserConfig = getBrowserConfig(testExecutionContext);
         LOGGER.info(String.format("Create new webdriver instance for: %s, on: %s, with browserConfig: %s", forUserPersona, browserName, browserConfig));
 
-        LOGGER.info(BrowserDriverManager.class.getName() + "-createNewWebDriver: " + browserName.toLowerCase());
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
         WebDriver driver = createWebDriver(forUserPersona, testExecutionContext, browserName, browserConfigForBrowserType);
 
@@ -203,7 +202,7 @@ class BrowserDriverManager {
                 Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
                         : ((ChromeDriver) driver).getCapabilities();
         Drivers.addUserPersonaDriverCapabilities(forUserPersona, capabilities);
-        LOGGER.info("Chrome driver capabilities extracted for further use");
+        LOGGER.debug("Chrome driver capabilities extracted for further use");
         manageWindowSizeAndHeadlessMode(driver);
         return driver;
     }
@@ -251,7 +250,7 @@ class BrowserDriverManager {
                 Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
                         : ((FirefoxDriver) driver).getCapabilities();
         Drivers.addUserPersonaDriverCapabilities(forUserPersona, capabilities);
-        LOGGER.info("Firefox driver capabilities extracted for further use");
+        LOGGER.debug("Firefox driver capabilities extracted for further use");
         manageWindowSizeAndHeadlessMode(driver);
         return driver;
     }
@@ -431,7 +430,7 @@ class BrowserDriverManager {
                 Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
                         : ((SafariDriver) driver).getCapabilities();
         Drivers.addUserPersonaDriverCapabilities(forUserPersona, capabilities);
-        LOGGER.info("Safari driver capabilities extracted for further use");
+        LOGGER.debug("Safari driver capabilities extracted for further use");
         // webpush notifications are disabled bydefault in safari , headless is not supported by
         // safari browser and user profiles cannot be set in safari
         manageWindowSizeAndHeadlessMode(driver);
@@ -568,7 +567,7 @@ class BrowserDriverManager {
         LOGGER.info(String.format(
                 "createElectronDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: " + "'%s', Number of ElectronDrivers: '%d'%n",
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
-        LOGGER.info("Active thread count: " + Thread.activeCount());
+        LOGGER.debug("Active thread count: " + Thread.activeCount());
 
         String baseUrl = getBaseUrl(userPersona);
         String appName = Drivers.getAppNamefor(userPersona);
@@ -580,7 +579,6 @@ class BrowserDriverManager {
         context.addTestState(TEST_CONTEXT.ELECTRON_BROWSER_ON, runningOn);
         JSONObject browserConfig = getBrowserConfig(context);
         LOGGER.info(String.format("Create new electrondriver instance for: %s, on: %s, with browserConfig: %s", userPersona, browserName, browserConfig));
-        LOGGER.info(BrowserDriverManager.class.getName() + "-createNewElectronDriver: " + browserName.toLowerCase());
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
         ChromeOptions chromeOptions = getChromeOptions(userPersona, context, browserConfigForBrowserType);
         addWindowSizeToChromeOptions(browserConfigForBrowserType, chromeOptions);
@@ -605,7 +603,7 @@ class BrowserDriverManager {
                 Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
                         : ((ChromeDriver) driver).getCapabilities();
         Drivers.addUserPersonaDriverCapabilities(userPersona, capabilities);
-        LOGGER.info("Electron driver capabilities extracted for further use");
+        LOGGER.debug("Electron driver capabilities extracted for further use");
 
         if (browserConfigForBrowserType.getBoolean("electronAppLoadingPage")) {
             handleWindowForElectronApplication(driver, browserConfigForBrowserType);

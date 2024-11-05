@@ -80,7 +80,7 @@ public class Visual {
     public Visual(String driverType, Platform platform, WebDriver innerDriver, String testName,
                   String userPersona, String appName) {
         boolean isVisualTestingEnabled = Runner.isVisualTestingEnabled();
-        LOGGER.info(format(
+        LOGGER.debug(format(
                 "Visual constructor: Driver type: %s, platform: %s, testName: %s, " +
                 "isVisualTestingEnabled:  %s",
                 driverType, platform.name(), testName, isVisualTestingEnabled));
@@ -116,7 +116,7 @@ public class Visual {
         if(driverType.equals(Driver.WEB_DRIVER)) {
             isVisualTestingEnabled = false;
         }
-        LOGGER.info(format("instantiateAppiumEyes: isVisualTestingEnabled: %s",
+        LOGGER.debug(format("instantiateAppiumEyes: isVisualTestingEnabled: %s",
                                   isVisualTestingEnabled));
         com.applitools.eyes.appium.Eyes appEyes = new com.applitools.eyes.appium.Eyes();
 
@@ -127,7 +127,7 @@ public class Visual {
         try {
             setProxyForAppExecution(appEyes);
             appEyes.open(innerDriver, appName, testName);
-            LOGGER.info(format("instantiateAppiumEyes: Is Applitools Visual Testing enabled? - %s", !appEyes.getIsDisabled()));
+            LOGGER.debug(format("instantiateAppiumEyes: Is Applitools Visual Testing enabled? - %s", !appEyes.getIsDisabled()));
         } catch(IllegalArgumentException e) {
             String message = format(
                     "Exception in instantiating Applitools for App: '%s', Closing driver instance",
@@ -146,7 +146,7 @@ public class Visual {
             LOGGER.info(format("Set proxyUrl for appEyes: %s", proxyUrl));
             appEyes.setProxy(new ProxySettings(proxyUrl));
         } else {
-            LOGGER.info("proxyUrl is null. No proxy set for appEyes");
+            LOGGER.debug("proxyUrl is null. No proxy set for appEyes");
         }
     }
 
@@ -192,7 +192,7 @@ public class Visual {
         if(driverType.equals(Driver.APPIUM_DRIVER)) {
             isVisualTestingEnabled = false;
         }
-        LOGGER.info(format("instantiateWebEyes: isVisualTestingEnabled: %s",
+        LOGGER.debug(format("instantiateWebEyes: isVisualTestingEnabled: %s",
                                   isVisualTestingEnabled));
         boolean isUFG = getValueFromConfig(APPLITOOLS.USE_UFG, false);
 
@@ -210,13 +210,12 @@ public class Visual {
         addCustomPropertiesInWebTestExecution(platform, webEyes);
 
         RectangleSize setBrowserViewPortSize = getBrowserViewPortSize(driverType, innerDriver);
-        LOGGER.info(format("Using browser dimensions for Applitools: %s",
-                                  setBrowserViewPortSize));
+        LOGGER.info(format("Using browser dimensions for Applitools: %s", setBrowserViewPortSize));
 
         try {
             setProxyForWebExecution(webEyes);
             webEyes.open(innerDriver, appName, testName, setBrowserViewPortSize);
-            LOGGER.info(format("instantiateWebEyes:  Is Applitools Visual Testing enabled? - %s", !webEyes.getIsDisabled()));
+            LOGGER.debug(format("instantiateWebEyes:  Is Applitools Visual Testing enabled? - %s", !webEyes.getIsDisabled()));
         } catch(IllegalArgumentException | EyesException e) {
             String message = format(
                     "Exception in instantiating Applitools for Web: '%s', Closing Web-driver " +
@@ -242,7 +241,7 @@ public class Visual {
             LOGGER.info(format("Set proxyUrl for webEyes: %s", proxyUrl));
             webEyes.setProxy(new ProxySettings(proxyUrl));
         } else {
-            LOGGER.info("proxyUrl is null. No proxy set for webEyes");
+            LOGGER.debug("proxyUrl is null. No proxy set for webEyes");
         }
     }
 
@@ -394,9 +393,9 @@ public class Visual {
         String formattedTagName = getFormattedTagName(fromScreen, tag);
         LOGGER.info(format("checkWindow: fromScreen: %s, tag: %s", fromScreen,
                                   formattedTagName));
-        LOGGER.info(format("checkWindow: eyesOnWeb.getIsDisabled(): %s",
+        LOGGER.debug(format("checkWindow: eyesOnWeb.getIsDisabled(): %s",
                                   eyesOnWeb.getIsDisabled()));
-        LOGGER.info(format("checkWindow: eyesOnApp.getIsDisabled(): %s",
+        LOGGER.debug(format("checkWindow: eyesOnApp.getIsDisabled(): %s",
                                   eyesOnApp.getIsDisabled()));
 
         LocalDateTime webStart = LocalDateTime.now();
@@ -430,9 +429,9 @@ public class Visual {
     public Visual check(String fromScreen, String tag, SeleniumCheckSettings checkSettings) {
         String formattedTagName = getFormattedTagName(fromScreen, tag);
         LOGGER.info(format("check: fromScreen: %s, tag: %s", fromScreen, formattedTagName));
-        LOGGER.info(
+        LOGGER.debug(
                 format("check: eyesOnWeb.getIsDisabled(): %s", eyesOnWeb.getIsDisabled()));
-        LOGGER.info(
+        LOGGER.debug(
                 format("check: eyesOnApp.getIsDisabled(): %s", eyesOnApp.getIsDisabled()));
 
         LocalDateTime webStart = LocalDateTime.now();
@@ -460,9 +459,9 @@ public class Visual {
     public Visual check(String fromScreen, String tag, AppiumCheckSettings checkSettings) {
         String formattedTagName = getFormattedTagName(fromScreen, tag);
         LOGGER.info(format("check: fromScreen: %s, tag: %s", fromScreen, formattedTagName));
-        LOGGER.info(
+        LOGGER.debug(
                 format("check: eyesOnWeb.getIsDisabled(): %s", eyesOnWeb.getIsDisabled()));
-        LOGGER.info(
+        LOGGER.debug(
                 format("check: eyesOnApp.getIsDisabled(): %s", eyesOnApp.getIsDisabled()));
 
         LocalDateTime webStart = LocalDateTime.now();
@@ -492,9 +491,9 @@ public class Visual {
         LOGGER.info(
                 format("checkWindow: fromScreen: %s, MatchLevel: %s, tag: %s", fromScreen,
                               level, formattedTagName));
-        LOGGER.info(format("checkWindow: eyesOnWeb.getIsDisabled(): %s",
+        LOGGER.debug(format("checkWindow: eyesOnWeb.getIsDisabled(): %s",
                                   eyesOnWeb.getIsDisabled()));
-        LOGGER.info(format("checkWindow: eyesOnApp.getIsDisabled(): %s",
+        LOGGER.debug(format("checkWindow: eyesOnApp.getIsDisabled(): %s",
                                   eyesOnApp.getIsDisabled()));
 
 

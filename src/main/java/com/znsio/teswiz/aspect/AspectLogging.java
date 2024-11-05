@@ -1,5 +1,6 @@
 package com.znsio.teswiz.aspect;
 
+import org.apache.logging.log4j.Level;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,12 +19,12 @@ public class AspectLogging {
 
     @Before("executionScope()")
     public void beforeAnyMethod(JoinPoint joinPoint) {
-        AspectJMethodLoggers.beforeAnyMethod(joinPoint);
+        AspectJMethodLoggers.beforeAnyMethod(joinPoint, Level.DEBUG);
     }
 
     @After("executionScope()")
     public void afterAnyMethod(JoinPoint joinPoint) {
-        AspectJMethodLoggers.afterAnyMethod(joinPoint);
+        AspectJMethodLoggers.afterAnyMethod(joinPoint, Level.DEBUG);
     }
 
 }

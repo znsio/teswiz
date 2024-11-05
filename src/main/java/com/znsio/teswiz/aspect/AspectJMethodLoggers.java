@@ -1,5 +1,6 @@
 package com.znsio.teswiz.aspect;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
@@ -7,28 +8,62 @@ import org.aspectj.lang.JoinPoint;
 import java.lang.reflect.Array;
 import java.util.stream.IntStream;
 
+import static org.apache.logging.log4j.Level.*;
+
 public class AspectJMethodLoggers {
     private static final Logger LOGGER = LogManager.getLogger(AspectJMethodLoggers.class.getName());
 
     private AspectJMethodLoggers() {
     }
 
-    public static void beforeAnyMethod(JoinPoint joinPoint) {
-        LOGGER.info(String.format("\t<<<%s>>>",
-                generateBeforeMethodAspectJLogger(joinPoint.getSignature().getDeclaringType().getSimpleName(),
-                        joinPoint.getSignature().getName(),joinPoint.getSourceLocation().getLine(),
-                joinPoint.getArgs())));
+    public static void beforeAnyMethod(JoinPoint joinPoint, Level level) {
+        try {
+            String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
+            String methodName = joinPoint.getSignature().getName();
+            Integer lineNumber = (joinPoint.getSourceLocation() != null) ? joinPoint.getSourceLocation().getLine() : -1;
+            Object[] methodArgs = joinPoint.getArgs();
+
+            String message = String.format("\t<<<%s>>>",
+                                           generateBeforeMethodAspectJLogger(className, methodName, lineNumber, methodArgs));
+
+            logAtLevel(level, message);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to log before method: " + e.getMessage());
+        }
     }
 
-    public static void afterAnyMethod(JoinPoint joinPoint) {
-        LOGGER.debug(String.format("\t<<<%s>>>",
-                generateAfterMethodAspectJLogger(joinPoint.getSignature().getDeclaringType().getSimpleName(),
-                        joinPoint.getSignature().getName())));
+    private static void logAtLevel(Level level, String message) {
+        if (level.equals(DEBUG)) {
+            LOGGER.debug(message);
+        } else if (level.equals(TRACE)) {
+            LOGGER.trace(message);
+        } else if (level.equals(WARN)) {
+            LOGGER.warn(message);
+        } else if (level.equals(ERROR)) {
+            LOGGER.error(message);
+        } else if (level.equals(FATAL)) {
+            LOGGER.fatal(message);
+        } else {
+            LOGGER.info(message);  // Fallback to INFO for unhandled levels
+        }
+    }
+
+    public static void afterAnyMethod(JoinPoint joinPoint, Level level) {
+        try {
+            String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
+            String methodName = joinPoint.getSignature().getName();
+
+            String message = String.format("\t<<<%s>>>", generateAfterMethodAspectJLogger(className, methodName));
+
+            logAtLevel(level, message);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to log after method: " + e.getMessage());
+        }
     }
 
     public static String generateBeforeMethodAspectJLogger(String simpleClassName,
-                                                           String methodName,
-                                                           int lineNumber, Object[] arguments) {
+            String methodName,
+            int lineNumber, Object[] arguments) {
         StringBuilder loggerMessage = new StringBuilder();
         loggerMessage.append(String.format("Entering method: '%s.%s:%d'%n", simpleClassName, methodName, lineNumber));
 
@@ -44,23 +79,24 @@ public class AspectJMethodLoggers {
                 loggerMessage.append(String.format("Value: \"null\"%n"));
             } else if (argument.getClass().isArray()) {
                 addArrayParameteInfoToLoggerMessage(loggerMessage, argument);
-            } else
+            } else {
                 loggerMessage.append(String.format("Type: '%s', Value: \"%s\"%n", argument.getClass().getSimpleName(), argument));
+            }
         }
     }
 
     private static void addArrayParameteInfoToLoggerMessage(StringBuilder loggerMessage,
-                                                         Object argument) {
+            Object argument) {
         StringBuilder arrayMessage = new StringBuilder();
         arrayMessage.append("[");
         IntStream.range(0, Array.getLength(argument)).mapToObj(arrayIndex -> String.format("%s, ", Array.get(argument, arrayIndex))).forEach(arrayMessage::append);
         arrayMessage.replace(arrayMessage.length() - 2, arrayMessage.length(), "]");
         loggerMessage.append(String.format("Type: '%s', Value: \"%s\"%n",
-                argument.getClass().getSimpleName(), arrayMessage));
+                                           argument.getClass().getSimpleName(), arrayMessage));
     }
 
     public static String generateAfterMethodAspectJLogger(String simpleClassName,
-                                                          String methodName) {
+            String methodName) {
         return String.format("Exiting method: '%s'", simpleClassName + "." + methodName);
     }
 }
