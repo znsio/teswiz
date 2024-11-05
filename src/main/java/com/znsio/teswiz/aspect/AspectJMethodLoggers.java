@@ -14,14 +14,14 @@ public class AspectJMethodLoggers {
     }
 
     public static void beforeAnyMethod(JoinPoint joinPoint) {
-        LOGGER.info(String.format("%n\t<<<%s>>>",
+        LOGGER.info(String.format("\t<<<%s>>>",
                 generateBeforeMethodAspectJLogger(joinPoint.getSignature().getDeclaringType().getSimpleName(),
                         joinPoint.getSignature().getName(),joinPoint.getSourceLocation().getLine(),
                 joinPoint.getArgs())));
     }
 
     public static void afterAnyMethod(JoinPoint joinPoint) {
-        LOGGER.info(String.format("%n\t<<<%s>>>",
+        LOGGER.debug(String.format("\t<<<%s>>>",
                 generateAfterMethodAspectJLogger(joinPoint.getSignature().getDeclaringType().getSimpleName(),
                         joinPoint.getSignature().getName())));
     }
