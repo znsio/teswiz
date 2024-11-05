@@ -19,13 +19,12 @@ public class JsonFile {
     }
 
     public static void saveJsonToFile(Map<String, Map> jsonMap, String fileName) {
-        LOGGER.info(
-                "\tSave the following json to file: " + fileName + "   with jsonmap:  " + jsonMap);
+        LOGGER.info("\tSave the following json to file: " + fileName + "   with jsonmap:  " + jsonMap);
         File file = new File(fileName);
         if(file.exists()) {
-            LOGGER.info("File: " + file + "  exixts.  Delete it first");
+            LOGGER.debug("File: " + file + "  exixts.  Delete it first");
             boolean isFileDeleted = file.delete();
-            LOGGER.info("File deleted? " + isFileDeleted);
+            LOGGER.debug("File deleted? " + isFileDeleted);
             if(!isFileDeleted) {
                 throw new EnvironmentSetupException(
                         "Unable to delete older, already existing capabilities file: " + fileName);
@@ -45,9 +44,9 @@ public class JsonFile {
 
     public static Map<String, Map> getNodeValueAsMapFromJsonFile(String node, String fileName) {
         Map<String, Map> map = loadJsonFile(fileName);
-        LOGGER.info("\tNode: " + node);
+        LOGGER.debug("\tNode: " + node);
         Map<String, Map> envMap = map.get(node);
-        LOGGER.info("\tLoaded map: " + envMap);
+        LOGGER.debug("\tLoaded map: " + envMap);
         if(null == envMap) {
             throw new InvalidTestDataException(
                     String.format("Node: '%s' not found in file: '%s'", node, fileName));
@@ -78,7 +77,7 @@ public class JsonFile {
                                                                                              Map> loadedMap) {
         StringBuilder nodePath = new StringBuilder();
         for(int nodeCount = 0; nodeCount < nodeTree.length - 1; nodeCount++) {
-            LOGGER.info("\tFinding node: " + nodeTree[nodeCount]);
+            LOGGER.debug("\tFinding node: " + nodeTree[nodeCount]);
             nodePath.append(nodeTree[nodeCount]).append(" -> ");
             loadedMap = loadedMap.get(nodeTree[nodeCount]);
             if(null == loadedMap) {
@@ -87,15 +86,15 @@ public class JsonFile {
             }
         }
         String retValue = String.valueOf(loadedMap.get(nodeTree[nodeTree.length - 1]));
-        LOGGER.info("\tFound value: " + retValue);
+        LOGGER.debug("\tFound value: " + retValue);
         return retValue;
     }
 
     public static ArrayList<Map> getNodeValueAsArrayListFromJsonFile(String fileName, String node) {
         Map<String, Map> map = loadJsonFile(fileName);
-        LOGGER.info("\tPlatform: " + node);
+        LOGGER.debug("\tPlatform: " + node);
         ArrayList<Map> envMap = (ArrayList<Map>) map.get(node);
-        LOGGER.info("\tLoaded arraylist: " + envMap);
+        LOGGER.debug("\tLoaded arraylist: " + envMap);
         return envMap;
     }
 
