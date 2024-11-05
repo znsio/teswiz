@@ -34,22 +34,19 @@ public class ScreenShotManager {
         if(null != driver) {
             fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
-            LOGGER.info(
-                    "The screenshot will be placed here : " + destinationFile.getAbsolutePath());
+            LOGGER.debug("The screenshot will be placed here : " + destinationFile.getAbsolutePath());
             try {
                 File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-                LOGGER.info("Original screenshot : " + screenshot.getAbsolutePath());
+                LOGGER.debug("Original screenshot : " + screenshot.getAbsolutePath());
                 FileUtils.copyFile(screenshot, destinationFile);
-                LOGGER.info(
-                        "The screenshot is available here : " + destinationFile.getAbsolutePath());
+                LOGGER.info("The screenshot is available here : " + destinationFile.getAbsolutePath());
                 ReportPortalLogger.attachFileInReportPortal(fileName, destinationFile);
             } catch(IOException | RuntimeException e) {
-                LOGGER.info(
-                        "ERROR: Unable to save or upload screenshot: '" + destinationFile.getAbsolutePath() + "' or upload screenshot to ReportPortal\n");
+                LOGGER.warn("ERROR: Unable to save or upload screenshot: '" + destinationFile.getAbsolutePath() + "' or upload screenshot to ReportPortal\n");
                 LOGGER.debug(ExceptionUtils.getStackTrace(e));
             }
         } else {
-            LOGGER.info("Driver is not instantiated for this test");
+            LOGGER.warn("Driver is not instantiated for this test");
         }
     }
 
