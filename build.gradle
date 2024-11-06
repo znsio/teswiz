@@ -153,11 +153,47 @@ static def getCurrentTimestamp() {
 
 project.ext.logDir = "./target/" + getMonth() + "/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
 
+def copyRpPropertiesIfMissing() {
+    def rpFile = file('src/test/resources/reportportal.properties')
+    def rpTemplateFile = file('src/test/resources/reportportal.properties.template')
+
+    if (!rpFile.exists() && rpTemplateFile.exists()) {
+        println "Copying $rpTemplateFile to $rpFile"
+        rpFile.text = rpTemplateFile.text
+    } else if (!rpTemplateFile.exists()) {
+        println "$rpTemplateFile does not exist. Please create it."
+    } else {
+        println "$rpFile already exists."
+    }
+    System.setProperty("reportportal.properties.file", rpFile.absolutePath)
+}
+
+task copyRpPropertiesIfMissing {
+    doLast {
+        copyRpPropertiesIfMissing()
+    }
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    if (taskGraph.hasTask(':build') || taskGraph.hasTask(':run')) {
+        copyRpPropertiesIfMissing()
+    }
+}
+
 tasks.register('run', JavaExec) {
     doFirst {
         println "Using LOG_DIR: ${project.logDir}"
         System.setProperty "LOG_DIR", "${project.logDir}"
         environment "APPLITOOLS_LOG_DIR", "${project.logDir}/applitools_logs"
+
+        def hostname = InetAddress.getLocalHost().getHostName()
+        println "Hostname: $hostname"
+        def ipAddress = InetAddress.getAllByName(hostname)
+                .find { it.hostAddress.startsWith("192") }
+                ?.hostAddress
+        println "IP Address of this machine: $ipAddress"
+        environment "BASE_URL", "http://$ipAddress:3000"
+        environment "REMOTE_WEBDRIVER_GRID_HOST_NAME", "$ipAddress"
 
         def configFile = System.getenv("CONFIG")
         if (null == configFile || !file(configFile).exists()) {

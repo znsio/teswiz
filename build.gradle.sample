@@ -49,28 +49,68 @@ static def getCurrentDatestamp() {
     return df.format(today)
 }
 
+static def getMonth() {
+    Date today = new Date()
+    SimpleDateFormat df = new SimpleDateFormat("MMM-yyyy")
+    return df.format(today)
+}
+
 static def getCurrentTimestamp() {
     Date today = new Date()
     SimpleDateFormat df = new SimpleDateFormat("HH-mm-ss")
     return df.format(today)
 }
 
+project.ext.logDir = "./target/" + getMonth() + "/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
+
+def copyRpPropertiesIfMissing() {
+    def rpFile = file('src/test/resources/reportportal.properties')
+    def rpTemplateFile = file('src/test/resources/reportportal.properties.template')
+
+    if (!rpFile.exists() && rpTemplateFile.exists()) {
+        println "Copying $rpTemplateFile to $rpFile"
+        rpFile.text = rpTemplateFile.text
+    } else if (!rpTemplateFile.exists()) {
+        println "$rpTemplateFile does not exist. Please create it."
+    } else {
+        println "$rpFile already exists."
+    }
+    System.setProperty("reportportal.properties.file", rpFile.absolutePath)
+}
+
+task copyRpPropertiesIfMissing {
+    doLast {
+        copyRpPropertiesIfMissing()
+    }
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    if (taskGraph.hasTask(':build') || taskGraph.hasTask(':run')) {
+        copyRpPropertiesIfMissing()
+    }
+}
+
 tasks.register('run', JavaExec) {
     doFirst {
-        def logDirectory = "target/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
-        println "Using LOG_DIR: $logDirectory"
-        System.setProperty "LOG_DIR", "$logDirectory"
-        environment "APPLITOOLS_LOG_DIR", "$logDirectory/applitools_logs"
-
-        def isRunInCI = Boolean.parseBoolean(System.getenv("RUN_IN_CI"))
-        println "isRunningInCI: $isRunInCI"
+        println "Using LOG_DIR: ${project.logDir}"
+        System.setProperty "LOG_DIR", "${project.logDir}"
+        environment "APPLITOOLS_LOG_DIR", "${project.logDir}/applitools_logs"
 
         def configFile = System.getenv("CONFIG")
-        if(null == configFile || !file(configFile).exists()) {
+        if (null == configFile || !file(configFile).exists()) {
             println("CONFIG file not provided, or does not exist")
             println("Run the test by providing the CONFIG file not provided, or does not exist")
             assert file(configFile).exists()
         }
+
+        def hostname = InetAddress.getLocalHost().getHostName()
+        println "Hostname: $hostname"
+        def ipAddress = InetAddress.getAllByName(hostname)
+                .find { it.hostAddress.startsWith("192") }
+                ?.hostAddress
+        println "IP Address of this machine: $ipAddress"
+        environment "BASE_URL", "http://$ipAddress:3000"
+        environment "REMOTE_WEBDRIVER_GRID_HOST_NAME", "$ipAddress"
 
 //      You can also specify which config file to use based on the value of RUN_IN_CI as shown below
 //
@@ -78,14 +118,14 @@ tasks.register('run', JavaExec) {
 //        println "isRunningInCI: $isRunInCI"
 //        def configFile = isRunInCI
 //                ? "./configs/theapp/theapp_pcloudy_config.properties"
-//                : "./configs/theapp/theapp_local_config.properties"
+//                : "./configs/theapp/theapp_local_android_config.properties"
 //        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
 
         systemProperties = System.properties as Map<String, ?>
         def runnerArgs = [
                 "${configFile}",
-                "<pathToStepDef>",
-                "<pathToFeaturesDir>"
+                "com/znsio/teswiz/steps",
+                "./src/test/resources/com/znsio/teswiz/features"
         ]
         args = runnerArgs
 
@@ -99,7 +139,6 @@ tasks.register('run', JavaExec) {
         }
     }
     mainClass = "com.znsio.teswiz.runner.Runner"
-
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
 }
 

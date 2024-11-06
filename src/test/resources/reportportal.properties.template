@@ -1,0 +1,11 @@
+rp.endpoint=http://localhost:8080
+rp.uuid=<API_KEY>
+rp.launch=Java launch
+rp.project=<PROJECT_NAME>
+rp.username=<USER_NAME>
+rp.enable=false
+rp.description=End-2-End scenarios
+rp.convertimage=false
+rp.mode=DEFAULT
+rp.skipped.issue=true
+rp.batch.size.logs=20
