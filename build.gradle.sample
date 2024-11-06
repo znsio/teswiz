@@ -109,8 +109,13 @@ tasks.register('run', JavaExec) {
                 .find { it.hostAddress.startsWith("192") }
                 ?.hostAddress
         println "IP Address of this machine: $ipAddress"
-        environment "BASE_URL", "http://$ipAddress:3000"
-        environment "REMOTE_WEBDRIVER_GRID_HOST_NAME", "$ipAddress"
+        if (null == ipAddress) {
+            println "Unable to get local IP address. NOT updating BASE_URL and REMOTE_WEBDRIVER_GRID_HOST_NAME"
+        } else {
+            println "Updating BASE_URL ('http://$ipAddress:3000') and REMOTE_WEBDRIVER_GRID_HOST_NAME ('$ipAddress')"
+            environment "BASE_URL", "http://$ipAddress:3000"
+            environment "REMOTE_WEBDRIVER_GRID_HOST_NAME", "$ipAddress"
+        }
 
 //      You can also specify which config file to use based on the value of RUN_IN_CI as shown below
 //
