@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 
 buildscript {
     ext {
-        gradleVersion = "8.10.2"
+        gradleVersion = "8.11"
         applitoolsAppiumVersion = "5.71.0"
         browserStackLocalVersion = "1.1.4"
         fasterxmlJacksonVersion = "2.18.1"
