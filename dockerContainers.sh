@@ -2,43 +2,43 @@
 
 set -e
 
-# Get the IP address using ifconfig
-ip_address="$(ifconfig | grep "inet " | grep -v 127 | grep -E "192" | awk 'NR==1 {print $2} ')"
+OS="$(uname)"
+arch="$(uname -m)"  # -i is only linux, -m is linux and apple
+MY_OS="NOT_SET"
+DOCKER_REGISTRY="selenium"
+CHROME_REPO="node-chromium"
+FIREFOX_REPO="node-firefox"
+SELENIUM_HUB_REPO="hub"
+
+case "$OS" in
+  "Linux")
+    echo "You are running Linux."
+    MY_OS="linux"
+    ip_address="$(ifconfig | grep "inet " | grep -v 127 | grep -E "192" | awk 'NR==1 {print $2} ')"
+    ;;
+  "Darwin")
+    echo "You are running macOS."
+    MY_OS="macOS"
+    ip_address="$(ifconfig | grep "inet " | grep -v 127 | grep -E "192" | awk 'NR==1 {print $2} ')"
+    ;;
+  "CYGWIN"*|"MINGW"*|"MSYS"*)
+    echo "You are running Windows (via Cygwin or Git Bash)."
+    MY_OS="Windows"
+    ip_address=$(ipconfig | grep "IPv4" | grep -E "192" | awk '{print $NF}' | head -n 1)
+    ;;
+  *)
+    echo "Unknown OS: $OS"
+    ;;
+esac
+
+echo "Running on OS: " $OS "-" $MY_OS
+echo "Running on arch: $arch"
 echo "Host IP Address: $ip_address"
+
 if [[ "$ip_address" == "" ]]; then
   echo "IP address not found based on the criteria. Exit."
   ifconfig | grep "inet "
   exit 1
-fi
-
-arch="$(uname -m)"  # -i is only linux, -m is linux and apple
-echo "Running on arch: $arch"
-DOCKER_REGISTRY="selenium"
-CHROME_REPO="node-chrome"
-FIREFOX_REPO="node-firefox"
-SELENIUM_HUB_REPO="hub"
-
-if [[ "$arch" = x86_64* ]]; then
-  if [[ "$(uname -a)" = *ARM64* ]]; then
-    echo 'a64'
-    DOCKER_REGISTRY="seleniarm"
-    CHROME_REPO="node-chromium"
-  else
-    echo "Unknown architecture. Exiting"
-    echo 'x64'
-  fi
-elif [[ "$arch" = i*86 ]]; then
-  echo 'x32'
-elif [[ "$arch" = arm* ]]; then
-  echo 'a32'
-  DOCKER_REGISTRY="seleniarm"
-  CHROME_REPO="node-chromium"
-elif test "$arch" = aarch64; then
-  echo 'a64'
-  DOCKER_REGISTRY="seleniarm"
-  CHROME_REPO="node-chromium"
-else
-    exit 1
 fi
 
 export DOCKER_REGISTRY=$DOCKER_REGISTRY
