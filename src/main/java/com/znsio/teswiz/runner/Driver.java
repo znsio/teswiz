@@ -503,6 +503,10 @@ public class Driver {
 
     public void scrollTillElementIntoView(By elementId) {
         WebElement element = driver.findElement(elementId);
+        scrollTillElementIntoView(element);
+    }
+
+    public void scrollTillElementIntoView(WebElement element) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
