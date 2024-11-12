@@ -34,7 +34,7 @@
           "skipChromeDownload": true,
           "cloud": {
             "cloudName": "browserstack",
-            "url": "http://hub-cloud.browserstack.com",
+            "url": "https://hub-cloud.browserstack.com",
             "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
             "devices": [
             ]

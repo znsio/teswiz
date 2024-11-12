@@ -106,14 +106,14 @@ tasks.register('run', JavaExec) {
         def hostname = InetAddress.getLocalHost().getHostName()
         println "Hostname: $hostname"
         def ipAddress = InetAddress.getAllByName(hostname)
-                .find { it.hostAddress.startsWith("192") }
+                .find { it.hostAddress.startsWith("192") || it.hostAddress.startsWith("172") || it.hostAddress.startsWith("10") }
                 ?.hostAddress
         println "IP Address of this machine: $ipAddress"
         if (null == ipAddress) {
             println "Unable to get local IP address. NOT updating BASE_URL and REMOTE_WEBDRIVER_GRID_HOST_NAME"
         } else {
-            println "Updating BASE_URL ('http://$ipAddress:3000') and REMOTE_WEBDRIVER_GRID_HOST_NAME ('$ipAddress')"
-            environment "BASE_URL", "http://$ipAddress:3000"
+//            println "Updating BASE_URL ('http://$ipAddress:3000') and REMOTE_WEBDRIVER_GRID_HOST_NAME ('$ipAddress')"
+//            environment "BASE_URL", "http://$ipAddress:3000"
             environment "REMOTE_WEBDRIVER_GRID_HOST_NAME", "$ipAddress"
         }
 

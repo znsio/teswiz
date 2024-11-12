@@ -1,9 +1,9 @@
 {
   "prod": {
-    "BASE_URL_API": "http://the-internet.herokuapp.com",
-    "BASE_URL": "http://the-internet.herokuapp.com/",
-    "IMAGES_BASE_URL": "http://images.google.com/",
-    "BING_BASE_URL": "http://bing.com/images",
+    "BASE_URL_API": "https://the-internet.herokuapp.com",
+    "BASE_URL": "https://the-internet.herokuapp.com/",
+    "IMAGES_BASE_URL": "https://images.google.com/",
+    "BING_BASE_URL": "https://bing.com/images",
     "JIOMEET_BASE_URL": "https://jiomeetpro.jio.com/home",
     "INDIGO_BASE_URL": "https://www.goindigo.in/",
     "DINEOUT_BASE_URL": "https://www.dineout.co.in/",
