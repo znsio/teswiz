@@ -14,12 +14,12 @@ case "$OS" in
   "Linux")
     echo "You are running Linux."
     MY_OS="linux"
-    ip_address="$(ifconfig | grep "inet " | grep -v 127 | grep -E "192" | awk 'NR==1 {print $2} ')"
+    ip_address="$(ifconfig | grep -Eo 'inet (192|172|10)\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}' | head -n 1)"
     ;;
   "Darwin")
     echo "You are running macOS."
     MY_OS="macOS"
-    ip_address="$(ifconfig | grep "inet " | grep -v 127 | grep -E "192" | awk 'NR==1 {print $2} ')"
+    ip_address="$(ifconfig | grep -Eo 'inet (192|172|10)\.[0-9]+\.[0-9]+\.[0-9]+' | awk '{print $2}' | head -n 1)"
     ;;
   "CYGWIN"*|"MINGW"*|"MSYS"*)
     echo "You are running Windows (via Cygwin or Git Bash)."

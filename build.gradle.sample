@@ -106,7 +106,7 @@ tasks.register('run', JavaExec) {
         def hostname = InetAddress.getLocalHost().getHostName()
         println "Hostname: $hostname"
         def ipAddress = InetAddress.getAllByName(hostname)
-                .find { it.hostAddress.startsWith("192") }
+                .find { it.hostAddress.startsWith("192") || it.hostAddress.startsWith("172") || it.hostAddress.startsWith("10") }
                 ?.hostAddress
         println "IP Address of this machine: $ipAddress"
         if (null == ipAddress) {
