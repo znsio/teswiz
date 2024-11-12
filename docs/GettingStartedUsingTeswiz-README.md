@@ -9,7 +9,7 @@ Follow these steps:
    * Get APP_PACKAGE_NAME - example: `aapt dump badging temp/sampleApps/theapp.apk | grep package`
    * Get APP_ACTIVITY - example: `aapt dump badging temp/ajio-8-3-4.apk | grep activity`
 1. For `web` automation
-   * Add `<>_BASE_URL` in environments.json - example: `THEAPP_BASE_URL=http://the-internet.herokuapp.com`
+   * Add `<>_BASE_URL` in environments.json - example: `THEAPP_BASE_URL=https://the-internet.herokuapp.com`
    * Update `BASE_URL` with the above in config.properties - example: `BASE_URL=THEAPP_BASE_URL`
 1. For `electron` automation
    * Add `binary` path in browser_config.json - example: `"binary": "C:\\path\\to\\chrome.exe"`
