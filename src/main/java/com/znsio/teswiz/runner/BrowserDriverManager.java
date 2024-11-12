@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.Proxy;
@@ -28,6 +29,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -36,6 +39,8 @@ import org.openqa.selenium.safari.SafariOptions;
 
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,10 +49,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
-
-import static com.appium.utils.OverriddenVariable.*;
 
 class BrowserDriverManager {
     private static final Logger LOGGER = LogManager.getLogger(BrowserDriverManager.class.getName());
@@ -526,6 +530,7 @@ class BrowserDriverManager {
         String platformName = Runner.getPlatform().name();
         String logFileName = getBrowserLogFileNameFor(userPersona, platformName,
                 browserNameForUser);
+        fetchBrowserLogsFromRemoteBrowser(driver, logFileName);
         --numberOfWebDriversUsed;
         LOGGER.info(String.format("Reduced numberOfWebDriversUsed: %d", numberOfWebDriversUsed));
         String logMessage = String.format("Browser logs for user: %s" + "%nlogFileName: %s",
@@ -543,6 +548,29 @@ class BrowserDriverManager {
             LOGGER.info(logMessage);
             ReportPortalLogger.logDebugMessage(logMessage);
             quitWebDriver(webDriver);
+        }
+    }
+
+    private static void writeLogEntriesToFile(WebDriver driver, String logFileName, String logType, String logLabel) {
+        String fileName = logFileName + "-" + logLabel;
+        try (FileWriter writer = new FileWriter(fileName, true)) {
+            LogEntries logs = driver.manage().logs().get(logType);
+            writer.write("\n=== " + logLabel + " Logs ===\n");
+            for (LogEntry entry : logs) {
+                writer.write("[" + entry.getLevel() + "] " + entry.getMessage() + "\n");
+            }
+            writer.flush();
+            LOGGER.info("Browser log saved in: " + fileName);
+        } catch (IOException e) {
+            LOGGER.error("Error writing " + logLabel + " log for file: " + logFileName + ": Error: " + e.getMessage());
+        }
+    }
+
+    private static void fetchBrowserLogsFromRemoteBrowser(@NotNull Driver driver, String logFileName) {
+        if (Runner.isRunningInCI()) {
+            LOGGER.info("Fetch browser logs from docker and save it");
+            writeLogEntriesToFile(driver.getInnerDriver(), logFileName, LogType.BROWSER, "Browser");
+            writeLogEntriesToFile(driver.getInnerDriver(), logFileName, LogType.PERFORMANCE, "Performance");
         }
     }
 
@@ -625,8 +653,9 @@ class BrowserDriverManager {
 
         while (windowHandles.size() <= 1) {
             windowHandles = driver.getWindowHandles();
-            if (System.currentTimeMillis() - startTime > browserConfigForBrowserType.getInt("electronAppLoadTime") * 1000L)
+            if (System.currentTimeMillis() - startTime > browserConfigForBrowserType.getInt("electronAppLoadTime") * 1000L) {
                 throw new TimeoutException("No Loading page window available, disable the electronAppLoadingPage parameter");
+            }
         }
 
         LOGGER.info(String.format("All the window handles available %s", windowHandles));
