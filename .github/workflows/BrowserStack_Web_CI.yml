@@ -34,3 +34,9 @@ jobs:
       - name: Run Web tests against Browserstack
         run: |
           RUN_IN_CI=true APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=web TAG="@theapp and @invalidLogin1 and @browserstack" ./gradlew run
+      - name: Save Test Artifacts
+        if: ${{ always() }}  # Ensure this step runs even if the tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: target

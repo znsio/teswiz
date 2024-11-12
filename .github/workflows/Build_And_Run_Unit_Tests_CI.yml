@@ -64,3 +64,9 @@ jobs:
           repository: znsio/getting-started-with-teswiz
           event-type: UpdateREADME
           client-payload: '{"teswiz_commit_id":"teswiz updated" }'
+      - name: Save Test Artifacts
+        if: ${{ always() }}  # Ensure this step runs even if the tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: target
