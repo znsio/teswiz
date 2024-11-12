@@ -17,11 +17,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnsupportedCommandException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -561,7 +561,7 @@ class BrowserDriverManager {
             }
             writer.flush();
             LOGGER.info("Browser log saved in: " + fileName);
-        } catch (IOException e) {
+        } catch (IOException | UnsupportedCommandException e) {
             LOGGER.error("Error writing " + logLabel + " log for file: " + logFileName + ": Error: " + e.getMessage());
         }
     }
