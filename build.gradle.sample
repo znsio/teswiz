@@ -112,8 +112,8 @@ tasks.register('run', JavaExec) {
         if (null == ipAddress) {
             println "Unable to get local IP address. NOT updating BASE_URL and REMOTE_WEBDRIVER_GRID_HOST_NAME"
         } else {
-            println "Updating BASE_URL ('http://$ipAddress:3000') and REMOTE_WEBDRIVER_GRID_HOST_NAME ('$ipAddress')"
-            environment "BASE_URL", "http://$ipAddress:3000"
+//            println "Updating BASE_URL ('http://$ipAddress:3000') and REMOTE_WEBDRIVER_GRID_HOST_NAME ('$ipAddress')"
+//            environment "BASE_URL", "http://$ipAddress:3000"
             environment "REMOTE_WEBDRIVER_GRID_HOST_NAME", "$ipAddress"
         }
 
