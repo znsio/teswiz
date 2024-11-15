@@ -1,5 +1,6 @@
 package com.znsio.teswiz.tools.cmd;
 
+import com.znsio.teswiz.exceptions.CommandLineExecutorException;
 import com.znsio.teswiz.runner.Runner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,14 +29,18 @@ public class AsyncCommandLineExecutor {
         }
     }
 
-    public AsyncCommandLineExecutor() throws IOException {
+    public AsyncCommandLineExecutor() {
         String os = Runner.OS_NAME.toLowerCase();
 
         ProcessBuilder processBuilder = os.contains("win")
                                         ? new ProcessBuilder("cmd.exe")
                                         : new ProcessBuilder("bash");
 
-        process = processBuilder.start();
+        try {
+            process = processBuilder.start();
+        } catch (IOException e) {
+            throw new CommandLineExecutorException("Unable to start the AsyncCommandLineExecutor", e);
+        }
 
         // Initialize writers and readers
         commandWriter = new PrintWriter(process.getOutputStream(), true);
@@ -70,7 +75,8 @@ public class AsyncCommandLineExecutor {
             Thread.currentThread().interrupt();
             LOGGER.debug("Command '%s' execution was interrupted.".formatted(command));
         } catch (IOException e) {
-            LOGGER.debug("Error reading stdout: %s".formatted(e.getMessage()), e.getCause());
+            LOGGER.error("Error reading stdout: %s".formatted(e.getMessage()), e.getCause());
+            throw new CommandLineExecutorException("Error reading stdout", e);
         }
 
         return new CommandResult(output.toString().trim());
