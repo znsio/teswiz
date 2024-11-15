@@ -46,10 +46,10 @@ class AsyncCommandLineExecutorTest {
 
         String command = "pwd";
         int timeoutInSeconds = 1;
-        String expectedResponse = "/Users/anand.bagmar/projects/znsio/teswiz";
+        String expectedResponse = "teswiz";
 
         response = sendCommand(executor, command, timeoutInSeconds);
-        assertThat(response).as("Output of command: '" + command + "' is incorrect").isEqualTo(expectedResponse);
+        assertThat(response).as("Output of command: '" + command + "' is incorrect").contains(expectedResponse);
 
         command = "./src/test/java/com/znsio/teswiz/tools/cmd/calculator.sh";
         timeoutInSeconds = 2;
