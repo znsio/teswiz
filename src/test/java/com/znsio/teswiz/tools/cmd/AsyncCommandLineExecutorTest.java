@@ -54,53 +54,72 @@ class AsyncCommandLineExecutorTest {
         command = "./src/test/java/com/znsio/teswiz/tools/cmd/calculator.sh";
         timeoutInSeconds = 2;
         expectedResponse = """
-                --------------------
-                Command Line Calculator
-                Choose an operation:
+                ----------------------------------------------------
+                Welcome to the Simple Command Line Calculator
+                Please choose an option:
                 1. Add
                 2. Subtract
                 3. Exit
-                --------------------""";
+                4. Log Errors
+                ----------------------------------------------------""";
         response = sendCommand(executor, command, timeoutInSeconds);
         assertThat(response).as("Output of command: '" + command + "' is incorrect").isEqualTo(expectedResponse);
 
         command = "1";
         timeoutInSeconds = 2;
         expectedResponse = """
-                Enter two numbers to add:""";
+                Addition:
+                
+                Enter first number:""";
         response = sendCommand(executor, command, timeoutInSeconds);
         assertThat(response).as("Output of command: '" + command + "' is incorrect").isEqualTo(expectedResponse);
 
         command = "15";
         timeoutInSeconds = 2;
-        expectedResponse = "";
+        expectedResponse = "Enter second number:";
         response = sendCommand(executor, command, timeoutInSeconds);
         assertThat(response).as("Output of command: '" + command + "' is incorrect").isEqualTo(expectedResponse);
 
         command = "24";
         timeoutInSeconds = 2;
         expectedResponse = """
-                Result: 39
-                --------------------
-                Command Line Calculator
-                Choose an operation:
+                [32mResult: 39[0m
+                ----------------------------------------------------
+                Welcome to the Simple Command Line Calculator
+                Please choose an option:
                 1. Add
                 2. Subtract
                 3. Exit
-                --------------------""";
+                4. Log Errors
+                ----------------------------------------------------""";
+        response = sendCommand(executor, command, timeoutInSeconds);
+        assertThat(response).as("Output of command: '" + command + "' is incorrect").isEqualTo(expectedResponse);
+
+        command = "4";
+        expectedResponse = """
+                Logging error to stderr in red.
+                ----------------------------------------------------
+                Welcome to the Simple Command Line Calculator
+                Please choose an option:
+                1. Add
+                2. Subtract
+                3. Exit
+                4. Log Errors
+                ----------------------------------------------------""";
         response = sendCommand(executor, command, timeoutInSeconds);
         assertThat(response).as("Output of command: '" + command + "' is incorrect").isEqualTo(expectedResponse);
 
         command = "5";
         expectedResponse = """
-                Invalid option, please try again.
-                --------------------
-                Command Line Calculator
-                Choose an operation:
+                Invalid option. Please try again.
+                ----------------------------------------------------
+                Welcome to the Simple Command Line Calculator
+                Please choose an option:
                 1. Add
                 2. Subtract
                 3. Exit
-                --------------------""";
+                4. Log Errors
+                ----------------------------------------------------""";
         response = sendCommand(executor, command, timeoutInSeconds);
         assertThat(response).as("Output of command: '" + command + "' is incorrect").isEqualTo(expectedResponse);
 
