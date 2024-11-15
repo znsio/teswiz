@@ -8,9 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class AsyncCommandLineExecutor {
     private final Process process;
@@ -37,10 +35,9 @@ public class AsyncCommandLineExecutor {
                                         ? new ProcessBuilder("cmd.exe")
                                         : new ProcessBuilder("bash");
 
-        processBuilder.redirectErrorStream(true);
-
         process = processBuilder.start();
 
+        // Initialize writers and readers
         commandWriter = new PrintWriter(process.getOutputStream(), true);
         outputReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
     }
@@ -50,49 +47,33 @@ public class AsyncCommandLineExecutor {
                                        ? "/c " + command
                                        : command;
 
-        LOGGER.info("Executing command: " + platformCommand);
+        LOGGER.info("Executing command: '%s', with timeout: '%d' seconds".formatted(platformCommand, timeoutInSeconds));
 
         StringBuilder output = new StringBuilder();
 
-        // CompletableFuture for reading stdout asynchronously
-        CompletableFuture<Void> stdoutFuture = CompletableFuture.runAsync(() -> {
-            try {
-                readStream(outputReader, output);
-            } catch (IOException e) {
-                LOGGER.debug("Error reading stdout: " + e.getMessage());
-            }
-        });
-
-        // Write the command to the shell
+        // Send the command
         commandWriter.println(platformCommand);
         commandWriter.flush();
 
         try {
-            // Wait for the command to complete or timeout
-            boolean finished = process.waitFor(timeoutInSeconds, TimeUnit.SECONDS);
+            // Wait for the specified timeout
+            TimeUnit.SECONDS.sleep(timeoutInSeconds);
 
-            if (!finished) {
-                LOGGER.debug("Command timed out. Returning partial output if any.");
+            // Read any accumulated output after the timeout
+            while (outputReader.ready()) {  // only read if data is available
+                String line = outputReader.readLine();
+                if (line != null) {
+                    output.append(line).append(System.lineSeparator());
+                }
             }
-
-            // Wait for the stdoutFuture to complete (even if the process timed out)
-            stdoutFuture.get(timeoutInSeconds, TimeUnit.SECONDS);
-
-        } catch (TimeoutException e) {
-            LOGGER.debug("Command timed out. Returning partial output if any.");
-        } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
-            LOGGER.debug(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.debug("Command '%s' execution was interrupted.".formatted(command));
+        } catch (IOException e) {
+            LOGGER.debug("Error reading stdout: %s".formatted(e.getMessage()), e.getCause());
         }
 
         return new CommandResult(output.toString().trim());
-    }
-
-    private void readStream(BufferedReader reader, StringBuilder output) throws IOException {
-        String line;
-        while ((line = reader.readLine()) != null) {
-            output.append(line).append(System.lineSeparator());
-            LOGGER.info(line); // Print each line as it is read
-        }
     }
 
     public void close() {
