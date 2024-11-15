@@ -8,7 +8,6 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AspectJMethodLoggerTest {
-
     private static final String className = AspectJMethodLoggerTest.class.getSimpleName();
     private static final String LOG_DIR = "./target/testLogs";
 
