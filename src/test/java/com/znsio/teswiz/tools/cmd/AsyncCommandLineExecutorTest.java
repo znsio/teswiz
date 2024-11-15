@@ -22,7 +22,6 @@ class AsyncCommandLineExecutorTest {
         new File(LOG_DIR).mkdirs();
     }
 
-
     @Test
     void asyncCLICalculatorTest() {
         try {
@@ -51,7 +50,7 @@ class AsyncCommandLineExecutorTest {
         response = sendCommand(executor, command, timeoutInSeconds);
         assertThat(response).as("Output of command: '" + command + "' is incorrect").contains(expectedResponse);
 
-        command = "./src/test/java/com/znsio/teswiz/tools/cmd/calculator.sh";
+        command = "./src/test/resources/tools/calculator.sh";
         timeoutInSeconds = 2;
         expectedResponse = """
                 ----------------------------------------------------
