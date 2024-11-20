@@ -497,7 +497,7 @@ class Setup {
     }
 
     static Map<String, Object> initialiseApplitoolsConfiguration() {
-        if (applitoolsConfiguration.isEmpty() && !Runner.getPlatform().equals(Platform.api) && !Runner.getPlatform().equals(Platform.cli)) {
+        if (applitoolsConfiguration.isEmpty() && !Runner.isAPI() && !Runner.isCLI()) {
             getApplitoolsConfigFromProvidedConfigFile();
             applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
             applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(APP_NAME));

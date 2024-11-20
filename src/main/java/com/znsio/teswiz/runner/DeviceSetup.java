@@ -309,7 +309,7 @@ class DeviceSetup {
     }
 
     static String getCloudNameFromCapabilities() {
-        if (Runner.isRunningInCI()) {
+        if (Runner.isRunningInCI() && !Runner.isAPI() && !Runner.isCLI()) {
             String capabilityFile = Setup.getFromConfigs(CAPS);
             return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
                     new String[]{"serverConfig", "server", "plugin",

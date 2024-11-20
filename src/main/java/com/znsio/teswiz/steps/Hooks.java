@@ -36,7 +36,7 @@ public class Hooks {
                                   scenario.getName()));
         LOGGER.info(String.format("Hooks: Running test %s on %s", testExecutionContext.getTestName(),
                                   Runner.getPlatform().name()));
-        if (!Runner.getPlatform().equals(Platform.api) || !Runner.getPlatform().equals(Platform.cli)) {
+        if (!Runner.isAPI() || !Runner.isCLI()) {
             testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
         }
         testExecutionContext.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS,
@@ -60,7 +60,7 @@ public class Hooks {
     }
 
     private void startTheAsyncCommandLineExecutor() {
-        if (Runner.getPlatform().equals(Platform.cli)) {
+        if (Runner.isCLI()) {
             LOGGER.info("Start the AsyncCommandLineExecutor");
             testExecutionContext.addTestState(TEST_CONTEXT.CLI_COMMAND_NUMBER, 1);
             AsyncCommandLineExecutor asyncCommandLineExecutor = new AsyncCommandLineExecutor();
@@ -105,7 +105,7 @@ public class Hooks {
     }
 
     private void closeTheAsyncCommandLineExecutor() {
-        if (Runner.getPlatform().equals(Platform.cli)) {
+        if (Runner.isCLI()) {
             LOGGER.info("Close the AsyncCommandLineExecutor");
             AsyncCommandLineExecutor asyncCommandLineExecutor = (AsyncCommandLineExecutor) testExecutionContext.getTestState(TEST_CONTEXT.ASYNC_COMMAND_LINE_EXECUTOR);
             asyncCommandLineExecutor.close();
