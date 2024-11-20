@@ -29,10 +29,6 @@ public class InteractiveCalculatorCLIBL {
     }
 
     public InteractiveCalculatorCLIBL launchInteractiveCLIForCalculator() {
-        context.addTestState(TEST_CONTEXT.CLI_COMMAND_NUMBER, 1);
-        AsyncCommandLineExecutor asyncCommandLineExecutor = new AsyncCommandLineExecutor();
-        context.addTestState(TEST_CONTEXT.ASYNC_COMMAND_LINE_EXECUTOR, asyncCommandLineExecutor);
-
         String expectedResponse = """
                 ----------------------------------------------------
                 Welcome to the Simple Command Line Calculator
@@ -151,27 +147,13 @@ public class InteractiveCalculatorCLIBL {
         String actualResponse = runCommand(command, 5);
         LOGGER.info("Actual response: %n%s".formatted(actualResponse));
         softly.assertThat(actualResponse).as("Output of command: '" + command + "' is incorrect").isEqualTo(expectedResponse);
-        return closeTheAsyncCommandLineExecutor();
-    }
-
-    private InteractiveCalculatorCLIBL closeTheAsyncCommandLineExecutor() {
-        LOGGER.debug("Close the AsyncCommandLineExecutor");
-        AsyncCommandLineExecutor asyncCommandLineExecutor = (AsyncCommandLineExecutor) context.getTestState(TEST_CONTEXT.ASYNC_COMMAND_LINE_EXECUTOR);
-        asyncCommandLineExecutor.close();
         return this;
     }
 
     private @NotNull String runCommand(String command, int timeoutInSeconds) {
         AsyncCommandLineExecutor asyncCommandLineExecutor = (AsyncCommandLineExecutor) context.getTestState(TEST_CONTEXT.ASYNC_COMMAND_LINE_EXECUTOR);
-        updateCurrentCommandNumber();
         AsyncCommandLineExecutor.CommandResult result = asyncCommandLineExecutor.sendCommand(command, timeoutInSeconds);
-        LOGGER.info("%n--> Stdout: %n%s".formatted(result.getOutput()));
+        LOGGER.info("%n--> AsyncCommandLineExecutor output begin: Command: '%s'%n%s%n-->  AsyncCommandLineExecutor output end%n".formatted(command, result.getOutput()));
         return result.getOutput();
-    }
-
-    private void updateCurrentCommandNumber() {
-        int commmandNumber = (int) context.getTestState(TEST_CONTEXT.CLI_COMMAND_NUMBER);
-        LOGGER.info("Running command # " + commmandNumber++);
-        context.addTestState(TEST_CONTEXT.CLI_COMMAND_NUMBER, commmandNumber);
     }
 }

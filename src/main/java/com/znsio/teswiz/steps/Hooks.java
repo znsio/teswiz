@@ -8,9 +8,10 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.UserPersonaDetails;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
+import com.znsio.teswiz.tools.cmd.AsyncCommandLineExecutor;
 import io.cucumber.java.Scenario;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 
 import java.util.Arrays;
@@ -22,15 +23,20 @@ public class Hooks {
     private static final Logger LOGGER = LogManager.getLogger(Hooks.class.getName());
     private static final List<String> excludeLoggingSystemProperties = Arrays.asList("java.class.path", "java.library.path");
     private static final List<String> excludeLoggingEnvVariables = Arrays.asList("KEY", "PASSWORD");
+    private final TestExecutionContext testExecutionContext;
+    private final long threadId;
+
+    public Hooks() {
+        threadId = Thread.currentThread().getId();
+        testExecutionContext = Runner.getTestExecutionContext(threadId);
+    }
 
     public void beforeScenario(Scenario scenario) {
-        long threadId = Thread.currentThread().getId();
-        TestExecutionContext testExecutionContext = Runner.getTestExecutionContext(threadId);
         LOGGER.info(String.format("Hooks: ThreadId : %s In RunCukes - beforeScenario: %s", threadId,
                                   scenario.getName()));
         LOGGER.info(String.format("Hooks: Running test %s on %s", testExecutionContext.getTestName(),
                                   Runner.getPlatform().name()));
-        if(!Runner.getPlatform().equals(Platform.api)) {
+        if (!Runner.isAPI() || !Runner.isCLI()) {
             testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
         }
         testExecutionContext.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS,
@@ -39,6 +45,27 @@ public class Hooks {
         testExecutionContext.addTestState(TEST_CONTEXT.SOFT_ASSERTIONS, softly);
         addEnvironmentVariablesToReportPortal();
         addSystemPropertiesToReportPortal();
+        startTheAsyncCommandLineExecutor();
+    }
+
+    public void afterScenario(Scenario scenario) {
+        long threadId = Thread.currentThread().getId();
+        LOGGER.info(String.format("Hooks: ThreadId: %d In RunCukes - afterScenario: %s", threadId,
+                                  scenario.getName()));
+        Drivers.attachLogsAndCloseAllDrivers(scenario);
+        closeTheAsyncCommandLineExecutor();
+        SoftAssertions softly = Runner.getSoftAssertion(threadId);
+        LOGGER.info("Hooks: Assert all soft assertions");
+        softly.assertAll();
+    }
+
+    private void startTheAsyncCommandLineExecutor() {
+        if (Runner.isCLI()) {
+            LOGGER.info("Start the AsyncCommandLineExecutor");
+            testExecutionContext.addTestState(TEST_CONTEXT.CLI_COMMAND_NUMBER, 1);
+            AsyncCommandLineExecutor asyncCommandLineExecutor = new AsyncCommandLineExecutor();
+            testExecutionContext.addTestState(TEST_CONTEXT.ASYNC_COMMAND_LINE_EXECUTOR, asyncCommandLineExecutor);
+        }
     }
 
     private void addEnvironmentVariablesToReportPortal() {
@@ -77,13 +104,12 @@ public class Hooks {
                 String.format("Hooks: System Properties:%n%s", propVars));
     }
 
-    public void afterScenario(Scenario scenario) {
-        long threadId = Thread.currentThread().getId();
-        LOGGER.info(String.format("Hooks: ThreadId: %d In RunCukes - afterScenario: %s", threadId,
-                                  scenario.getName()));
-        Drivers.attachLogsAndCloseAllDrivers(scenario);
-        SoftAssertions softly = Runner.getSoftAssertion(threadId);
-        LOGGER.info("Hooks: Assert all soft assertions");
-        softly.assertAll();
+    private void closeTheAsyncCommandLineExecutor() {
+        if (Runner.isCLI()) {
+            LOGGER.info("Close the AsyncCommandLineExecutor");
+            AsyncCommandLineExecutor asyncCommandLineExecutor = (AsyncCommandLineExecutor) testExecutionContext.getTestState(TEST_CONTEXT.ASYNC_COMMAND_LINE_EXECUTOR);
+            asyncCommandLineExecutor.close();
+        }
     }
+
 }

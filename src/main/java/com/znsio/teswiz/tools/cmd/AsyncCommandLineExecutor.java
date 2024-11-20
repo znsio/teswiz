@@ -1,5 +1,7 @@
 package com.znsio.teswiz.tools.cmd;
 
+import com.context.TestExecutionContext;
+import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.CommandLineExecutorException;
 import com.znsio.teswiz.runner.Runner;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +18,7 @@ public class AsyncCommandLineExecutor {
     private final PrintWriter commandWriter;
     private final BufferedReader outputReader;
     private static final Logger LOGGER = LogManager.getLogger(AsyncCommandLineExecutor.class.getName());
+    private final TestExecutionContext context;
 
     public static class CommandResult {
         private final String output;
@@ -30,6 +33,8 @@ public class AsyncCommandLineExecutor {
     }
 
     public AsyncCommandLineExecutor() {
+        long threadId = Thread.currentThread().getId();
+        this.context = Runner.getTestExecutionContext(threadId);
         String os = Runner.OS_NAME.toLowerCase();
 
         ProcessBuilder processBuilder = os.contains("win")
@@ -48,6 +53,7 @@ public class AsyncCommandLineExecutor {
     }
 
     public CommandResult sendCommand(String command, int timeoutInSeconds) {
+        updateCurrentCommandNumber();
         final String platformCommand = Runner.IS_WINDOWS
                                        ? "/c " + command
                                        : command;
@@ -93,4 +99,11 @@ public class AsyncCommandLineExecutor {
             LOGGER.debug("Error closing resources: " + e.getMessage());
         }
     }
+
+    private void updateCurrentCommandNumber() {
+        int commmandNumber = (int) context.getTestState(TEST_CONTEXT.CLI_COMMAND_NUMBER);
+        LOGGER.info("AsyncCommandLineExecutor: Running command # " + commmandNumber++);
+        context.addTestState(TEST_CONTEXT.CLI_COMMAND_NUMBER, commmandNumber);
+    }
+
 }

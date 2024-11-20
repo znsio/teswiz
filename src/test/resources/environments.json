@@ -12,5 +12,7 @@
   },
   "dev": {
     "CONFENGINE_BASE_URL": "https://www.dev.confengine.com/"
+  },
+  "local": {
   }
 }

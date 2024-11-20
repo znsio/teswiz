@@ -247,6 +247,14 @@ public class Runner {
         return Setup.getBooleanValueFromConfigs(Setup.RUN_IN_CI);
     }
 
+    public static boolean isCLI() {
+        return Runner.getPlatform().equals(Platform.cli);
+    }
+
+    public static boolean isAPI() {
+        return Runner.getPlatform().equals(Platform.api);
+    }
+
     public static String getBrowser() {
         return Setup.getFromConfigs(Setup.BROWSER);
     }
