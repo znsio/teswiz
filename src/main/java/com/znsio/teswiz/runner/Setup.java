@@ -475,19 +475,19 @@ class Setup {
         if (currentPlatform.equals(Platform.web)) {
             configs.put(APP_PATH, configs.get(BROWSER));
             configs.put(EXECUTED_ON, "Local Browsers");
-            setupListenersForWebOrAPIExecution(webCukeArgs);
+            setupListenersForWebOrAPIOrCLIExecution(webCukeArgs);
         } else if (currentPlatform.equals(Platform.electron)) {
             configs.put(APP_PATH, configs.get(BROWSER));
             configs.put(EXECUTED_ON, "Local Electron Application");
-            setupListenersForWebOrAPIExecution(webCukeArgs);
-        } else if (currentPlatform.equals(Platform.api)) {
+            setupListenersForWebOrAPIOrCLIExecution(webCukeArgs);
+        } else if (currentPlatform.equals(Platform.api) || currentPlatform.equals(Platform.cli)) {
             configs.put(EXECUTED_ON, currentPlatform.name());
-            setupListenersForWebOrAPIExecution(webCukeArgs);
+            setupListenersForWebOrAPIOrCLIExecution(webCukeArgs);
         }
         return webCukeArgs;
     }
 
-    private static void setupListenersForWebOrAPIExecution(ArrayList<String> webCukeArgs) {
+    private static void setupListenersForWebOrAPIOrCLIExecution(ArrayList<String> webCukeArgs) {
         webCukeArgs.add("--threads");
         webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
         webCukeArgs.add(PLUGIN);
@@ -497,7 +497,7 @@ class Setup {
     }
 
     static Map<String, Object> initialiseApplitoolsConfiguration() {
-        if (applitoolsConfiguration.isEmpty()) {
+        if (applitoolsConfiguration.isEmpty() && !Runner.getPlatform().equals(Platform.api) && !Runner.getPlatform().equals(Platform.cli)) {
             getApplitoolsConfigFromProvidedConfigFile();
             applitoolsConfiguration.put(APPLITOOLS.SERVER_URL, getServerUrl());
             applitoolsConfiguration.put(APPLITOOLS.APP_NAME, configs.get(APP_NAME));

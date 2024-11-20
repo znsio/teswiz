@@ -6,5 +6,6 @@ public enum Platform {
     windows,
     web,
     api,
-    electron
+    electron,
+    cli
 }
