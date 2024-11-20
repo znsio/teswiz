@@ -61,6 +61,7 @@ public class Hooks {
 
     private void startTheAsyncCommandLineExecutor() {
         if (Runner.getPlatform().equals(Platform.cli)) {
+            LOGGER.info("Start the AsyncCommandLineExecutor");
             testExecutionContext.addTestState(TEST_CONTEXT.CLI_COMMAND_NUMBER, 1);
             AsyncCommandLineExecutor asyncCommandLineExecutor = new AsyncCommandLineExecutor();
             testExecutionContext.addTestState(TEST_CONTEXT.ASYNC_COMMAND_LINE_EXECUTOR, asyncCommandLineExecutor);
@@ -104,9 +105,11 @@ public class Hooks {
     }
 
     private void closeTheAsyncCommandLineExecutor() {
-        LOGGER.debug("Close the AsyncCommandLineExecutor");
-        AsyncCommandLineExecutor asyncCommandLineExecutor = (AsyncCommandLineExecutor) testExecutionContext.getTestState(TEST_CONTEXT.ASYNC_COMMAND_LINE_EXECUTOR);
-        asyncCommandLineExecutor.close();
+        if (Runner.getPlatform().equals(Platform.cli)) {
+            LOGGER.info("Close the AsyncCommandLineExecutor");
+            AsyncCommandLineExecutor asyncCommandLineExecutor = (AsyncCommandLineExecutor) testExecutionContext.getTestState(TEST_CONTEXT.ASYNC_COMMAND_LINE_EXECUTOR);
+            asyncCommandLineExecutor.close();
+        }
     }
 
 }
