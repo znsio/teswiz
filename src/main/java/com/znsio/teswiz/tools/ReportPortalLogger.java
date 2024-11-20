@@ -25,7 +25,7 @@ public class ReportPortalLogger {
                     String.format("'%s' - Upload of file: '%s'::'%s' to ReportPortal succeeded",
                                   getCallingClassAndMethodName(), message, destinationFile));
         } else {
-            LOGGER.error(String.format("'%s' - Upload of file: '%s'::'%s' to ReportPortal failed",
+            LOGGER.debug(String.format("'%s' - Upload of file: '%s'::'%s' to ReportPortal failed",
                                        getCallingClassAndMethodName(), message, destinationFile));
         }
     }
@@ -62,7 +62,7 @@ public class ReportPortalLogger {
                                        getCallingClassAndMethodName(), message));
 
         } else {
-            LOGGER.error(String.format("'%s' - Logging message: '%s' to ReportPortal failed",
+            LOGGER.debug(String.format("'%s' - Logging message: '%s' to ReportPortal failed",
                                        getCallingClassAndMethodName(), message));
         }
     }
