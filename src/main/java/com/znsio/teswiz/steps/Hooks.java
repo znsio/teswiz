@@ -26,7 +26,7 @@ public class Hooks {
     private final TestExecutionContext testExecutionContext;
     private final long threadId;
 
-    protected Hooks() {
+    public Hooks() {
         threadId = Thread.currentThread().getId();
         testExecutionContext = Runner.getTestExecutionContext(threadId);
     }
