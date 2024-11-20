@@ -1,7 +1,7 @@
-@api @cli
+@cli
 Feature: Test the calculator app (interactive CLI)
 
-  # CONFIG=configs/api_local_config.properties TAG=@cli ./gradlew run
+  # CONFIG=configs/cli_local_config.properties ./gradlew run
   Scenario: Test the calculator app
     Given I launch the interactive CLI for calculator
     When I add 2 numbers - 24 and 43

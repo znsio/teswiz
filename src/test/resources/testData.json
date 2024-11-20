@@ -37,6 +37,7 @@
     }
   },
   "dev": {},
+  "local": {},
   "browserStack": {
     "username": "eot.testing@gmail.com",
     "password": "eotTesting@0"
