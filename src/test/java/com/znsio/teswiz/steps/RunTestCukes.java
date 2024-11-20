@@ -7,24 +7,22 @@ import com.applitools.eyes.visualgrid.model.ScreenOrientation;
 import com.context.SessionContext;
 import com.context.TestExecutionContext;
 import com.znsio.teswiz.entities.APPLITOOLS;
+import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.services.UnirestService;
 import com.znsio.teswiz.tools.HeartBeat;
 import com.znsio.teswiz.tools.ReportPortalLogger;
+import com.znsio.teswiz.tools.cmd.AsyncCommandLineExecutor;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.Assertions;
 import org.testng.annotations.DataProvider;
 
-import java.time.Instant;
 import java.util.HashMap;
 
 public class RunTestCukes
@@ -36,7 +34,7 @@ public class RunTestCukes
         long threadId = Thread.currentThread().getId();
         LOGGER.info("RunTestCukes: Constructor: ThreadId: " + threadId);
         context = SessionContext.getTestExecutionContext(threadId);
-        System.setProperty(TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT, "@android,@web,@iOS,@api");
+        System.setProperty(TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT, "@android,@web,@iOS,@api,@cli");
     }
 
     @Override
@@ -54,6 +52,19 @@ public class RunTestCukes
         LOGGER.info(String.format("RunTestCukes: ThreadId: %d: in overridden beforeTestScenario%n",
                                   Thread.currentThread().getId()));
         new Hooks().beforeScenario(scenario);
+        addApplitoolsUFGConfigurationToContext();
+        isEnvironmentHealthy(context.getTestName(), Runner.getFromEnvironmentConfiguration(SAMPLE_TEST_CONTEXT.HEALTH_CHECK_URL));
+    }
+
+    @After
+    public void afterTestScenario(Scenario scenario) {
+        LOGGER.info(String.format("RunTestCukes: ThreadId: %d: in overridden afterTestScenario%n",
+                                  Thread.currentThread().getId()));
+        this.closeHeartBeatThreads();
+        new Hooks().afterScenario(scenario);
+    }
+
+    private void addApplitoolsUFGConfigurationToContext() {
         Configuration ufgConfig = new Configuration();
         ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
         ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
@@ -61,7 +72,6 @@ public class RunTestCukes
         ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
         LOGGER.info("Use the following Browsers and devices in UFG config: " + ufgConfig.getBrowsersInfo());
         context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
-        isEnvironmentHealthy(context.getTestName(), Runner.getFromEnvironmentConfiguration(SAMPLE_TEST_CONTEXT.HEALTH_CHECK_URL));
     }
 
     private void isEnvironmentHealthy(String testName, String healthCheckUrl) {
@@ -80,14 +90,6 @@ public class RunTestCukes
 
             Assertions.assertThat(isEnvironmentHealthy).as("Health check failed").isTrue();
         }
-    }
-
-    @After
-    public void afterTestScenario(Scenario scenario) {
-        LOGGER.info(String.format("RunTestCukes: ThreadId: %d: in overridden afterTestScenario%n",
-                                  Thread.currentThread().getId()));
-        this.closeHeartBeatThreads();
-        new Hooks().afterScenario(scenario);
     }
 
     private void closeHeartBeatThreads() {
