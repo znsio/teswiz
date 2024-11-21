@@ -122,7 +122,7 @@ public class JsonFile {
                 LOGGER.info("The JSON files (file1: '%s' and file2: '%s') are identical.");
                 return true;
             } else {
-                String differencs = JsonFile.getDifferencs(diff, json1);
+                String differencs = getDifferences(diff, json1);
                 LOGGER.info("The JSON files (file1: '%s' and file2: '%s') are different.\n%s".formatted(file1, file2, differencs));
                 return false;
             }
@@ -131,42 +131,49 @@ public class JsonFile {
         }
     }
 
-    static @NotNull String getDifferencs(JsonNode diff, JsonNode jsonNode1) {
-        String differencs = "";
+    static @NotNull String getDifferences(JsonNode diff, JsonNode jsonNode1) {
+        StringBuilder differences = new StringBuilder();
 
         for (JsonNode change : diff) {
             String operation = change.get("op").asText();
             String path = change.get("path").asText();
-            differencs += "\nOperation: " + operation + ", Path: " + path;
+
+            differences.append("\n\tOperation: ").append(operation).append(", Path: ").append(path);
 
             if (operation.equals("replace") || operation.equals("add")) {
-                differencs += "\n\tNew Value: " + change.get("value");
+                appendNewValue(differences, change);
             }
             if (operation.equals("replace") || operation.equals("remove")) {
-                String[] keys = path.split("/");
-                JsonNode parentNode = jsonNode1;
-
-                for (int i = 1; i < keys.length; i++) {
-                    String key = keys[i];
-                    if (parentNode == null) {
-                        differencs += "\n\tMissing key or structure for path: " + path + " in the original file.";
-                        break;
-                    }
-                    if (key.matches("\\d+")) {
-                        parentNode = parentNode.get(Integer.parseInt(key)); // Handle array index
-                    } else {
-                        parentNode = parentNode.get(key); // Handle object key
-                    }
-                }
-
-                if (parentNode != null) {
-                    differencs += "\n\tOld Value: " + parentNode;
-                } else {
-                    differencs += "\n\tOld Value: null (key does not exist in the original file)";
-                }
+                appendOldValue(differences, path, jsonNode1);
             }
         }
-        differencs += "\n";
-        return differencs;
+
+        differences.append("\n");
+        return differences.toString();
     }
+
+    private static void appendNewValue(StringBuilder differences, JsonNode change) {
+        differences.append("\n\t\tNew Value: ").append(change.get("value"));
+    }
+
+    private static void appendOldValue(StringBuilder differences, String path, JsonNode jsonNode1) {
+        String[] keys = path.split("/");
+        JsonNode parentNode = jsonNode1;
+
+        for (int i = 1; i < keys.length; i++) {
+            String key = keys[i];
+            if (parentNode == null) {
+                differences.append("\n\t\tMissing key or structure for path: ").append(path).append(" in the original file.");
+                return;
+            }
+            parentNode = key.matches("\\d+") ? parentNode.get(Integer.parseInt(key)) : parentNode.get(key);
+        }
+
+        if (parentNode != null) {
+            differences.append("\n\t\tOld Value: ").append(parentNode);
+        } else {
+            differences.append("\n\t\tOld Value: null (key does not exist in the original file)");
+        }
+    }
+
 }

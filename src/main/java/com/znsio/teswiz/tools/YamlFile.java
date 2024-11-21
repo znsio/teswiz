@@ -41,7 +41,7 @@ public class YamlFile {
                 LOGGER.info("The YAML files (file1: '%s' and file2: '%s') are identical.");
                 return true;
             } else {
-                String differencs = JsonFile.getDifferencs(diff, jsonNode1);
+                String differencs = JsonFile.getDifferences(diff, jsonNode1);
                 LOGGER.info("The YAML files (file1: '%s' and file2: '%s') are different.\n%s".formatted(file1, file2, differencs));
                 return false;
             }
