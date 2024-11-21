@@ -22,6 +22,7 @@ buildscript {
         jetbrainsAnnotationsVersion = "26.0.1"
         junitVersion = "5.11.3"
         snakeyamlVersion = "2.3"
+        jsonDiffVersion = "0.4.14"
     }
 }
 
@@ -95,6 +96,7 @@ dependencies {
     implementation "in.specmatic:specmatic-core:${project.specmaticVersion}"
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "org.yaml:snakeyaml:$project.snakeyamlVersion"
+    implementation "com.flipkart.zjsonpatch:zjsonpatch:$project.jsonDiffVersion"
 }
 
 shadowJar {

@@ -2,11 +2,13 @@ package com.znsio.teswiz.tools;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flipkart.zjsonpatch.JsonDiff;
 import com.google.gson.*;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -23,21 +25,21 @@ public class JsonFile {
     public static void saveJsonToFile(Map<String, Map> jsonMap, String fileName) {
         LOGGER.info("\tSave the following json to file: " + fileName + "   with jsonmap:  " + jsonMap);
         File file = new File(fileName);
-        if(file.exists()) {
+        if (file.exists()) {
             LOGGER.debug("File: " + file + "  exixts.  Delete it first");
             boolean isFileDeleted = file.delete();
             LOGGER.debug("File deleted? " + isFileDeleted);
-            if(!isFileDeleted) {
+            if (!isFileDeleted) {
                 throw new EnvironmentSetupException(
                         "Unable to delete older, already existing capabilities file: " + fileName);
             }
         } else {
             LOGGER.info("File " + file + " does not exist. Create it\n");
         }
-        try(Writer writer = new FileWriter(fileName)) {
+        try (Writer writer = new FileWriter(fileName)) {
             Gson gson = new GsonBuilder().create();
             gson.toJson(jsonMap, writer);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new EnvironmentSetupException(
                     String.format("Unable to save following json to file: '%s'%n'%s'%n", jsonMap,
                                   fileName), e);
@@ -49,7 +51,7 @@ public class JsonFile {
         LOGGER.debug("\tNode: " + node);
         Map<String, Map> envMap = map.get(node);
         LOGGER.debug("\tLoaded map: " + envMap);
-        if(null == envMap) {
+        if (null == envMap) {
             throw new InvalidTestDataException(
                     String.format("Node: '%s' not found in file: '%s'", node, fileName));
         }
@@ -64,7 +66,7 @@ public class JsonFile {
             Map<String, Map> map = gson.fromJson(reader, Map.class);
             reader.close();
             return map;
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new InvalidTestDataException(
                     String.format("Unable to load json file: '%s'", fileName), e);
         }
@@ -114,15 +116,57 @@ public class JsonFile {
             JsonNode json1 = objectMapper.readTree(Files.newBufferedReader(Paths.get(file1)));
             JsonNode json2 = objectMapper.readTree(Files.newBufferedReader(Paths.get(file2)));
 
-            if (json1.equals(json2)) {
+            JsonNode diff = JsonDiff.asJson(json1, json2);
+
+            if (diff.isEmpty()) {
                 LOGGER.info("The JSON files (file1: '%s' and file2: '%s') are identical.");
                 return true;
             } else {
-                LOGGER.info("The JSON files (file1: '%s' and file2: '%s') are different.");
+                String differencs = JsonFile.getDifferencs(diff, json1);
+                LOGGER.info("The JSON files (file1: '%s' and file2: '%s') are different.\n%s".formatted(file1, file2, differencs));
                 return false;
             }
         } catch (Exception e) {
             throw new InvalidTestDataException("Invalid file provided", e);
         }
+    }
+
+    static @NotNull String getDifferencs(JsonNode diff, JsonNode jsonNode1) {
+        String differencs = "";
+
+        for (JsonNode change : diff) {
+            String operation = change.get("op").asText();
+            String path = change.get("path").asText();
+            differencs += "\nOperation: " + operation + ", Path: " + path;
+
+            if (operation.equals("replace") || operation.equals("add")) {
+                differencs += "\n\tNew Value: " + change.get("value");
+            }
+            if (operation.equals("replace") || operation.equals("remove")) {
+                String[] keys = path.split("/");
+                JsonNode parentNode = jsonNode1;
+
+                for (int i = 1; i < keys.length; i++) {
+                    String key = keys[i];
+                    if (parentNode == null) {
+                        differencs += "\n\tMissing key or structure for path: " + path + " in the original file.";
+                        break;
+                    }
+                    if (key.matches("\\d+")) {
+                        parentNode = parentNode.get(Integer.parseInt(key)); // Handle array index
+                    } else {
+                        parentNode = parentNode.get(key); // Handle object key
+                    }
+                }
+
+                if (parentNode != null) {
+                    differencs += "\n\tOld Value: " + parentNode;
+                } else {
+                    differencs += "\n\tOld Value: null (key does not exist in the original file)";
+                }
+            }
+        }
+        differencs += "\n";
+        return differencs;
     }
 }

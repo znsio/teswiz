@@ -27,6 +27,6 @@ class JsonFileTest {
 
     @Test
     void compareDifferentFiles() {
-        assertThat(JsonFile.compareFiles("configs/browser_config.json", "configs/applitools_config.json")).as("Files are not identical").isFalse();
+        assertThat(JsonFile.compareFiles("caps/theapp/theapp_browserstack_capabilities.json", "caps/theapp/theapp_headspin_android_capabilities.json")).as("Files are not identical").isFalse();
     }
 }

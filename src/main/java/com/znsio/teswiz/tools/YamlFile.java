@@ -1,5 +1,8 @@
 package com.znsio.teswiz.tools;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flipkart.zjsonpatch.JsonDiff;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,11 +31,18 @@ public class YamlFile {
                 yaml2 = yaml.load(input2);
             }
 
-            if (yaml1.equals(yaml2)) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode1 = objectMapper.valueToTree(yaml1);
+            JsonNode jsonNode2 = objectMapper.valueToTree(yaml2);
+
+            JsonNode diff = JsonDiff.asJson(jsonNode1, jsonNode2);
+
+            if (diff.isEmpty()) {
                 LOGGER.info("The YAML files (file1: '%s' and file2: '%s') are identical.");
                 return true;
             } else {
-                LOGGER.info("The YAML files (file1: '%s' and file2: '%s') are different.");
+                String differencs = JsonFile.getDifferencs(diff, jsonNode1);
+                LOGGER.info("The YAML files (file1: '%s' and file2: '%s') are different.\n%s".formatted(file1, file2, differencs));
                 return false;
             }
         } catch (Exception e) {
