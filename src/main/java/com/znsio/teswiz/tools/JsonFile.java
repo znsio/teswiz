@@ -1,5 +1,7 @@
 package com.znsio.teswiz.tools;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
@@ -104,5 +106,24 @@ public class JsonFile {
 
     public static JsonArray convertToArray(String jsonAsString) {
         return JsonParser.parseString(jsonAsString).getAsJsonArray();
+    }
+
+    public static boolean compareFiles(String file1, String file2) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            JsonNode json1 = objectMapper.readTree(Files.newBufferedReader(Paths.get(file1)));
+            JsonNode json2 = objectMapper.readTree(Files.newBufferedReader(Paths.get(file2)));
+
+            if (json1.equals(json2)) {
+                LOGGER.info("The JSON files (file1: '%s' and file2: '%s') are identical.");
+                return true;
+            } else {
+                LOGGER.info("The JSON files (file1: '%s' and file2: '%s') are different.");
+                return false;
+            }
+        } catch (Exception e) {
+            throw new InvalidTestDataException("Invalid file provided", e);
+        }
     }
 }

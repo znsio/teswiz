@@ -12,7 +12,7 @@ buildscript {
         jadbVersion = "1.2.1"
         unirestVersion = "3.14.5"
         specmaticVersion = '1.3.39'
-        webDriverManager = '5.9.2'
+        webDriverManagerVersion = '5.9.2'
         jodaTimeVersion = "2.13.0"
         masterThoughtVersion = "5.8.4"
         commonsLang3Version = "3.17.0"
@@ -21,6 +21,7 @@ buildscript {
         assertJVersion = "3.26.3"
         jetbrainsAnnotationsVersion = "26.0.1"
         junitVersion = "5.11.3"
+        snakeyamlVersion = "2.3"
     }
 }
 
@@ -92,7 +93,8 @@ dependencies {
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
     implementation "org.aspectj:aspectjrt:$project.aspectJVersion"
     implementation "in.specmatic:specmatic-core:${project.specmaticVersion}"
-    implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManager"
+    implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
+    implementation "org.yaml:snakeyaml:$project.snakeyamlVersion"
 }
 
 shadowJar {
