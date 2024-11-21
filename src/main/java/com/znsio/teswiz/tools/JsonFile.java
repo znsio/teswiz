@@ -75,14 +75,13 @@ public class JsonFile {
         return getValueFromLoadedJsonMap(fileName, nodeTree, map);
     }
 
-    public static String getValueFromLoadedJsonMap(String fileName, String[] nodeTree, Map<String,
-                                                                                             Map> loadedMap) {
+    public static String getValueFromLoadedJsonMap(String fileName, String[] nodeTree, Map<String, Map> loadedMap) {
         StringBuilder nodePath = new StringBuilder();
-        for(int nodeCount = 0; nodeCount < nodeTree.length - 1; nodeCount++) {
+        for (int nodeCount = 0; nodeCount < nodeTree.length - 1; nodeCount++) {
             LOGGER.debug("\tFinding node: " + nodeTree[nodeCount]);
             nodePath.append(nodeTree[nodeCount]).append(" -> ");
             loadedMap = loadedMap.get(nodeTree[nodeCount]);
-            if(null == loadedMap) {
+            if (null == loadedMap) {
                 throw new InvalidTestDataException(
                         String.format("Node: '%s' not found in file: '%s'", nodePath, fileName));
             }
