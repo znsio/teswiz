@@ -71,7 +71,7 @@ Example:
 To enable Visual test automation using Applitools Visual AI, follow the steps below:
 * In build.gradle, provide your APPLITOOLS_API_KEY:
 
-  > environment "APPLITOOLS_API_KEY", System.getenv("teswiz_APPLITOOLS_API_KEY")
+  > environment "APPLITOOLS_API_KEY", System.getenv("TESWIZ_APPLITOOLS_API_KEY")
 
 * Enable visual validation by setting `IS_VISUAL=true` in either of:
   * the config file, or
