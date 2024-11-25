@@ -7,8 +7,8 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.services.UnirestService;
 import com.znsio.teswiz.tools.*;
 import io.cucumber.java.Scenario;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 
 import java.io.File;
@@ -87,6 +87,8 @@ class PublicMethodsTest {
         Drivers.createDriverFor(currentUserPersona, "appName", "browserName", currentPlatform,
                                 context);
         Drivers.createDriverFor(currentUserPersona, "appNane", currentPlatform, context);
+        Drivers.createPDFDriverFor(currentUserPersona, currentPlatform, context, "pdfFileName");
+
         Drivers.getDriverForUser(currentUserPersona);
         Drivers.assignNewPersonaToExistingDriver(currentUserPersona, "newPersona", context);
         Drivers.getDriverForCurrentUser(threadId);
@@ -116,7 +118,7 @@ class PublicMethodsTest {
         JsonFile.saveJsonToFile(new HashMap<>(), "");
         JsonFile.getNodeValueAsMapFromJsonFile("", "");
         JsonFile.loadJsonFile("");
-        String [] a = new String[0];
+        String[] a = new String[0];
         JsonFile.getNodeValueAsStringFromJsonFile("", a);
         JsonFile.getValueFromLoadedJsonMap("", a, new HashMap<>());
         JsonFile.getNodeValueAsArrayListFromJsonFile("", "");
