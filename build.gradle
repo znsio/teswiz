@@ -23,7 +23,7 @@ buildscript {
         jetbrainsAnnotationsVersion = "26.0.1"
         junitVersion = "5.11.3"
         snakeyamlVersion = "2.3"
-        jsonDiffVersion = "0.4.14"
+        jsonDiffVersion = "0.4.16"
         pdfBoxVersion = '3.0.2'
     }
 }
