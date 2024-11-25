@@ -36,7 +36,7 @@ public class Hooks {
                                   scenario.getName()));
         LOGGER.info(String.format("Hooks: Running test %s on %s", testExecutionContext.getTestName(),
                                   Runner.getPlatform().name()));
-        if (!Runner.isAPI() || !Runner.isCLI()) {
+        if (!Runner.isAPI() || !Runner.isCLI() || !Runner.isPDF()) {
             testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
         }
         testExecutionContext.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS,

@@ -1,5 +1,6 @@
 package com.znsio.teswiz.runner;
 
+import com.context.TestExecutionContext;
 import com.google.common.collect.ImmutableMap;
 import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
@@ -51,6 +52,7 @@ import static java.util.Arrays.asList;
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
     public static final String APPIUM_DRIVER = "AppiumDriver";
+    public static final String PDF_DRIVER = "PDFDriver";
     private static final Logger LOGGER = LogManager.getLogger(Driver.class.getName());
     private final String type;
     private final WebDriver driver;
@@ -83,6 +85,21 @@ public class Driver {
         this.isRunningInHeadlessMode = isRunInHeadlessMode;
         instantiateEyes(testName, webDriver);
     }
+
+    public Driver(String userPersona, Platform platform, TestExecutionContext context, String pdfFileName) {
+        type = PDF_DRIVER;
+        driver = null;
+        this.userPersona = userPersona;
+        this.appName = pdfFileName;
+        this.driverForPlatform = platform;
+        this.isRunningInHeadlessMode = false;
+        instantiateEyes(context.getTestName(), pdfFileName);
+    }
+
+    private void instantiateEyes(String testName, String pdfFileName) {
+        this.visually = new Visual(this.type, this.driverForPlatform, testName, userPersona, pdfFileName);
+    }
+
 
     private void instantiateEyes(String testName, AppiumDriver innerDriver) {
         this.visually = new Visual(this.type, this.driverForPlatform, innerDriver, testName, userPersona, appName);

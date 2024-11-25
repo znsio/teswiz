@@ -6,6 +6,7 @@ buildscript {
     ext {
         gradleVersion = "8.11.1"
         applitoolsAppiumVersion = "5.72.0"
+        applitoolsImagesVersion = "5.73.0"
         browserStackLocalVersion = "1.1.4"
         fasterxmlJacksonVersion = "2.18.1"
         atdVersion = "b313941325" // ATD main branch
@@ -23,6 +24,7 @@ buildscript {
         junitVersion = "5.11.3"
         snakeyamlVersion = "2.3"
         jsonDiffVersion = "0.4.14"
+        pdfBoxVersion = '3.0.2'
     }
 }
 
@@ -88,6 +90,7 @@ dependencies {
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
     implementation "joda-time:joda-time:$project.jodaTimeVersion"
     implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
+    implementation "com.applitools:eyes-images-java5:$project.applitoolsImagesVersion"
     implementation ("com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion") {
 //        exclude group: 'io.appium', module: 'java-client'
     }
@@ -97,6 +100,7 @@ dependencies {
     implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
     implementation "org.yaml:snakeyaml:$project.snakeyamlVersion"
     implementation "com.flipkart.zjsonpatch:zjsonpatch:$project.jsonDiffVersion"
+    implementation "org.apache.pdfbox:pdfbox:$project.pdfBoxVersion"
 }
 
 shadowJar {
@@ -189,6 +193,7 @@ tasks.register('run', JavaExec) {
         println "Using LOG_DIR: ${project.logDir}"
         System.setProperty "LOG_DIR", "${project.logDir}"
         environment "APPLITOOLS_LOG_DIR", "${project.logDir}/applitools_logs"
+        environment "APPLITOOLS_API_KEY", System.getenv("teswiz_APPLITOOLS_API_KEY")
 
         def hostname = InetAddress.getLocalHost().getHostName()
         println "Hostname: $hostname"

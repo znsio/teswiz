@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.context.SessionContext.getTestExecutionContext;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
+import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static io.appium.java_client.remote.options.SupportsDeviceNameOption.DEVICE_NAME_OPTION;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
@@ -61,8 +62,7 @@ public class Drivers {
         return (UserPersonaDetails) context.getTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS);
     }
 
-    public static Driver createDriverFor(String userPersona, Platform forPlatform,
-                                         TestExecutionContext context) {
+    public static Driver createDriverFor(String userPersona, Platform forPlatform, TestExecutionContext context) {
         return createDriverFor(userPersona, DEFAULT, Runner.getBrowser(), forPlatform, context);
     }
 
@@ -165,10 +165,8 @@ public class Drivers {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
 
         if (!userPersonaDetails.isDriverAssignedForUser(userPersona)) {
-            LOGGER.info(
-                    "getDriverForUser: Drivers available for userPersonas: " + userPersonaDetails.getAllUserPersonasForAssignedDrivers());
-            throw new InvalidTestDataException(
-                    String.format(NO_DRIVER_FOUND_FOR_USER_PERSONA, userPersona));
+            LOGGER.info("getDriverForUser: Drivers available for userPersonas: " + userPersonaDetails.getAllUserPersonasForAssignedDrivers());
+            throw new InvalidTestDataException(String.format(NO_DRIVER_FOUND_FOR_USER_PERSONA, userPersona));
         }
 
         return userPersonaDetails.getDriverAssignedForUser(userPersona);
@@ -285,15 +283,21 @@ public class Drivers {
     }
 
     private static void attachLogsAndCloseDriver(String userPersona, Driver driver) {
+        String driverName = Driver.PDF_DRIVER;
+        if (!driver.getType().equalsIgnoreCase(Driver.PDF_DRIVER)) {
+            driverName = driver.getInnerDriver().getClass().getSimpleName();
+        }
         LOGGER.info(String.format("attachLogsAndCloseDriver: %s - %s - %s", userPersona,
                                   driver.getType(),
-                                  driver.getInnerDriver().getClass().getSimpleName()));
+                                  driverName));
         switch (driver.getType()) {
             case Driver.WEB_DRIVER:
                 BrowserDriverManager.closeWebDriver(userPersona, driver);
                 break;
             case Driver.APPIUM_DRIVER:
                 AppiumDriverManager.closeAppiumDriver(userPersona, driver);
+                break;
+            case Driver.PDF_DRIVER:
                 break;
             default:
                 throw new InvalidTestDataException(
@@ -365,4 +369,16 @@ public class Drivers {
         return getDriverForCurrentUser(threadId).getVisual();
     }
 
+    public static void createPDFDriverFor(String userPersona, Platform forPlatform, TestExecutionContext context, String pdfFileName) {
+        Driver currentDriver = new Driver(userPersona, forPlatform, context, pdfFileName);
+        context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
+        context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
+        context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, forPlatform);
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
+        userPersonaDetails.addAppName(userPersona, pdfFileName);
+        userPersonaDetails.addPlatform(userPersona, forPlatform);
+        userPersonaDetails.addDriver(userPersona, currentDriver);
+        LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n",
+                                  userPersona, forPlatform.name()));
+    }
 }

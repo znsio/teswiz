@@ -73,6 +73,7 @@ class PublicMethodsTest {
         Runner.getAppPackageName();
         Runner.isRunningInCI();
         Runner.isCLI();
+        Runner.isPDF();
         Runner.isAPI();
         Runner.getBrowser();
         Runner.getProxyURL();
