@@ -378,7 +378,6 @@ public class Drivers {
         userPersonaDetails.addAppName(userPersona, pdfFileName);
         userPersonaDetails.addPlatform(userPersona, forPlatform);
         userPersonaDetails.addDriver(userPersona, currentDriver);
-        LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n",
-                                  userPersona, forPlatform.name()));
+        LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n", userPersona, forPlatform.name()));
     }
 }

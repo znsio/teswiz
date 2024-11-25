@@ -34,7 +34,7 @@ public class PDFValidatorBL {
     public PDFValidatorBL validate(String pdfFileName) {
         TestResults testResults = PDFValidatorScreen.get().validatePDF(pdfFileName);
         testResults.getStatus().equals(TestResultsStatus.Passed);
-        assertThat(testResults.getStatus()).as("PDF validation failed for file: %s".formatted(pdfFileName)).isEqualTo(TestResultsStatus.Passed);
+        softly.assertThat(testResults.getStatus()).as("PDF validation failed for file: %s".formatted(pdfFileName)).isEqualTo(TestResultsStatus.Passed);
         return this;
     }
 
@@ -43,7 +43,7 @@ public class PDFValidatorBL {
         LOGGER.info("Validating standalone PDF file: %%s%s".formatted(pdfFileName));
         TestResults testResults = PDFValidatorScreen.get().validatePDF();
         testResults.getStatus().equals(TestResultsStatus.Passed);
-        assertThat(testResults.getStatus()).as("PDF validation failed for file: '%s'".formatted(pdfFileName)).isEqualTo(TestResultsStatus.Passed);
+        softly.assertThat(testResults.getStatus()).as("PDF validation failed for file: '%s'".formatted(pdfFileName)).isEqualTo(TestResultsStatus.Passed);
         return this;
     }
 
@@ -51,7 +51,7 @@ public class PDFValidatorBL {
         LOGGER.info("Validate page numbers: '%s' of PDF file: '%s'".formatted(pdfFileName, Arrays.toString(intArray)));
         TestResults testResults = PDFValidatorScreen.get().validatePDF(pdfFileName, intArray);
         testResults.getStatus().equals(TestResultsStatus.Passed);
-        assertThat(testResults.getStatus()).as("PDF validation failed for file: '%s'".formatted(pdfFileName)).isEqualTo(TestResultsStatus.Passed);
+        softly.assertThat(testResults.getStatus()).as("PDF validation failed for file: '%s'".formatted(pdfFileName)).isEqualTo(TestResultsStatus.Passed);
         return this;
     }
 
@@ -60,7 +60,7 @@ public class PDFValidatorBL {
         LOGGER.info("Validating page numbers: '%s' of standalone PDF file: '%s'".formatted(Arrays.toString(intArray), pdfFileName));
         TestResults testResults = PDFValidatorScreen.get().validatePDF(intArray);
         testResults.getStatus().equals(TestResultsStatus.Passed);
-        assertThat(testResults.getStatus()).as("PDF validation failed for file: %s".formatted(pdfFileName)).isEqualTo(TestResultsStatus.Passed);
+        softly.assertThat(testResults.getStatus()).as("PDF validation failed for file: %s".formatted(pdfFileName)).isEqualTo(TestResultsStatus.Passed);
         return this;
     }
 }

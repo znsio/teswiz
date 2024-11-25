@@ -42,7 +42,7 @@ public class PDFSteps {
     @Then("I validate all pages of the pdf document {string}")
     public void iValidateAllPagesOfThePdfDocument(String pdfFileName) {
         LOGGER.info("Validate all pages of the pdf document %s".formatted(pdfFileName));
-        new PDFValidatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).validate(pdfFileName);
+        new PDFValidatorBL(SAMPLE_TEST_CONTEXT.ME, Platform.pdf).validate(pdfFileName);
     }
 
     @And("I validate page numbers {string} of the pdf document {string}")
@@ -51,7 +51,7 @@ public class PDFSteps {
                 .mapToInt(Integer::parseInt)
                 .toArray();
         LOGGER.info("Validate page numbers: '%s' of the pdf document %s".formatted(Arrays.toString(intArray), pdfFileName));
-        new PDFValidatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).validate(pdfFileName, intArray);
+        new PDFValidatorBL(SAMPLE_TEST_CONTEXT.ME, Platform.pdf).validate(pdfFileName, intArray);
     }
 
     @Given("I validate the standalone pdf document {string}")

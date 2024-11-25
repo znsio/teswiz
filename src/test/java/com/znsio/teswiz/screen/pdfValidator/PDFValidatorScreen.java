@@ -6,8 +6,9 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
+import com.znsio.teswiz.screen.android.PDFValidator.PDFValidatorScreenAndroid;
 import com.znsio.teswiz.screen.pdf.PDFValidatorScreenPDF;
-import com.znsio.teswiz.screen.web.PDFValidatorScreenWeb.PDFValidatorScreenWeb;
+import com.znsio.teswiz.screen.web.PDFValidator.PDFValidatorScreenWeb;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +26,8 @@ public abstract class PDFValidatorScreen {
         switch (platform) {
             case web:
                 return new PDFValidatorScreenWeb(driver, visually);
+            case android:
+                return new PDFValidatorScreenAndroid(driver, visually);
             case pdf:
                 return new PDFValidatorScreenPDF(driver, visually);
         }

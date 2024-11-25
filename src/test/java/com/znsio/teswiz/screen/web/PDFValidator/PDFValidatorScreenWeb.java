@@ -1,4 +1,4 @@
-package com.znsio.teswiz.screen.web.PDFValidatorScreenWeb;
+package com.znsio.teswiz.screen.web.PDFValidator;
 
 import com.applitools.eyes.TestResults;
 import com.znsio.teswiz.runner.Driver;

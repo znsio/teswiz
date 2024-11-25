@@ -1,7 +1,6 @@
 package com.znsio.teswiz.exceptions;
 
-public class VisualTestSetupException
-        extends RuntimeException {
+public class VisualTestSetupException extends RuntimeException {
     public VisualTestSetupException(String message) {
         super(message);
     }

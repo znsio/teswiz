@@ -316,6 +316,10 @@ class AppiumDriverManager {
     }
 
     private static void terminateApp(AndroidDriver androidDriver, String appPackageName) {
+        if (null == androidDriver) {
+            LOGGER.debug("Driver already terminated. Returning.");
+            return;
+        }
         Object deviceAPILevel = androidDriver.getCapabilities().getCapability("deviceApiLevel");
         LOGGER.info(String.format("Current API level: '%s'", deviceAPILevel));
         if (null!=deviceAPILevel && deviceAPILevel.toString().equals("33") && !Runner.getCloudName().equalsIgnoreCase("browserstack")) {
