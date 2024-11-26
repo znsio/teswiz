@@ -78,4 +78,14 @@ public class AppBL {
         CommandLineExecutor.execCommand(forceStopTheApp);
         return this;
     }
+
+    public AppBL launchAndTakeScreenshot() {
+        ScreenShotScreen.get().takeScreenshot();
+        return this;
+    }
+
+    public AppBL goToLogin() {
+        AppLaunchScreen.get().selectLogin();
+        return this;
+    }
 }

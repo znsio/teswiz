@@ -251,6 +251,10 @@ public class Runner {
         return Runner.getPlatform().equals(Platform.cli);
     }
 
+    public static boolean isPDF() {
+        return Runner.getPlatform().equals(Platform.pdf);
+    }
+
     public static boolean isAPI() {
         return Runner.getPlatform().equals(Platform.api);
     }

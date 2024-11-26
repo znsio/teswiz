@@ -10,7 +10,7 @@
     "eventTimings": true,
     "enablePerformanceLogging": true,
     "printPageSourceOnFindFailure": true,
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
+    "app": "/Users/anand.bagmar/projects/my/sampleAppsForNativeMobileAutomation/TheApp-release.apk",
     "deviceName": "android",
     "noSign": true
   },

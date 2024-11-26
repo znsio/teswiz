@@ -32,31 +32,36 @@ public class Hooks {
     }
 
     public void beforeScenario(Scenario scenario) {
-        LOGGER.info(String.format("Hooks: ThreadId : %s In RunCukes - beforeScenario: %s", threadId,
-                                  scenario.getName()));
-        LOGGER.info(String.format("Hooks: Running test %s on %s", testExecutionContext.getTestName(),
-                                  Runner.getPlatform().name()));
-        if (!Runner.isAPI() || !Runner.isCLI()) {
-            testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
+        Object isHooksInitialized = testExecutionContext.getTestState(TEST_CONTEXT.HOOKS_INITIALIZED);
+        LOGGER.info("Hooks: beforeScenario: isHooksInitialized: " + isHooksInitialized);
+        if (null == isHooksInitialized) {
+            LOGGER.info("Hooks: ThreadId : '%d' :: beforeScenario: '%s'".formatted(threadId, scenario.getName()));
+            if (!Runner.isAPI() || !Runner.isCLI() || !Runner.isPDF()) {
+                testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
+            }
+            testExecutionContext.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS,
+                                              new UserPersonaDetails());
+            SoftAssertions softly = new SoftAssertions();
+            testExecutionContext.addTestState(TEST_CONTEXT.SOFT_ASSERTIONS, softly);
+            addEnvironmentVariablesToReportPortal();
+            addSystemPropertiesToReportPortal();
+            startTheAsyncCommandLineExecutor();
+            testExecutionContext.addTestState(TEST_CONTEXT.HOOKS_INITIALIZED, true);
         }
-        testExecutionContext.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS,
-                                          new UserPersonaDetails());
-        SoftAssertions softly = new SoftAssertions();
-        testExecutionContext.addTestState(TEST_CONTEXT.SOFT_ASSERTIONS, softly);
-        addEnvironmentVariablesToReportPortal();
-        addSystemPropertiesToReportPortal();
-        startTheAsyncCommandLineExecutor();
     }
 
     public void afterScenario(Scenario scenario) {
-        long threadId = Thread.currentThread().getId();
-        LOGGER.info(String.format("Hooks: ThreadId: %d In RunCukes - afterScenario: %s", threadId,
-                                  scenario.getName()));
-        Drivers.attachLogsAndCloseAllDrivers(scenario);
-        closeTheAsyncCommandLineExecutor();
-        SoftAssertions softly = Runner.getSoftAssertion(threadId);
-        LOGGER.info("Hooks: Assert all soft assertions");
-        softly.assertAll();
+        Object isHooksInitialized = testExecutionContext.getTestState(TEST_CONTEXT.HOOKS_INITIALIZED);
+        LOGGER.info("Hooks: afterScenario: isHooksInitialized: " + isHooksInitialized);
+        if (null != isHooksInitialized) {
+            LOGGER.info("Hooks: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
+            testExecutionContext.addTestState(TEST_CONTEXT.HOOKS_INITIALIZED, null);
+            Drivers.attachLogsAndCloseAllDrivers(scenario);
+            closeTheAsyncCommandLineExecutor();
+            SoftAssertions softly = Runner.getSoftAssertion(threadId);
+            LOGGER.info("Hooks: Assert all soft assertions");
+            softly.assertAll();
+        }
     }
 
     private void startTheAsyncCommandLineExecutor() {

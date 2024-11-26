@@ -528,20 +528,17 @@ class BrowserDriverManager {
                                Driver driver) {
         String browserNameForUser = Drivers.getBrowserNameForUser(userPersona);
         String platformName = Runner.getPlatform().name();
-        String logFileName = getBrowserLogFileNameFor(userPersona, platformName,
-                browserNameForUser);
+        String logFileName = getBrowserLogFileNameFor(userPersona, platformName, browserNameForUser);
         fetchBrowserLogsFromRemoteBrowser(driver, logFileName);
         --numberOfWebDriversUsed;
         LOGGER.info(String.format("Reduced numberOfWebDriversUsed: %d", numberOfWebDriversUsed));
-        String logMessage = String.format("Browser logs for user: %s" + "%nlogFileName: %s",
-                userPersona, logFileName);
+        String logMessage = String.format("Browser logs for user: %s" + "%nlogFileName: %s", userPersona, logFileName);
         LOGGER.info(logMessage);
         ReportPortalLogger.attachFileInReportPortal(logMessage, new File(logFileName));
 
         WebDriver webDriver = driver.getInnerDriver();
         if (null == webDriver) {
-            logMessage = String.format("Strange. But WebDriver for user '%s' already closed",
-                    userPersona);
+            logMessage = String.format("Strange. But WebDriver for user '%s' already closed", userPersona);
             LOGGER.info(logMessage);
         } else {
             logMessage = String.format("Closing WebDriver for user: '%s'", userPersona);

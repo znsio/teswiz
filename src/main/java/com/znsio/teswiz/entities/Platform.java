@@ -7,5 +7,6 @@ public enum Platform {
     web,
     api,
     electron,
-    cli
+    cli,
+    pdf
 }

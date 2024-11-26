@@ -472,7 +472,7 @@ class Setup {
 
     private static ArrayList<String> setupPlatformExecution() {
         ArrayList<String> webCukeArgs = new ArrayList<>();
-        if (currentPlatform.equals(Platform.web)) {
+        if (!useATD()) {
             configs.put(APP_PATH, configs.get(BROWSER));
             configs.put(EXECUTED_ON, "Local Browsers");
             setupListenersForWebOrAPIOrCLIExecution(webCukeArgs);
@@ -485,6 +485,10 @@ class Setup {
             setupListenersForWebOrAPIOrCLIExecution(webCukeArgs);
         }
         return webCukeArgs;
+    }
+
+    private static boolean useATD() {
+        return currentPlatform.equals(Platform.android) || currentPlatform.equals(Platform.iOS) || currentPlatform.equals(Platform.windows);
     }
 
     private static void setupListenersForWebOrAPIOrCLIExecution(ArrayList<String> webCukeArgs) {
