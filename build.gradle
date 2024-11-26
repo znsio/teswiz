@@ -196,6 +196,12 @@ tasks.register('run', JavaExec) {
         println "MY_REPO_VAR: ${System.getenv("MY_REPO_VAR")}"
         println "MY_VAR: ${System.getenv("MY_VAR")}"
         println "VAR1: ${System.getenv("VAR1")}"
+        println "MY_REPO_VAR passed to Gradle: ${project.findProperty('MY_REPO_VAR') ? '****' : 'Not Found'}"
+        println "TESWIZ_APPLITOOLS_API_KEY passed to Gradle: ${project.findProperty('TESWIZ_APPLITOOLS_API_KEY') ? '****' : 'Not Found'}"
+        println "APPLITOOLS_API_KEY passed to Gradle: ${project.findProperty('APPLITOOLS_API_KEY') ? '****' : 'Not Found'}"
+        println "VAR2 passed to Gradle: ${project.findProperty('VAR2') ? '****' : 'Not Found'}"
+        println "VAR2 passed to Gradle: ${project.findProperty('VAR2') ? project.findProperty('VAR2') : 'Not Found'}"
+        println "MY_REPO_VAR passed to Gradle: ${project.findProperty('MY_REPO_VAR') ? project.findProperty('MY_REPO_VAR') : 'Not Found'}"
 
         System.setProperty "LOG_DIR", "${project.logDir}"
         environment "APPLITOOLS_LOG_DIR", "${project.logDir}/applitools_logs"
