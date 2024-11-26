@@ -9,9 +9,9 @@ name: HardGate_PassingBuild
 
 on:
   push:
-    branches: [ main, failingTestsHardGate ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, failingTestsHardGate ]
+    branches: [ main ]
 
 jobs:
   build:

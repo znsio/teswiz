@@ -5,7 +5,7 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-name: BrowserStack_PDF_Web_CI
+name: Standalone_PDF_Tests
 
 on:
   push:
@@ -25,15 +25,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Install Appium 2.0 and dependencies
+      - name: Run passing tests
         run: |
-          node -v
-          npm cache clean --force
-          npm install
-          npm list
-      - name: Run PDF-Web tests against Browserstack
-        run: |
-          RUN_IN_CI=true TESWIZ_APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/pdf/pdf_web_browserstack_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=web TAG="@validatePDF and @browserstack" ./gradlew run
+          RUN_IN_CI=true CONFIG=./configs/pdf/local_pdf_config.properties PLATFORM=pdf TAG=@standalone ./gradlew run
       - name: Save Test Artifacts
         if: ${{ always() }}  # Ensure this step runs even if the tests fail
         uses: actions/upload-artifact@v4
