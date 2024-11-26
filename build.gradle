@@ -188,12 +188,19 @@ gradle.taskGraph.whenReady { taskGraph ->
     }
 }
 
+println "Is TESWIZ_APPLITOOLS_API_KEY null? - ${null==System.getenv("TESWIZ_APPLITOOLS_API_KEY")}"
+
 tasks.register('run', JavaExec) {
     doFirst {
         println "Using LOG_DIR: ${project.logDir}"
+
         System.setProperty "LOG_DIR", "${project.logDir}"
         environment "APPLITOOLS_LOG_DIR", "${project.logDir}/applitools_logs"
         environment "APPLITOOLS_API_KEY", System.getenv("TESWIZ_APPLITOOLS_API_KEY")
+        println "Is TESWIZ_APPLITOOLS_API_KEY null? - ${null==System.getenv("TESWIZ_APPLITOOLS_API_KEY")}"
+        println "Is APPLITOOLS_API_KEY null? - ${null==System.getenv("APPLITOOLS_API_KEY")}"
+
+        exit 1;
 
         def hostname = InetAddress.getLocalHost().getHostName()
         println "Hostname: $hostname"
