@@ -234,8 +234,6 @@ tasks.register('run', JavaExec) {
         environment "APPLITOOLS_API_KEY", System.getenv("APPLITOOLS_API_KEY")
         println "Is APPLITOOLS_API_KEY null? - ${System.getenv("APPLITOOLS_API_KEY")}"
 
-        exit 1;
-
         def hostname = InetAddress.getLocalHost().getHostName()
         println "Hostname: $hostname"
         def ipAddress = InetAddress.getAllByName(hostname)
