@@ -1,9 +1,10 @@
 @validatePDF
 Feature: PDF validation using Applitools
 
+  #  RUN_IN_CI=true CONFIG=./configs/theapp/pdf_browserstack_web_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=web TAG="@validatePDF and @browserstack" ./gradlew run
   # CONFIG=./configs/pdf/pdf_local_web_config.properties PLATFORM=web TAG=@validatePDF ./gradlew run
   # CONFIG=./configs/pdf/pdf_local_android_config.properties PLATFORM=android TAG=@validatePDF ./gradlew run
-  @web @android
+  @web @android @browserstack
   Scenario: Validate a pdf document as part of a web scenario
     Given "I" go to Login
     Then I validate all pages of the pdf document "src/test/resources/pdf/Teswiz.pdf"
