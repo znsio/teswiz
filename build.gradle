@@ -24,7 +24,7 @@ buildscript {
         junitVersion = "5.11.3"
         snakeyamlVersion = "2.3"
         jsonDiffVersion = "0.4.16"
-        pdfBoxVersion = '3.0.2'
+        pdfBoxVersion = '3.0.3'
     }
 }
 
