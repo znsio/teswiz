@@ -18,6 +18,12 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      MY_REPO_VAR: ${{ secrets.MY_REPO_VAR }}
+      TESWIZ_APPLITOOLS_API_KEY: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+      APPLITOOLS_API_KEY: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+      VAR2: variable_2
+
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Set up JDK 17
@@ -31,6 +37,12 @@ jobs:
 #          npm cache clean --force
 #          npm install
 #          npm list
+      - name: Validate Secret
+        run: |
+          echo "MY_REPO_VAR is set to: ${MY_REPO_VAR:0:3}***"
+          echo "TESWIZ_APPLITOOLS_API_KEY is set to: ${TESWIZ_APPLITOOLS_API_KEY:0:3}***"
+          echo "APPLITOOLS_API_KEY is set to: ${APPLITOOLS_API_KEY:0:3}***"
+          echo "VAR2 is set to: ${VAR2:0:3}***"
       - name: Run passing tests
         run: |
           echo "MY_REPO_VAR: ${{ secrets.MY_REPO_VAR }}"
