@@ -193,6 +193,8 @@ println "Is APPLITOOLS_API_KEY null? - ${null==System.getenv("APPLITOOLS_API_KEY
 tasks.register('run', JavaExec) {
     doFirst {
         println "Using LOG_DIR: ${project.logDir}"
+        println "MY_NEW_SECRET: ${System.getenv("MY_NEW_SECRET")}"
+        println "MY_SECRET: ${System.getenv("MY_SECRET")}"
 
         System.setProperty "LOG_DIR", "${project.logDir}"
         environment "APPLITOOLS_LOG_DIR", "${project.logDir}/applitools_logs"
