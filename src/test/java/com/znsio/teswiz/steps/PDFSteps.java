@@ -31,12 +31,12 @@ public class PDFSteps {
         new PDFValidatorBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).validate(pdfFileName);
     }
 
-    @Given("{string} launch the app")
-    public void launchTheApp(String userPersona) {
+    @Given("{string} go to Login")
+    public void goToLogin(String userPersona) {
         LOGGER.info("Launch the app: " + userPersona);
         Platform currentPlatform = Runner.getPlatform();
         Drivers.createDriverFor(userPersona, currentPlatform, context);
-        new AppBL(userPersona, currentPlatform).launchAndTakeScreenshot();
+        new AppBL(userPersona, currentPlatform).goToLogin();
     }
 
     @Then("I validate all pages of the pdf document {string}")

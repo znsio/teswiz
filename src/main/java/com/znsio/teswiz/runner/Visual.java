@@ -145,9 +145,7 @@ public class Visual {
             throw new VisualTestSetupException("Set IS_VISUAL=true to validate PDF file: %s".formatted(pdfFileName));
         }
 
-        EyesRunner runner = new ImageRunner();
-        runner.setDontCloseBatches(true);
-        com.applitools.eyes.images.Eyes eyesImages = new com.applitools.eyes.images.Eyes(runner);
+        com.applitools.eyes.images.Eyes eyesImages = new com.applitools.eyes.images.Eyes();
 
         String appName = (String) applitoolsConfig.get(APPLITOOLS.APP_NAME);
         eyesImages.setConfiguration(configureExecutionForPDF(isVisualTestingEnabled, appName));
@@ -196,7 +194,7 @@ public class Visual {
             String pdfReadingMessage = "\n\tLoad pdf '" + pdfFile.getAbsolutePath() + "' and validate all pages";
             for (int pageNum : pagesToProcess) {
                 BufferedImage image = renderer.renderImage(pageNum);
-                pdfReadingMessage += "\n\t\tParsed page " + (pageNum + 1);
+                pdfReadingMessage += "\n\t\tProcessing page: " + (pageNum + 1);
                 eyesImages.check(pageNamePrefix + pageNum, com.applitools.eyes.images.Target.image(image));
             }
             LOGGER.info(pdfReadingMessage);

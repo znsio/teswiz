@@ -34,16 +34,14 @@ public class RunCukes
     @Before
     public void beforeScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();
-        LOGGER.info(String.format("RunCukes: ThreadId : %s In RunCukes - beforeScenario: %s", threadId,
-                                  scenario.getName()));
+        LOGGER.info("RunCukes: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
         new Hooks().beforeScenario(scenario);
     }
 
     @After
     public void afterScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();
-        LOGGER.info(String.format("RunCukes: ThreadId: %d In RunCukes - afterScenario: %s", threadId,
-                                  scenario.getName()));
+        LOGGER.info("RunCukes: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
         new Hooks().afterScenario(scenario);
     }
 }

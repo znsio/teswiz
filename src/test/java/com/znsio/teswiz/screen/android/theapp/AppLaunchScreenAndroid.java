@@ -32,6 +32,7 @@ public class AppLaunchScreenAndroid
     @Override
     public LoginScreen selectLogin() {
         driver.findElement(byLoginScreenAccessibilityId).click();
+        visually.checkWindow(SCREEN_NAME, "Login Screen");
         return LoginScreen.get();
     }
 

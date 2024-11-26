@@ -5,7 +5,7 @@ Feature: PDF validation using Applitools
   # CONFIG=./configs/pdf/pdf_local_android_config.properties PLATFORM=android TAG=@validatePDF ./gradlew run
   @web @android
   Scenario: Validate a pdf document as part of a web scenario
-    Given "I" launch the app
+    Given "I" go to Login
     Then I validate all pages of the pdf document "src/test/resources/pdf/Teswiz.pdf"
     And I validate page numbers "1,2,4,7" of the pdf document "src/test/resources/pdf/Teswiz.pdf"
 

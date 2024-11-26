@@ -40,8 +40,7 @@ public class RunTestCukes
     @Override
     @DataProvider(parallel = true)
     public Object[][] scenarios() {
-        LOGGER.info(String.format("RunTestCukes: ThreadId: %d: in overridden scenarios%n",
-                                  Thread.currentThread().getId()));
+        LOGGER.info(String.format("RunTestCukes: ThreadId: %d: in overridden scenarios%n", Thread.currentThread().getId()));
         Object[][] scenarios = super.scenarios();
         LOGGER.info(scenarios);
         return scenarios;
@@ -49,8 +48,8 @@ public class RunTestCukes
 
     @Before
     public void beforeTestScenario(Scenario scenario) {
-        LOGGER.info(String.format("RunTestCukes: ThreadId: %d: in overridden beforeTestScenario%n",
-                                  Thread.currentThread().getId()));
+        long threadId = Thread.currentThread().getId();
+        LOGGER.info("RunTestCukes: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
         new Hooks().beforeScenario(scenario);
         addApplitoolsUFGConfigurationToContext();
         isEnvironmentHealthy(context.getTestName(), Runner.getFromEnvironmentConfiguration(SAMPLE_TEST_CONTEXT.HEALTH_CHECK_URL));
@@ -58,8 +57,8 @@ public class RunTestCukes
 
     @After
     public void afterTestScenario(Scenario scenario) {
-        LOGGER.info(String.format("RunTestCukes: ThreadId: %d: in overridden afterTestScenario%n",
-                                  Thread.currentThread().getId()));
+        long threadId = Thread.currentThread().getId();
+        LOGGER.info("RunTestCukes: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
         this.closeHeartBeatThreads();
         new Hooks().afterScenario(scenario);
     }

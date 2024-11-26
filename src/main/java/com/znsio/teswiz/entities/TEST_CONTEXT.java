@@ -25,4 +25,5 @@ public class TEST_CONTEXT {
     public static final String CLI_COMMAND_NUMBER = "cliCommandNumber";
     public static final String ASYNC_COMMAND_LINE_EXECUTOR = "asyncCommandLineExecutor";
     public static final String PDF_FILE_NAME = "pdfFileName";
+    public static final String HOOKS_INITIALIZED = "hooksInitialized";
 }
