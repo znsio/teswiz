@@ -55,6 +55,7 @@ public class Hooks {
         LOGGER.info("Hooks: afterScenario: isHooksInitialized: " + isHooksInitialized);
         if (null != isHooksInitialized) {
             LOGGER.info("Hooks: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
+            testExecutionContext.addTestState(TEST_CONTEXT.HOOKS_INITIALIZED, null);
             Drivers.attachLogsAndCloseAllDrivers(scenario);
             closeTheAsyncCommandLineExecutor();
             SoftAssertions softly = Runner.getSoftAssertion(threadId);
