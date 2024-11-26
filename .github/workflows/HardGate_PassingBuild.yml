@@ -33,7 +33,7 @@ jobs:
 #          npm list
       - name: Run passing tests
         run: |
-          APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties PLATFORM=api TAG="@negateResults" SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false ./gradlew run
+          APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} INVALID_API_KEY=${{ secrets.INVALID_API_KEY }} RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties PLATFORM=api TAG="@negateResults" SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false ./gradlew run
       - name: Save Test Artifacts
         if: ${{ always() }}  # Ensure this step runs even if the tests fail
         uses: actions/upload-artifact@v4
