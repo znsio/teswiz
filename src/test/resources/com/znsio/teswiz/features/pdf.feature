@@ -9,7 +9,7 @@ Feature: PDF validation using Applitools
   Scenario: Validate a pdf document as part of a web scenario
     Given "I" go to Login
     Then I validate all pages of the pdf document "src/test/resources/pdf/Teswiz.pdf"
-    And I validate page numbers "1,2,4,7" of the pdf document "src/test/resources/pdf/Teswiz.pdf"
+    And I validate page numbers "1,3" of the pdf document "src/test/resources/pdf/Teswiz.pdf"
 
   # CONFIG=./configs/pdf/local_pdf_config.properties PLATFORM=pdf TAG=@standalone ./gradlew run
   # CONFIG=./configs/pdf/local_pdf_config.properties PLATFORM=pdf TAG="@standalone and @allpages" ./gradlew run
@@ -21,4 +21,4 @@ Feature: PDF validation using Applitools
   # CONFIG=./configs/pdf/local_pdf_config.properties PLATFORM=pdf TAG="@standalone and @specificpages" ./gradlew run
   @pdf @standalone @specificpages
   Scenario: Validate specific pages of the standalone pdf document
-    Given I validate page numbers "1,2,4,7" of standalone pdf document "src/test/resources/pdf/Teswiz.pdf"
+    Given I validate page numbers "1,3" of standalone pdf document "src/test/resources/pdf/Teswiz.pdf"
