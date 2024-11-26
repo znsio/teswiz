@@ -25,12 +25,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Install Appium 2.0 and dependencies
-        run: |
-          node -v
-          npm cache clean --force
-          npm install
-          npm list
+#      - name: Install Appium 2.0 and dependencies
+#        run: |
+#          node -v
+#          npm cache clean --force
+#          npm install
+#          npm list
       - name: Run passing tests
         run: |
           echo "MY_NEW_SECRET: ${{ secrets.MY_NEW_SECRET }}"
