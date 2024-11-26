@@ -18,12 +18,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    env:
-      MY_REPO_VAR: ${{ secrets.MY_REPO_VAR }}
-      TESWIZ_APPLITOOLS_API_KEY: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
-      APPLITOOLS_API_KEY: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
-      VAR2: variable_2
-
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       - name: Set up JDK 17
@@ -37,18 +31,9 @@ jobs:
 #          npm cache clean --force
 #          npm install
 #          npm list
-      - name: Validate Secret
-        run: |
-          echo "MY_REPO_VAR is set to: ${MY_REPO_VAR:0:3}***"
-          echo "TESWIZ_APPLITOOLS_API_KEY is set to: ${TESWIZ_APPLITOOLS_API_KEY:0:3}***"
-          echo "APPLITOOLS_API_KEY is set to: ${APPLITOOLS_API_KEY:0:3}***"
-          echo "VAR2 is set to: ${VAR2:0:3}***"
       - name: Run passing tests
         run: |
-          echo "MY_REPO_VAR: ${{ secrets.MY_REPO_VAR }}"
-          export VAR1=${{ secrets.MY_REPO_VAR }}
-          echo "VAR1 env var: ${VAR1}"
-          MY_VAR=${{ secrets.MY_REPO_VAR }} RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties PLATFORM=api TAG="@negateResults" SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false ./gradlew run
+          APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties PLATFORM=api TAG="@negateResults" SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false ./gradlew run
       - name: Save Test Artifacts
         if: ${{ always() }}  # Ensure this step runs even if the tests fail
         uses: actions/upload-artifact@v4
