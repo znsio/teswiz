@@ -193,8 +193,8 @@ public class Visual {
             String pageNamePrefix = pdfFile.getName() + "-";
             String pdfReadingMessage = "\n\tLoad pdf '" + pdfFile.getAbsolutePath() + "' and validate all pages";
             for (int pageNum : pagesToProcess) {
-                BufferedImage image = renderer.renderImage(pageNum);
-                pdfReadingMessage += "\n\t\tProcessing page: " + (pageNum + 1);
+                BufferedImage image = renderer.renderImage(pageNum-1);
+                pdfReadingMessage += "\n\t\tProcessing page: " + (pageNum);
                 eyesImages.check(pageNamePrefix + pageNum, com.applitools.eyes.images.Target.image(image));
             }
             LOGGER.info(pdfReadingMessage);
