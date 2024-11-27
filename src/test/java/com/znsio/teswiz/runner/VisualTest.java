@@ -34,28 +34,36 @@ class VisualTest {
 
     @Test
     void processAllPagesByDefaultTest() throws IOException {
-        int[] expectedPagesToProcess = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        int[] expectedPagesToProcess = new int[]{1, 2, 3};
         int[] pagesToProcess = Visual.getPagesToProcess(expectedPagesToProcess, pdfDocument);
-        assertThat(expectedPagesToProcess).isEqualTo(pagesToProcess);
+        assertThat(pagesToProcess).isEqualTo(expectedPagesToProcess);
     }
 
     @Test
     void processAllPagesIfNullIsProvidedTest() throws IOException {
-        int[] expectedPagesToProcess = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        int[] expectedPagesToProcess = new int[]{1, 2, 3};
         int[] pagesToProcess = Visual.getPagesToProcess(null, pdfDocument);
-        assertThat(expectedPagesToProcess).isEqualTo(pagesToProcess);
+        assertThat(pagesToProcess).isEqualTo(expectedPagesToProcess);
     }
 
     @Test
     void processSpecificPagesByDefaultTest() throws IOException {
-        int[] expectedPagesToProcess = new int[]{0, 2, 4, 6, 8, 9};
+        int[] expectedPagesToProcess = new int[]{1, 3};
         int[] pagesToProcess = Visual.getPagesToProcess(expectedPagesToProcess, pdfDocument);
-        assertThat(expectedPagesToProcess).isEqualTo(pagesToProcess);
+        assertThat(pagesToProcess).isEqualTo(expectedPagesToProcess);
     }
 
     @Test
-    void outOfBoundPageNumberTest() throws IOException {
+    void allOutOfBoundPageNumberTest() throws IOException {
         int[] expectedPagesToProcess = new int[]{0, 19};
+        Assertions.assertThatThrownBy(() -> Visual.getPagesToProcess(expectedPagesToProcess, pdfDocument))
+                .isInstanceOf(InvalidTestDataException.class)
+                .hasMessageContaining("Invalid page numbers provided to process the pdf: [0, 19]");
+    }
+
+    @Test
+    void partialOfBoundPageNumberTest() throws IOException {
+        int[] expectedPagesToProcess = new int[]{1, 19};
         Assertions.assertThatThrownBy(() -> Visual.getPagesToProcess(expectedPagesToProcess, pdfDocument))
                 .isInstanceOf(InvalidTestDataException.class)
                 .hasMessageContaining("Invalid page numbers provided to process the pdf: [19]");

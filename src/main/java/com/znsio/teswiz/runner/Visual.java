@@ -204,17 +204,19 @@ public class Visual {
     }
 
     static int[] getPagesToProcess(int[] pageNumbers, PDDocument document) {
-        // Determine the pages to process
+        int totalPages = document.getNumberOfPages();
+
+        // Determine the pages to process (1-based indexing)
         int[] pagesToProcess = (pageNumbers == null || pageNumbers.length == 0)
-                               ? java.util.stream.IntStream.range(0, document.getNumberOfPages()).toArray()
+                               ? java.util.stream.IntStream.rangeClosed(1, totalPages).toArray() // 1-based indexing
                                : pageNumbers;
 
-        LOGGER.info("Provided Page numbers to process: " + java.util.Arrays.toString(pagesToProcess));
+        LOGGER.info("Provided Page numbers to process (1-based): " + java.util.Arrays.toString(pagesToProcess));
 
-        // Collect invalid page numbers
+        // Validate page numbers
         java.util.List<Integer> invalidPages = new java.util.ArrayList<>();
         for (int pageNum : pagesToProcess) {
-            if (pageNum >= document.getNumberOfPages() || pageNum < 0) {
+            if (pageNum > totalPages || pageNum < 1) { // 1-based validation
                 invalidPages.add(pageNum);
                 LOGGER.warn("\n\tPage number " + pageNum + " is out of bounds for this PDF.");
             }
@@ -224,7 +226,7 @@ public class Visual {
             throw new InvalidTestDataException("Invalid page numbers provided to process the pdf: " + invalidPages);
         }
 
-        LOGGER.info("Valid Pages to process: " + java.util.Arrays.toString(pagesToProcess));
+        LOGGER.info("Valid Pages to process (1-based): " + java.util.Arrays.toString(pagesToProcess));
         return pagesToProcess;
     }
 
