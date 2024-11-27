@@ -1,17 +1,10 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+name: HardGate_CI
 
-name: HardGate_FailingBuild
-
-#on:
-#  push:
-#    branches: [ main ]
-#  pull_request:
-#    branches: [ main ]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -26,12 +19,17 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Install Appium 2.0 and dependencies
+
+      - name: Run passing tests
         run: |
-          node -v
-          npm cache clean --force
-          npm install
-          npm list
+          RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties PLATFORM=api TAG="@negateResults" SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false ./gradlew run
+      - name: Save Test Artifacts
+        if: ${{ always() }}  # Ensure this step runs even if the tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-passing
+          path: target
+
       - name: Run failing tests
         run: |
           RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties PLATFORM=api TAG="@negateResults" SET_HARD_GATE=true IS_FAILING_TEST_SUITE=true ./gradlew run
@@ -39,5 +37,5 @@ jobs:
         if: ${{ always() }}  # Ensure this step runs even if the tests fail
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: test-results-failing
           path: target

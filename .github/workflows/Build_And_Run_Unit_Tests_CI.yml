@@ -1,17 +1,10 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
 name: Build_And_Run_Unit_Tests
 
-#on:
-#  push:
-#    branches: [ main ]
-#  pull_request:
-#    branches: [ main ]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -69,5 +62,5 @@ jobs:
         if: ${{ always() }}  # Ensure this step runs even if the tests fail
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: test-results-unit
           path: target
