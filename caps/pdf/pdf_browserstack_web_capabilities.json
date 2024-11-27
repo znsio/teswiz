@@ -1,18 +1,4 @@
 {
-  "android": {
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
-    "adbExecTimeout": 45000,
-    "appPackage": "com.appiumpro.the_app",
-    "automationName": "UiAutomator2",
-    "autoGrantPermissions": true,
-    "deviceName": "android",
-    "enablePerformanceLogging": true,
-    "eventTimings": true,
-    "noSign": true,
-    "platformName": "android",
-    "printPageSourceOnFindFailure": true,
-    "uiautomator2ServerInstallTimeout": 10000
-  },
   "web": {
     "browserName": "chrome",
     "browserstackOptions": {
