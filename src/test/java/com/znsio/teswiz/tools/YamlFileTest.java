@@ -22,11 +22,11 @@ class YamlFileTest {
 
     @Test
     void compareIdenticalFiles() {
-        assertThat(YamlFile.compareFiles(".github/workflows/HardGate_PassingBuild.yml", ".github/workflows/HardGate_PassingBuild.yml")).as("Files are not identical").isTrue();
+        assertThat(YamlFile.compareFiles(".github/workflows/HardGate_CI.yml", ".github/workflows/HardGate_CI.yml")).as("Files are not identical").isTrue();
     }
 
     @Test
     void compareDifferentFiles() {
-        assertThat(YamlFile.compareFiles(".github/workflows/HardGate_PassingBuild.yml", ".github/workflows/HardGate_FailingBuild.yml")).as("Files are not identical").isFalse();
+        assertThat(YamlFile.compareFiles(".github/workflows/HardGate_CI.yml", ".github/workflows/InteractiveCLI_CI.yml")).as("Files are not identical").isFalse();
     }
 }
