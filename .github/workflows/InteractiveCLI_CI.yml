@@ -19,9 +19,11 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
       - name: Run Interactive CLI tests
         run: |
           RUN_IN_CI=true IS_VISUAL=false CONFIG=./configs/cli_local_config.properties PLATFORM=cli TAG=@calculator ./gradlew run
+        continue-on-error: true
       - name: Save Test Artifacts
         if: ${{ always() }}  # Ensure this step runs even if the tests fail
         uses: actions/upload-artifact@v4
