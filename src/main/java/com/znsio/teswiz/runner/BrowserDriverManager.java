@@ -558,7 +558,7 @@ class BrowserDriverManager {
             }
             writer.flush();
             LOGGER.info("Browser log saved in: " + fileName);
-        } catch (IOException | UnsupportedCommandException e) {
+        } catch (NoSuchSessionException | IOException | UnsupportedCommandException e) {
             LOGGER.error("Error writing " + logLabel + " log for file: " + logFileName + ": Error: " + e.getMessage());
         }
     }
