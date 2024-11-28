@@ -2,7 +2,6 @@ package com.znsio.teswiz.runner;
 
 import com.applitools.eyes.*;
 import com.applitools.eyes.appium.AppiumCheckSettings;
-import com.applitools.eyes.images.ImageRunner;
 import com.applitools.eyes.selenium.*;
 import com.applitools.eyes.selenium.fluent.SeleniumCheckSettings;
 import com.applitools.eyes.selenium.fluent.Target;
@@ -21,6 +20,7 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.exceptions.VisualTestSetupException;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
+import com.znsio.teswiz.tools.Wait;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.Loader;
@@ -172,8 +172,8 @@ public class Visual {
         String pdfTestName = pdfFile.getName();
         if (null != pageNumbers && pageNumbers.length > 0) {
             String pdfFileNameWithoutExtension = pdfTestName.contains(".")
-                          ? pdfTestName.substring(0, pdfTestName.lastIndexOf('.'))
-                          : pdfTestName;
+                                                 ? pdfTestName.substring(0, pdfTestName.lastIndexOf('.'))
+                                                 : pdfTestName;
             pdfTestName = pdfFileNameWithoutExtension + "-" + Arrays.stream(pageNumbers)
                     .mapToObj(String::valueOf)
                     .collect(Collectors.joining(","));
@@ -192,10 +192,18 @@ public class Visual {
             PDFRenderer renderer = new PDFRenderer(document);
             String pageNamePrefix = pdfFile.getName() + "-";
             String pdfReadingMessage = "\n\tLoad pdf '" + pdfFile.getAbsolutePath() + "' and validate all pages";
+            int concurrency = getValueFromConfig(APPLITOOLS.CONCURRENCY, DEFAULT_UFG_CONCURRENCY);
+
             for (int pageNum : pagesToProcess) {
-                BufferedImage image = renderer.renderImage(pageNum-1);
+                BufferedImage image = renderer.renderImage(pageNum - 1);
                 pdfReadingMessage += "\n\t\tProcessing page: " + (pageNum);
                 eyesImages.check(pageNamePrefix + pageNum, com.applitools.eyes.images.Target.image(image));
+
+                if (0 == pageNum % concurrency) {
+                    int seconds = 5;
+                    LOGGER.info("Processing page %d. Wait for %d before proceeding".formatted(pageNum, seconds));
+                    Wait.waitFor(seconds);
+                }
             }
             LOGGER.info(pdfReadingMessage);
         } catch (IOException e) {
@@ -524,8 +532,8 @@ public class Visual {
                       File.separator, appType);
     }
 
-    private int getValueFromConfig(String key, int defaultValue) {
-        Object valueFromConfig = applitoolsConfig.get(key);
+    private static int getValueFromConfig(String key, int defaultValue) {
+        Object valueFromConfig = getApplitoolsConfiguration().get(key);
         return (null == valueFromConfig) ? defaultValue
                                          : convertValueFromConfigToInt(valueFromConfig);
     }
@@ -575,7 +583,7 @@ public class Visual {
         }
     }
 
-    private int convertValueFromConfigToInt(Object valueFromConfig) {
+    private static int convertValueFromConfigToInt(Object valueFromConfig) {
         try {
             return Integer.parseInt(valueOf(valueFromConfig));
         } catch (NumberFormatException e) {
