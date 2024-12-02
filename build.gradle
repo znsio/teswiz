@@ -5,10 +5,10 @@ import java.text.SimpleDateFormat
 buildscript {
     ext {
         gradleVersion = "8.11.1"
-        applitoolsAppiumVersion = "5.72.0"
-        applitoolsImagesVersion = "5.73.0"
+        applitoolsAppiumVersion = "5.73.0"
+        applitoolsImagesVersion = "5.74.0"
         browserStackLocalVersion = "1.1.4"
-        fasterxmlJacksonVersion = "2.18.1"
+        fasterxmlJacksonVersion = "2.18.2"
         atdVersion = "14.0.4" // ATD main branch
         jadbVersion = "1.2.1"
         unirestVersion = "3.14.5"
