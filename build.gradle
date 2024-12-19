@@ -21,7 +21,7 @@ buildscript {
         aspectJVersion = "1.9.22.1"
         assertJVersion = "3.26.3"
         jetbrainsAnnotationsVersion = "26.0.1"
-        junitVersion = "5.11.3"
+        junitVersion = "5.11.4"
         snakeyamlVersion = "2.3"
         jsonDiffVersion = "0.4.16"
         pdfBoxVersion = '3.0.3'
@@ -38,7 +38,7 @@ plugins {
 }
 
 group = 'com.github.znsio'
-version '1.0.10'
+version '1.0.11'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
