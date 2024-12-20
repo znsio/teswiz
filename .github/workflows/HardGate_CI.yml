@@ -7,8 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-
+  HardGate_CI:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 

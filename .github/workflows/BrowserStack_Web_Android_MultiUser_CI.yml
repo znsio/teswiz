@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  BrowserStack_Web_Android_MultiUser_CI:
 
     runs-on: ubuntu-latest
     timeout-minutes: 20
