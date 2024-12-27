@@ -1,5 +1,3 @@
-import org.codehaus.groovy.runtime.GStringImpl
-
 import java.text.SimpleDateFormat
 
 buildscript {
@@ -51,9 +49,6 @@ repositories {
         dirs 'libs'
     }
     mavenCentral()
-    maven {
-        url 'https://jitpack.io'
-    }
 }
 
 configurations {
@@ -73,6 +68,119 @@ idea {
     }
 }
 
+// Define the libs directory in the project root
+ext.libsDir = file("$projectDir/libs")
+
+def downloadDependency(String name, String type, Map<String, String> params) {
+    if (!libsDir.exists()) {
+        libsDir.mkdirs()
+    }
+
+    println "Download dependency: ${name} from ${type}"
+    def jarFile = new File(libsDir, "${name}-${params.version}.jar")
+    if (jarFile.exists()) {
+        println "\tDependency $name already exists at: $jarFile. No need to redownload it"
+        return jarFile
+    }
+
+    def jarUrl
+    if (type == "github") {
+        println "\tFetching latest GitHub release information for ${params.repoUrl}..."
+        def jsonResponse = new URL(params.repoUrl).text
+        def jsonSlurper = new groovy.json.JsonSlurper()
+        def releaseInfo = jsonSlurper.parseText(jsonResponse)
+
+        // Ensure assets field is a list and each asset is a Map
+        def assets = releaseInfo.assets
+        if (!(assets instanceof List)) {
+            throw new GradleException("Assets field is not a list: $assets")
+        }
+
+        def jarAsset = releaseInfo.assets.find { it.name.matches(/${name}-\d+\.\d+\.\d+\.jar/) }
+        if (!jarAsset) {
+            throw new GradleException("No ${name} JAR file found in the latest GitHub release.")
+        }
+        jarUrl = jarAsset.browser_download_url
+    } else if (type == "jitpack") {
+        jarUrl = "https://jitpack.io/${params.group.replace('.', '/')}/${params.artifact}/${params.version}/${params.artifact}-${params.version}${params.fileNameSuffix}.jar"
+    } else {
+        throw new GradleException("Unknown type: $type")
+    }
+
+    println "\tDownloading ${name} JAR from ${jarUrl}"
+    def downloadCommand
+    if (System.getProperty("os.name").toLowerCase().contains("win")) {
+        downloadCommand = ["cmd", "/c", "curl", "-o", jarFile.absolutePath, jarUrl]
+    } else {
+        downloadCommand = ["wget", "-O", jarFile.absolutePath, jarUrl]
+    }
+    // Explicitly convert all elements to String
+    downloadCommand = downloadCommand.collect { it.toString() }
+
+    println "\tDownloading using command: ${downloadCommand}"
+
+    def process = new ProcessBuilder(downloadCommand).redirectErrorStream(true).start()
+    process.inputStream.eachLine { println it }
+    process.waitFor()
+
+    if (process.exitValue() != 0) {
+        throw new GradleException("Failed to download ${name} JAR.")
+    }
+
+    println "${name} JAR downloaded to $jarFile"
+    return jarFile
+}
+
+// Define a custom task to download dependencies
+task downloadDependencies {
+    doLast {
+        println "Downloading required dependencies..."
+        def dependencies = [
+//                [
+//                        name  : "teswiz",
+//                        type  : "github",
+//                        params: [
+//                                repoUrl: "https://api.github.com/repos/znsio/teswiz/releases/latest"
+//                        ]
+//                ],
+                [
+                        name  : "AppiumTestDistribution",
+                        type  : "jitpack",
+                        params: [
+                                group   : "com.github.AppiumTestDistribution",
+                                artifact: "AppiumTestDistribution",
+                                version : "$project.atdVersion",
+                                fileNameSuffix: "-jar-with-dependencies"
+                        ]
+                ],
+                [
+                        name  : "jadb",
+                        type  : "jitpack",
+                        params: [
+                                group   : "com.github.vidstige",
+                                artifact: "jadb",
+                                version : "$project.jadbVersion",
+                                fileNameSuffix: ""
+                        ]
+                ]
+        ]
+
+        println "\n---------------------------------------------"
+
+        dependencies.each { dep ->
+            println "Processing dependency: ${dep.name}"
+            downloadDependency(dep.name, dep.type, dep.params)
+            println "\n---------------------------------------------"
+
+        }
+    }
+}
+
+// Ensure dependencies are downloaded before compiling
+tasks.compileJava {
+    dependsOn downloadDependencies
+}
+
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
     implementation files(layout.buildDirectory.files("/classes/main"))
@@ -80,18 +188,14 @@ dependencies {
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
     implementation "com.konghq:unirest-java:$project.unirestVersion"
     implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion") {
-        exclude group: 'io.appium', module: 'java-client'
-    }
     implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
     implementation "org.apache.commons:commons-rng-simple:$project.commonsRngSimpleVersion"
-    implementation "com.github.vidstige:jadb:$project.jadbVersion"
     implementation "org.jetbrains:annotations:$project.jetbrainsAnnotationsVersion"
     implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
     implementation "joda-time:joda-time:$project.jodaTimeVersion"
     implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
     implementation "com.applitools:eyes-images-java5:$project.applitoolsImagesVersion"
-    implementation ("com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion") {
+    implementation("com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion") {
 //        exclude group: 'io.appium', module: 'java-client'
     }
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
