@@ -25,7 +25,6 @@ class VisualTest {
     public static void setupBefore() throws IOException {
         System.setProperty("LOG_DIR", LOG_DIR);
         new File(LOG_DIR).mkdirs();
-        LogManager.getLogger();
 
         pdfFileName = "src/test/resources/pdf/Teswiz.pdf";
         pdfFile = new File(pdfFileName);
