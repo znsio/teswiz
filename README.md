@@ -85,4 +85,6 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 
 ## [Troubleshooting / FAQs](docs/FAQs-README.md)
 
+## [Trouble downloading teswiz from jitpack.io?](docs/teswizDownloadIssue.md)
+
 ### Contact [Anand Bagmar](https://twitter.com/BagmarAnand) for help or if you face issues using teswiz
