@@ -111,7 +111,7 @@ public class Runner {
         // running failing test suite - passedScenarios==0, exit 0
         // running passing test suite - failedScenarios==0, exit 0
         status = (runningFailingTestSuite && passedScenarios == 0) ||
-                (!runningFailingTestSuite && failedScenarios == 0) ? (byte) 0 : (byte) 1;
+                 (!runningFailingTestSuite && failedScenarios == 0) ? (byte) 0 : (byte) 1;
         LOGGER.info("Status: {}", status);
         return status;
     }
@@ -199,7 +199,7 @@ public class Runner {
         if (args.length != 3) {
             throw new InvalidTestDataException(
                     "Expected following parameters: 'String configFilePath, String " +
-                            "stepDefDirName, String " + "featuresDirName");
+                    "stepDefDirName, String " + "featuresDirName");
         }
         new Runner(args[0], args[1], args[2]);
     }
@@ -286,7 +286,7 @@ public class Runner {
         } catch (Exception e) {
             throw new InvalidTestDataException(
                     String.format("There was a problem while setting browser config file '%s'",
-                            browserConfigFile));
+                                  browserConfigFile));
         }
     }
 

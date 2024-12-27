@@ -19,7 +19,22 @@ import java.util.List;
 import java.util.Map;
 
 import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
-import static com.znsio.teswiz.runner.Setup.*;
+import static com.znsio.teswiz.runner.Setup.APP_NAME;
+import static com.znsio.teswiz.runner.Setup.BUILD_ID;
+import static com.znsio.teswiz.runner.Setup.BUILD_INITIATION_REASON;
+import static com.znsio.teswiz.runner.Setup.EXECUTED_ON;
+import static com.znsio.teswiz.runner.Setup.HOST_NAME;
+import static com.znsio.teswiz.runner.Setup.IS_FAILING_TEST_SUITE;
+import static com.znsio.teswiz.runner.Setup.IS_VISUAL;
+import static com.znsio.teswiz.runner.Setup.LOG_DIR;
+import static com.znsio.teswiz.runner.Setup.PARALLEL;
+import static com.znsio.teswiz.runner.Setup.PLATFORM;
+import static com.znsio.teswiz.runner.Setup.REPORTS_DIR;
+import static com.znsio.teswiz.runner.Setup.RUN_IN_CI;
+import static com.znsio.teswiz.runner.Setup.SET_HARD_GATE;
+import static com.znsio.teswiz.runner.Setup.TAG;
+import static com.znsio.teswiz.runner.Setup.TAG_FOR_REPORTPORTAL;
+import static com.znsio.teswiz.runner.Setup.TARGET_ENVIRONMENT;
 
 class CustomReports {
     private static final Logger LOGGER = LogManager.getLogger(CustomReports.class.getName());
@@ -61,7 +76,7 @@ class CustomReports {
     private static Configuration excludeCustomTagsFromReport(Configuration config) {
         String tagsToExclude = System.getProperty(
                 TEST_CONTEXT.TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT);
-        if(null != tagsToExclude) {
+        if (null != tagsToExclude) {
             config.setTagsToExcludeFromChart(tagsToExclude.trim().split(","));
         }
         return config;
@@ -72,7 +87,7 @@ class CustomReports {
         Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsDir), new String[]{"json"},
                                                          true);
         LOGGER.info(String.format("\tFound '%s' result files for processing", jsonFiles.size()));
-        if(jsonFiles.isEmpty()) {
+        if (jsonFiles.isEmpty()) {
             LOGGER.info("Reports not generated");
         }
         List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
