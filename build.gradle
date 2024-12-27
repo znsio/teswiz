@@ -3,10 +3,10 @@ import org.codehaus.groovy.runtime.GStringImpl
 
 buildscript {
     ext {
-        gradleVersion = "8.11.1"
+        gradleVersion = "8.12"
         applitoolsAppiumVersion = "5.73.0"
         applitoolsImagesVersion = "5.74.0"
-        browserStackLocalVersion = "1.1.4"
+        browserStackLocalVersion = "1.1.5"
         fasterxmlJacksonVersion = "2.18.2"
         atdVersion = "14.0.4" // ATD main branch
         jadbVersion = "1.2.1"
