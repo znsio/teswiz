@@ -112,31 +112,11 @@ task downloadDependencies {
     doLast {
         println "Downloading required dependencies..."
         def dependencies = [
-//                [
-//                        name  : "teswiz",
-//                        type  : "github",
-//                        params: [
-//                                repoUrl: "https://api.github.com/repos/znsio/teswiz/releases/latest"
-//                        ]
-//                ],
                 [
-                        name  : "AppiumTestDistribution",
-                        type  : "jitpack",
+                        name  : "teswiz",
+                        type  : "github",
                         params: [
-                                group   : "com.github.AppiumTestDistribution",
-                                artifact: "AppiumTestDistribution",
-                                version : "$project.atdVersion",
-                                fileNameSuffix: "-jar-with-dependencies"
-                        ]
-                ],
-                [
-                        name  : "jadb",
-                        type  : "jitpack",
-                        params: [
-                                group   : "com.github.vidstige",
-                                artifact: "jadb",
-                                version : "$project.jadbVersion",
-                                fileNameSuffix: ""
+                                repoUrl: "https://api.github.com/repos/znsio/teswiz/releases/latest"
                         ]
                 ]
         ]
