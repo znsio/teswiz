@@ -32,13 +32,13 @@ plugins {
     id "org.sonarqube" version "6.0.1.5171"
     id "java"
     id "idea"
-    id "com.github.johnrengelman.shadow" version '8.1.1'
+    id "com.gradleup.shadow" version '8.3.5'
     id "maven-publish"
     id "io.freefair.aspectj.post-compile-weaving" version "8.11"
 }
 
 group = 'com.github.znsio'
-version '1.0.13-noATD'
+version = '1.0.13-noATD'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -52,7 +52,7 @@ repositories {
     }
     mavenCentral()
     maven {
-        url 'https://jitpack.io'
+        url = 'https://jitpack.io'
     }
 }
 
@@ -137,31 +137,13 @@ task downloadDependencies {
     doLast {
         println "Downloading required dependencies..."
         def dependencies = [
-//                [
-//                        name  : "teswiz",
-//                        type  : "github",
-//                        params: [
-//                                repoUrl: "https://api.github.com/repos/znsio/teswiz/releases/latest",
-//                                version: "$project.teswizVersion"
-//                        ]
-//                ],
-//                [
-//                        name  : "AppiumTestDistribution",
-//                        type  : "jitpack",
-//                        params: [
-//                                group   : "com.github.AppiumTestDistribution",
-//                                artifact: "AppiumTestDistribution",
-//                                version : "$project.atdVersion",
-//                                fileNameSuffix: "-jar-with-dependencies"
-//                        ]
-//                ],
                 [
                         name  : "jadb",
                         type  : "jitpack",
                         params: [
-                                group   : "com.github.vidstige",
-                                artifact: "jadb",
-                                version : "$project.jadbVersion",
+                                group         : "com.github.vidstige",
+                                artifact      : "jadb",
+                                version       : "$project.jadbVersion",
                                 fileNameSuffix: ""
                         ]
                 ]
@@ -251,7 +233,7 @@ shadowJar {
     archiveBaseName.set("$project.name")
     archiveClassifier.set('')
     archiveVersion.set("$project.version")
-    zip64 true
+    zip64 = true
     manifest {
         attributes "Multi-Release": true
         attributes "Main-Class": "com.znsio.e2e.runner.Runner"
