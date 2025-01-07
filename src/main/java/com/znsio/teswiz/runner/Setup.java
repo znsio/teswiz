@@ -7,6 +7,8 @@ import com.znsio.teswiz.entities.APPLITOOLS;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.listener.CucumberPlatformScenarioListener;
+import com.znsio.teswiz.listener.CucumberPlatformScenarioReporterListener;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
@@ -241,7 +243,7 @@ class Setup {
 
     private static void setupExecutionEnvironment() {
         getPlatformTagsAndLaunchName();
-        addCucumberPlugsToArgs();
+        addCucumberReportPluginsToArgs();
         CUKE_ARGS.addAll(DeviceSetup.setupAndroidExecution());
         CUKE_ARGS.addAll(DeviceSetup.setupIOSExecution());
         CUKE_ARGS.addAll(DeviceSetup.setupWindowsExecution());
@@ -457,7 +459,7 @@ class Setup {
         return inferredTags;
     }
 
-    private static void addCucumberPlugsToArgs() {
+    private static void addCucumberReportPluginsToArgs() {
         CUKE_ARGS.add(PLUGIN);
         CUKE_ARGS.add("pretty");
         CUKE_ARGS.add(PLUGIN);
@@ -476,8 +478,6 @@ class Setup {
 
     private static Collection<String> setupCucumberListenersForExecution() {
         ArrayList<String> cukeArgs = new ArrayList<>();
-        cukeArgs.add("--threads");
-        cukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
         cukeArgs.add(PLUGIN);
         cukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioListener");
         cukeArgs.add(PLUGIN);

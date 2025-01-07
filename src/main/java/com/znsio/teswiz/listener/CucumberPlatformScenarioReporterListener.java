@@ -8,10 +8,8 @@ import org.apache.logging.log4j.LogManager;
 
 import java.util.Calendar;
 
-public class CucumberPlatformScenarioReporterListener
-        extends ScenarioReporter {
-    private static final Logger LOGGER = LogManager.getLogger(
-            CucumberPlatformScenarioReporterListener.class.getName());
+public class CucumberPlatformScenarioReporterListener extends ScenarioReporter {
+    private static final Logger LOGGER = LogManager.getLogger(CucumberPlatformScenarioReporterListener.class.getName());
     private static final String DUMMY_ROOT_SUITE_NAME = "End-2-End Tests";
     private static final String RP_STORY_TYPE = "SUITE";
     public static String launchUUID;
