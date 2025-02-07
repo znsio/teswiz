@@ -266,7 +266,7 @@ static def getCurrentTimestamp() {
     return df.format(today)
 }
 
- def logDir = "./target/" + getMonth() + "/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
+def logDir = "./target/" + getMonth() + "/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
 
 def copyRpPropertiesIfMissing() {
     def rpFile = file('src/test/resources/reportportal.properties')
@@ -358,9 +358,10 @@ test {
         println "Using LOG_DIR for tests: ${logDir}"
         systemProperty "LOG_DIR", "${logDir}"
 
-        if (!logDir.exists()) {
-            logDir.mkdirs()
-            println "Created log directory at: ${logDir.absolutePath}"
+        def logFileDir = new File(logDir)
+        if (!logFileDir.exists()) {
+            logFileDir.mkdirs()
+            println "Created log directory at: ${logFileDir.absolutePath}"
         }
     }
     useTestNG()
