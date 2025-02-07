@@ -7,12 +7,14 @@ import com.znsio.teswiz.entities.APPLITOOLS;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.listener.CucumberPlatformScenarioListener;
+import com.znsio.teswiz.listener.CucumberPlatformScenarioReporterListener;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,19 +26,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-import static com.appium.utils.OverriddenVariable.getOverriddenBooleanValue;
-import static com.appium.utils.OverriddenVariable.getOverriddenIntValue;
-import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
-import static com.znsio.teswiz.runner.Runner.NOT_SET;
-import static com.znsio.teswiz.runner.Runner.OS_NAME;
-import static com.znsio.teswiz.runner.Runner.USER_NAME;
+import static com.znsio.teswiz.runner.Runner.*;
+import static com.znsio.teswiz.tools.OverriddenVariable.*;
 
 class Setup {
     static final String RUN_IN_CI = "RUN_IN_CI";
@@ -250,11 +243,13 @@ class Setup {
 
     private static void setupExecutionEnvironment() {
         getPlatformTagsAndLaunchName();
-        addCucumberPlugsToArgs();
+        addCucumberReportPluginsToArgs();
         CUKE_ARGS.addAll(DeviceSetup.setupAndroidExecution());
         CUKE_ARGS.addAll(DeviceSetup.setupIOSExecution());
         CUKE_ARGS.addAll(DeviceSetup.setupWindowsExecution());
-        CUKE_ARGS.addAll(setupPlatformExecution());
+        CUKE_ARGS.addAll(setupCucumberListenersForExecution());
+        CUKE_ARGS.addAll(setupParallelExecution());
+
         initialiseApplitoolsConfiguration();
 
         String rpAttributes = String.format(
@@ -291,6 +286,17 @@ class Setup {
         System.setProperty("rp.description", configs.get(APP_NAME) + " " + configs.get(RP_DESCRIPTION) + " on " + currentPlatform.name());
         System.setProperty("rp.launch", configs.get(LAUNCH_NAME));
         System.setProperty("rp.attributes", rpAttributes);
+    }
+
+    private static Collection<String> setupParallelExecution() {
+        List<String> parallelExecutionArgs = new ArrayList<>();
+        parallelExecutionArgs.add("--threads");
+        if (Setup.getPlatform().equals(Platform.windows) || Setup.getPlatform().equals(Platform.electron)) {
+            parallelExecutionArgs.add("1");
+        } else {
+            parallelExecutionArgs.add(Setup.getIntegerValueAsStringFromConfigs(PARALLEL));
+        }
+        return parallelExecutionArgs;
     }
 
     private static void printStringConfigsMap() {
@@ -453,7 +459,7 @@ class Setup {
         return inferredTags;
     }
 
-    private static void addCucumberPlugsToArgs() {
+    private static void addCucumberReportPluginsToArgs() {
         CUKE_ARGS.add(PLUGIN);
         CUKE_ARGS.add("pretty");
         CUKE_ARGS.add(PLUGIN);
@@ -470,34 +476,13 @@ class Setup {
         System.setProperty("cucumber.publish.quiet", "true");
     }
 
-    private static ArrayList<String> setupPlatformExecution() {
-        ArrayList<String> webCukeArgs = new ArrayList<>();
-        if (!useATD()) {
-            configs.put(APP_PATH, configs.get(BROWSER));
-            configs.put(EXECUTED_ON, "Local Browsers");
-            setupListenersForWebOrAPIOrCLIExecution(webCukeArgs);
-        } else if (currentPlatform.equals(Platform.electron)) {
-            configs.put(APP_PATH, configs.get(BROWSER));
-            configs.put(EXECUTED_ON, "Local Electron Application");
-            setupListenersForWebOrAPIOrCLIExecution(webCukeArgs);
-        } else if (currentPlatform.equals(Platform.api) || currentPlatform.equals(Platform.cli)) {
-            configs.put(EXECUTED_ON, currentPlatform.name());
-            setupListenersForWebOrAPIOrCLIExecution(webCukeArgs);
-        }
-        return webCukeArgs;
-    }
-
-    private static boolean useATD() {
-        return currentPlatform.equals(Platform.android) || currentPlatform.equals(Platform.iOS) || currentPlatform.equals(Platform.windows);
-    }
-
-    private static void setupListenersForWebOrAPIOrCLIExecution(ArrayList<String> webCukeArgs) {
-        webCukeArgs.add("--threads");
-        webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
-        webCukeArgs.add(PLUGIN);
-        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioListener");
-        webCukeArgs.add(PLUGIN);
-        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioReporterListener");
+    private static Collection<String> setupCucumberListenersForExecution() {
+        ArrayList<String> cukeArgs = new ArrayList<>();
+        cukeArgs.add(PLUGIN);
+        cukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioListener");
+        cukeArgs.add(PLUGIN);
+        cukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioReporterListener");
+        return cukeArgs;
     }
 
     static Map<String, Object> initialiseApplitoolsConfiguration() {

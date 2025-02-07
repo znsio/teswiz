@@ -1,7 +1,7 @@
 package com.znsio.teswiz.tools;
 
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
 import org.apache.commons.io.FileUtils;
@@ -32,7 +32,7 @@ public class ScreenShotManager {
 
     public void takeScreenShot(WebDriver driver, String fileName) {
         if(null != driver) {
-            fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
+            fileName = ScenarioUtils.normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
             LOGGER.debug("The screenshot will be placed here : " + destinationFile.getAbsolutePath());
             try {
@@ -48,11 +48,6 @@ public class ScreenShotManager {
         } else {
             LOGGER.warn("Driver is not instantiated for this test");
         }
-    }
-
-    private String normaliseScenarioName(String scenarioName) {
-        return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_")
-                           .replaceAll("__", "_").replaceAll("__", "_");
     }
 
     private int getPrefix() {

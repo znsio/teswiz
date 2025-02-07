@@ -1,7 +1,9 @@
 package com.znsio.teswiz.tools;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.flipkart.zjsonpatch.JsonDiff;
 import com.google.gson.*;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
@@ -176,4 +178,27 @@ public class JsonFile {
         }
     }
 
+    public static String prettyPrintStringMap(Map<String, String> map) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String prettyJson = map.toString();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            prettyJson = objectMapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            // unable to convert map to pretty json
+        }
+        return prettyJson;
+    }
+
+    public static String prettyPrintObjectMap(Map<String, Object> map) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String prettyJson = map.toString();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            prettyJson = objectMapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            // unable to convert map to pretty json
+        }
+        return prettyJson;
+    }
 }

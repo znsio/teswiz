@@ -1,12 +1,15 @@
 package com.znsio.teswiz.steps;
 
-import com.context.TestExecutionContext;
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.entities.FileLocations;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.UserPersonaDetails;
 import com.znsio.teswiz.tools.ReportPortalLogger;
+import com.znsio.teswiz.tools.ScenarioUtils;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import com.znsio.teswiz.tools.cmd.AsyncCommandLineExecutor;
 import io.cucumber.java.Scenario;
@@ -14,28 +17,40 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.io.File;
+import java.util.*;
 
 public class Hooks {
     private static final Logger LOGGER = LogManager.getLogger(Hooks.class.getName());
     private static final List<String> excludeLoggingSystemProperties = Arrays.asList("java.class.path", "java.library.path");
     private static final List<String> excludeLoggingEnvVariables = Arrays.asList("KEY", "PASSWORD");
-    private final TestExecutionContext testExecutionContext;
-    private final long threadId;
+    private final Map<String, Integer> scenarioRunCounts = new HashMap<>();
 
     public Hooks() {
-        threadId = Thread.currentThread().getId();
-        testExecutionContext = Runner.getTestExecutionContext(threadId);
     }
 
     public void beforeScenario(Scenario scenario) {
+        String scenarioName = scenario.getName();
+        Integer scenarioRunCount = getScenarioRunCount(scenarioName);
+        TestExecutionContext testExecutionContext = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
+        if (testExecutionContext != null) {
+            LOGGER.info("Test execution context: " + testExecutionContext);
+        } else {
+            LOGGER.info("Test execution context is null");
+            testExecutionContext = new TestExecutionContext(scenarioRunCount + "-" + scenarioName);
+            String normalisedScenarioName = ScenarioUtils.normaliseScenarioName(scenarioName);
+
+            LOGGER.info(String.format("ThreadId: %d: beforeScenario: for scenario: %s%n", Thread.currentThread().getId(), scenarioName));
+            String scenarioLogDirectory = FileLocations.REPORTS_DIRECTORY + normalisedScenarioName;
+            testExecutionContext.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioLogDirectory);
+            String screenshotDirectory = FileLocations.REPORTS_DIRECTORY + normalisedScenarioName + File.separator + "screenshot" + File.separator;
+            testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_DIRECTORY, screenshotDirectory);
+        }
+
         Object isHooksInitialized = testExecutionContext.getTestState(TEST_CONTEXT.HOOKS_INITIALIZED);
         LOGGER.info("Hooks: beforeScenario: isHooksInitialized: " + isHooksInitialized);
         if (null == isHooksInitialized) {
-            LOGGER.info("Hooks: ThreadId : '%d' :: beforeScenario: '%s'".formatted(threadId, scenario.getName()));
+            LOGGER.info("Hooks: ThreadId : '%d' :: beforeScenario: '%s'".formatted(Thread.currentThread().getId(), scenarioName));
             if (!Runner.isAPI() || !Runner.isCLI() || !Runner.isPDF()) {
                 testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
             }
@@ -51,24 +66,38 @@ public class Hooks {
     }
 
     public void afterScenario(Scenario scenario) {
-        Object isHooksInitialized = testExecutionContext.getTestState(TEST_CONTEXT.HOOKS_INITIALIZED);
-        LOGGER.info("Hooks: afterScenario: isHooksInitialized: " + isHooksInitialized);
-        if (null != isHooksInitialized) {
-            LOGGER.info("Hooks: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
-            testExecutionContext.addTestState(TEST_CONTEXT.HOOKS_INITIALIZED, null);
-            Drivers.attachLogsAndCloseAllDrivers(scenario);
-            closeTheAsyncCommandLineExecutor();
-            SoftAssertions softly = Runner.getSoftAssertion(threadId);
-            LOGGER.info("Hooks: Assert all soft assertions");
-            softly.assertAll();
+        TestExecutionContext testExecutionContext = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
+        if (null != testExecutionContext) {
+            Object isHooksInitialized = testExecutionContext.getTestState(TEST_CONTEXT.HOOKS_INITIALIZED);
+            LOGGER.info("Hooks: afterScenario: isHooksInitialized: " + isHooksInitialized);
+            if (null != isHooksInitialized) {
+                long threadId = Thread.currentThread().getId();
+                LOGGER.info("Hooks: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
+                testExecutionContext.addTestState(TEST_CONTEXT.HOOKS_INITIALIZED, null);
+                Drivers.attachLogsAndCloseAllDrivers(scenario);
+                closeTheAsyncCommandLineExecutor();
+                SoftAssertions softly = Runner.getSoftAssertion(threadId);
+                LOGGER.info("Hooks: Assert all soft assertions");
+                softly.assertAll();
+            }
+            SessionContext.remove(Thread.currentThread().getId());
         }
+    }
+
+    private Integer getScenarioRunCount(String scenarioName) {
+        if (scenarioRunCounts.containsKey(scenarioName)) {
+            scenarioRunCounts.put(scenarioName, scenarioRunCounts.get(scenarioName) + 1);
+        } else {
+            scenarioRunCounts.put(scenarioName, 1);
+        }
+        return scenarioRunCounts.get(scenarioName);
     }
 
     private void startTheAsyncCommandLineExecutor() {
         if (Runner.isCLI()) {
             LOGGER.info("Start the AsyncCommandLineExecutor");
-            testExecutionContext.addTestState(TEST_CONTEXT.CLI_COMMAND_NUMBER, 1);
             AsyncCommandLineExecutor asyncCommandLineExecutor = new AsyncCommandLineExecutor();
+            TestExecutionContext testExecutionContext = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
             testExecutionContext.addTestState(TEST_CONTEXT.ASYNC_COMMAND_LINE_EXECUTOR, asyncCommandLineExecutor);
         }
     }
@@ -112,6 +141,7 @@ public class Hooks {
     private void closeTheAsyncCommandLineExecutor() {
         if (Runner.isCLI()) {
             LOGGER.info("Close the AsyncCommandLineExecutor");
+            TestExecutionContext testExecutionContext = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
             AsyncCommandLineExecutor asyncCommandLineExecutor = (AsyncCommandLineExecutor) testExecutionContext.getTestState(TEST_CONTEXT.ASYNC_COMMAND_LINE_EXECUTOR);
             asyncCommandLineExecutor.close();
         }
