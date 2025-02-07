@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import static com.znsio.teswiz.listener.CucumberScenarioListener.createFile;
+//import static com.znsio.teswiz.listener.CucumberScenarioListener.createFile;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Runner.getCloudName;
 import static com.znsio.teswiz.runner.Setup.CAPS;

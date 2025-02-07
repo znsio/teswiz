@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 
 buildscript {
     ext {
-        gradleVersion = "8.12"
+        gradleVersion = "8.12.1"
     }
 }
 
@@ -14,7 +14,7 @@ plugins {
     id "idea"
     id "com.gradleup.shadow" version '8.3.5'
     id "maven-publish"
-    id "io.freefair.aspectj.post-compile-weaving" version "8.11"
+    id "io.freefair.aspectj.post-compile-weaving" version "8.12.1"
 }
 
 group = 'com.github.znsio'
@@ -166,7 +166,7 @@ dependencies {
     implementation "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
 
     // Assertions and testing
-    implementation "org.assertj:assertj-core:3.27.0"
+    implementation "org.assertj:assertj-core:3.27.3"
 //    implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
 //    implementation "org.testng:testng:7.10.2"
     implementation "io.cucumber:cucumber-java:7.20.1"
@@ -180,8 +180,8 @@ dependencies {
     implementation "com.browserstack:browserstack-local-java:1.1.5"
 
     // Applitools for visual testing
-    implementation "com.applitools:eyes-images-java5:5.74.0"
-    implementation "com.applitools:eyes-appium-java5:5.73.0"
+    implementation "com.applitools:eyes-images-java5:5.75.2"
+    implementation "com.applitools:eyes-appium-java5:5.74.2"
 
     // Aspect-Oriented Programming (AOP)
     implementation "org.aspectj:aspectjrt:1.9.22.1"
@@ -194,8 +194,8 @@ dependencies {
     // Utility libraries
     implementation "org.apache.commons:commons-lang3:3.17.0"
     implementation "org.apache.commons:commons-rng-simple:1.6"
-    implementation "org.jetbrains:annotations:26.0.1"
-    implementation "joda-time:joda-time:2.13.0"
+    implementation "org.jetbrains:annotations:26.0.2"
+    implementation "joda-time:joda-time:2.13.1"
     implementation "io.github.bonigarcia:webdrivermanager:5.9.2"
 
     // Reporting
@@ -203,7 +203,7 @@ dependencies {
     implementation 'com.epam.reportportal:agent-java-cucumber6:5.3.4'
 
     // PDF handling
-    implementation "org.apache.pdfbox:pdfbox:3.0.3"
+    implementation "org.apache.pdfbox:pdfbox:3.0.4"
 
     // Lombok
     implementation 'org.projectlombok:lombok:1.18.36'
@@ -266,7 +266,7 @@ static def getCurrentTimestamp() {
     return df.format(today)
 }
 
-project.ext.logDir = "./target/" + getMonth() + "/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
+ def logDir = "./target/" + getMonth() + "/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
 
 def copyRpPropertiesIfMissing() {
     def rpFile = file('src/test/resources/reportportal.properties')
@@ -297,9 +297,9 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 tasks.register('run', JavaExec) {
     doFirst {
-        println "Using LOG_DIR: ${project.logDir}"
-        System.setProperty "LOG_DIR", "${project.logDir}"
-        environment "APPLITOOLS_LOG_DIR", "${project.logDir}/applitools_logs"
+        println "Using LOG_DIR: $logDir"
+        System.setProperty "LOG_DIR", "$logDir"
+        environment "APPLITOOLS_LOG_DIR", "${logDir}/applitools_logs"
         environment "APPLITOOLS_API_KEY", System.getenv("TESWIZ_APPLITOOLS_API_KEY")
 
         def hostname = InetAddress.getLocalHost().getHostName()
@@ -355,9 +355,8 @@ tasks.register('run', JavaExec) {
 
 test {
     doFirst {
-        println "Using LOG_DIR for tests: ${project.logDir}"
-        def logDir = new File("${project.logDir}")
-        systemProperty "LOG_DIR", "${project.logDir}"
+        println "Using LOG_DIR for tests: ${logDir}"
+        systemProperty "LOG_DIR", "${logDir}"
 
         if (!logDir.exists()) {
             logDir.mkdirs()
@@ -385,8 +384,8 @@ test {
     reports {
         html.required.set(true)
         junitXml.required.set(true)
-        html.outputLocation.set(file("$project.logDir/unit-test-results"))
-        junitXml.outputLocation.set(file("$project.logDir/unit-test-results"))
+        html.outputLocation.set(file("$logDir/unit-test-results"))
+        junitXml.outputLocation.set(file("$logDir/unit-test-results"))
     }
 }
 

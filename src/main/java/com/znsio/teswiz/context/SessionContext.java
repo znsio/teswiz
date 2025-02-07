@@ -1,10 +1,8 @@
 package com.znsio.teswiz.context;
 
-import com.znsio.teswiz.listener.CucumberScenarioListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.ITestContext;
-
 
 import java.io.File;
 import java.io.FileInputStream;

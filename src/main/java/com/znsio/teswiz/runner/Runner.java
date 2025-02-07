@@ -7,6 +7,7 @@ import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import io.cucumber.core.cli.Main;
 import net.masterthought.cucumber.Reportable;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.assertj.core.api.SoftAssertions;
@@ -88,14 +89,13 @@ public class Runner {
             if (isHardGate) {
                 status = getStatus(isRunningFailingTests, totalFeatures, totalScenarios, passedScenarios, failedScenarios);
                 LOGGER.info("SET_HARD_GATE is '%s', and '%s' is '%s'. Returning status '%s' of hard gate".
-                        formatted(isHardGate, IS_FAILING_TEST_SUITE, isRunningFailingTests, status));
+                                    formatted(isHardGate, IS_FAILING_TEST_SUITE, isRunningFailingTests, status));
             } else {
                 LOGGER.info("SET_HARD_GATE is '%s'. Return actual status '%s' of test execution".formatted(isHardGate, status));
             }
             System.exit(status);
         } catch (Exception e) {
-            LOGGER.error("EXCEPTION: {}", e.getMessage());
-            LOGGER.error(e);
+            LOGGER.error("EXCEPTION: {}\n{}", e.getMessage(), ExceptionUtils.getStackTrace(e));
             System.exit(1);
         }
     }
