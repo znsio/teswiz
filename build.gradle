@@ -4,26 +4,26 @@ import org.codehaus.groovy.runtime.GStringImpl
 buildscript {
     ext {
         gradleVersion = "8.12"
-        applitoolsAppiumVersion = "5.73.0"
-        applitoolsImagesVersion = "5.74.0"
+        applitoolsAppiumVersion = "5.74.2"
+        applitoolsImagesVersion = "5.75.2"
         browserStackLocalVersion = "1.1.5"
         fasterxmlJacksonVersion = "2.18.2"
         atdVersion = "14.0.4" // ATD main branch
         jadbVersion = "1.2.1"
         unirestVersion = "3.14.5"
         specmaticVersion = '1.3.39'
-        webDriverManagerVersion = '5.9.2'
-        jodaTimeVersion = "2.13.0"
-        masterThoughtVersion = "5.8.2"
+        webDriverManagerVersion = '5.9.3'
+        jodaTimeVersion = "2.13.1"
+        masterThoughtVersion = "5.8.4"
         commonsLang3Version = "3.17.0"
         commonsRngSimpleVersion = "1.6"
         aspectJVersion = "1.9.22.1"
-        assertJVersion = "3.27.0"
-        jetbrainsAnnotationsVersion = "26.0.1"
+        assertJVersion = "3.27.3"
+        jetbrainsAnnotationsVersion = "26.0.2"
         junitVersion = "5.11.4"
-        snakeyamlVersion = "2.3"
+        snakeyamlVersion = "2.4"
         jsonDiffVersion = "0.4.16"
-        pdfBoxVersion = '3.0.3'
+        pdfBoxVersion = '3.0.4'
     }
 }
 
@@ -33,7 +33,7 @@ plugins {
     id "idea"
     id "com.github.johnrengelman.shadow" version '8.1.1'
     id "maven-publish"
-    id "io.freefair.aspectj.post-compile-weaving" version "8.11"
+    id "io.freefair.aspectj.post-compile-weaving" version "8.12.1"
 }
 
 group = 'com.github.znsio'
