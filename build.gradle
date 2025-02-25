@@ -3,7 +3,7 @@ import org.codehaus.groovy.runtime.GStringImpl
 
 buildscript {
     ext {
-        gradleVersion = "8.12"
+        gradleVersion = "8.13"
         applitoolsAppiumVersion = "5.73.0"
         applitoolsImagesVersion = "5.74.0"
         browserStackLocalVersion = "1.1.5"
