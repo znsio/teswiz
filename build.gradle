@@ -17,7 +17,7 @@ plugins {
 
 def group = "com.github.znsio"
 def version = "1.0.12"
-def atdVersion= "14.0.4" // ATD main branch
+def atdVersion = "14.0.4" // ATD main branch
 def applitoolsAppiumVersion = "5.75.0"
 def applitoolsImagesVersion = "5.76.0"
 def aspectJVersion = "1.9.22.1"
@@ -37,7 +37,6 @@ def pdfBoxVersion = "3.0.3"
 def seleniumVersion = "4.25.0"
 def snakeyamlVersion = "2.4"
 def specmaticVersion = "1.3.39"
-def testNGVersion = "7.10.2"
 def unirestVersion = "3.14.5"
 def webDriverManagerVersion = "6.0.0"
 
@@ -192,7 +191,7 @@ dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
     implementation files(layout.buildDirectory.files("/classes/main"))
     implementation files(layout.buildDirectory.files("/classes/test"))
-    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$atdVersion") {
+    implementation("com.github.AppiumTestDistribution:AppiumTestDistribution:$atdVersion") {
         exclude group: 'io.appium', module: 'java-client'
     }
     implementation "com.github.vidstige:jadb:$jadbVersion"
@@ -203,7 +202,7 @@ dependencies {
     implementation "org.apache.commons:commons-rng-simple:$commonsRngSimpleVersion"
     implementation "org.jetbrains:annotations:$jetbrainsAnnotationsVersion"
     testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
-//    implementation "org.testng:testng:$testNGVersion"
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation "joda-time:joda-time:$jodaTimeVersion"
     implementation "com.browserstack:browserstack-local-java:$browserStackLocalVersion"
     implementation "com.applitools:eyes-images-java5:$applitoolsImagesVersion"
@@ -215,8 +214,6 @@ dependencies {
 //        exclude group: 'io.appium', module: 'java-client'
     }
     implementation "org.seleniumhq.selenium:selenium-java:$seleniumVersion"
-//    implementation "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
-//    implementation "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
     implementation "org.aspectj:aspectjrt:$aspectJVersion"
     implementation "in.specmatic:specmatic-core:$specmaticVersion"
