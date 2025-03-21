@@ -3,27 +3,28 @@ import org.codehaus.groovy.runtime.GStringImpl
 
 buildscript {
     ext {
-        gradleVersion = "8.12"
-        applitoolsAppiumVersion = "5.73.0"
-        applitoolsImagesVersion = "5.74.0"
-        browserStackLocalVersion = "1.1.5"
-        fasterxmlJacksonVersion = "2.18.2"
+        applitoolsAppiumVersion = "5.75.0"
+        applitoolsImagesVersion = "5.76.0"
+        aspectJVersion = "1.9.22.1"
+        assertJVersion = "3.27.3"
         atdVersion = "14.0.4" // ATD main branch
-        jadbVersion = "1.2.1"
-        unirestVersion = "3.14.5"
-        specmaticVersion = '1.3.39'
-        webDriverManagerVersion = '5.9.2'
-        jodaTimeVersion = "2.13.0"
-        masterThoughtVersion = "5.8.2"
+        browserStackLocalVersion = "1.1.5"
         commonsLang3Version = "3.17.0"
         commonsRngSimpleVersion = "1.6"
-        aspectJVersion = "1.9.22.1"
-        assertJVersion = "3.27.0"
-        jetbrainsAnnotationsVersion = "26.0.1"
-        junitVersion = "5.11.4"
-        snakeyamlVersion = "2.3"
+        fasterxmlJacksonVersion = "2.18.3"
+        gradleVersion = "8.13"
+        jadbVersion = "1.2.1"
+        jetbrainsAnnotationsVersion = "26.0.2"
+        jodaTimeVersion = "2.13.1"
         jsonDiffVersion = "0.4.16"
+        junitVersion = "5.12.1"
+        masterThoughtVersion = "5.8.2"
         pdfBoxVersion = '3.0.3'
+        seleniumVersion = "4.25.0"
+        snakeyamlVersion = "2.4"
+        specmaticVersion = '1.3.39'
+        unirestVersion = "3.14.5"
+        webDriverManagerVersion = '6.0.0'
     }
 }
 
@@ -205,8 +206,10 @@ dependencies {
     implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
     implementation "com.applitools:eyes-images-java5:$project.applitoolsImagesVersion"
     implementation("com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion") {
+        exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
 //        exclude group: 'io.appium', module: 'java-client'
     }
+    implementation "org.seleniumhq.selenium:selenium-java:$seleniumVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
     implementation "org.aspectj:aspectjrt:$project.aspectJVersion"
     implementation "in.specmatic:specmatic-core:${project.specmaticVersion}"
