@@ -3,28 +3,6 @@ import org.codehaus.groovy.runtime.GStringImpl
 
 buildscript {
     ext {
-        applitoolsAppiumVersion = "5.75.0"
-        applitoolsImagesVersion = "5.76.0"
-        aspectJVersion = "1.9.22.1"
-        assertJVersion = "3.27.3"
-        atdVersion = "14.0.4" // ATD main branch
-        browserStackLocalVersion = "1.1.5"
-        commonsLang3Version = "3.17.0"
-        commonsRngSimpleVersion = "1.6"
-        fasterxmlJacksonVersion = "2.18.3"
-        gradleVersion = "8.13"
-        jadbVersion = "1.2.1"
-        jetbrainsAnnotationsVersion = "26.0.2"
-        jodaTimeVersion = "2.13.1"
-        jsonDiffVersion = "0.4.16"
-        junitVersion = "5.12.1"
-        masterThoughtVersion = "5.8.2"
-        pdfBoxVersion = '3.0.3'
-        seleniumVersion = "4.25.0"
-        snakeyamlVersion = "2.4"
-        specmaticVersion = '1.3.39'
-        unirestVersion = "3.14.5"
-        webDriverManagerVersion = '6.0.0'
     }
 }
 
@@ -37,8 +15,31 @@ plugins {
     id "io.freefair.aspectj.post-compile-weaving" version "8.11"
 }
 
-group = 'com.github.znsio'
-version '1.0.12'
+def group = "com.github.znsio"
+def version = "1.0.12"
+def atdVersion= "14.0.4" // ATD main branch
+def applitoolsAppiumVersion = "5.75.0"
+def applitoolsImagesVersion = "5.76.0"
+def aspectJVersion = "1.9.22.1"
+def assertJVersion = "3.27.3"
+def browserStackLocalVersion = "1.1.5"
+def commonsLang3Version = "3.17.0"
+def commonsRngSimpleVersion = "1.6"
+def fasterxmlJacksonVersion = "2.18.3"
+def gradleVersion = "8.13"
+def jadbVersion = "1.2.1"
+def jetbrainsAnnotationsVersion = "26.0.2"
+def jodaTimeVersion = "2.13.1"
+def jsonDiffVersion = "0.4.16"
+def junitVersion = "5.12.1"
+def masterThoughtVersion = "5.8.2"
+def pdfBoxVersion = "3.0.3"
+def seleniumVersion = "4.25.0"
+def snakeyamlVersion = "2.4"
+def specmaticVersion = "1.3.39"
+def testNGVersion = "7.10.2"
+def unirestVersion = "3.14.5"
+def webDriverManagerVersion = "6.0.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -55,7 +56,7 @@ repositories {
     }
     mavenCentral()
     maven {
-        url 'https://jitpack.io'
+        url = 'https://jitpack.io'
     }
 }
 
@@ -136,7 +137,7 @@ def downloadDependency(String name, String type, Map<String, String> params) {
 }
 
 // Define a custom task to download dependencies
-task downloadDependencies {
+tasks.register('downloadDependencies') {
     doLast {
         println "Downloading required dependencies..."
         def dependencies = [
@@ -145,7 +146,7 @@ task downloadDependencies {
 //                        type  : "github",
 //                        params: [
 //                                repoUrl: "https://api.github.com/repos/znsio/teswiz/releases/latest",
-//                                version: "$project.teswizVersion"
+//                                version: "$teswizVersion"
 //                        ]
 //                ],
                 [
@@ -154,7 +155,7 @@ task downloadDependencies {
                         params: [
                                 group   : "com.github.AppiumTestDistribution",
                                 artifact: "AppiumTestDistribution",
-                                version : "$project.atdVersion",
+                                version : "$atdVersion",
                                 fileNameSuffix: "-jar-with-dependencies"
                         ]
                 ],
@@ -164,7 +165,7 @@ task downloadDependencies {
                         params: [
                                 group   : "com.github.vidstige",
                                 artifact: "jadb",
-                                version : "$project.jadbVersion",
+                                version : "$jadbVersion",
                                 fileNameSuffix: ""
                         ]
                 ]
@@ -191,21 +192,22 @@ dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
     implementation files(layout.buildDirectory.files("/classes/main"))
     implementation files(layout.buildDirectory.files("/classes/test"))
-    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$project.atdVersion") {
+    implementation ("com.github.AppiumTestDistribution:AppiumTestDistribution:$atdVersion") {
         exclude group: 'io.appium', module: 'java-client'
     }
-    implementation "com.github.vidstige:jadb:$project.jadbVersion"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$project.fasterxmlJacksonVersion"
-    implementation "com.konghq:unirest-java:$project.unirestVersion"
-    implementation "org.assertj:assertj-core:$project.assertJVersion"
-    implementation "org.apache.commons:commons-lang3:$project.commonsLang3Version"
-    implementation "org.apache.commons:commons-rng-simple:$project.commonsRngSimpleVersion"
-    implementation "org.jetbrains:annotations:$project.jetbrainsAnnotationsVersion"
-    implementation "org.junit.jupiter:junit-jupiter:$project.junitVersion"
-    implementation "joda-time:joda-time:$project.jodaTimeVersion"
-    implementation "com.browserstack:browserstack-local-java:$project.browserStackLocalVersion"
-    implementation "com.applitools:eyes-images-java5:$project.applitoolsImagesVersion"
-    implementation("com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion") {
+    implementation "com.github.vidstige:jadb:$jadbVersion"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$fasterxmlJacksonVersion"
+    implementation "com.konghq:unirest-java:$unirestVersion"
+    implementation "org.assertj:assertj-core:$assertJVersion"
+    implementation "org.apache.commons:commons-lang3:$commonsLang3Version"
+    implementation "org.apache.commons:commons-rng-simple:$commonsRngSimpleVersion"
+    implementation "org.jetbrains:annotations:$jetbrainsAnnotationsVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+//    implementation "org.testng:testng:$testNGVersion"
+    implementation "joda-time:joda-time:$jodaTimeVersion"
+    implementation "com.browserstack:browserstack-local-java:$browserStackLocalVersion"
+    implementation "com.applitools:eyes-images-java5:$applitoolsImagesVersion"
+    implementation("com.applitools:eyes-appium-java5:$applitoolsAppiumVersion") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
@@ -216,19 +218,19 @@ dependencies {
 //    implementation "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
 //    implementation "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
-    implementation "org.aspectj:aspectjrt:$project.aspectJVersion"
-    implementation "in.specmatic:specmatic-core:${project.specmaticVersion}"
-    implementation "io.github.bonigarcia:webdrivermanager:$project.webDriverManagerVersion"
-    implementation "org.yaml:snakeyaml:$project.snakeyamlVersion"
-    implementation "com.flipkart.zjsonpatch:zjsonpatch:$project.jsonDiffVersion"
-    implementation "org.apache.pdfbox:pdfbox:$project.pdfBoxVersion"
+    implementation "org.aspectj:aspectjrt:$aspectJVersion"
+    implementation "in.specmatic:specmatic-core:$specmaticVersion"
+    implementation "io.github.bonigarcia:webdrivermanager:$webDriverManagerVersion"
+    implementation "org.yaml:snakeyaml:$snakeyamlVersion"
+    implementation "com.flipkart.zjsonpatch:zjsonpatch:$jsonDiffVersion"
+    implementation "org.apache.pdfbox:pdfbox:$pdfBoxVersion"
 }
 
 shadowJar {
     archiveBaseName.set("$project.name")
     archiveClassifier.set('')
     archiveVersion.set("$project.version")
-    zip64 true
+    zip64 = true
     manifest {
         attributes "Multi-Release": true
         attributes "Main-Class": "com.znsio.e2e.runner.Runner"
@@ -248,7 +250,7 @@ artifacts {
 }
 
 wrapper {
-    gradleVersion = project.gradleVersion // version from gradle.properties
+    gradleVersion = "$gradleVersion" // version from gradle.properties
 }
 
 publishing {
@@ -297,7 +299,7 @@ def copyRpPropertiesIfMissing() {
     System.setProperty("reportportal.properties.file", rpFile.absolutePath)
 }
 
-task copyRpPropertiesIfMissing {
+tasks.register('copyRpPropertiesIfMissing') {
     doLast {
         copyRpPropertiesIfMissing()
     }
@@ -367,7 +369,7 @@ tasks.register('run', JavaExec) {
     classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
 }
 
-test {
+tasks.named('test', Test) {
     useJUnitPlatform()
 
     outputs.upToDateWhen { false }
