@@ -15,8 +15,8 @@ plugins {
     id "io.freefair.aspectj.post-compile-weaving" version "8.11"
 }
 
-def group = "com.github.znsio"
-def version = "1.0.12"
+group = "com.github.znsio"
+version = "1.0.12"
 def atdVersion = "14.0.4" // ATD main branch
 def applitoolsAppiumVersion = "5.75.0"
 def applitoolsImagesVersion = "5.76.0"
