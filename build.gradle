@@ -207,9 +207,14 @@ dependencies {
     implementation "com.applitools:eyes-images-java5:$project.applitoolsImagesVersion"
     implementation("com.applitools:eyes-appium-java5:$project.applitoolsAppiumVersion") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
+        exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
+        exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
+        exclude group: 'org.seleniumhq.selenium', module: 'selenium-remote-driver'
 //        exclude group: 'io.appium', module: 'java-client'
     }
     implementation "org.seleniumhq.selenium:selenium-java:$seleniumVersion"
+//    implementation "org.seleniumhq.selenium:selenium-api:$seleniumVersion"
+//    implementation "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
     implementation "net.masterthought:cucumber-reporting:$masterThoughtVersion"
     implementation "org.aspectj:aspectjrt:$project.aspectJVersion"
     implementation "in.specmatic:specmatic-core:${project.specmaticVersion}"
