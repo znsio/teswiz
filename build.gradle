@@ -7,20 +7,20 @@ buildscript {
 }
 
 plugins {
-    id "org.sonarqube" version "6.0.1.5171"
+    id "org.sonarqube" version "6.1.0.5360"
     id "java"
     id "idea"
     id "com.github.johnrengelman.shadow" version '8.1.1'
     id "maven-publish"
-    id "io.freefair.aspectj.post-compile-weaving" version "8.11"
+    id "io.freefair.aspectj.post-compile-weaving" version "8.13.1"
 }
 
 group = "com.github.znsio"
 version = "1.0.12"
 def atdVersion = "14.0.4" // ATD main branch
-def applitoolsAppiumVersion = "5.75.0"
-def applitoolsImagesVersion = "5.76.0"
-def aspectJVersion = "1.9.22.1"
+def applitoolsAppiumVersion = "5.75.1"
+def applitoolsImagesVersion = "5.77.0"
+def aspectJVersion = "1.9.23"
 def assertJVersion = "3.27.3"
 def browserStackLocalVersion = "1.1.5"
 def commonsLang3Version = "3.17.0"
@@ -29,16 +29,16 @@ def fasterxmlJacksonVersion = "2.18.3"
 def gradleVersion = "8.13"
 def jadbVersion = "1.2.1"
 def jetbrainsAnnotationsVersion = "26.0.2"
-def jodaTimeVersion = "2.13.1"
+def jodaTimeVersion = "2.14.0"
 def jsonDiffVersion = "0.4.16"
 def junitVersion = "5.12.1"
-def masterThoughtVersion = "5.8.2"
+def masterThoughtVersion = "5.8.4"
 def pdfBoxVersion = "3.0.4"
-def seleniumVersion = "4.29.0"
+def seleniumVersion = "4.31.0"
 def snakeyamlVersion = "2.4"
 def specmaticVersion = "1.3.39"
 def unirestVersion = "3.14.5"
-def webDriverManagerVersion = "6.0.0"
+def webDriverManagerVersion = "6.0.1"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
