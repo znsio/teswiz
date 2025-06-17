@@ -75,15 +75,50 @@ idea {
 // Define the libs directory in the project root
 ext.libsDir = file("$projectDir/libs")
 
+def isJarInLocalCache(String group, String artifact, String version, String fileNameSuffix) {
+    def m2Path = new File(System.getProperty("user.home"),
+            ".m2/repository/${group.replace('.', '/')}/${artifact}/${version}/${artifact}-${version}${fileNameSuffix}.jar")
+    def gradlePath = new File(System.getProperty("user.home"),
+            ".gradle/caches/modules-2/files-2.1/${group}/${artifact}/${version}")
+
+    if (m2Path.exists()) {
+        println "\t✔ Found in local .m2 cache: $m2Path"
+        return m2Path
+    }
+
+    if (gradlePath.exists()) {
+        def cachedJar = gradlePath.listFiles()?.find { it.name.endsWith(".jar") }
+        if (cachedJar) {
+            println "\t✔ Found in .gradle cache: ${cachedJar}"
+            return cachedJar
+        }
+    }
+
+    return null
+}
+
 def downloadDependency(String name, String type, Map<String, String> params) {
     if (!libsDir.exists()) {
         libsDir.mkdirs()
     }
 
-    println "Download dependency: ${name} from ${type}"
+    println "Processing dependency: ${name} from ${type}"
     def jarFile = new File(libsDir, "${name}-${params.version}.jar")
-    if (jarFile.exists()) {
-        println "\tDependency $name already exists at: $jarFile. No need to redownload it"
+
+    if (params.forceUpdate?.toString() == "true") {
+        if (jarFile.exists()) {
+            println "\t🧹 Force update enabled. Deleting existing jar: $jarFile"
+            jarFile.delete()
+        }
+    } else if (jarFile.exists()) {
+        println "\t✔ Dependency $name already exists at: $jarFile. Skipping download."
+        return jarFile
+    }
+
+    def cachedJar = isJarInLocalCache(params.group, params.artifact, params.version, params.fileNameSuffix ?: "")
+    if (cachedJar != null) {
+        jarFile.bytes = cachedJar.bytes
+        println "\t✅ Copied from local cache to: $jarFile"
         return jarFile
     }
 
@@ -94,13 +129,12 @@ def downloadDependency(String name, String type, Map<String, String> params) {
         def jsonSlurper = new groovy.json.JsonSlurper()
         def releaseInfo = jsonSlurper.parseText(jsonResponse)
 
-        // Ensure assets field is a list and each asset is a Map
         def assets = releaseInfo.assets
         if (!(assets instanceof List)) {
             throw new GradleException("Assets field is not a list: $assets")
         }
 
-        def jarAsset = releaseInfo.assets.find { it.name.matches(/${name}-\d+\.\d+\.\d+\.jar/) }
+        def jarAsset = assets.find { it.name.matches(/${name}-\d+\.\d+\.\d+\.jar/) }
         if (!jarAsset) {
             throw new GradleException("No ${name} JAR file found in the latest GitHub release.")
         }
@@ -111,29 +145,27 @@ def downloadDependency(String name, String type, Map<String, String> params) {
         throw new GradleException("Unknown type: $type")
     }
 
-    println "\tDownloading ${name} JAR from ${jarUrl}"
-    def downloadCommand
-    if (System.getProperty("os.name").toLowerCase().contains("win")) {
-        downloadCommand = ["cmd", "/c", "curl", "-o", jarFile.absolutePath, jarUrl]
-    } else {
-        downloadCommand = ["wget", "-O", jarFile.absolutePath, jarUrl]
-    }
-    // Explicitly convert all elements to String
+    println "\t⬇ Downloading ${name} JAR from ${jarUrl}"
+    def downloadCommand = System.getProperty("os.name").toLowerCase().contains("win") ?
+            ["cmd", "/c", "curl", "-L", "-o", jarFile.absolutePath, jarUrl] :
+            ["wget", "-O", jarFile.absolutePath, jarUrl]
+
     downloadCommand = downloadCommand.collect { it.toString() }
 
-    println "\tDownloading using command: ${downloadCommand}"
+    println "\t📥 Downloading using command: ${downloadCommand}"
 
     def process = new ProcessBuilder(downloadCommand).redirectErrorStream(true).start()
     process.inputStream.eachLine { println it }
     process.waitFor()
 
     if (process.exitValue() != 0) {
-        throw new GradleException("Failed to download ${name} JAR.")
+        throw new GradleException("❌ Failed to download ${name} JAR.")
     }
 
-    println "${name} JAR downloaded to $jarFile"
+    println "✅ ${name} JAR downloaded to $jarFile"
     return jarFile
 }
+
 
 // Define a custom task to download dependencies
 tasks.register('downloadDependencies') {
@@ -155,7 +187,8 @@ tasks.register('downloadDependencies') {
                                 group   : "com.github.AppiumTestDistribution",
                                 artifact: "AppiumTestDistribution",
                                 version : "$atdVersion",
-                                fileNameSuffix: "-jar-with-dependencies"
+                                fileNameSuffix: "-jar-with-dependencies",
+                                forceUpdate: true
                         ]
                 ],
                 [
@@ -165,7 +198,8 @@ tasks.register('downloadDependencies') {
                                 group   : "com.github.vidstige",
                                 artifact: "jadb",
                                 version : "$jadbVersion",
-                                fileNameSuffix: ""
+                                fileNameSuffix: "",
+                                forceUpdate: false
                         ]
                 ]
         ]
