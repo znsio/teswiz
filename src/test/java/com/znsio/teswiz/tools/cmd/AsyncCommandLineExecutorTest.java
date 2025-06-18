@@ -1,5 +1,6 @@
 package com.znsio.teswiz.tools.cmd;
 
+import com.znsio.teswiz.tools.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +21,7 @@ class AsyncCommandLineExecutorTest {
     public static void setupBefore() {
         LOGGER.info("Create LOG_DIR: " + LOG_DIR);
         System.setProperty("LOG_DIR", LOG_DIR);
-        new File(LOG_DIR).mkdirs();
+        FileUtils.createDirectory(LOG_DIR);
     }
 
     @Test

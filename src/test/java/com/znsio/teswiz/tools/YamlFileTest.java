@@ -17,7 +17,7 @@ class YamlFileTest {
     public static void setupBefore() {
         LOGGER.info("Create LOG_DIR: " + LOG_DIR);
         System.setProperty("LOG_DIR", LOG_DIR);
-        new File(LOG_DIR).mkdirs();
+        FileUtils.createDirectory(LOG_DIR);
     }
 
     @Test

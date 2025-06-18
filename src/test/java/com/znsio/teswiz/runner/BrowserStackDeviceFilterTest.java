@@ -3,6 +3,7 @@ package com.znsio.teswiz.runner;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.znsio.teswiz.tools.FileUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ class BrowserStackDeviceFilterTest {
     @BeforeAll
     public static void setupBefore() {
         System.setProperty("LOG_DIR", LOG_DIR);
-        new File(LOG_DIR).mkdirs();
+        FileUtils.createDirectory(LOG_DIR);
     }
 
     @BeforeEach

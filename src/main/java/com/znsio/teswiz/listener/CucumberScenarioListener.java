@@ -3,7 +3,9 @@ package com.znsio.teswiz.listener;
 import com.epam.reportportal.service.ReportPortal;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.atd.*;
+import com.znsio.teswiz.tools.FileUtils;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import io.appium.java_client.AppiumDriver;
@@ -68,19 +70,9 @@ public class CucumberScenarioListener implements ConcurrentEventListener {
     }
 
     public static File createFile(String dirName, String fileName) {
-        File logFile = new File(System.getProperty("user.dir")
-                + dirName
-                + fileName + ".txt");
-        if (logFile.exists()) {
-            return logFile;
-        }
-        try {
-            logFile.getParentFile().mkdirs();
-            logFile.createNewFile();
-        } catch (Exception e) {
-            ExceptionUtils.getStackTrace(e);
-        }
-        return logFile;
+        String absoluteFilePath = Runner.USER_DIRECTORY + dirName + fileName + ".txt";
+        FileUtils.createDirectory(absoluteFilePath);
+        return new File(absoluteFilePath);
     }
 
     private void caseStartedHandler(TestCaseStarted event) {
@@ -119,9 +111,7 @@ public class CucumberScenarioListener implements ConcurrentEventListener {
         if (ATD_AppiumDeviceManager.getAppiumDevice().getPlatformName().equalsIgnoreCase("android")) {
             fileName = String.format("/%s-run-%s",
                             ATD_AppiumDeviceManager.getAppiumDevice().getUdid(), scenarioRunCount);
-            File logFile = createFile(deviceLogFileDirectory
-                                      + FileLocations.DEVICE_LOGS_DIRECTORY,
-                    fileName);
+            File logFile = createFile(deviceLogFileDirectory + FileLocations.DEVICE_LOGS_DIRECTORY, fileName);
             fileName = logFile.getAbsolutePath();
             LOGGER.debug("Capturing device logs here: " + fileName);
             PrintStream logFileStream = null;

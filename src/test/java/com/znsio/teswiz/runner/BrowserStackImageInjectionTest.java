@@ -1,5 +1,6 @@
 package com.znsio.teswiz.runner;
 
+import com.znsio.teswiz.tools.FileUtils;
 import io.appium.java_client.android.AndroidDriver;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +27,7 @@ class BrowserStackImageInjectionTest {
     @BeforeAll
     static void getSetup() {
         System.setProperty("LOG_DIR", LOG_DIR);
-        new File(LOG_DIR).mkdirs();
+        FileUtils.createDirectory(LOG_DIR);
 
         authenticationUser = System.getenv("CLOUD_USERNAME");
         authenticationKey = System.getenv("CLOUD_KEY");

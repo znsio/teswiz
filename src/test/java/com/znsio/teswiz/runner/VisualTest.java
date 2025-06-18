@@ -1,6 +1,7 @@
 package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.tools.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.Loader;
@@ -24,7 +25,7 @@ class VisualTest {
     @BeforeAll
     public static void setupBefore() throws IOException {
         System.setProperty("LOG_DIR", LOG_DIR);
-        new File(LOG_DIR).mkdirs();
+        FileUtils.createDirectory(LOG_DIR);
 
         pdfFileName = "src/test/resources/pdf/Teswiz.pdf";
         pdfFile = new File(pdfFileName);

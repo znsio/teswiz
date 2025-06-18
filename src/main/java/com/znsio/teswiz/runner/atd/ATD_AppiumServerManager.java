@@ -59,10 +59,10 @@ public class ATD_AppiumServerManager {
                                 + "appium_logs.txt"))
                         .withIPAddress(host)
                         .withTimeout(Duration.ofSeconds(60))
-                        .withArgument(() -> "--config", System.getProperty("user.dir") + FileLocations.SERVER_CONFIG)
+                        .withArgument(() -> "--config", System.getProperty("user.dir") + FileLocations.SERVER_CONFIG_JSON)
                         .withArgument(GeneralServerFlag.RELAXED_SECURITY)
-                        .usingAnyFreePort()
-                        .withArgument(() -> "--log-level", "debug");
+                        .withArgument(() -> "--log-level", "debug")
+                        .usingAnyFreePort();
         if (CustomCapabilities.getInstance().getCapabilities().has("basePath")) {
             if (!StringUtils.isBlank(getBasePath())) {
                 builder.withArgument(GeneralServerFlag.BASEPATH, getBasePath());

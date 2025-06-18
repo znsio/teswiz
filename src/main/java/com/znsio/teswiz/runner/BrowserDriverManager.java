@@ -5,6 +5,7 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.tools.FileUtils;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.ReportPortalLogger;
@@ -471,8 +472,7 @@ class BrowserDriverManager {
         String logFile = String.format("%s%sdeviceLogs%s%s-%s.log", scenarioLogDir, File.separator,
                 File.separator, browserType, forUserPersona);
 
-        File file = new File(logFile);
-        file.getParentFile().mkdirs();
+        FileUtils.createDirectory(logFile);
 
         String logMessage = String.format("Creating %s logs in file: %s", browserType, logFile);
         LOGGER.info(logMessage);
