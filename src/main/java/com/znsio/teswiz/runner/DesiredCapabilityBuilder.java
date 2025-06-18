@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner.atd;
+package com.znsio.teswiz.runner;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.logging.log4j.LogManager;
@@ -10,7 +10,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Set;
 
-import static com.znsio.teswiz.runner.atd.ConfigFileManager.CAPS;
+import static com.znsio.teswiz.runner.ConfigFileManager.CAPS;
 
 public class DesiredCapabilityBuilder {
 

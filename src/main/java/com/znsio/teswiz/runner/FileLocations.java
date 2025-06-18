@@ -1,8 +1,8 @@
-package com.znsio.teswiz.runner.atd;
+package com.znsio.teswiz.runner;
 
 import java.io.File;
 
-import static com.znsio.teswiz.runner.atd.OverriddenVariable.getOverriddenStringValue;
+import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 
 public interface FileLocations {
 
@@ -14,8 +14,6 @@ public interface FileLocations {
 
     String SERVER_CONFIG_JSON = OUTPUT_DIRECTORY + "server.json";
     String REPORTS_DIRECTORY = OUTPUT_DIRECTORY + "reports" + File.separator;
-
-    String SCREENSHOTS_DIRECTORY = OUTPUT_DIRECTORY + "screenshot" + File.separator;
 
     String APPIUM_LOGS_DIRECTORY = OUTPUT_DIRECTORY + "appiumlogs" + File.separator;
     String DEVICE_LOGS_DIRECTORY = "deviceLogs" + File.separator;

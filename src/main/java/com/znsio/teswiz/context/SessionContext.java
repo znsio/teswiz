@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.Properties;
 
-import static com.znsio.teswiz.runner.atd.OverriddenVariable.getOverriddenStringValue;
+import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 
 public class SessionContext {
     static final String TEST_RUNNER = "testrunner";

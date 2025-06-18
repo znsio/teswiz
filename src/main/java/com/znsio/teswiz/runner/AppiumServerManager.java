@@ -1,6 +1,5 @@
-package com.znsio.teswiz.runner.atd;
+package com.znsio.teswiz.runner;
 
-import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.tools.FileUtils;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
@@ -15,9 +14,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.time.Duration;
 
-public class ATD_AppiumServerManager {
+public class AppiumServerManager {
 
-    private static final Logger LOGGER = LogManager.getLogger(ATD_AppiumServerManager.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AppiumServerManager.class.getName());
     private static AppiumDriverLocalService appiumDriverLocalService;
 
     private static AppiumDriverLocalService getAppiumDriverLocalService() {
@@ -26,7 +25,7 @@ public class ATD_AppiumServerManager {
 
     private static void setAppiumDriverLocalService(
             AppiumDriverLocalService appiumDriverLocalService) {
-        ATD_AppiumServerManager.appiumDriverLocalService = appiumDriverLocalService;
+        AppiumServerManager.appiumDriverLocalService = appiumDriverLocalService;
     }
 
     private URL getAppiumUrl() {

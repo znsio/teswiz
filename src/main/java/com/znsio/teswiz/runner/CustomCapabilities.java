@@ -1,6 +1,5 @@
-package com.znsio.teswiz.runner.atd;
+package com.znsio.teswiz.runner;
 
-import com.znsio.teswiz.runner.Runner;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,8 +19,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static com.znsio.teswiz.runner.atd.ConfigFileManager.CAPS;
-import static com.znsio.teswiz.runner.atd.OverriddenVariable.getOverriddenStringValue;
+import static com.znsio.teswiz.runner.ConfigFileManager.CAPS;
+import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 
 public class CustomCapabilities {
     private static final Logger LOGGER = LogManager.getLogger(CustomCapabilities.class.getName());
@@ -52,7 +51,7 @@ public class CustomCapabilities {
         String defaultFileName = FilenameUtils.removeExtension(new File(CAPS.get()).getName());
         StringBuilder varParsing = new StringBuilder(200);
         if (!fileName.equals(defaultFileName)) {
-            varParsing.append("atd_" + fileName).append("_");
+            varParsing.append("atd_").append(fileName).append("_");
         } else {
             varParsing.append("atd").append("_");
         }
@@ -213,15 +212,7 @@ public class CustomCapabilities {
         return false;
     }
 
-    public boolean isApp() {
-        return getCapabilityObjectFromKey("iOS").has("app");
-    }
-
-    public boolean isWindowsApp() {
-        return getCapabilityObjectFromKey("windows").has("app");
-    }
-
-    public void validateCapabilitySchema(JSONObject loadedCapabilities) {
+    private void validateCapabilitySchema(JSONObject loadedCapabilities) {
         String schemaFileName = getSchemaFileName();
         try {
             LOGGER.debug("Validating capabilities schema: {}", loadedCapabilities);

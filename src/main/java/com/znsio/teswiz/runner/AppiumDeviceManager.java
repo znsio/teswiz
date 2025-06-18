@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner.atd;
+package com.znsio.teswiz.runner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,8 +6,8 @@ import org.apache.logging.log4j.Logger;
 /**
  * Device Manager - Handles all device related information's e.g UDID, Model, etc
  */
-public class ATD_AppiumDeviceManager {
-    private static final Logger LOGGER = LogManager.getLogger(ATD_AppiumDeviceManager.class.getName());
+public class AppiumDeviceManager {
+    private static final Logger LOGGER = LogManager.getLogger(AppiumDeviceManager.class.getName());
     private static final ThreadLocal<DriverSession> appiumDevice = new ThreadLocal<>();
 
 

@@ -192,15 +192,14 @@ public class Drivers {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
 
         Map<String, Driver> allAssignedUserPersonasAndDrivers = userPersonaDetails.getAllAssignedUserPersonasAndDrivers();
-        LOGGER.info("Closing driver for the following userPersonas: " + allAssignedUserPersonasAndDrivers.keySet());
+        LOGGER.info("Closing driver for the following userPersonas: {}", allAssignedUserPersonasAndDrivers.keySet());
         allAssignedUserPersonasAndDrivers.forEach((userPersona, driver) -> {
-            LOGGER.info("Closing driver for the userPersonas: " + userPersona);
+            LOGGER.info("Closing driver for the userPersonas: {}", userPersona);
             driver.getVisual().takeScreenshot("afterHooks", userPersona);
             updateTestStatusInCloud(driver.getInnerDriver(), scenario.getStatus());
             validateVisualTestResults(userPersona, driver);
             attachLogsAndCloseDriver(userPersona, driver);
         });
-        AppiumDriverManager.freeDevices();
         userPersonaDetails.clearAllDrivers();
         userPersonaDetails.clearAllAppNames();
         userPersonaDetails.clearAllCapabilities();
@@ -209,7 +208,7 @@ public class Drivers {
     }
 
     private static void updateTestStatusInCloud(WebDriver driver, Status cucumberScenarioStatus) {
-        LOGGER.info(String.format("updateTestStatusInCloud for Scenario with status: '%s'", cucumberScenarioStatus.name()));
+        LOGGER.info("updateTestStatusInCloud for Scenario with status: '{}'", cucumberScenarioStatus.name());
         long currentThreadId = Thread.currentThread().getId();
         SoftAssertions softly = Runner.getSoftAssertion(currentThreadId);
 

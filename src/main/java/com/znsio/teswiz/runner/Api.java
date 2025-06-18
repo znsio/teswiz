@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner.atd;
+package com.znsio.teswiz.runner;
 
 
 import okhttp3.OkHttpClient;

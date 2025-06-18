@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner.atd;
+package com.znsio.teswiz.runner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,25 +7,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import static com.znsio.teswiz.runner.atd.OverriddenVariable.getOverriddenStringValue;
+import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Integer.parseInt;
-import static java.text.MessageFormat.format;
 
 /**
  * ConfigFileManager - Read config file statically into configFileMap
  */
 public enum ConfigFileManager {
-    CATEGORY("ATDTest"),
-    SUITE_NAME("ATDSuiteName"),
-    LISTENERS(""),
-    INCLUDE_GROUPS(""),
-    EXCLUDE_GROUPS(""),
-    FRAMEWORK("testng"),
-    MAX_RETRY_COUNT("0"),
-    CAPS("./caps/capabilities.json"),
-    RUNNER_LEVEL("methods"),
-    RUNNER("distribute");
+    CAPS("./caps/capabilities.json");
 
     private static final Properties PROPERTIES;
     private static final Logger LOGGER = LogManager.getLogger(ConfigFileManager.class.getName());
@@ -33,11 +23,11 @@ public enum ConfigFileManager {
     static {
         PROPERTIES = new Properties();
         String configFile = getOverriddenStringValue("CONFIG_FILE", "./configs/config.properties");
-        LOGGER.info(format("Using config file from [{0}]", configFile));
+        LOGGER.info("Using config file from [{}]", configFile);
         try (FileInputStream inputStream = new FileInputStream(configFile)) {
             PROPERTIES.load(inputStream);
         } catch (IOException e) {
-            LOGGER.info(format("Error while loading config file: {0}", e.getMessage()));
+            LOGGER.info("Error while loading config file: {}", e.getMessage());
         }
     }
 

@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner.atd;
+package com.znsio.teswiz.runner;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner.atd;
+package com.znsio.teswiz.runner;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -12,31 +12,6 @@ public class PluginClI {
     private static final Logger LOGGER = LogManager.getLogger(PluginClI.class.getName());
     private static PluginClI instance;
     private Plugin plugin;
-    //    public String subcommand;
-    //    private String address;
-    //    private String basePath;
-    //    private int port;
-    //    private ArrayList<String> usePlugins;
-    //    private ArrayList<Object> extraArgs;
-    //    private boolean allowCors;
-    //    private ArrayList<Object> allowInsecure;
-    //    private int callbackPort;
-    //    private boolean debugLogSpacing;
-    //    private ArrayList<Object> denyInsecure;
-    //    private int keepAliveTimeout;
-    //    private boolean localTimezone;
-    //    private String loglevel;
-    //    private boolean logNoColors;
-    //    private boolean logTimestamp;
-    //    private boolean longStacktrace;
-    //    private boolean noPermsCheck;
-    //    private boolean relaxedSecurityEnabled;
-    //    private boolean sessionOverride;
-    //    private boolean strictCaps;
-    //    private ArrayList<Object> useDrivers;
-    //    private String tmpDir;
-    //    private Meta meta;
-    //    private int $loki;
 
     public static PluginClI getInstance() {
         if (instance == null) {
@@ -80,13 +55,6 @@ public class PluginClI {
             return cloud;
         }
     }
-
-    //    public static class Meta {
-    //        private int revision;
-    //        private long created;
-    //        private int version;
-    //        private long updated;
-    //    }
 
     public static class Plugin {
         @JsonProperty("device-farm")

@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner.atd;
+package com.znsio.teswiz.tools;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

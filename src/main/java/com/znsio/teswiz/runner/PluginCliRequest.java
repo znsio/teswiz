@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner.atd;
+package com.znsio.teswiz.runner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +17,7 @@ public class PluginCliRequest {
     }
 
     public PluginClI getCliArgs() {
-        ATD_AppiumServerManager appiumServerManager = new ATD_AppiumServerManager();
+        AppiumServerManager appiumServerManager = new AppiumServerManager();
         String remoteWDHubIP = appiumServerManager.getRemoteWDHubIP();
         URL url = null;
         try {

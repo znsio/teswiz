@@ -35,7 +35,7 @@ import java.util.Properties;
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static com.znsio.teswiz.runner.Runner.OS_NAME;
 import static com.znsio.teswiz.runner.Runner.USER_NAME;
-import static com.znsio.teswiz.runner.atd.OverriddenVariable.*;
+import static com.znsio.teswiz.tools.OverriddenVariable.*;
 
 class Setup {
     static final String RUN_IN_CI = "RUN_IN_CI";

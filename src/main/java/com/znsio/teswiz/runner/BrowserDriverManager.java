@@ -52,7 +52,7 @@ import java.util.logging.Level;
 
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
-import static com.znsio.teswiz.runner.atd.OverriddenVariable.getOverriddenStringValue;
+import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 
 class BrowserDriverManager {
     private static final Logger LOGGER = LogManager.getLogger(BrowserDriverManager.class.getName());
