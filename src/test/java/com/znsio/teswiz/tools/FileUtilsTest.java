@@ -33,6 +33,13 @@ class FileUtilsTest {
     }
 
     @Test
+    void createDirectory_withFileName_shouldCreateDirectoryWithThatName() {
+        String fileLikeDir = tempDir.resolve("logfile.txt").toString();
+        assertThat(FileUtils.createDirectory(fileLikeDir)).isTrue();
+        assertThat(new File(fileLikeDir)).exists().isDirectory();
+    }
+
+    @Test
     void createDirectory_withValidPath_shouldCreateDirectory() {
         String newDir = tempDir.resolve("newDir").toString();
         assertThat(FileUtils.createDirectory(newDir)).isTrue();
@@ -79,42 +86,42 @@ class FileUtilsTest {
     void createParentDirectory_withNullParent_shouldThrowException() {
         assertThatThrownBy(() -> FileUtils.createParentDirectory(null, "child"))
                 .isInstanceOf(InvalidTestDataException.class)
-                .hasMessageContaining("Parent directory is null or empty");
+                .hasMessageContaining("Parent is null or empty");
     }
 
     @Test
     void createParentDirectory_withNullChild_shouldThrowException() {
         assertThatThrownBy(() -> FileUtils.createParentDirectory("parent", null))
                 .isInstanceOf(InvalidTestDataException.class)
-                .hasMessageContaining("Child directory is null or empty");
+                .hasMessageContaining("Child is null or empty");
     }
 
     @Test
     void createParentDirectory_withNullParentAndChild_shouldThrowException() {
         assertThatThrownBy(() -> FileUtils.createParentDirectory(null, null))
                 .isInstanceOf(InvalidTestDataException.class)
-                .hasMessageContaining("Parent directory is null or empty");
+                .hasMessageContaining("Parent is null or empty");
     }
 
     @Test
     void createParentDirectory_withEmptyChild_shouldThrowException() {
         assertThatThrownBy(() -> FileUtils.createParentDirectory(tempDirPath, ""))
                 .isInstanceOf(InvalidTestDataException.class)
-                .hasMessageContaining("Child directory is null or empty");
+                .hasMessageContaining("Child is null or empty");
     }
 
     @Test
     void createParentDirectory_withEmptyParent_shouldThrowException() {
         assertThatThrownBy(() -> FileUtils.createParentDirectory("", "tempDirPath"))
                 .isInstanceOf(InvalidTestDataException.class)
-                .hasMessageContaining("Parent directory is null or empty");
+                .hasMessageContaining("Parent is null or empty");
     }
 
     @Test
     void createParentDirectory_withEmptyParentAndChild_shouldThrowException() {
         assertThatThrownBy(() -> FileUtils.createParentDirectory("", ""))
                 .isInstanceOf(InvalidTestDataException.class)
-                .hasMessageContaining("Parent directory is null or empty");
+                .hasMessageContaining("Parent is null or empty");
     }
 
     @Test

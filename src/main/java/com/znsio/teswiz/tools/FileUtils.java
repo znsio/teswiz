@@ -7,33 +7,49 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 public class FileUtils {
-
     private static final Logger LOGGER = LogManager.getLogger(FileUtils.class.getName());
 
-    public static boolean createParentDirectory(String parent, String child) {
-        validatePathComponent(parent, "Parent directory");
-        validatePathComponent(child, "Child directory");
-        return createDirectoryInternal(new File(parent, child));
+    public synchronized static boolean createParentDirectory(String parent, String child) {
+        validatePathComponent("Parent", parent);
+        validatePathComponent("Child", child);
+
+        File file = new File(parent, child);
+        return createDirectoryInternal(file);
     }
 
     public static boolean createDirectory(String dir) {
-        validatePathComponent(dir, "Directory");
-        return createDirectoryInternal(new File(dir));
+        validatePathComponent("Directory", dir);
+        File file = new File(dir);
+        return createDirectoryInternal(file);
     }
 
     private static boolean createDirectoryInternal(File file) {
-        if (!file.exists()) {
-            boolean created = file.mkdirs();
-            LOGGER.debug("Directory: {} created: {}", file.getAbsolutePath(), created);
-            return created;
+        if (file.exists()) {
+            if (file.isFile()) {
+                throw new InvalidTestDataException("Path exists but is a file: " + file.getAbsolutePath());
+            }
+            return true;
         }
-        LOGGER.debug("Directory already exists: {}", file.getAbsolutePath());
-        return true;
+
+        boolean created = false;
+        if (looksLikeAFile(file.getName())) {
+            LOGGER.warn("Path '{}' looks like a file name. Creating directory till its parent", file.getAbsolutePath());
+            created = file.getParentFile().mkdirs();
+        } else {
+            created = file.mkdirs();
+        }
+        LOGGER.debug("Directory: {} created?: {}", file.getAbsolutePath(), created);
+        return created;
     }
 
-    private static void validatePathComponent(String path, String label) {
-        if (path == null || path.trim().isEmpty()) {
-            throw new InvalidTestDataException(label + " is null or empty");
+    private static void validatePathComponent(String name, String value) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new InvalidTestDataException(name + " is null or empty");
         }
+    }
+
+    private static boolean looksLikeAFile(String name) {
+        // crude check for extensions (e.g., file.txt, data.json)
+        return name.matches(".*\\.[a-zA-Z0-9]+$");
     }
 }
