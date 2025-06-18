@@ -28,7 +28,7 @@ Example:
     buildscript {
         ext {
             gradleVersion = '8.11.1'
-            teswizVersion = '1.0.12'
+            teswizVersion = '1.0.13'
         }
         repositories {
             mavenLocal()

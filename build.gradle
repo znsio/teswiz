@@ -15,10 +15,12 @@ plugins {
     id "io.freefair.aspectj.post-compile-weaving" version "8.11"
 }
 
-group = "com.github.znsio"
-version = "1.0.12"
+def teswizVersion = "1.0.13"
 def aspectJVersion = "1.9.24"
 def jadbVersion = "1.2.1"
+
+group = "com.github.znsio"
+version = "$teswizVersion"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
