@@ -1,5 +1,7 @@
 package com.znsio.teswiz.runner.atd;
 
+import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.tools.FileUtils;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
@@ -46,10 +48,7 @@ public class ATD_AppiumServerManager {
 
     public void startAppiumServer(String host) throws Exception {
         LOGGER.info("{}Starting Appium Server on Localhost", LOGGER.getName());
-        new File(
-                System.getProperty("user.dir")
-                + FileLocations.APPIUM_LOGS_DIRECTORY
-                + "appium_logs.txt").getParentFile().mkdirs();
+        FileUtils.createDirectory(Runner.USER_DIRECTORY + FileLocations.APPIUM_LOGS_DIRECTORY + "appium_logs.txt");
         AppiumDriverLocalService appiumDriverLocalService;
         AppiumServiceBuilder builder =
                 getAppiumServerBuilder(host)
