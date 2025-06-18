@@ -8,6 +8,7 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.commons.io.FileUtils;
@@ -31,12 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static com.appium.utils.OverriddenVariable.getOverriddenBooleanValue;
-import static com.appium.utils.OverriddenVariable.getOverriddenIntValue;
-import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static com.znsio.teswiz.runner.Runner.OS_NAME;
 import static com.znsio.teswiz.runner.Runner.USER_NAME;
+import static com.znsio.teswiz.runner.atd.OverriddenVariable.*;
 
 class Setup {
     static final String RUN_IN_CI = "RUN_IN_CI";
@@ -517,7 +516,7 @@ class Setup {
             applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING, isDisableBrowserFetching());
             applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, setupApplitoolsBatchInfo());
         }
-        LOGGER.info(String.format("applitoolsConfiguration: %s", applitoolsConfiguration));
+        LOGGER.info("applitoolsConfiguration:\n{}", JsonPrettyPrinter.prettyPrint(applitoolsConfiguration));
         return applitoolsConfiguration;
     }
 

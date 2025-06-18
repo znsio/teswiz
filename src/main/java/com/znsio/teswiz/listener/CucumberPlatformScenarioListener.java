@@ -1,11 +1,11 @@
 package com.znsio.teswiz.listener;
 
-import com.appium.filelocations.FileLocations;
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.runner.atd.FileLocations;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import org.apache.logging.log4j.LogManager;

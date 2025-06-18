@@ -44,8 +44,8 @@ class DeviceSetup {
             System.getProperty("user.dir") + File.separator +
                     "temp" + File.separator + "sampleApps";
     private static final String CLOUD_NAME_NOT_SUPPORTED_MESSAGE = "Provided cloudName: '%s' is not supported";
-    private static final String CUCUMBER_SCENARIO_LISTENER = "com.cucumber.listener.CucumberScenarioListener";
-    private static final String CUCUMBER_SCENARIO_REPORTER_LISTENER = "com.cucumber.listener.CucumberScenarioReporterListener";
+    private static final String CUCUMBER_SCENARIO_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioListener";
+    private static final String CUCUMBER_SCENARIO_REPORTER_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioReporterListener";
 
     private DeviceSetup() {
         LOGGER.debug("DeviceSetup - private constructor");

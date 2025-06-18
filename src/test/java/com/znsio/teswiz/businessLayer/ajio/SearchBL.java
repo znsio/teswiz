@@ -1,6 +1,6 @@
 package com.znsio.teswiz.businessLayer.ajio;
 
-import com.context.TestExecutionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;

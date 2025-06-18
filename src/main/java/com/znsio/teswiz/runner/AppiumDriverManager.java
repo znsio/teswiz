@@ -1,15 +1,12 @@
 package com.znsio.teswiz.runner;
 
-import com.appium.capabilities.DriverSession;
-import com.appium.filelocations.FileLocations;
-import com.appium.manager.AppiumDeviceManager;
-import com.appium.plugin.PluginClI;
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.runner.atd.*;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
@@ -31,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import static com.cucumber.listener.CucumberScenarioListener.createFile;
+import static com.znsio.teswiz.listener.CucumberScenarioListener.createFile;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Runner.getCloudName;
 import static com.znsio.teswiz.runner.Setup.CAPS;
@@ -92,8 +89,7 @@ class AppiumDriverManager {
     private static Driver createNewAppiumDriver(String userPersona, Platform forPlatform, TestExecutionContext context, String appName, File capabilityFileToUseForDriverCreation) {
         Driver currentDriver;
         try {
-            AppiumDriver appiumDriver = new com.appium.manager.AppiumDriverManager().startAppiumDriverInstance(userPersona, capabilityFileToUseForDriverCreation.getAbsolutePath());
-
+            AppiumDriver appiumDriver = new ATD_AppiumDriverManager().startAppiumDriverInstance(userPersona, capabilityFileToUseForDriverCreation.getAbsolutePath());
 
             String scenarioDirectory = context.getTestStateAsString("scenarioDirectory");
             Integer scenarioRunCount = (Integer) context.getTestState("scenarioRunCount");
@@ -114,15 +110,15 @@ class AppiumDriverManager {
 
     private static String startDataCapture(Integer scenarioRunCount, String deviceLogFileDirectory) {
         String fileName = String.format("/run-%s", scenarioRunCount);
-        if (AppiumDeviceManager.getAppiumDevice().getPlatformName().equalsIgnoreCase("android")) {
+        if (ATD_AppiumDeviceManager.getAppiumDevice().getPlatformName().equalsIgnoreCase("android")) {
             try {
-                fileName = String.format("/%s-run-%s", AppiumDeviceManager.getAppiumDevice().getUdid(), scenarioRunCount);
+                fileName = String.format("/%s-run-%s", ATD_AppiumDeviceManager.getAppiumDevice().getUdid(), scenarioRunCount);
                 File logFile = createFile(deviceLogFileDirectory + FileLocations.DEVICE_LOGS_DIRECTORY, fileName);
                 fileName = logFile.getAbsolutePath();
                 LOGGER.debug("Capturing device logs here: " + fileName);
                 PrintStream logFileStream = null;
                 logFileStream = new PrintStream(logFile);
-                LogEntries logcatOutput = com.appium.manager.AppiumDriverManager.getDriver().manage().logs().get("logcat");
+                LogEntries logcatOutput = ATD_AppiumDriverManager.getDriver().manage().logs().get("logcat");
                 StreamSupport.stream(logcatOutput.spliterator(), false).forEach(logFileStream::println);
             } catch (FileNotFoundException e) {
                 LOGGER.warn("ERROR in getting logcat. Skipping logcat capture");

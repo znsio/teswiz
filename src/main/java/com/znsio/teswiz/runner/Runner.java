@@ -1,7 +1,7 @@
 package com.znsio.teswiz.runner;
 
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
@@ -17,8 +17,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Setup.HOST_NAME;
@@ -69,7 +71,12 @@ public class Runner {
         args.add(featuresDir);
         boolean isHardGate = isHardGateSet();
         boolean isRunningFailingTests = isRunningFailingTestSuite();
-        LOGGER.info("Begin running tests with args: {}", args);
+        String prettyArgs = args.stream()
+                .map(arg -> "\t" + arg + ",")
+                .collect(Collectors.joining("\n", "\t[\n", "\n\t]"));
+
+        LOGGER.info("Begin running tests with args:\n{}", prettyArgs);
+//        LOGGER.info("Begin running tests with args: {}", args);
         String[] array = args.toArray(String[]::new);
         try {
             byte status = Main.run(array);

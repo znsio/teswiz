@@ -1,7 +1,7 @@
 package com.znsio.teswiz.steps;
 
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.businessLayer.indigo.GiftVoucherBL;
 import com.znsio.teswiz.businessLayer.indigo.IndigoBL;
 import com.znsio.teswiz.runner.Runner;

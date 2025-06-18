@@ -1,6 +1,6 @@
 package com.znsio.teswiz.runner;
 
-import com.context.TestExecutionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.context.SessionContext.getTestExecutionContext;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
+import static com.znsio.teswiz.runner.Runner.getTestExecutionContext;
 import static io.appium.java_client.remote.options.SupportsDeviceNameOption.DEVICE_NAME_OPTION;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
@@ -297,22 +297,22 @@ public class Drivers {
     }
 
     static void addUserPersonaDriverCapabilities(String userPersona, Capabilities capabilities) {
-        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(getTestExecutionContext(Thread.currentThread().getId()));
         userPersonaDetails.addCapabilities(userPersona, capabilities);
     }
 
     static void addUserPersonaDeviceLogFileName(String userPersona, String deviceLogsFileName, Platform forPlatform) {
-        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(getTestExecutionContext(Thread.currentThread().getId()));
         userPersonaDetails.addDeviceLogFileNameFor(userPersona, forPlatform.name(), deviceLogsFileName);
     }
 
     static Capabilities getCapabilitiesFor(String userPersona) {
-        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(getTestExecutionContext(Thread.currentThread().getId()));
         return userPersonaDetails.getCapabilitiesAssignedForUser(userPersona);
     }
 
     static String getAppNamefor(String userPersona) {
-        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(Runner.getTestExecutionContext(Thread.currentThread().getId()));
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(getTestExecutionContext(Thread.currentThread().getId()));
         return userPersonaDetails.getAppName(userPersona);
     }
 
