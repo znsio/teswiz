@@ -1,10 +1,12 @@
 package com.znsio.teswiz.tools;
 
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 
 public class FileUtils {
     private static final Logger LOGGER = LogManager.getLogger(FileUtils.class.getName());
@@ -51,5 +53,14 @@ public class FileUtils {
     private static boolean looksLikeAFile(String name) {
         // crude check for extensions (e.g., file.txt, data.json)
         return name.matches(".*\\.[a-zA-Z0-9]+$");
+    }
+
+    public static void copyFile(File source, File destination) {
+        try {
+            org.apache.commons.io.FileUtils.copyFile(source, destination);
+        } catch (IOException e) {
+            LOGGER.warn("ERROR: Unable to copy file from '{}' to '{}'\n", source.getAbsolutePath(), destination.getAbsolutePath());
+            LOGGER.debug(ExceptionUtils.getStackTrace(e));
+        }
     }
 }
