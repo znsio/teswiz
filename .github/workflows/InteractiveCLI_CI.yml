@@ -36,4 +36,6 @@ jobs:
       - name: Check Result of Interactive CLI Tests
         run: |
           echo "Checking exit code for Interactive CLI tests..."
-          [[ "${{ steps.interactive_cli_tests.outputs.exit_code }}" != "0" ]] && echo "❌ Interactive CLI tests failed" && exit 1
+          fail=0
+          [[ "${{ steps.interactive_cli_tests.outputs.exit_code }}" != "0" ]] && echo "❌ Interactive CLI tests failed" && fail=1
+          exit $fail
