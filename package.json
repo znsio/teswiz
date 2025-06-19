@@ -6,7 +6,7 @@
     "appium-device-farm": "9.8.8",
     "appium-uiautomator2-driver": "4.2.3",
     "appium-xcuitest-driver": "9.7.0",
-    "go-ios": "1.0.178",
+    "go-ios": "1.0.180",
     "braces": "3.0.3",
     "fill-range": "7.1.1",
     "ws": "8.18.2",
