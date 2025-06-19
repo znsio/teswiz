@@ -40,12 +40,4 @@ public enum ConfigFileManager {
     public String get() {
         return getOverriddenStringValue(name(), PROPERTIES.getProperty(name(), defaultValue));
     }
-
-    public boolean isTrue() {
-        return parseBoolean(get());
-    }
-
-    public int getInt() {
-        return parseInt(get());
-    }
 }
