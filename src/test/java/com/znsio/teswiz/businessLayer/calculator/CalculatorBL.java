@@ -2,8 +2,8 @@ package com.znsio.teswiz.businessLayer.calculator;
 
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
+import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.ScreenShotScreen;
 import com.znsio.teswiz.screen.calculator.CalculatorScreen;
 import com.znsio.teswiz.screen.calculator.NewCalculatorScreen;

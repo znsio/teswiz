@@ -5,8 +5,8 @@ import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.autoscroll.AutoScrollScreen;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

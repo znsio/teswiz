@@ -1,13 +1,10 @@
 package com.znsio.teswiz.tools.cmd;
 
-import com.znsio.teswiz.tools.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
 
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,13 +12,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AsyncCommandLineExecutorTest {
     private static final Logger LOGGER = LogManager.getLogger(AsyncCommandLineExecutorTest.class.getName());
     private static int commandNumber = 1;
-    private static final String LOG_DIR = "./target/testLogs";
 
     @BeforeAll
     public static void setupBefore() {
-        LOGGER.info("Create LOG_DIR: " + LOG_DIR);
-        System.setProperty("LOG_DIR", LOG_DIR);
-        FileUtils.createDirectory(LOG_DIR);
+        LOGGER.info("Running AsyncCommandLineExecutorTest");
     }
 
     @Test

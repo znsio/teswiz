@@ -1,7 +1,8 @@
 package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import com.znsio.teswiz.tools.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AppPathTest {
-    private static final String LOG_DIR = "./target/testLogs";
+    private static final Logger LOGGER = LogManager.getLogger(AppPathTest.class.getName());
     private static final String directoryPath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "unitTests" + File.separator + "sampleApps";
     private static final String fileName = "VodQA.apk";
     private static final String expectedAppPath = directoryPath + File.separator + fileName;
@@ -25,8 +26,7 @@ public class AppPathTest {
 
     @BeforeAll
     public static void setupBefore() {
-        System.setProperty("LOG_DIR", LOG_DIR);
-        FileUtils.createDirectory(LOG_DIR);
+        LOGGER.info("Running AppPathTest");
     }
 
     @Test

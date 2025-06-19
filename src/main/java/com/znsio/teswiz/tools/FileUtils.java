@@ -25,16 +25,6 @@ public class FileUtils {
         return createDirectoryInternal(file);
     }
 
-    public static File createFileWithExtension(String dirName, String fileName, String extension) {
-        String absoluteFilePath = dirName + fileName + "." + extension;
-        FileUtils.createDirectory(absoluteFilePath);
-        return new File(absoluteFilePath);
-    }
-
-    public static File createTxtFile(String dirName, String fileName) {
-        return createFileWithExtension(dirName, fileName, "txt");
-    }
-
     private static File createDirectoryInternal(File file) {
         if (file.exists()) {
             if (file.isFile()) {

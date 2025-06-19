@@ -407,6 +407,7 @@ tasks.named('test', Test) {
         jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
     }
     println "Using LOG_DIR: ${project.logDir}"
+    systemProperty "LOG_DIR", "${project.logDir}"
     reports {
         html.required.set(true)
         junitXml.required.set(true)

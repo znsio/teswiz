@@ -3,7 +3,8 @@ package com.znsio.teswiz.runner;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import com.znsio.teswiz.tools.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,16 +23,14 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BrowserStackDeviceFilterTest {
-
+    private static final Logger LOGGER = LogManager.getLogger(BrowserStackDeviceFilterTest.class.getName());
     List<BrowserStackDevice> browserStackDevices;
-    private static final String LOG_DIR = "./target/testLogs";
 
     Method applyFilters;
 
     @BeforeAll
     public static void setupBefore() {
-        System.setProperty("LOG_DIR", LOG_DIR);
-        FileUtils.createDirectory(LOG_DIR);
+        LOGGER.info("Running BrowserStackDeviceFilterTest");
     }
 
     @BeforeEach

@@ -2,12 +2,11 @@ package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.tools.FileUtils;
 import io.appium.java_client.android.AndroidDriver;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 

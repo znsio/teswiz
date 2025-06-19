@@ -1,8 +1,8 @@
 package com.znsio.teswiz.steps;
 
+import com.znsio.teswiz.businessLayer.interactiveCalculatorCLI.InteractiveCalculatorCLIBL;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
-import com.znsio.teswiz.businessLayer.interactiveCalculatorCLI.InteractiveCalculatorCLIBL;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;

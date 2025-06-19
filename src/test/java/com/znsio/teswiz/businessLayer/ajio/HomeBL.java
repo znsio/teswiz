@@ -6,8 +6,8 @@ import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.ajio.HomeScreen;
 import com.znsio.teswiz.screen.ajio.SearchScreen;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 
 import static org.assertj.core.api.Assertions.assertThat;

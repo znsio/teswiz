@@ -5,19 +5,14 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JsonFileTest {
     private static final Logger LOGGER = LogManager.getLogger(JsonFileTest.class.getName());
-    private static final String LOG_DIR = "./target/testLogs";
 
     @BeforeAll
     public static void setupBefore() {
-        LOGGER.info("Create LOG_DIR: " + LOG_DIR);
-        System.setProperty("LOG_DIR", LOG_DIR);
-        FileUtils.createDirectory(LOG_DIR);
+        LOGGER.info("Running JsonFileTest");
     }
 
     @Test
