@@ -19,6 +19,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
       - name: Install Appium 2.0 and dependencies
         run: |
           node -v
@@ -27,51 +28,69 @@ jobs:
           npm list
 
       - name: Run Web tests against Browserstack
+        id: theapp_web
         run: |
+          set +e
           RUN_IN_CI=true TESWIZ_APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=web TAG="@theapp and @invalidLogin1 and @browserstack" ./gradlew run
-        continue-on-error: true
-      - name: Save Test Artifacts
-        if: ${{ always() }}  # Ensure this step runs even if the tests fail
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Save Test Artifacts - TheApp Web
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: test-results-theapp-web
           path: target
-        continue-on-error: true
 
       - name: Run TheApp Android tests against Browserstack
+        id: theapp_android
         run: |
+          set +e
           echo "Run theApp Tests"
           RUN_IN_CI=true TESWIZ_APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/theapp/theapp_browserstack_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=android TAG="@theapp and @invalidLogin1 and @browserstack" ./gradlew run
-        continue-on-error: true
-      - name: Save Test Artifacts
-        if: ${{ always() }}  # Ensure this step runs even if the tests fail
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Save Test Artifacts - TheApp Android
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: test-results-theapp-android
           path: target
-        continue-on-error: true
 
       - name: Run New Calculator Android tests against Browserstack
+        id: calculator_android
         run: |
+          set +e
           echo "Run New Calculator Tests"
-          RUN_IN_CI=true TESWIZ_APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/calculator/new_calculator_browserstack_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }}  PLATFORM=android TAG="@new_calculator and @browserstack" ./gradlew run
-        continue-on-error: true
-      - name: Save Test Artifacts
-        if: ${{ always() }}  # Ensure this step runs even if the tests fail
+          RUN_IN_CI=true TESWIZ_APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/calculator/new_calculator_browserstack_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=android TAG="@new_calculator and @browserstack" ./gradlew run
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Save Test Artifacts - Calculator Android
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: test-results-calculator-android
           path: target
-        continue-on-error: true
 
       - name: Run Multi-user Android & Web tests against Browserstack
+        id: multi_user
         run: |
+          set +e
           RUN_IN_CI=true TESWIZ_APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} IS_VISUAL=true CONFIG=./configs/theapp/theapp_browserstack_config.properties CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} PLATFORM=android TAG="@multiuser-android-web and @theapp and @browserstack" ./gradlew run
-        continue-on-error: true
-      - name: Save Test Artifacts
-        if: ${{ always() }}  # Ensure this step runs even if the tests fail
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Save Test Artifacts - Multi-user
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: test-results-multi-user
           path: target
-        continue-on-error: true
+
+      - name: Check for Failures and Exit with 1 if Any Test Failed
+        run: |
+          echo "Checking all exit codes..."
+          fail=0
+          [[ "${{ steps.theapp_web.outputs.exit_code }}" != "0" ]] && echo "❌ TheApp Web tests failed" && fail=1
+          [[ "${{ steps.theapp_android.outputs.exit_code }}" != "0" ]] && echo "❌ TheApp Android tests failed" && fail=1
+          [[ "${{ steps.calculator_android.outputs.exit_code }}" != "0" ]] && echo "❌ Calculator Android tests failed" && fail=1
+          [[ "${{ steps.multi_user.outputs.exit_code }}" != "0" ]] && echo "❌ Multi-user tests failed" && fail=1
+          exit $fail

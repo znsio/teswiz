@@ -20,25 +20,37 @@ jobs:
           distribution: 'temurin'
 
       - name: Run passing tests
+        id: passing_tests
         run: |
+          set +e
           RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties PLATFORM=api TAG="@negateResults" SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false ./gradlew run
-        continue-on-error: true
-      - name: Save Test Artifacts
-        if: ${{ always() }}  # Ensure this step runs even if the tests fail
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Save Test Artifacts - Passing Tests
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: test-results-passing
           path: target
-        continue-on-error: true
 
       - name: Run failing tests
+        id: failing_tests
         run: |
+          set +e
           RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties PLATFORM=api TAG="@negateResults" SET_HARD_GATE=true IS_FAILING_TEST_SUITE=true ./gradlew run
-        continue-on-error: true
-      - name: Save Test Artifacts
-        if: ${{ always() }}  # Ensure this step runs even if the tests fail
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Save Test Artifacts - Failing Tests
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: test-results-failing
           path: target
-        continue-on-error: true
+
+      - name: Check Result of Passing/Failing Tests
+        run: |
+          echo "Checking exit codes for passing and failing test groups..."
+          fail=0
+          [[ "${{ steps.passing_tests.outputs.exit_code }}" != "0" ]] && echo "❌ Passing tests failed" && fail=1
+          [[ "${{ steps.failing_tests.outputs.exit_code }}" != "0" ]] && echo "❌ Failing tests failed" && fail=1
+          exit $fail

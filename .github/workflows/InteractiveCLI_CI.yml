@@ -20,12 +20,20 @@ jobs:
           distribution: 'temurin'
 
       - name: Run Interactive CLI tests
+        id: interactive_cli_tests
         run: |
+          set +e
           RUN_IN_CI=true IS_VISUAL=false CONFIG=./configs/cli_local_config.properties PLATFORM=cli TAG=@calculator ./gradlew run
-        continue-on-error: true
-      - name: Save Test Artifacts
-        if: ${{ always() }}  # Ensure this step runs even if the tests fail
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Save Test Artifacts - Interactive CLI
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: test-results-interactive
           path: target
+
+      - name: Check Result of Interactive CLI Tests
+        run: |
+          echo "Checking exit code for Interactive CLI tests..."
+          [[ "${{ steps.interactive_cli_tests.outputs.exit_code }}" != "0" ]] && echo "❌ Interactive CLI tests failed" && exit 1
