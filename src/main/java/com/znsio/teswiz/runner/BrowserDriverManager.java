@@ -5,7 +5,6 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import com.znsio.teswiz.tools.FileUtils;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.ReportPortalLogger;
@@ -463,22 +462,25 @@ class BrowserDriverManager {
         }
     }
 
-    private static void setBrowserLogFileName(String forUserPersona,
+    private static String setBrowserLogFileName(String forUserPersona,
                                        TestExecutionContext testExecutionContext,
                                        String browserType) {
-        String scenarioLogDir = Runner.USER_DIRECTORY + testExecutionContext.getTestStateAsString(
-                TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+        String scenarioLogDir = Runner.USER_DIRECTORY + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+        String currentPersona = testExecutionContext.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
+        String browserLogDirectory = testExecutionContext.getTestStateAsString(TEST_CONTEXT.DEVICE_LOGS_DIRECTORY);
+        Integer scenarioCount = (Integer) testExecutionContext.getTestState(TEST_CONTEXT.EXAMPLE_RUN_COUNT);
+
         browserType = browserType.toLowerCase();
-        String logFile = String.format("%s%sdeviceLogs%s%s-%s.log", scenarioLogDir, File.separator,
-                File.separator, browserType, forUserPersona);
+        String fileName = String.format("%s-Browser-%s-%s-run-%s.log", scenarioCount, numberOfWebDriversUsed+1, currentPersona, browserType);
 
-        FileUtils.createDirectory(logFile);
+        File logFile = new File(browserLogDirectory, fileName);
+        fileName = logFile.getAbsolutePath();
+        LOGGER.info("Capturing browser logs for '{}' here: '{}'", currentPersona, logFile.getAbsolutePath());
 
-        String logMessage = String.format("Creating %s logs in file: %s", browserType, logFile);
-        LOGGER.info(logMessage);
-        ReportPortalLogger.logDebugMessage(logMessage);
-        System.setProperty("webdriver." + browserType + ".logfile", logFile);
-        addBrowserLogFileNameFor(forUserPersona, Platform.web.name(), browserType, logFile);
+        ReportPortalLogger.logDebugMessage(String.format("Capturing browser logs for '%s' here: '%s'", currentPersona, logFile.getAbsolutePath()));
+        System.setProperty("webdriver." + browserType + ".logfile", fileName);
+        addBrowserLogFileNameFor(forUserPersona, Platform.web.name(), browserType, fileName);
+        return fileName;
     }
 
     private static void addBrowserLogFileNameFor(String userPersona, String forPlatform,

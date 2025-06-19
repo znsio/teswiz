@@ -110,6 +110,8 @@ class Setup {
     private static final String AND_NOT_WIP = " and not @wip";
     private static final String AND_NOT_FAILING = " and not @failing";
     private static final String AND_FAILING = " and @failing";
+    private static final String CUCUMBER_SCENARIO_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioListener";
+    private static final String CUCUMBER_SCENARIO_REPORTER_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioReporterListener";
 
     private Setup() {
         LOGGER.debug("Setup - private constructor");
@@ -494,9 +496,9 @@ class Setup {
         webCukeArgs.add("--threads");
         webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
         webCukeArgs.add(PLUGIN);
-        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioListener");
+        webCukeArgs.add(CUCUMBER_SCENARIO_LISTENER);
         webCukeArgs.add(PLUGIN);
-        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioReporterListener");
+        webCukeArgs.add(CUCUMBER_SCENARIO_REPORTER_LISTENER);
     }
 
     static Map<String, Object> initialiseApplitoolsConfiguration() {

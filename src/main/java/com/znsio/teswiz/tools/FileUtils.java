@@ -11,7 +11,7 @@ import java.io.IOException;
 public class FileUtils {
     private static final Logger LOGGER = LogManager.getLogger(FileUtils.class.getName());
 
-    public synchronized static boolean createParentDirectory(String parent, String child) {
+    public synchronized static File createDirectoryIn(String parent, String child) {
         validatePathComponent("Parent", parent);
         validatePathComponent("Child", child);
 
@@ -19,18 +19,28 @@ public class FileUtils {
         return createDirectoryInternal(file);
     }
 
-    public static boolean createDirectory(String dir) {
+    public static File createDirectory(String dir) {
         validatePathComponent("Directory", dir);
         File file = new File(dir);
         return createDirectoryInternal(file);
     }
 
-    private static boolean createDirectoryInternal(File file) {
+    public static File createFileWithExtension(String dirName, String fileName, String extension) {
+        String absoluteFilePath = dirName + fileName + "." + extension;
+        FileUtils.createDirectory(absoluteFilePath);
+        return new File(absoluteFilePath);
+    }
+
+    public static File createTxtFile(String dirName, String fileName) {
+        return createFileWithExtension(dirName, fileName, "txt");
+    }
+
+    private static File createDirectoryInternal(File file) {
         if (file.exists()) {
             if (file.isFile()) {
                 throw new InvalidTestDataException("Path exists but is a file: " + file.getAbsolutePath());
             }
-            return true;
+            return file;
         }
 
         boolean created = false;
@@ -41,7 +51,7 @@ public class FileUtils {
             created = file.mkdirs();
         }
         LOGGER.debug("Directory: {} created?: {}", file.getAbsolutePath(), created);
-        return created;
+        return file;
     }
 
     private static void validatePathComponent(String name, String value) {

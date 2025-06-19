@@ -187,7 +187,7 @@ public class Drivers {
 
     public static void attachLogsAndCloseAllDrivers(Scenario scenario) {
         long currentThreadId = Thread.currentThread().getId();
-        LOGGER.info(String.format("Close all drivers for test on ThreadId: - %d", currentThreadId));
+        LOGGER.info("Close all drivers for test on ThreadId: - {}", currentThreadId);
         TestExecutionContext context = getTestExecutionContext(currentThreadId);
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
 

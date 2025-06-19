@@ -3,7 +3,6 @@ package com.znsio.teswiz.tools;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
-import com.znsio.teswiz.runner.Runner;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,6 +57,6 @@ public class ScreenShotManager {
 
     private File createScreenshotFile(String dirName, String fileName) {
         fileName = fileName.endsWith(".png") ? fileName : fileName + ".png";
-        return new File(Runner.USER_DIRECTORY + dirName + File.separator + fileName);
+        return new File(dirName + File.separator + fileName);
     }
 }

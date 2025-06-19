@@ -7,9 +7,11 @@ public class TEST_CONTEXT {
     public static final String CURRENT_USER_PERSONA = "currentUserPersona";
     public static final String DEVICE_INFO = "deviceInfo";
     public static final String DEVICE_ON = "deviceOn";
+    public static final String DEVICE_ID = "deviceId";
+    public static final String DEVICE_LOG = "deviceLog";
     public static final String NORMALISED_SCENARIO_NAME = "normalisedScenarioName";
     public static final String SCENARIO_LOG_DIRECTORY = "scenarioDirectory";
-    public static final String SCENARIO_RUN_COUNT = "scenarioRunCount";
+    public static final String EXAMPLE_RUN_COUNT = "scenarioRunCount";
     public static final String SCREENSHOT_DIRECTORY = "scenarioScreenshotsDirectory";
     public static final String SCREENSHOT_MANAGER = "screenShotManager";
     public static final String SOFT_ASSERTIONS = "softAssertions";
@@ -26,4 +28,6 @@ public class TEST_CONTEXT {
     public static final String ASYNC_COMMAND_LINE_EXECUTOR = "asyncCommandLineExecutor";
     public static final String PDF_FILE_NAME = "pdfFileName";
     public static final String HOOKS_INITIALIZED = "hooksInitialized";
+    public static final String DEVICE_LOGS_DIRECTORY = "deviceLogs";
+    public static final String SCENARIO_RUN_COUNT = "scenarioRunCount";
 }

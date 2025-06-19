@@ -17,4 +17,5 @@ public interface FileLocations {
 
     String APPIUM_LOGS_DIRECTORY = OUTPUT_DIRECTORY + "appiumlogs" + File.separator;
     String DEVICE_LOGS_DIRECTORY = "deviceLogs" + File.separator;
+    String SCREENSHOTS_DIRECTORY = "screenshots" + File.separator;
 }

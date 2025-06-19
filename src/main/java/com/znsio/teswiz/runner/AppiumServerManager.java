@@ -1,5 +1,6 @@
 package com.znsio.teswiz.runner;
 
+import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.tools.FileUtils;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
@@ -32,12 +33,14 @@ public class AppiumServerManager {
         return getAppiumDriverLocalService().getUrl();
     }
 
-    public void destroyAppiumNode() {
-        LOGGER.info("Shutting down Appium Server");
-        getAppiumDriverLocalService().stop();
-        if (getAppiumDriverLocalService().isRunning()) {
-            LOGGER.info("AppiumServer didn't shut... Trying to quit again....");
+    public static void destroyAppiumNode() {
+        if (null != getAppiumDriverLocalService()) {
+            LOGGER.info("Shutting down Appium Server");
             getAppiumDriverLocalService().stop();
+            if (getAppiumDriverLocalService().isRunning()) {
+                LOGGER.info("AppiumServer didn't shut... Trying to quit again....");
+                getAppiumDriverLocalService().stop();
+            }
         }
     }
 
@@ -45,22 +48,27 @@ public class AppiumServerManager {
         return getAppiumUrl().toString();
     }
 
-    public void startAppiumServer(String host) throws Exception {
+    public void startAppiumServer(String host) {
         LOGGER.info("{}Starting Appium Server on Localhost", LOGGER.getName());
         FileUtils.createDirectory(Runner.USER_DIRECTORY + FileLocations.APPIUM_LOGS_DIRECTORY + "appium_logs.txt");
         AppiumDriverLocalService appiumDriverLocalService;
         AppiumServiceBuilder builder =
-                getAppiumServerBuilder(host)
-                        .withLogFile(new File(
-                                System.getProperty("user.dir")
-                                + FileLocations.APPIUM_LOGS_DIRECTORY
-                                + "appium_logs.txt"))
-                        .withIPAddress(host)
-                        .withTimeout(Duration.ofSeconds(60))
-                        .withArgument(() -> "--config", System.getProperty("user.dir") + FileLocations.SERVER_CONFIG_JSON)
-                        .withArgument(GeneralServerFlag.RELAXED_SECURITY)
-                        .withArgument(() -> "--log-level", "debug")
-                        .usingAnyFreePort();
+                null;
+        try {
+            builder = getAppiumServerBuilder(host)
+                    .withLogFile(new File(
+                            System.getProperty("user.dir")
+                            + FileLocations.APPIUM_LOGS_DIRECTORY
+                            + "appium_logs.txt"))
+                    .withIPAddress(host)
+                    .withTimeout(Duration.ofSeconds(60))
+                    .withArgument(() -> "--config", System.getProperty("user.dir") + FileLocations.SERVER_CONFIG_JSON)
+                    .withArgument(GeneralServerFlag.RELAXED_SECURITY)
+                    .withArgument(() -> "--log-level", "debug")
+                    .usingAnyFreePort();
+        } catch (Exception e) {
+            throw new EnvironmentSetupException("Unable to start Appium Server", e);
+        }
         if (CustomCapabilities.getInstance().getCapabilities().has("basePath")) {
             if (!StringUtils.isBlank(getBasePath())) {
                 builder.withArgument(GeneralServerFlag.BASEPATH, getBasePath());

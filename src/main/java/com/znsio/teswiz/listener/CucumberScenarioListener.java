@@ -1,50 +1,41 @@
 package com.znsio.teswiz.listener;
 
-import com.epam.reportportal.service.ReportPortal;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
-import com.znsio.teswiz.runner.AppiumDeviceManager;
-import com.znsio.teswiz.runner.AppiumDriverManager;
+import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.AppiumServerManager;
 import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.runner.CustomCapabilities;
 import com.znsio.teswiz.runner.FileLocations;
-import com.znsio.teswiz.runner.PluginClI;
 import com.znsio.teswiz.tools.FileUtils;
-import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
-import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import io.appium.java_client.AppiumDriver;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
-import org.openqa.selenium.logging.LogEntries;
 
 import java.io.*;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.StreamSupport;
 
-import static com.znsio.teswiz.runner.FileLocations.SERVER_CONFIG_JSON;
 import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 
 public class CucumberScenarioListener implements ConcurrentEventListener {
     private static final Logger LOGGER = Logger.getLogger(CucumberScenarioListener.class.getName());
-    private final AppiumDriverManager appiumDriverManager;
-    private final AppiumServerManager appiumServerManager;
-    private final Map<String, Integer> scenarioRunCounts = new HashMap<String, Integer>();
+//    private final AppiumDriverManager appiumDriverManager;
+//    private final AppiumServerManager appiumServerManager;
+    private final Map<String, Integer> numberOfExamplesForScenario = new HashMap<String, Integer>();
+    private int runningScenarioNumber = 0;
 
     public CucumberScenarioListener() throws Exception {
         LOGGER.info(String.format("ThreadID: %d: CucumberScenarioListener%n", Thread.currentThread().getId()));
         setLog4jCompatibility();
-        CustomCapabilities.getInstance();
-        writeServiceConfig();
-        appiumServerManager = new AppiumServerManager();
-        appiumServerManager.startAppiumServer("127.0.0.1"); //Needs to be removed
-        FileUtils.createParentDirectory(Runner.USER_DIRECTORY, FileLocations.OUTPUT_DIRECTORY);
-        appiumDriverManager = new AppiumDriverManager();
+        FileUtils.createDirectoryIn(Runner.USER_DIRECTORY, FileLocations.OUTPUT_DIRECTORY);
+
+        // todo - for appium - done
+//        CustomCapabilities.getInstance();
+//        writeServiceConfig();
+//        appiumServerManager = new AppiumServerManager();
+//        appiumServerManager.startAppiumServer("127.0.0.1"); //Needs to be removed
+//        appiumDriverManager = new AppiumDriverManager();
     }
 
     private void setLog4jCompatibility() {
@@ -52,35 +43,35 @@ public class CucumberScenarioListener implements ConcurrentEventListener {
         System.setProperty("log4j1.compatibility", "true");
     }
 
-    private void writeServiceConfig() {
-        JSONObject serverConfig = CustomCapabilities.getInstance().getCapabilityObjectFromKey("serverConfig");
-        try (FileWriter writer = new FileWriter(new File(Runner.USER_DIRECTORY + SERVER_CONFIG_JSON))) {
-            writer.write(serverConfig.toString());
-            writer.flush();
-        } catch (IOException e) {
-            ExceptionUtils.getStackTrace(e);
-        }
-    }
+//    private void writeServiceConfig() {
+//        JSONObject serverConfig = CustomCapabilities.getInstance().getCapabilityObjectFromKey("serverConfig");
+//        try (FileWriter writer = new FileWriter(new File(Runner.USER_DIRECTORY + SERVER_CONFIG_JSON))) {
+//            writer.write(serverConfig.toString());
+//            writer.flush();
+//        } catch (IOException e) {
+//            ExceptionUtils.getStackTrace(e);
+//        }
+//    }
 
-    private AppiumDriver allocateDeviceAndStartDriver(String scenarioName) {
-        AppiumDriver driver = AppiumDriverManager.getDriver();
-        if (driver == null || driver.getSessionId() == null) {
-            return appiumDriverManager.startAppiumDriverInstance(scenarioName);
-        } else {
-            return driver;
-        }
-    }
+//    private AppiumDriver allocateDeviceAndStartDriver(String scenarioName) {
+//        AppiumDriver driver = AppiumDriverManager.getDriver();
+//        if (driver == null || driver.getSessionId() == null) {
+//            return appiumDriverManager.startAppiumDriverInstance(scenarioName);
+//        } else {
+//            return driver;
+//        }
+//    }
 
-    private String getCapabilityFor(org.openqa.selenium.Capabilities capabilities, String name) {
-        Object capability = capabilities.getCapability(name);
-        return null == capability ? "" : capability.toString();
-    }
+//    private String getCapabilityFor(org.openqa.selenium.Capabilities capabilities, String name) {
+//        Object capability = capabilities.getCapability(name);
+//        return null == capability ? "" : capability.toString();
+//    }
 
     @Override
     public void setEventPublisher(EventPublisher eventPublisher) {
         eventPublisher.registerHandlerFor(TestRunStarted.class, this::runStartedHandler);
-        eventPublisher.registerHandlerFor(TestCaseStarted.class, this::caseStartedHandler);
-        eventPublisher.registerHandlerFor(TestCaseFinished.class, this::caseFinishedHandler);
+        eventPublisher.registerHandlerFor(TestCaseStarted.class, this::scenarioStartedHandler);
+        eventPublisher.registerHandlerFor(TestCaseFinished.class, this::scenarioFinishedHandler);
         eventPublisher.registerHandlerFor(TestRunFinished.class, this::runFinishedHandler);
     }
 
@@ -89,175 +80,163 @@ public class CucumberScenarioListener implements ConcurrentEventListener {
         LOGGER.info(String.format("ThreadID: %d: beforeSuite: %n", Thread.currentThread().getId()));
     }
 
-    public static File createFile(String dirName, String fileName) {
-        String absoluteFilePath = Runner.USER_DIRECTORY + dirName + fileName + ".txt";
-        FileUtils.createDirectory(absoluteFilePath);
-        return new File(absoluteFilePath);
-    }
-
-    private void caseStartedHandler(TestCaseStarted event) {
+    private void scenarioStartedHandler(TestCaseStarted event) {
         String scenarioName = event.getTestCase().getName();
-        LOGGER.info("$$$$$   TEST-CASE  -- " + scenarioName + "  STARTED   $$$$$");
-        LOGGER.info("caseStartedHandler: " + scenarioName);
-        Integer scenarioRunCount = getScenarioRunCount(scenarioName);
+        Integer currentExampleRowNumberForScenario = updateCurrentExampleRowNumberForScenario(scenarioName);
+        runningScenarioNumber++;
+
+        LOGGER.info("Running Scenario #" + runningScenarioNumber + " '" + scenarioName + "' started");
+        LOGGER.info("\tCurrent Example Row Number: " + currentExampleRowNumberForScenario);
+        TestExecutionContext testExecutionContext = new TestExecutionContext(scenarioName + "-" + currentExampleRowNumberForScenario);
+
         String normalisedScenarioName = normaliseScenarioName(scenarioName);
-        LOGGER.info(String.format("ThreadID: %d: beforeScenario: for scenario: %s%n", Thread.currentThread().getId(), scenarioName));
-        String scenarioReportDirectory = FileLocations.REPORTS_DIRECTORY + normalisedScenarioName + File.separator;
-        AppiumDriver createdAppiumDriver = allocateDeviceAndStartDriver(scenarioName);
-        String deviceLogFileName = startDataCapture(scenarioRunCount, scenarioReportDirectory);
+        String scenarioLogDirectory = FileLocations.REPORTS_DIRECTORY + runningScenarioNumber + "-" + normalisedScenarioName + "_" + currentExampleRowNumberForScenario + File.separator;
+        String screenshotDirectory = scenarioLogDirectory + FileLocations.SCREENSHOTS_DIRECTORY;
+        String deviceLogsDirectory = scenarioLogDirectory + FileLocations.DEVICE_LOGS_DIRECTORY;
 
-        TestExecutionContext testExecutionContext = new TestExecutionContext(scenarioName);
-        testExecutionContext.addTestState("appiumDriver", createdAppiumDriver);
-        testExecutionContext.addTestState("deviceId", AppiumDeviceManager.getAppiumDevice().getUdid());
-        testExecutionContext.addTestState("deviceInfo", AppiumDeviceManager.getAppiumDevice());
-        testExecutionContext.addTestState("deviceLog", deviceLogFileName);
-        testExecutionContext.addTestState("scenarioRunCount", scenarioRunCount);
-        testExecutionContext.addTestState("normalisedScenarioName", normalisedScenarioName);
-        testExecutionContext.addTestState("scenarioDirectory", scenarioReportDirectory);
-        testExecutionContext.addTestState("scenarioScreenshotsDirectory", scenarioReportDirectory + "screenshot" + File.separator);
+        scenarioLogDirectory = FileUtils.createDirectoryIn(Runner.USER_DIRECTORY, scenarioLogDirectory).getAbsolutePath();
+        screenshotDirectory = FileUtils.createDirectoryIn(Runner.USER_DIRECTORY, screenshotDirectory).getAbsolutePath();
+        deviceLogsDirectory = FileUtils.createDirectoryIn(Runner.USER_DIRECTORY, deviceLogsDirectory).getAbsolutePath();
+        testExecutionContext.addTestState(TEST_CONTEXT.EXAMPLE_RUN_COUNT, currentExampleRowNumberForScenario);
+        testExecutionContext.addTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT, runningScenarioNumber);
+        testExecutionContext.addTestState(TEST_CONTEXT.NORMALISED_SCENARIO_NAME, normalisedScenarioName);
+        testExecutionContext.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioLogDirectory);
+        testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_DIRECTORY, screenshotDirectory);
+        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_LOGS_DIRECTORY, deviceLogsDirectory);
+
+        // todo - for appium - done
+//        AppiumDriver createdAppiumDriver = allocateDeviceAndStartDriver(scenarioName);
+//        String deviceLogFileName = AppiumDriverManager.startDataCapture();
+//        testExecutionContext.addTestState("appiumDriver", createdAppiumDriver);
+//        testExecutionContext.addTestState("deviceId", AppiumDeviceManager.getAppiumDevice().getUdid());
+//        testExecutionContext.addTestState("deviceInfo", AppiumDeviceManager.getAppiumDevice());
+//        testExecutionContext.addTestState("deviceLog", deviceLogFileName);
     }
 
-    private String startDataCapture(Integer scenarioRunCount, String deviceLogFileDirectory) {
-        String fileName = String.format("/run-%s", scenarioRunCount);
-        if (AppiumDeviceManager.getAppiumDevice().getPlatformName().equalsIgnoreCase("android")) {
-            fileName = String.format("/%s-run-%s", AppiumDeviceManager.getAppiumDevice().getUdid(), scenarioRunCount);
-            File logFile = createFile(deviceLogFileDirectory + FileLocations.DEVICE_LOGS_DIRECTORY, fileName);
-            fileName = logFile.getAbsolutePath();
-            LOGGER.debug("Capturing device logs here: " + fileName);
-            PrintStream logFileStream = null;
-            try {
-                logFileStream = new PrintStream(logFile);
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                LogEntries logcatOutput = AppiumDriverManager.getDriver().manage().logs().get("logcat");
-                StreamSupport.stream(logcatOutput.spliterator(), false).forEach(logFileStream::println);
-            } catch (Exception e) {
-                LOGGER.warn("ERROR in getting logcat. Skipping logcat capture");
-            }
-        }
-        return fileName;
-    }
-
-    private boolean isRunningOnpCloudy() {
-        boolean isPCloudy = getCloudName().equalsIgnoreCase("pCloudy");
-        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
-        return isPCloudy;
-    }
-
-    private static String getCloudName() {
-        return PluginClI.getInstance().getCloudName();
-    }
-
-    private boolean isRunningOnBrowserStack() {
-        boolean isBrowserStack = getCloudName().equalsIgnoreCase("browserstack");
-        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
-        return isBrowserStack;
-    }
-
-    private boolean isRunningOnHeadspin() {
-        boolean isHeadspin = getCloudName().equalsIgnoreCase("headspin");
-        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
-        return isHeadspin;
-    }
+//    private boolean isRunningOnpCloudy() {
+//        boolean isPCloudy = getCloudName().equalsIgnoreCase("pCloudy");
+//        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
+//        return isPCloudy;
+//    }
+//
+//    private static String getCloudName() {
+//        return PluginClI.getInstance().getCloudName();
+//    }
+//
+//    private boolean isRunningOnBrowserStack() {
+//        boolean isBrowserStack = getCloudName().equalsIgnoreCase("browserstack");
+//        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
+//        return isBrowserStack;
+//    }
+//
+//    private boolean isRunningOnHeadspin() {
+//        boolean isHeadspin = getCloudName().equalsIgnoreCase("headspin");
+//        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
+//        return isHeadspin;
+//    }
 
     private String normaliseScenarioName(String scenarioName) {
         return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_");
     }
 
-    private Integer getScenarioRunCount(String scenarioName) {
-        if (scenarioRunCounts.containsKey(scenarioName)) {
-            scenarioRunCounts.put(scenarioName, scenarioRunCounts.get(scenarioName) + 1);
+    private Integer updateCurrentExampleRowNumberForScenario(String scenarioName) {
+        if (numberOfExamplesForScenario.containsKey(scenarioName)) {
+            numberOfExamplesForScenario.put(scenarioName, numberOfExamplesForScenario.get(scenarioName) + 1);
         } else {
-            scenarioRunCounts.put(scenarioName, 1);
+            numberOfExamplesForScenario.put(scenarioName, 1);
         }
-        return scenarioRunCounts.get(scenarioName);
+        return numberOfExamplesForScenario.get(scenarioName);
     }
 
-    private void caseFinishedHandler(TestCaseFinished event) {
-        String scenarioName = event.getTestCase().getName();
-        LOGGER.info("caseFinishedHandler Name: " + scenarioName);
-        long threadId = Thread.currentThread().getId();
-        LOGGER.info(String.format("ThreadID: %d: afterScenario: for scenario: %s%n", threadId, event.getTestCase().toString()));
+    private Integer getCurrentExampleRowNumberForScenario(String scenarioName) {
+        return numberOfExamplesForScenario.get(scenarioName);
+    }
 
+    private void scenarioFinishedHandler(TestCaseFinished event) {
+        String scenarioName = event.getTestCase().getName();
+        Integer currentExampleRowNumberForScenario = getCurrentExampleRowNumberForScenario(scenarioName);
+
+        LOGGER.info("Finished Scenario #" + runningScenarioNumber + "'" + scenarioName + "' started");
+        LOGGER.info("\tCurrent Example Row Number: " + currentExampleRowNumberForScenario);
+
+        long threadId = Thread.currentThread().getId();
         TestExecutionContext testExecutionContext = SessionContext.getTestExecutionContext(threadId);
 
-        AppiumDriver driver = (AppiumDriver) testExecutionContext.getTestState("appiumDriver");
-        attachCloudExecutionReportLinkToReportPortal(driver);
-        stopAppiumDriver();
-        String deviceLogFileName = testExecutionContext.getTestStateAsString("deviceLog");
-        if (null != deviceLogFileName) {
-            LOGGER.debug(String.format("Attaching device logs %s to ReportPortal: ", deviceLogFileName));
-            File file = new File(deviceLogFileName);
-            ReportPortal.emitLog("ADB Logs - " + file.getName(), "DEBUG", new Date(), file);
-        }
+        // todo - for appium
+//        AppiumDriver driver = (AppiumDriver) testExecutionContext.getTestState("appiumDriver");
+//        attachCloudExecutionReportLinkToReportPortal(driver);
+//        stopAppiumDriver();
+//        String deviceLogFileName = testExecutionContext.getTestStateAsString("deviceLog");
+//        if (null != deviceLogFileName) {
+//            LOGGER.debug(String.format("Attaching device logs %s to ReportPortal: ", deviceLogFileName));
+//            File file = new File(deviceLogFileName);
+//            ReportPortal.emitLog("ADB Logs - " + file.getName(), "DEBUG", new Date(), file);
+//        }
         SessionContext.remove(threadId);
-        LOGGER.info("$$$$$   TEST-CASE  -- " + scenarioName + "  ENDED   $$$$$");
     }
 
-    private void stopAppiumDriver() {
-        try {
-            appiumDriverManager.stopAppiumDriver();
-        } catch (Exception e) {
-            LOGGER.warn("Error stopping Appium Driver", e);
-        }
-    }
+//    private void stopAppiumDriver() {
+//        try {
+//            appiumDriverManager.stopAppiumDriver();
+//        } catch (Exception e) {
+//            LOGGER.warn("Error stopping Appium Driver", e);
+//        }
+//    }
 
-    private void attachCloudExecutionReportLinkToReportPortal(AppiumDriver driver) {
-        if ((PluginClI.getInstance().isCloudExecution()) && isRunningOnpCloudy()) {
-            String link = (String) driver.executeScript("pCloudy_getReportLink");
-            String message = "pCloudy Report link available here: " + link;
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
-        } else if ((PluginClI.getInstance().isCloudExecution()) && isRunningOnHeadspin()) {
-            String sessionId = driver.getSessionId().toString();
-            String link = "https://ui-dev.headspin.io/sessions/" + sessionId + "/waterfall";
-            String message = "Headspin Report link available here: " + link;
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
-        } else if ((PluginClI.getInstance().isCloudExecution()) && isRunningOnBrowserStack()) {
-            String sessionId = driver.getSessionId().toString();
-            String link = getReportLinkFromBrowserStack(sessionId);
-            String message = "BrowserStack Report link available here: " + link;
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
-        }
-    }
+//    private void attachCloudExecutionReportLinkToReportPortal(AppiumDriver driver) {
+//        if ((PluginClI.getInstance().isCloudExecution()) && isRunningOnpCloudy()) {
+//            String link = (String) driver.executeScript("pCloudy_getReportLink");
+//            String message = "pCloudy Report link available here: " + link;
+//            LOGGER.info(message);
+//            ReportPortal.emitLog(message, "DEBUG", new Date());
+//        } else if ((PluginClI.getInstance().isCloudExecution()) && isRunningOnHeadspin()) {
+//            String sessionId = driver.getSessionId().toString();
+//            String link = "https://ui-dev.headspin.io/sessions/" + sessionId + "/waterfall";
+//            String message = "Headspin Report link available here: " + link;
+//            LOGGER.info(message);
+//            ReportPortal.emitLog(message, "DEBUG", new Date());
+//        } else if ((PluginClI.getInstance().isCloudExecution()) && isRunningOnBrowserStack()) {
+//            String sessionId = driver.getSessionId().toString();
+//            String link = getReportLinkFromBrowserStack(sessionId);
+//            String message = "BrowserStack Report link available here: " + link;
+//            LOGGER.info(message);
+//            ReportPortal.emitLog(message, "DEBUG", new Date());
+//        }
+//    }
 
-    private static String getReportLinkFromBrowserStack(String sessionId) {
-        String browserStackTestResultUrl = "";
-        String cloudUser = getOverriddenStringValue("CLOUD_USERNAME");
-        String cloudPassword = getOverriddenStringValue("CLOUD_KEY");
-        String resultStdOut = null;
-        try {
-            String[] curlCommand = new String[]{"curl --in" + "secure " + getCurlProxyCommand() + " -u \"" + cloudUser + ":" + cloudPassword + "\" -X GET \"https://api-cloud.browserstack.com/app-automate/sessions/" + sessionId + ".json\""};
-            CommandLineResponse commandLineResponse = CommandLineExecutor.execCommand(curlCommand);
-            LOGGER.info(String.format("Response from BrowserStack - '%s'", commandLineResponse.getStdOut()));
-            JSONObject pr = new JSONObject(commandLineResponse.getStdOut());
-            JSONObject automation_session = pr.getJSONObject("automation_session");
-            browserStackTestResultUrl = automation_session.getString("browser_url");
-            LOGGER.info("BrowserStack execution link: " + browserStackTestResultUrl);
-        } catch (Exception e) {
-            LOGGER.info("Unable to get test execution link from BrowserStack: " + e.getMessage());
-            ExceptionUtils.getStackTrace(e);
-        }
-        return browserStackTestResultUrl;
-    }
+//    private static String getReportLinkFromBrowserStack(String sessionId) {
+//        String browserStackTestResultUrl = "";
+//        String cloudUser = getOverriddenStringValue("CLOUD_USERNAME");
+//        String cloudPassword = getOverriddenStringValue("CLOUD_KEY");
+//        String resultStdOut = null;
+//        try {
+//            String[] curlCommand = new String[]{"curl --in" + "secure " + getCurlProxyCommand() + " -u \"" + cloudUser + ":" + cloudPassword + "\" -X GET \"https://api-cloud.browserstack.com/app-automate/sessions/" + sessionId + ".json\""};
+//            CommandLineResponse commandLineResponse = CommandLineExecutor.execCommand(curlCommand);
+//            LOGGER.info(String.format("Response from BrowserStack - '%s'", commandLineResponse.getStdOut()));
+//            JSONObject pr = new JSONObject(commandLineResponse.getStdOut());
+//            JSONObject automation_session = pr.getJSONObject("automation_session");
+//            browserStackTestResultUrl = automation_session.getString("browser_url");
+//            LOGGER.info("BrowserStack execution link: " + browserStackTestResultUrl);
+//        } catch (Exception e) {
+//            LOGGER.info("Unable to get test execution link from BrowserStack: " + e.getMessage());
+//            ExceptionUtils.getStackTrace(e);
+//        }
+//        return browserStackTestResultUrl;
+//    }
 
-    static String getCurlProxyCommand() {
-        String curlProxyCommand = "";
-        if (null != getOverriddenStringValue("PROXY_URL")) {
-            curlProxyCommand = " --proxy " + System.getProperty("PROXY_URL");
-        }
-        return curlProxyCommand;
-    }
+//    static String getCurlProxyCommand() {
+//        String curlProxyCommand = "";
+//        if (null != getOverriddenStringValue("PROXY_URL")) {
+//            curlProxyCommand = " --proxy " + System.getProperty("PROXY_URL");
+//        }
+//        return curlProxyCommand;
+//    }
 
     private void runFinishedHandler(TestRunFinished event) {
         LOGGER.info("runFinishedHandler: " + event.getResult().toString());
         LOGGER.info(String.format("ThreadID: %d: afterSuite: %n", Thread.currentThread().getId()));
         try {
-            appiumServerManager.destroyAppiumNode();
+            AppiumServerManager.destroyAppiumNode();
             SessionContext.setReportPortalLaunchURL();
         } catch (Exception e) {
             ExceptionUtils.getStackTrace(e);
