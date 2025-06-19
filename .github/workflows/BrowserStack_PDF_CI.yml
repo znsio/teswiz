@@ -2,9 +2,9 @@ name: BrowserStack_PDF_CI
 
 on:
   push:
-    branches: [ main, cleanATD ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, cleanATD ]
+    branches: [ main ]
 
 jobs:
   BrowserStack_PDF_CI:

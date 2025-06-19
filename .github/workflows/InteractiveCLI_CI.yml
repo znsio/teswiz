@@ -2,9 +2,9 @@ name: Interactive_CLI
 
 on:
   push:
-    branches: [ main, cleanATD ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, cleanATD ]
+    branches: [ main ]
 
 jobs:
   Interactive_CLI:

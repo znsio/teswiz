@@ -2,9 +2,9 @@ name: Build_And_Run_Unit_Tests
 
 on:
   push:
-    branches: [ main, cleanATD ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, cleanATD ]
+    branches: [ main ]
 
 jobs:
   Build_And_Run_Unit_Tests:
