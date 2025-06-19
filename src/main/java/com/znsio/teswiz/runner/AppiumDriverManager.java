@@ -37,6 +37,7 @@ import java.util.stream.StreamSupport;
 
 import static com.znsio.teswiz.runner.FileLocations.SERVER_CONFIG_JSON;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
+import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 
@@ -118,20 +119,24 @@ public class AppiumDriverManager {
         Integer scenarioCount = (Integer) testExecutionContext.getTestState(TEST_CONTEXT.EXAMPLE_RUN_COUNT);
         String deviceLogDirectory = testExecutionContext.getTestStateAsString(TEST_CONTEXT.DEVICE_LOGS_DIRECTORY);
         String fileName = String.format("%s-Device-%s-run-%s.log", scenarioCount, numberOfAppiumDriversUsed + 1, AppiumDeviceManager.getAppiumDevice().getUdid());
-        if ("android".equalsIgnoreCase(AppiumDeviceManager.getAppiumDevice().getPlatformName())) {
-            try {
-                File logFile = new File(deviceLogDirectory, fileName);
-                fileName = logFile.getAbsolutePath();
-                LOGGER.debug("Capturing device logs here: {}", logFile.getAbsolutePath());
+        if (!Runner.getCloudName().equalsIgnoreCase(NOT_SET)) {
+            LOGGER.warn("Skipping logcat capture for cloud devices");
+        } else {
+            if ("android".equalsIgnoreCase(AppiumDeviceManager.getAppiumDevice().getPlatformName())) {
+                try {
+                    File logFile = new File(deviceLogDirectory, fileName);
+                    fileName = logFile.getAbsolutePath();
+                    LOGGER.debug("Capturing device logs here: {}", logFile.getAbsolutePath());
 
-                // Use try-with-resources for proper closing of PrintStream
-                try (PrintStream logFileStream = new PrintStream(logFile)) {
-                    LogEntries logcatOutput = AppiumDriverManager.getDriver().manage().logs().get("logcat");
-                    StreamSupport.stream(logcatOutput.spliterator(), false).forEach(logFileStream::println);
+                    // Use try-with-resources for proper closing of PrintStream
+                    try (PrintStream logFileStream = new PrintStream(logFile)) {
+                        LogEntries logcatOutput = AppiumDriverManager.getDriver().manage().logs().get("logcat");
+                        StreamSupport.stream(logcatOutput.spliterator(), false).forEach(logFileStream::println);
+                    }
+
+                } catch (FileNotFoundException e) {
+                    LOGGER.warn("ERROR in getting logcat. Skipping logcat capture", e);
                 }
-
-            } catch (FileNotFoundException e) {
-                LOGGER.warn("ERROR in getting logcat. Skipping logcat capture", e);
             }
         }
         return fileName;
@@ -169,7 +174,7 @@ public class AppiumDriverManager {
         }
 
         AppiumDriver appiumDriver = allocateDeviceAndStartDriver(testExecutionContext.getTestName());
-        String deviceLogFileName = AppiumDriverManager.startDataCapture();
+        String deviceLogFileName = startDataCapture();
         testExecutionContext.addTestState(TEST_CONTEXT.APPIUM_DRIVER, appiumDriver);
         testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ID, AppiumDeviceManager.getAppiumDevice().getUdid());
         testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_INFO, AppiumDeviceManager.getAppiumDevice());
