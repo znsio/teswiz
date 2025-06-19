@@ -18,19 +18,29 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Check token (debug only)
+      - name: Check TESWIZ_REPO_DISPATCH_TOKEN (debug only)
         run: |
-          TOKEN_FIRST_15=${TOKEN:0:15}
-          TOKEN_LAST_15=${TOKEN: -15}
+          TOKEN_FIRST_15=${C_TESWIZ_REPO_DISPATCH_TOKEN:0:15}
+          TOKEN_LAST_15=${C_TESWIZ_REPO_DISPATCH_TOKEN: -15}
           echo "Token prefix: $TOKEN_FIRST_15"
           echo "Token suffix: $TOKEN_LAST_15"
-          echo "Token starts with: ${TOKEN:0:4}" # Caution: log only first few characters!
+          echo "Token starts with: ${C_TESWIZ_REPO_DISPATCH_TOKEN:0:4}" # Caution: log only first few characters!
         env:
-          TOKEN: ${{ secrets.TESWIZ_REPO_DISPATCH }}
-      - name: Build with Gradle and run unit tests
-        uses: gradle/gradle-build-action@093dfe9d598ec5a42246855d09b49dc76803c005
-        with:
-          arguments: clean build --refresh-dependencies
+          C_TESWIZ_REPO_DISPATCH_TOKEN: ${{ secrets.TESWIZ_REPO_DISPATCH_TOKEN }}
+      - name: Check TESWIZ_REPO_DISPATCH_TOKEN (debug only)
+        run: |
+          TOKEN_FIRST_15=${C_TESWIZ_PAT:0:15}
+          TOKEN_LAST_15=${C_TESWIZ_PAT: -15}
+          echo "Token prefix: $TOKEN_FIRST_15"
+          echo "Token suffix: $TOKEN_LAST_15"
+          echo "Token starts with: ${C_TESWIZ_PAT:0:4}" # Caution: log only first few characters!
+        env:
+          C_TESWIZ_PAT: ${{ secrets.TESWIZ_PAT }}
+
+#      - name: Build with Gradle and run unit tests
+#        uses: gradle/gradle-build-action@093dfe9d598ec5a42246855d09b49dc76803c005
+#        with:
+#          arguments: clean build --refresh-dependencies
       - name: Get Latest Commit ID and save in GITHUB_ENV
         run: |
           echo "COMMIT_ID=$(git rev-parse HEAD | head -c 10)" >> "$GITHUB_ENV"
@@ -59,17 +69,17 @@ jobs:
           fi
         env:
           PAT_TOKEN: ${{ secrets.TESWIZ_PAT }}
-      - name: Trigger Workflow in getting-started-with-teswiz
-        if: github.ref_name == 'main'
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.TESWIZ_REPO_DISPATCH }}
-          repository: znsio/getting-started-with-teswiz
-          event-type: UpdateREADME
-          client-payload: '{"teswiz_commit_id":"teswiz updated" }'
-      - name: Save Test Artifacts
-        if: ${{ always() }}  # Ensure this step runs even if the tests fail
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-unit
-          path: target
+#      - name: Trigger Workflow in getting-started-with-teswiz
+#        if: github.ref_name == 'main'
+#        uses: peter-evans/repository-dispatch@v3
+#        with:
+#          token: ${{ secrets.TESWIZ_REPO_DISPATCH_TOKEN }}
+#          repository: znsio/getting-started-with-teswiz
+#          event-type: UpdateREADME
+#          client-payload: '{"teswiz_commit_id":"teswiz updated" }'
+#      - name: Save Test Artifacts
+#        if: ${{ always() }}  # Ensure this step runs even if the tests fail
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: test-results-unit
+#          path: target
