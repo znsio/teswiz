@@ -18,6 +18,15 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Check token (debug only)
+        run: |
+          TOKEN_FIRST_15=${TOKEN:0:15}
+          TOKEN_LAST_15=${TOKEN: -15}
+          echo "Token prefix: $TOKEN_FIRST_15"
+          echo "Token suffix: $TOKEN_LAST_15"
+          echo "Token starts with: ${TOKEN:0:4}" # Caution: log only first few characters!
+        env:
+          TOKEN: ${{ secrets.TESWIZ_REPO_DISPATCH }}
       - name: Build with Gradle and run unit tests
         uses: gradle/gradle-build-action@093dfe9d598ec5a42246855d09b49dc76803c005
         with:
