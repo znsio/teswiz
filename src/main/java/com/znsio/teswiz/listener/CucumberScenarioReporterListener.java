@@ -3,7 +3,6 @@ package com.znsio.teswiz.listener;
 import com.epam.reportportal.cucumber.ScenarioReporter;
 import com.epam.reportportal.utils.MemoizingSupplier;
 import com.epam.ta.reportportal.ws.model.StartTestItemRQ;
-//import com.znsio.teswiz.runner.atd.ATD_AppiumDriverManager;
 import com.znsio.teswiz.runner.AppiumServerManager;
 import org.apache.log4j.Logger;
 

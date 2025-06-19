@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
-import static java.lang.Boolean.parseBoolean;
-import static java.lang.Integer.parseInt;
 
 /**
  * ConfigFileManager - Read config file statically into configFileMap

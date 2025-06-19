@@ -12,8 +12,8 @@ import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,16 +25,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-import static com.znsio.teswiz.runner.Runner.NOT_SET;
-import static com.znsio.teswiz.runner.Runner.OS_NAME;
-import static com.znsio.teswiz.runner.Runner.USER_NAME;
+import static com.znsio.teswiz.runner.Runner.*;
 import static com.znsio.teswiz.tools.OverriddenVariable.*;
 
 class Setup {

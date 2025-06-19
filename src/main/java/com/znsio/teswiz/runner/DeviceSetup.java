@@ -6,8 +6,8 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -29,14 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
-import static com.znsio.teswiz.runner.Setup.APP_PATH;
-import static com.znsio.teswiz.runner.Setup.APP_VERSION;
-import static com.znsio.teswiz.runner.Setup.CAPS;
-import static com.znsio.teswiz.runner.Setup.EXECUTED_ON;
-import static com.znsio.teswiz.runner.Setup.LOG_DIR;
-import static com.znsio.teswiz.runner.Setup.PARALLEL;
-import static com.znsio.teswiz.runner.Setup.PLUGIN;
-import static com.znsio.teswiz.runner.Setup.RUN_IN_CI;
+import static com.znsio.teswiz.runner.Setup.*;
 
 class DeviceSetup {
     private static final Logger LOGGER = LogManager.getLogger(DeviceSetup.class.getName());

@@ -4,19 +4,17 @@ import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.AppiumServerManager;
-import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.FileLocations;
+import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.tools.FileUtils;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
-import java.io.*;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 
 public class CucumberScenarioListener implements ConcurrentEventListener {
     private static final Logger LOGGER = Logger.getLogger(CucumberScenarioListener.class.getName());
