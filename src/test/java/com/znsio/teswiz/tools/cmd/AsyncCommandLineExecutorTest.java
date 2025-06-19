@@ -1,25 +1,21 @@
 package com.znsio.teswiz.tools.cmd;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
 
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AsyncCommandLineExecutorTest {
     private static final Logger LOGGER = LogManager.getLogger(AsyncCommandLineExecutorTest.class.getName());
-    private static int commmandNumber = 1;
-    private static final String LOG_DIR = "./target/testLogs";
+    private static int commandNumber = 1;
 
     @BeforeAll
     public static void setupBefore() {
-        LOGGER.info("Create LOG_DIR: " + LOG_DIR);
-        System.setProperty("LOG_DIR", LOG_DIR);
-        new File(LOG_DIR).mkdirs();
+        LOGGER.info("Running AsyncCommandLineExecutorTest");
     }
 
     @Test
@@ -29,12 +25,12 @@ class AsyncCommandLineExecutorTest {
             calculatorTest(executor);
             executor.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            ExceptionUtils.getStackTrace(e);
         }
     }
 
     private static String sendCommand(AsyncCommandLineExecutor executor, String command, int timeoutInSeconds) {
-        LOGGER.info("Command # " + commmandNumber++);
+        LOGGER.info("Command # " + commandNumber++);
         AsyncCommandLineExecutor.CommandResult result = executor.sendCommand(command, timeoutInSeconds);
         LOGGER.info("%n--> Stdout: %n%s".formatted(result.getOutput()));
         return result.getOutput();

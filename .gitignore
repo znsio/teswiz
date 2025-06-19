@@ -37,3 +37,4 @@ reportportal.sync
 .vscode/*
 src/test/resources/reportportal.properties
 ${sys:LOG_DIR}/
+node_modules_/

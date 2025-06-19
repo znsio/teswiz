@@ -1,12 +1,12 @@
 package com.znsio.teswiz.runner;
 
+import com.znsio.teswiz.tools.FileUtils;
 import io.appium.java_client.android.AndroidDriver;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -26,7 +26,7 @@ class BrowserStackImageInjectionTest {
     @BeforeAll
     static void getSetup() {
         System.setProperty("LOG_DIR", LOG_DIR);
-        new File(LOG_DIR).mkdirs();
+        FileUtils.createDirectory(LOG_DIR);
 
         authenticationUser = System.getenv("CLOUD_USERNAME");
         authenticationKey = System.getenv("CLOUD_KEY");

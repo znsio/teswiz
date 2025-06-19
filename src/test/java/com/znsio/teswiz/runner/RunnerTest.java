@@ -1,9 +1,18 @@
 package com.znsio.teswiz.runner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class RunnerTest {
+    private static final Logger LOGGER = LogManager.getLogger(RunnerTest.class.getName());
+
+    @BeforeAll
+    public static void setupBefore() {
+        LOGGER.info("Running RunnerTest");
+    }
 
     // running passing test suite - failedScenarios==0, exit 0
     @Test

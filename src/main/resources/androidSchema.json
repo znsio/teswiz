@@ -1,0 +1,33 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "android",
+    "serverConfig"
+  ],
+  "properties": {
+    "android": {
+      "$id": "#/properties/android",
+      "type": "object",
+      "title": "The Android Schema",
+      "required": [
+        "automationName"
+      ],
+      "properties": {
+        "automationName": {
+          "$id": "#/properties/android/properties/automationName",
+          "type": "string",
+          "title": "The Automationname Schema",
+          "default": "",
+          "examples": [
+            "UIAutomator2 or Espresso"
+          ],
+          "pattern": "^(.*)$"
+        }
+      }
+    }
+  }
+}

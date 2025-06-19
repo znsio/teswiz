@@ -1,14 +1,14 @@
 package com.znsio.teswiz.steps;
 
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
 import com.znsio.teswiz.businessLayer.cryptoAPI.CryptoAPIBL;
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CryptoAPISteps {
 

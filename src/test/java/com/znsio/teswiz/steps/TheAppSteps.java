@@ -1,12 +1,12 @@
 package com.znsio.teswiz.steps;
 
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
 import com.znsio.teswiz.businessLayer.heartbeat.HeartBeatBL;
 import com.znsio.teswiz.businessLayer.theapp.AppBL;
 import com.znsio.teswiz.businessLayer.theapp.ClipboardBL;
 import com.znsio.teswiz.businessLayer.theapp.EchoBL;
 import com.znsio.teswiz.businessLayer.theapp.FileUploadBL;
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.entities.TEST_CONTEXT;

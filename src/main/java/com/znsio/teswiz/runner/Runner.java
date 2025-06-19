@@ -1,14 +1,14 @@
 package com.znsio.teswiz.runner;
 
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import io.cucumber.core.cli.Main;
 import net.masterthought.cucumber.Reportable;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -19,11 +19,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
-import static com.znsio.teswiz.runner.Setup.HOST_NAME;
-import static com.znsio.teswiz.runner.Setup.IS_FAILING_TEST_SUITE;
-import static com.znsio.teswiz.runner.Setup.SET_HARD_GATE;
+import static com.znsio.teswiz.runner.Setup.*;
 
 public class Runner {
     public static final String OS_NAME = System.getProperty("os.name");
@@ -69,7 +68,12 @@ public class Runner {
         args.add(featuresDir);
         boolean isHardGate = isHardGateSet();
         boolean isRunningFailingTests = isRunningFailingTestSuite();
-        LOGGER.info("Begin running tests with args: {}", args);
+        String prettyArgs = args.stream()
+                .map(arg -> "\t" + arg + ",")
+                .collect(Collectors.joining("\n", "\t[\n", "\n\t]"));
+
+        LOGGER.info("Begin running tests with args:\n{}", prettyArgs);
+//        LOGGER.info("Begin running tests with args: {}", args);
         String[] array = args.toArray(String[]::new);
         try {
             byte status = Main.run(array);

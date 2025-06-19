@@ -4,8 +4,8 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.services.UnirestService;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 

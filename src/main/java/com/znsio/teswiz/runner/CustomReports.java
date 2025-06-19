@@ -5,36 +5,15 @@ import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
 import net.masterthought.cucumber.Reportable;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
-import static com.znsio.teswiz.runner.Setup.APP_NAME;
-import static com.znsio.teswiz.runner.Setup.BUILD_ID;
-import static com.znsio.teswiz.runner.Setup.BUILD_INITIATION_REASON;
-import static com.znsio.teswiz.runner.Setup.EXECUTED_ON;
-import static com.znsio.teswiz.runner.Setup.HOST_NAME;
-import static com.znsio.teswiz.runner.Setup.IS_FAILING_TEST_SUITE;
-import static com.znsio.teswiz.runner.Setup.IS_VISUAL;
-import static com.znsio.teswiz.runner.Setup.LOG_DIR;
-import static com.znsio.teswiz.runner.Setup.PARALLEL;
-import static com.znsio.teswiz.runner.Setup.PLATFORM;
-import static com.znsio.teswiz.runner.Setup.REPORTS_DIR;
-import static com.znsio.teswiz.runner.Setup.RUN_IN_CI;
-import static com.znsio.teswiz.runner.Setup.SET_HARD_GATE;
-import static com.znsio.teswiz.runner.Setup.TAG;
-import static com.znsio.teswiz.runner.Setup.TAG_FOR_REPORTPORTAL;
-import static com.znsio.teswiz.runner.Setup.TARGET_ENVIRONMENT;
+import static com.znsio.teswiz.runner.Setup.*;
 
 class CustomReports {
     private static final Logger LOGGER = LogManager.getLogger(CustomReports.class.getName());

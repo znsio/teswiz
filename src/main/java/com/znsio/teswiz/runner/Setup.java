@@ -8,11 +8,12 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,19 +25,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-import static com.appium.utils.OverriddenVariable.getOverriddenBooleanValue;
-import static com.appium.utils.OverriddenVariable.getOverriddenIntValue;
-import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
-import static com.znsio.teswiz.runner.Runner.NOT_SET;
-import static com.znsio.teswiz.runner.Runner.OS_NAME;
-import static com.znsio.teswiz.runner.Runner.USER_NAME;
+import static com.znsio.teswiz.runner.Runner.*;
+import static com.znsio.teswiz.tools.OverriddenVariable.*;
 
 class Setup {
     static final String RUN_IN_CI = "RUN_IN_CI";
@@ -111,6 +103,8 @@ class Setup {
     private static final String AND_NOT_WIP = " and not @wip";
     private static final String AND_NOT_FAILING = " and not @failing";
     private static final String AND_FAILING = " and @failing";
+    private static final String CUCUMBER_SCENARIO_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioListener";
+    private static final String CUCUMBER_SCENARIO_REPORTER_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioReporterListener";
 
     private Setup() {
         LOGGER.debug("Setup - private constructor");
@@ -495,9 +489,9 @@ class Setup {
         webCukeArgs.add("--threads");
         webCukeArgs.add(String.valueOf(configsInteger.get(PARALLEL)));
         webCukeArgs.add(PLUGIN);
-        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioListener");
+        webCukeArgs.add(CUCUMBER_SCENARIO_LISTENER);
         webCukeArgs.add(PLUGIN);
-        webCukeArgs.add("com.znsio.teswiz.listener.CucumberPlatformScenarioReporterListener");
+        webCukeArgs.add(CUCUMBER_SCENARIO_REPORTER_LISTENER);
     }
 
     static Map<String, Object> initialiseApplitoolsConfiguration() {
@@ -517,7 +511,7 @@ class Setup {
             applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING, isDisableBrowserFetching());
             applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, setupApplitoolsBatchInfo());
         }
-        LOGGER.info(String.format("applitoolsConfiguration: %s", applitoolsConfiguration));
+        LOGGER.info("applitoolsConfiguration:\n{}", JsonPrettyPrinter.prettyPrint(applitoolsConfiguration));
         return applitoolsConfiguration;
     }
 

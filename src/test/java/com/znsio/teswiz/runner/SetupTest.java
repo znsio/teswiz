@@ -1,23 +1,23 @@
 package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.entities.APPLITOOLS;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SetupTest {
-    private static final String LOG_DIR = "./target/testLogs";
+    private static final Logger LOGGER = LogManager.getLogger(BrowserStackDeviceFilterTest.class.getName());
     private static final String configFilePath = "./configs/ajio/ajio_local_android_config.properties";
 
     @BeforeAll
     public static void setupBefore() {
-        System.setProperty("LOG_DIR", LOG_DIR);
-        new File(LOG_DIR).mkdirs();
+        LOGGER.info("Running SetupTest");
     }
 
     @BeforeEach

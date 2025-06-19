@@ -1,7 +1,7 @@
 package com.znsio.teswiz.runner;
 
-import com.context.TestExecutionContext;
 import com.google.common.collect.ImmutableMap;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.FileNotUploadedException;
@@ -17,8 +17,8 @@ import io.appium.java_client.remote.SupportsContextSwitching;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;

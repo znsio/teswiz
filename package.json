@@ -3,10 +3,10 @@
     "@appium/doctor": "2.1.15",
     "@appium/relaxed-caps-plugin": "1.0.6",
     "appium": "2.19.0",
-    "appium-device-farm": "10.0.5",
+    "appium-device-farm": "9.8.8",
     "appium-uiautomator2-driver": "4.2.3",
     "appium-xcuitest-driver": "9.7.0",
-    "go-ios": "1.0.178",
+    "go-ios": "1.0.180",
     "braces": "3.0.3",
     "fill-range": "7.1.1",
     "ws": "8.18.2",
@@ -18,7 +18,7 @@
   },
   "name": "teswiz",
   "description": "[![0.0.3](https://jitpack.io/v/znsio/teswiz.svg)](https://jitpack.io/#znsio/teswiz) [![0.0.3](https://jitci.com/gh/znsio/teswiz/svg)](https://jitci.com/gh/znsio/teswiz) [![CI](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml) [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "main": "index.js",
   "directories": {
     "doc": "docs"

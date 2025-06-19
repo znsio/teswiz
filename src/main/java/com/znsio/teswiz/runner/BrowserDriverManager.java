@@ -1,6 +1,6 @@
 package com.znsio.teswiz.runner;
 
-import com.context.TestExecutionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
@@ -10,19 +10,13 @@ import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.*;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.MutableCapabilities;
-import org.openqa.selenium.NoSuchSessionException;
-import org.openqa.selenium.Proxy;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.UnsupportedCommandException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -37,7 +31,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
-import java.awt.Toolkit;
+import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -49,9 +43,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import static com.appium.utils.OverriddenVariable.getOverriddenStringValue;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
+import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 
 class BrowserDriverManager {
     private static final Logger LOGGER = LogManager.getLogger(BrowserDriverManager.class.getName());
@@ -222,7 +216,7 @@ class BrowserDriverManager {
             chromeOptions.setBrowserVersion(browserVersion);
         }
 
-        setLogFileName(forUserPersona, testExecutionContext, "Chrome");
+        setBrowserLogFileName(forUserPersona, testExecutionContext, "Chrome");
         setPreferencesInChromeOptions(chromeConfiguration, chromeOptions);
         setLoggingPrefsInChromeOptions(chromeConfiguration.getBoolean(VERBOSE_LOGGING), chromeOptions);
         setProxyInChromeOptions(chromeOptions, chromeConfiguration);
@@ -263,7 +257,7 @@ class BrowserDriverManager {
     private static FirefoxOptions getFirefoxOptions(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject firefoxConfiguration) {
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         firefoxOptions.setAcceptInsecureCerts(firefoxConfiguration.getBoolean(ACCEPT_INSECURE_CERTS));
-        setLogFileName(forUserPersona, testExecutionContext, "Firefox");
+        setBrowserLogFileName(forUserPersona, testExecutionContext, "Firefox");
         setProfileInFirefoxOptions(firefoxConfiguration, firefoxOptions);
         setPreferencesInFirefoxOptions(firefoxConfiguration, firefoxOptions);
         setLoggingPrefsInFirefoxOptions(firefoxConfiguration, firefoxOptions);
@@ -445,7 +439,7 @@ class BrowserDriverManager {
     private static SafariOptions getSafariOptions(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject safariConfigurations) {
         SafariOptions safariOptions = new SafariOptions();
         safariOptions.setCapability(ACCEPT_INSECURE_CERTS, safariConfigurations.getBoolean(ACCEPT_INSECURE_CERTS));
-        setLogFileName(forUserPersona, testExecutionContext, "Safari");
+        setBrowserLogFileName(forUserPersona, testExecutionContext, "Safari");
         boolean setUseTechnologyPreview = safariConfigurations.getBoolean("setUseTechnologyPreview");
         // setUseTechnologyPreview is false by default
         safariOptions.setUseTechnologyPreview(setUseTechnologyPreview); //
@@ -462,24 +456,25 @@ class BrowserDriverManager {
         }
     }
 
-    private static void setLogFileName(String forUserPersona,
+    private static String setBrowserLogFileName(String forUserPersona,
                                        TestExecutionContext testExecutionContext,
                                        String browserType) {
-        String scenarioLogDir = Runner.USER_DIRECTORY + testExecutionContext.getTestStateAsString(
-                TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+        String scenarioLogDir = Runner.USER_DIRECTORY + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+        String currentPersona = testExecutionContext.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
+        String browserLogDirectory = testExecutionContext.getTestStateAsString(TEST_CONTEXT.DEVICE_LOGS_DIRECTORY);
+        Integer scenarioCount = (Integer) testExecutionContext.getTestState(TEST_CONTEXT.EXAMPLE_RUN_COUNT);
+
         browserType = browserType.toLowerCase();
-        String logFile = String.format("%s%sdeviceLogs%s%s-%s.log", scenarioLogDir, File.separator,
-                File.separator, browserType, forUserPersona);
+        String fileName = String.format("%s-Browser-%s-%s-run-%s.log", scenarioCount, numberOfWebDriversUsed+1, currentPersona, browserType);
 
-        File file = new File(logFile);
-        file.getParentFile().mkdirs();
+        File logFile = new File(browserLogDirectory, fileName);
+        fileName = logFile.getAbsolutePath();
+        LOGGER.info("Capturing browser logs for '{}' here: '{}'", currentPersona, logFile.getAbsolutePath());
 
-        String logMessage = String.format("Creating %s logs in file: %s", browserType, logFile);
-        LOGGER.info(logMessage);
-        ReportPortalLogger.logDebugMessage(logMessage);
-        System.setProperty("webdriver." + browserType + ".logfile", logFile);
-        Platform plaform = Runner.getPlatform();
-        addBrowserLogFileNameFor(forUserPersona, plaform.name(), browserType, logFile);
+        ReportPortalLogger.logDebugMessage(String.format("Capturing browser logs for '%s' here: '%s'", currentPersona, logFile.getAbsolutePath()));
+        System.setProperty("webdriver." + browserType + ".logfile", fileName);
+        addBrowserLogFileNameFor(forUserPersona, Platform.web.name(), browserType, fileName);
+        return fileName;
     }
 
     private static void addBrowserLogFileNameFor(String userPersona, String forPlatform,
@@ -527,11 +522,10 @@ class BrowserDriverManager {
                                @NotNull
                                Driver driver) {
         String browserNameForUser = Drivers.getBrowserNameForUser(userPersona);
-        String platformName = Runner.getPlatform().name();
-        String logFileName = getBrowserLogFileNameFor(userPersona, platformName, browserNameForUser);
+        String logFileName = getBrowserLogFileNameFor(userPersona, Platform.web.name(), browserNameForUser);
         fetchBrowserLogsFromRemoteBrowser(driver, logFileName);
         --numberOfWebDriversUsed;
-        LOGGER.info(String.format("Reduced numberOfWebDriversUsed: %d", numberOfWebDriversUsed));
+        LOGGER.info("Reduced numberOfWebDriversUsed: {}", numberOfWebDriversUsed);
         String logMessage = String.format("Browser logs for user: %s" + "%nlogFileName: %s", userPersona, logFileName);
         LOGGER.info(logMessage);
         ReportPortalLogger.attachFileInReportPortal(logMessage, new File(logFileName));

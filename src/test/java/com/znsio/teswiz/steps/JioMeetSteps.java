@@ -1,11 +1,11 @@
 package com.znsio.teswiz.steps;
 
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
 import com.znsio.teswiz.businessLayer.jiomeet.AuthBL;
 import com.znsio.teswiz.businessLayer.jiomeet.InAMeetingBL;
 import com.znsio.teswiz.businessLayer.jiomeet.JoinAMeetingBL;
 import com.znsio.teswiz.businessLayer.jiomeet.LandingBL;
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;

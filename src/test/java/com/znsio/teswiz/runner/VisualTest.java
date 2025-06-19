@@ -16,16 +16,14 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class VisualTest {
-    private static final String LOG_DIR = Runner.USER_DIRECTORY + "/target/testLogs";
+    private static final Logger LOGGER = LogManager.getLogger(VisualTest.class.getName());
     private static String pdfFileName;
     private static File pdfFile;
     private static PDDocument pdfDocument;
 
     @BeforeAll
     public static void setupBefore() throws IOException {
-        System.setProperty("LOG_DIR", LOG_DIR);
-        new File(LOG_DIR).mkdirs();
-
+        LOGGER.info("Running VisualTest");
         pdfFileName = "src/test/resources/pdf/Teswiz.pdf";
         pdfFile = new File(pdfFileName);
         pdfDocument = Loader.loadPDF(new RandomAccessReadBufferedFile(pdfFile.getAbsolutePath()));
