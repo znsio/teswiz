@@ -1,14 +1,11 @@
 package com.znsio.teswiz.context;
 
 import org.apache.log4j.Logger;
-import org.testng.ITestContext;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.Properties;
 
 import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
@@ -48,7 +45,7 @@ public class SessionContext {
             String reportPortalPropertiesFile = "src/test/resources/reportportal.properties";
             getOverriddenStringValue("REPORT_PORTAL_FILE", reportPortalPropertiesFile);
             LOGGER.info("Using reportportal.properties file from "
-                    + reportPortalPropertiesFile);
+                        + reportPortalPropertiesFile);
             File reportPortalFile = new File(reportPortalPropertiesFile);
             String absolutePath = reportPortalFile.getAbsolutePath();
             if (reportPortalFile.exists()) {
@@ -65,16 +62,6 @@ public class SessionContext {
         return properties;
     }
 
-    public static void setReportPortalLaunchURL(ITestContext iTestContext) {
-        Optional reportPortalListener = Arrays.stream(iTestContext.getSuite().getXmlSuite()
-                .getListeners().toArray()).filter(x ->
-                x.equals("com.epam.reportportal.testng.ReportPortalTestNGListener"))
-                .findFirst();
-        if (reportPortalListener.isPresent()) {
-            setReportPortalLaunchURL();
-        }
-    }
-
     public static String getReportPortalLaunchURL() {
         return reportPortalLaunchURL;
     }
@@ -83,15 +70,15 @@ public class SessionContext {
         boolean isReportPortalEnabledInProperties =
                 (null == reportPortalProperties.getProperty("rp.enable")
                  || (reportPortalProperties.getProperty("rp.enable")
-                                           .equalsIgnoreCase("true")));
+                        .equalsIgnoreCase("true")));
         if (isReportPortalEnabledInProperties) {
             String rpLaunchId = System.getProperty("rp.launch.id");
             LOGGER.debug(String.format("System property: rp.launch.id: '%s'",
-                    rpLaunchId));
+                                       rpLaunchId));
             reportPortalLaunchURL = String.format("%s/ui/#%s/launches/all/%s",
                                                   reportPortalProperties.getProperty("rp.endpoint"),
                                                   reportPortalProperties.getProperty("rp.project"),
-                    rpLaunchId);
+                                                  rpLaunchId);
             LOGGER.info(String.format(
                     "**** ReportPortal URL - %s ****",
                     reportPortalLaunchURL));
