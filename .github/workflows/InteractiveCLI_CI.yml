@@ -30,11 +30,15 @@ jobs:
           tag: "@calculator"
           is-visual: "false"
           artifact-name: "test-results-interactive"
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Check Result of Interactive CLI Tests
         run: |
           echo "🔍 Checking exit code for Interactive CLI tests..."
-          exit_code=${{ steps.interactive_cli.outputs.exit_code }}
+          exit_code="${{ steps.interactive_cli.outputs.exit_code }}"
+
           if [[ "$exit_code" != "0" ]]; then
             echo "❌ Interactive CLI tests failed (exit code: $exit_code)"
             {
