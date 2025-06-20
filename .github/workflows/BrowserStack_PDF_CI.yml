@@ -67,7 +67,7 @@ jobs:
           platform: "pdf"
           tag: "@standalone"
           artifact-name: "test-results-Standalone"
-          is-visual: "false"
+          is-visual: "true"
           applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
           browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
           browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
