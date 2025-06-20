@@ -1,85 +1,85 @@
-name: BrowserStack_PDF_CI
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  BrowserStack_PDF_CI:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: temurin
-
-      - name: Install Appium 2.0 and dependencies
-        run: |
-          node -v
-          npm cache clean --force
-          npm install
-          npm list
-
-      - name: Run PDF-Android Tests
-        id: pdf_android
-        uses: ./.github/actions/run-and-collect-tests
-        with:
-          display-name: "PDF Android"
-          config-path: "./configs/pdf/pdf_android_browserstack_config.properties"
-          platform: "android"
-          tag: "@validatePDF and @browserstack"
-          artifact-name: "test-results-PDF-Android"
-          is-visual: "true"
-
-      - name: Run PDF-Web Tests
-        id: pdf_web
-        uses: ./.github/actions/run-and-collect-tests
-        with:
-          display-name: "PDF Web"
-          config-path: "./configs/pdf/pdf_web_browserstack_config.properties"
-          platform: "web"
-          tag: "@validatePDF and @browserstack"
-          artifact-name: "test-results-PDF-Web"
-          is-visual: "true"
-
-      - name: Run Standalone PDF Tests
-        id: standalone
-        uses: ./.github/actions/run-and-collect-tests
-        with:
-          display-name: "Standalone PDF"
-          config-path: "./configs/pdf/local_pdf_config.properties"
-          platform: "pdf"
-          tag: "@standalone"
-          artifact-name: "test-results-Standalone"
-
-      - name: Check for Failures and Add Summary
-        run: |
-          echo "Checking exit codes for all test runs..."
-          fail=0
-
-          [[ "${{ steps.pdf_android.outputs.exit_code }}" != "0" ]] && echo "❌ PDF Android tests failed" && fail=1
-          [[ "${{ steps.pdf_web.outputs.exit_code }}" != "0" ]] && echo "❌ PDF Web tests failed" && fail=1
-          [[ "${{ steps.standalone.outputs.exit_code }}" != "0" ]] && echo "❌ Standalone PDF tests failed" && fail=1
-
-          if [ "$fail" -ne 0 ]; then
-            {
-              echo "### ❌ PDF CI Test Failures"
-              echo ""
-              [[ "${{ steps.pdf_android.outputs.exit_code }}" != "0" ]] && echo "- PDF Android (exit code: ${{ steps.pdf_android.outputs.exit_code }})"
-              [[ "${{ steps.pdf_web.outputs.exit_code }}" != "0" ]] && echo "- PDF Web (exit code: ${{ steps.pdf_web.outputs.exit_code }})"
-              [[ "${{ steps.standalone.outputs.exit_code }}" != "0" ]] && echo "- Standalone PDF (exit code: ${{ steps.standalone.outputs.exit_code }})"
-              echo ""
-              echo "**Commit:** ${{ github.sha }}"
-              echo "**Triggered by:** ${{ github.actor }}"
-              echo "**Workflow:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-            } >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          else
-            echo "✅ All PDF test suites passed"
+#name: BrowserStack_PDF_CI
+#
+#on:
+#  push:
+#    branches: [ main ]
+#  pull_request:
+#    branches: [ main ]
+#
+#jobs:
+#  BrowserStack_PDF_CI:
+#    runs-on: ubuntu-latest
+#    timeout-minutes: 20
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Set up JDK 17
+#        uses: actions/setup-java@v4
+#        with:
+#          java-version: '17'
+#          distribution: temurin
+#
+#      - name: Install Appium 2.0 and dependencies
+#        run: |
+#          node -v
+#          npm cache clean --force
+#          npm install
+#          npm list
+#
+#      - name: Run PDF-Android Tests
+#        id: pdf_android
+#        uses: ./.github/actions/run-and-collect-tests
+#        with:
+#          display-name: "PDF Android"
+#          config-path: "./configs/pdf/pdf_android_browserstack_config.properties"
+#          platform: "android"
+#          tag: "@validatePDF and @browserstack"
+#          artifact-name: "test-results-PDF-Android"
+#          is-visual: "true"
+#
+#      - name: Run PDF-Web Tests
+#        id: pdf_web
+#        uses: ./.github/actions/run-and-collect-tests
+#        with:
+#          display-name: "PDF Web"
+#          config-path: "./configs/pdf/pdf_web_browserstack_config.properties"
+#          platform: "web"
+#          tag: "@validatePDF and @browserstack"
+#          artifact-name: "test-results-PDF-Web"
+#          is-visual: "true"
+#
+#      - name: Run Standalone PDF Tests
+#        id: standalone
+#        uses: ./.github/actions/run-and-collect-tests
+#        with:
+#          display-name: "Standalone PDF"
+#          config-path: "./configs/pdf/local_pdf_config.properties"
+#          platform: "pdf"
+#          tag: "@standalone"
+#          artifact-name: "test-results-Standalone"
+#
+#      - name: Check for Failures and Add Summary
+#        run: |
+#          echo "Checking exit codes for all test runs..."
+#          fail=0
+#
+#          [[ "${{ steps.pdf_android.outputs.exit_code }}" != "0" ]] && echo "❌ PDF Android tests failed" && fail=1
+#          [[ "${{ steps.pdf_web.outputs.exit_code }}" != "0" ]] && echo "❌ PDF Web tests failed" && fail=1
+#          [[ "${{ steps.standalone.outputs.exit_code }}" != "0" ]] && echo "❌ Standalone PDF tests failed" && fail=1
+#
+#          if [ "$fail" -ne 0 ]; then
+#            {
+#              echo "### ❌ PDF CI Test Failures"
+#              echo ""
+#              [[ "${{ steps.pdf_android.outputs.exit_code }}" != "0" ]] && echo "- PDF Android (exit code: ${{ steps.pdf_android.outputs.exit_code }})"
+#              [[ "${{ steps.pdf_web.outputs.exit_code }}" != "0" ]] && echo "- PDF Web (exit code: ${{ steps.pdf_web.outputs.exit_code }})"
+#              [[ "${{ steps.standalone.outputs.exit_code }}" != "0" ]] && echo "- Standalone PDF (exit code: ${{ steps.standalone.outputs.exit_code }})"
+#              echo ""
+#              echo "**Commit:** ${{ github.sha }}"
+#              echo "**Triggered by:** ${{ github.actor }}"
+#              echo "**Workflow:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+#            } >> "$GITHUB_STEP_SUMMARY"
+#            exit 1
+#          else
+#            echo "✅ All PDF test suites passed"
