@@ -1,63 +1,52 @@
 name: Run and Collect Tests
-description: Runs a test suite and collects its results into a named artifact
-
+description: Run a test suite, capture exit code, and upload artifacts
 inputs:
-  display-name:
-    description: "Name to display in logs"
+  id:
     required: true
-  config-path:
-    description: "Path to the config file"
+    description: Short identifier for this test run
+  config:
     required: true
-  platform:
-    description: "Target platform (web/android/api/pdf/...)"
-    required: true
+    description: Path to .properties config file
   tag:
-    description: "Cucumber tag to filter tests"
     required: true
-  artifact-name:
-    description: "Name of the artifact to save"
+    description: Cucumber tag filter for this run
+  platform:
     required: true
-  is-visual:
-    description: "Set to true to enable visual validations"
-    required: false
-    default: "false"
-  is-failing-suite:
-    description: "Set to true if this suite is expected to fail (used for hard gate testing)"
-    required: false
-    default: "false"
+    description: Platform (e.g. web, android, api)
+  applitools_api_key:
+    required: true
+    description: Applitools API Key
+  browserstack_username:
+    required: true
+    description: BrowserStack username
+  browserstack_key:
+    required: true
+    description: BrowserStack access key
 
 outputs:
   exit_code:
-    description: "Exit code of the test run"
-    value: ${{ steps.run-tests.outputs.exit_code }}
+    description: The exit code from the test execution
 
 runs:
   using: "composite"
   steps:
-    - name: Run ${{ inputs.display-name }} Tests
-      id: run-tests
-      shell: bash
+    - shell: bash
       run: |
+        echo "🔧 Running tests for ${{ inputs.id }}"
         set +e
-        echo "Running: ${{ inputs.display-name }}"
-        IS_VISUAL=${{ inputs.is-visual }}
-        IS_FAILING_TEST_SUITE=${{ inputs.is-failing-suite }}
         RUN_IN_CI=true \
-        TESWIZ_APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} \
-        CONFIG=${{ inputs.config-path }} \
-        CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} \
-        CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} \
+        CONFIG=${{ inputs.config }} \
         PLATFORM=${{ inputs.platform }} \
-        TAG="${{ inputs.tag }}" \
-        IS_VISUAL=$IS_VISUAL \
-        IS_FAILING_TEST_SUITE=$IS_FAILING_TEST_SUITE \
+        TAG=${{ inputs.tag }} \
+        TESWIZ_APPLITOOLS_API_KEY=${{ inputs.applitools_api_key }} \
+        CLOUD_USERNAME=${{ inputs.browserstack_username }} \
+        CLOUD_KEY=${{ inputs.browserstack_key }} \
         ./gradlew run
+        echo "exit_code=$?" >> "$GITHUB_OUTPUT"
 
-        echo "exit_code=$?" >> $GITHUB_OUTPUT
-
-    - name: Save Test Artifacts - ${{ inputs.display-name }}
-      if: ${{ always() }}
+    - name: Upload Test Artifacts
+      if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.artifact-name }}
+        name: test-results-${{ inputs.id }}
         path: target
