@@ -31,55 +31,79 @@ jobs:
         id: pdf_android
         uses: ./.github/actions/run-and-collect-tests
         with:
+          id: pdf-android
           display-name: "PDF Android"
           config-path: "./configs/pdf/pdf_android_browserstack_config.properties"
           platform: "android"
           tag: "@validatePDF and @browserstack"
           artifact-name: "test-results-PDF-Android"
           is-visual: "true"
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Run PDF-Web Tests
         id: pdf_web
         uses: ./.github/actions/run-and-collect-tests
         with:
+          id: pdf-web
           display-name: "PDF Web"
           config-path: "./configs/pdf/pdf_web_browserstack_config.properties"
           platform: "web"
           tag: "@validatePDF and @browserstack"
           artifact-name: "test-results-PDF-Web"
           is-visual: "true"
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Run Standalone PDF Tests
         id: standalone
         uses: ./.github/actions/run-and-collect-tests
         with:
+          id: standalone
           display-name: "Standalone PDF"
           config-path: "./configs/pdf/local_pdf_config.properties"
           platform: "pdf"
           tag: "@standalone"
           artifact-name: "test-results-Standalone"
+          is-visual: "false"
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Check for Failures and Add Summary
         run: |
-          echo "Checking exit codes for all test runs..."
+          echo "🔍 Checking exit codes for all PDF test runs..."
           fail=0
+          summary="### ❌ PDF CI Test Failures\n\n"
 
-          [[ "${{ steps.pdf_android.outputs.exit_code }}" != "0" ]] && echo "❌ PDF Android tests failed" && fail=1
-          [[ "${{ steps.pdf_web.outputs.exit_code }}" != "0" ]] && echo "❌ PDF Web tests failed" && fail=1
-          [[ "${{ steps.standalone.outputs.exit_code }}" != "0" ]] && echo "❌ Standalone PDF tests failed" && fail=1
+          PDF_ANDROID_CODE="${{ steps.pdf_android.outputs.exit_code }}"
+          PDF_WEB_CODE="${{ steps.pdf_web.outputs.exit_code }}"
+          STANDALONE_CODE="${{ steps.standalone.outputs.exit_code }}"
 
-          if [ "$fail" -ne 0 ]; then
-            {
-              echo "### ❌ PDF CI Test Failures"
-              echo ""
-              [[ "${{ steps.pdf_android.outputs.exit_code }}" != "0" ]] && echo "- PDF Android (exit code: ${{ steps.pdf_android.outputs.exit_code }})"
-              [[ "${{ steps.pdf_web.outputs.exit_code }}" != "0" ]] && echo "- PDF Web (exit code: ${{ steps.pdf_web.outputs.exit_code }})"
-              [[ "${{ steps.standalone.outputs.exit_code }}" != "0" ]] && echo "- Standalone PDF (exit code: ${{ steps.standalone.outputs.exit_code }})"
-              echo ""
-              echo "**Commit:** ${{ github.sha }}"
-              echo "**Triggered by:** ${{ github.actor }}"
-              echo "**Workflow:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-            } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$PDF_ANDROID_CODE" != "0" && -n "$PDF_ANDROID_CODE" ]]; then
+            summary+="- ❌ **PDF Android** failed (exit code: $PDF_ANDROID_CODE)\n"
+            fail=1
+          fi
+
+          if [[ "$PDF_WEB_CODE" != "0" && -n "$PDF_WEB_CODE" ]]; then
+            summary+="- ❌ **PDF Web** failed (exit code: $PDF_WEB_CODE)\n"
+            fail=1
+          fi
+
+          if [[ "$STANDALONE_CODE" != "0" && -n "$STANDALONE_CODE" ]]; then
+            summary+="- ❌ **Standalone PDF** failed (exit code: $STANDALONE_CODE)\n"
+            fail=1
+          fi
+
+          if [[ $fail -ne 0 ]]; then
+            summary+="\n**Commit:** \`${{ github.sha }}\`\n"
+            summary+="**Triggered by:** \`${{ github.actor }}\`\n"
+            summary+="**Workflow:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n"
+            echo -e "$summary"
+            echo -e "$summary" >> "$GITHUB_STEP_SUMMARY"
             exit 1
           else
             echo "✅ All PDF test suites passed"
+          fi

@@ -31,69 +31,103 @@ jobs:
         id: theapp_web
         uses: ./.github/actions/run-and-collect-tests
         with:
+          id: theapp-web
           display-name: "TheApp Web"
           config-path: "./configs/theapp/theapp_browserstack_web_config.properties"
           platform: "web"
           tag: "@theapp and @invalidLogin1 and @browserstack"
           artifact-name: "test-results-theapp-web"
           is-visual: "true"
+          additional-env: ""
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Run TheApp Android tests
         id: theapp_android
         uses: ./.github/actions/run-and-collect-tests
         with:
+          id: theapp-android
           display-name: "TheApp Android"
           config-path: "./configs/theapp/theapp_browserstack_config.properties"
           platform: "android"
           tag: "@theapp and @invalidLogin1 and @browserstack"
           artifact-name: "test-results-theapp-android"
           is-visual: "true"
+          additional-env: ""
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Run Calculator Android tests
         id: calculator_android
         uses: ./.github/actions/run-and-collect-tests
         with:
+          id: calculator-android
           display-name: "Calculator Android"
           config-path: "./configs/calculator/new_calculator_browserstack_config.properties"
           platform: "android"
           tag: "@new_calculator and @browserstack"
           artifact-name: "test-results-calculator-android"
           is-visual: "true"
+          additional-env: ""
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Run Multi-user Android & Web tests
         id: multi_user
         uses: ./.github/actions/run-and-collect-tests
         with:
+          id: multi-user
           display-name: "Multi-user Android & Web"
           config-path: "./configs/theapp/theapp_browserstack_config.properties"
           platform: "android"
           tag: "@multiuser-android-web and @theapp and @browserstack"
           artifact-name: "test-results-multi-user"
           is-visual: "true"
+          additional-env: ""
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Check for Failures and Add Summary
         run: |
           echo "Checking exit codes for all test runs..."
           fail=0
+          summary="### ❌ Web + Android CI Test Failures\n"
 
-          [[ "${{ steps.theapp_web.outputs.exit_code }}" != "0" ]] && echo "❌ TheApp Web tests failed" && fail=1
-          [[ "${{ steps.theapp_android.outputs.exit_code }}" != "0" ]] && echo "❌ TheApp Android tests failed" && fail=1
-          [[ "${{ steps.calculator_android.outputs.exit_code }}" != "0" ]] && echo "❌ Calculator Android tests failed" && fail=1
-          [[ "${{ steps.multi_user.outputs.exit_code }}" != "0" ]] && echo "❌ Multi-user tests failed" && fail=1
+          THEAPP_WEB_CODE="${{ steps.theapp_web.outputs.exit_code }}"
+          THEAPP_ANDROID_CODE="${{ steps.theapp_android.outputs.exit_code }}"
+          CALCULATOR_ANDROID_CODE="${{ steps.calculator_android.outputs.exit_code }}"
+          MULTI_USER_CODE="${{ steps.multi_user.outputs.exit_code }}"
+
+          if [ "$THEAPP_WEB_CODE" != "0" ]; then
+            summary="${summary}- TheApp Web (exit code: $THEAPP_WEB_CODE)\n"
+            fail=1
+          fi
+
+          if [ "$THEAPP_ANDROID_CODE" != "0" ]; then
+            summary="${summary}- TheApp Android (exit code: $THEAPP_ANDROID_CODE)\n"
+            fail=1
+          fi
+
+          if [ "$CALCULATOR_ANDROID_CODE" != "0" ]; then
+            summary="${summary}- Calculator Android (exit code: $CALCULATOR_ANDROID_CODE)\n"
+            fail=1
+          fi
+
+          if [ "$MULTI_USER_CODE" != "0" ]; then
+            summary="${summary}- Multi-user (exit code: $MULTI_USER_CODE)\n"
+            fail=1
+          fi
 
           if [ "$fail" -ne 0 ]; then
-            {
-              echo "### ❌ Web + Android CI Test Failures"
-              echo ""
-              [[ "${{ steps.theapp_web.outputs.exit_code }}" != "0" ]] && echo "- TheApp Web (exit code: ${{ steps.theapp_web.outputs.exit_code }})"
-              [[ "${{ steps.theapp_android.outputs.exit_code }}" != "0" ]] && echo "- TheApp Android (exit code: ${{ steps.theapp_android.outputs.exit_code }})"
-              [[ "${{ steps.calculator_android.outputs.exit_code }}" != "0" ]] && echo "- Calculator Android (exit code: ${{ steps.calculator_android.outputs.exit_code }})"
-              [[ "${{ steps.multi_user.outputs.exit_code }}" != "0" ]] && echo "- Multi-user (exit code: ${{ steps.multi_user.outputs.exit_code }})"
-              echo ""
-              echo "**Commit:** ${{ github.sha }}"
-              echo "**Triggered by:** ${{ github.actor }}"
-              echo "**Workflow:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-            } >> "$GITHUB_STEP_SUMMARY"
+            summary="${summary}\n**Commit:** ${{ github.sha }}\n"
+            summary="${summary}**Triggered by:** ${{ github.actor }}\n"
+            summary="${summary}**Workflow:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n"
+            echo -e "$summary" >> "$GITHUB_STEP_SUMMARY"
             exit 1
           else
             echo "✅ All test suites passed"
+          fi
