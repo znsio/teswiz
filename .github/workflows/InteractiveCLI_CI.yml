@@ -52,3 +52,5 @@ jobs:
             exit 1
           else
             echo "✅ Interactive CLI tests passed."
+          fi
+      
