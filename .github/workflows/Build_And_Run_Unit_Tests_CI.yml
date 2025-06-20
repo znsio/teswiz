@@ -2,84 +2,83 @@ name: Build_And_Run_Unit_Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  Build_And_Run_Unit_Tests:
+  build_and_test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      - name: Set up JDK 17
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐛 Debug TESWIZ_REPO_DISPATCH_TOKEN (first/last 15 chars)
+        run: |
+          echo "First 15: ${TOKEN:0:15}"
+          echo "Last 15: ${TOKEN: -15}"
+          echo "Starts with: ${TOKEN:0:4}"
+        env:
+          TOKEN: ${{ secrets.TESWIZ_REPO_DISPATCH_TOKEN }}
+
+      - name: 🐛 Debug TESWIZ_PAT (first/last 15 chars)
+        run: |
+          echo "First 15: ${TOKEN:0:15}"
+          echo "Last 15: ${TOKEN: -15}"
+          echo "Starts with: ${TOKEN:0:4}"
+        env:
+          TOKEN: ${{ secrets.TESWIZ_PAT }}
+
+      - name: ☕ Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Check TESWIZ_REPO_DISPATCH_TOKEN (debug only)
-        run: |
-          TOKEN_FIRST_15=${C_TESWIZ_REPO_DISPATCH_TOKEN:0:15}
-          TOKEN_LAST_15=${C_TESWIZ_REPO_DISPATCH_TOKEN: -15}
-          echo "Token prefix: $TOKEN_FIRST_15"
-          echo "Token suffix: $TOKEN_LAST_15"
-          echo "Token starts with: ${C_TESWIZ_REPO_DISPATCH_TOKEN:0:4}" # Caution: log only first few characters!
-        env:
-          C_TESWIZ_REPO_DISPATCH_TOKEN: ${{ secrets.TESWIZ_REPO_DISPATCH_TOKEN }}
-      - name: Check TESWIZ_REPO_DISPATCH_TOKEN (debug only)
-        run: |
-          TOKEN_FIRST_15=${C_TESWIZ_PAT:0:15}
-          TOKEN_LAST_15=${C_TESWIZ_PAT: -15}
-          echo "Token prefix: $TOKEN_FIRST_15"
-          echo "Token suffix: $TOKEN_LAST_15"
-          echo "Token starts with: ${C_TESWIZ_PAT:0:4}" # Caution: log only first few characters!
-        env:
-          C_TESWIZ_PAT: ${{ secrets.TESWIZ_PAT }}
 
-#      - name: Build with Gradle and run unit tests
-#        uses: gradle/gradle-build-action@093dfe9d598ec5a42246855d09b49dc76803c005
-#        with:
-#          arguments: clean build --refresh-dependencies
-      - name: Get Latest Commit ID and save in GITHUB_ENV
-        run: |
-          echo "COMMIT_ID=$(git rev-parse HEAD | head -c 10)" >> "$GITHUB_ENV"
-      - name: Update README with latest commit id and push to repo
+      - name: 🧪 Build with Gradle and Run Unit Tests
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: clean build --refresh-dependencies
+
+      - name: 🆔 Capture Commit ID
+        run: echo "COMMIT_ID=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+
+      - name: 📝 Update README with Commit ID (main only)
+        if: github.ref_name == 'main'
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git status
-          BRANCH_NAME=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-          echo "Running on branch: '$BRANCH_NAME'"
-          if [[ "$BRANCH_NAME" = "main" ]]; then
-            git pull --rebase origin main
-            echo "COMMIT_ID=$COMMIT_ID"
-            awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_new.md
-            mv README_new.md README.md
-            if [ -n "$(git status --porcelain)" ]; then
-              echo "There are changes in 'main'. Update README"
-              git add README.md
-              git commit -m "Update README with latest commit ID - $COMMIT_ID"
-              git push -u origin main
-            else
-              echo "No local changes in 'main'. Nothing to update in the README."
-            fi
+          git pull --rebase origin main
+
+          awk -v id="$COMMIT_ID" '{gsub("commit-.*-blue", "commit-"id"-blue")}1' README.md > README_temp.md
+          mv README_temp.md README.md
+
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Updating README with commit ID: $COMMIT_ID"
+            git add README.md
+            git commit -m "🔄 Update README with latest commit ID - $COMMIT_ID"
+            git push origin main
           else
-            echo "Not running in 'main'. No need to update README for branch: '$BRANCH_NAME'"
+            echo "✅ No changes to commit"
           fi
         env:
+          COMMIT_ID: ${{ env.COMMIT_ID }}
           PAT_TOKEN: ${{ secrets.TESWIZ_PAT }}
-#      - name: Trigger Workflow in getting-started-with-teswiz
-#        if: github.ref_name == 'main'
-#        uses: peter-evans/repository-dispatch@v3
-#        with:
-#          token: ${{ secrets.TESWIZ_REPO_DISPATCH_TOKEN }}
-#          repository: znsio/getting-started-with-teswiz
-#          event-type: UpdateREADME
-#          client-payload: '{"teswiz_commit_id":"teswiz updated" }'
-#      - name: Save Test Artifacts
-#        if: ${{ always() }}  # Ensure this step runs even if the tests fail
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: test-results-unit
-#          path: target
+
+      - name: 🚀 Trigger Workflow in getting-started-with-teswiz (main only)
+        if: github.ref_name == 'main'
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.TESWIZ_REPO_DISPATCH_TOKEN }}
+          repository: znsio/getting-started-with-teswiz
+          event-type: UpdateREADME
+          client-payload: '{"teswiz_commit_id":"${{ env.COMMIT_ID }}"}'
+
+      - name: 📦 Upload Unit Test Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-unit
+          path: target

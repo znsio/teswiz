@@ -1,0 +1,63 @@
+name: Run and Collect Tests
+description: Runs a test suite and collects its results into a named artifact
+
+inputs:
+  display-name:
+    description: "Name to display in logs"
+    required: true
+  config-path:
+    description: "Path to the config file"
+    required: true
+  platform:
+    description: "Target platform (web/android/api/pdf/...)"
+    required: true
+  tag:
+    description: "Cucumber tag to filter tests"
+    required: true
+  artifact-name:
+    description: "Name of the artifact to save"
+    required: true
+  is-visual:
+    description: "Set to true to enable visual validations"
+    required: false
+    default: "false"
+  is-failing-suite:
+    description: "Set to true if this suite is expected to fail (used for hard gate testing)"
+    required: false
+    default: "false"
+
+outputs:
+  exit_code:
+    description: "Exit code of the test run"
+    value: ${{ steps.run-tests.outputs.exit_code }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run ${{ inputs.display-name }} Tests
+      id: run-tests
+      shell: bash
+      run: |
+        set +e
+        echo "Running: ${{ inputs.display-name }}"
+        IS_VISUAL=${{ inputs.is-visual }}
+        IS_FAILING_TEST_SUITE=${{ inputs.is-failing-suite }}
+        RUN_IN_CI=true \
+        TESWIZ_APPLITOOLS_API_KEY=${{ secrets.TESWIZ_APPLITOOLS_API_KEY }} \
+        CONFIG=${{ inputs.config-path }} \
+        CLOUD_USERNAME=${{ secrets.BROWSERSTACK_CLOUD_USERNAME }} \
+        CLOUD_KEY=${{ secrets.BROWSERSTACK_CLOUD_KEY }} \
+        PLATFORM=${{ inputs.platform }} \
+        TAG="${{ inputs.tag }}" \
+        IS_VISUAL=$IS_VISUAL \
+        IS_FAILING_TEST_SUITE=$IS_FAILING_TEST_SUITE \
+        ./gradlew run
+
+        echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+    - name: Save Test Artifacts - ${{ inputs.display-name }}
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: target

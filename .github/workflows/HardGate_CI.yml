@@ -12,45 +12,59 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: temurin
 
-      - name: Run passing tests
+      - name: Run Passing Tests
         id: passing_tests
-        run: |
-          set +e
-          RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties PLATFORM=api TAG="@negateResults" SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false ./gradlew run
-          echo "exit_code=$?" >> $GITHUB_OUTPUT
-
-      - name: Save Test Artifacts - Passing Tests
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: ./.github/actions/run-and-collect-tests
         with:
-          name: test-results-passing
-          path: target
+          display-name: "Passing Tests"
+          config-path: "./configs/theapp/theapp_browserstack_web_config.properties"
+          platform: "api"
+          tag: "@negateResults"
+          artifact-name: "test-results-passing"
+          is-visual: "false"
+          additional-env: "SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false"
 
-      - name: Run failing tests
+      - name: Run Failing Tests
         id: failing_tests
-        run: |
-          set +e
-          RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties PLATFORM=api TAG="@negateResults" SET_HARD_GATE=true IS_FAILING_TEST_SUITE=true ./gradlew run
-          echo "exit_code=$?" >> $GITHUB_OUTPUT
-
-      - name: Save Test Artifacts - Failing Tests
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: ./.github/actions/run-and-collect-tests
         with:
-          name: test-results-failing
-          path: target
+          display-name: "Failing Tests"
+          config-path: "./configs/theapp/theapp_browserstack_web_config.properties"
+          platform: "api"
+          tag: "@negateResults"
+          artifact-name: "test-results-failing"
+          is-visual: "false"
+          additional-env: "SET_HARD_GATE=true IS_FAILING_TEST_SUITE=true"
 
       - name: Check Result of Passing/Failing Tests
         run: |
-          echo "Checking exit codes for passing and failing test groups..."
+          echo "🔍 Checking exit codes for both test groups..."
           fail=0
-          [[ "${{ steps.passing_tests.outputs.exit_code }}" != "0" ]] && echo "❌ Passing tests failed" && fail=1
-          [[ "${{ steps.failing_tests.outputs.exit_code }}" != "0" ]] && echo "❌ Failing tests failed" && fail=1
-          exit $fail
+          summary="### ❌ HardGate CI Failures\n"
+
+          if [ "${{ steps.passing_tests.outputs.exit_code }}" != "0" ]; then
+            summary+="- ❌ Passing tests failed (exit code: ${{ steps.passing_tests.outputs.exit_code }})\n"
+            fail=1
+          fi
+
+          if [ "${{ steps.failing_tests.outputs.exit_code }}" != "0" ]; then
+            summary+="- ❌ Failing tests failed (exit code: ${{ steps.failing_tests.outputs.exit_code }})\n"
+            fail=1
+          fi
+
+          if [ $fail -ne 0 ]; then
+            summary+="\n**Commit:** ${{ github.sha }}\n"
+            summary+="**Triggered by:** ${{ github.actor }}\n"
+            summary+="**Workflow:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n"
+            echo -e "$summary" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "✅ All HardGate CI tests passed."

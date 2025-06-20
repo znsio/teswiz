@@ -12,30 +12,39 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: temurin
 
-      - name: Run Interactive CLI tests
-        id: interactive_cli_tests
-        run: |
-          set +e
-          RUN_IN_CI=true IS_VISUAL=false CONFIG=./configs/cli_local_config.properties PLATFORM=cli TAG=@calculator ./gradlew run
-          echo "exit_code=$?" >> $GITHUB_OUTPUT
-
-      - name: Save Test Artifacts - Interactive CLI
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+      - name: Run Interactive CLI Tests
+        id: interactive_cli
+        uses: ./.github/actions/run-and-collect-tests
         with:
-          name: test-results-interactive
-          path: target
+          display-name: "Interactive CLI Tests"
+          config-path: "./configs/cli_local_config.properties"
+          platform: "cli"
+          tag: "@calculator"
+          is-visual: "false"
+          artifact-name: "test-results-interactive"
 
       - name: Check Result of Interactive CLI Tests
         run: |
-          echo "Checking exit code for Interactive CLI tests..."
-          fail=0
-          [[ "${{ steps.interactive_cli_tests.outputs.exit_code }}" != "0" ]] && echo "❌ Interactive CLI tests failed" && fail=1
-          exit $fail
+          echo "🔍 Checking exit code for Interactive CLI tests..."
+          exit_code=${{ steps.interactive_cli.outputs.exit_code }}
+          if [[ "$exit_code" != "0" ]]; then
+            echo "❌ Interactive CLI tests failed (exit code: $exit_code)"
+            {
+              echo "### ❌ Interactive CLI Test Failures"
+              echo "- Interactive CLI tests failed (exit code: $exit_code)"
+              echo ""
+              echo "**Commit:** ${{ github.sha }}"
+              echo "**Triggered by:** ${{ github.actor }}"
+              echo "**Workflow:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          else
+            echo "✅ Interactive CLI tests passed."
