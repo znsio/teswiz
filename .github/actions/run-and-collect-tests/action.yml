@@ -1,56 +1,57 @@
 name: Run and Collect Tests
-description: |
-  Run a test suite, capture its result, and upload test artifacts.
-  Supports parameterized test execution for different platforms and configs.
+
+description: >
+  Composite action to run test suites with specified tags, config, and environment, collect the exit code,
+  and upload artifacts from the target/ directory.
 
 inputs:
   id:
-    description: "Short identifier for the test suite"
     required: true
+    description: Short identifier for the test suite (used in logs and artifact naming)
   config-path:
-    description: "Path to the test configuration file (.properties)"
     required: true
+    description: Path to the test configuration .properties file
   tag:
-    description: "Cucumber tag expression to run"
     required: true
+    description: Cucumber tag to execute (e.g. @smoke and @web)
   platform:
-    description: "Test platform (web, android, api, etc.)"
     required: true
+    description: Platform under test (e.g. web, android, api)
   applitools_api_key:
-    description: "Applitools API key"
     required: true
+    description: Applitools API Key
   browserstack_username:
-    description: "BrowserStack username"
     required: true
+    description: BrowserStack username
   browserstack_key:
-    description: "BrowserStack key"
     required: true
+    description: BrowserStack access key
   display-name:
-    description: "Descriptive name of the test suite"
     required: true
+    description: Friendly name for logs (e.g. "PDF Web Tests")
   artifact-name:
-    description: "Custom artifact name for results"
     required: true
+    description: Name of the artifact to be saved
   is-visual:
-    description: "Enable visual testing (true/false)"
     required: true
+    description: Whether to enable visual testing (true or false)
   additional-env:
-    description: "Additional environment variables"
     required: false
-    default: ""
+    description: Additional environment variables (space-separated)
 
 outputs:
   exit_code:
-    description: "Exit code from the test run"
+    description: Exit code from test execution
+    value: ${{ steps.run-tests.outputs.exit_code }}
 
 runs:
   using: "composite"
   steps:
-    - name: Run ${{ inputs.display-name }}
+    - id: run-tests
       shell: bash
       run: |
         set +e
-        echo "📦 Running ${{ inputs.display-name }}..."
+        echo "🧪 Running ${{ inputs.display-name }}"
         export APPLITOOLS_API_KEY="${{ inputs.applitools_api_key }}"
         export CLOUD_USERNAME="${{ inputs.browserstack_username }}"
         export CLOUD_KEY="${{ inputs.browserstack_key }}"
@@ -66,6 +67,10 @@ runs:
 
         ./gradlew run
         echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+        
+        EXIT_CODE=0
+        RUN_IN_CI=true TESWIZ_APPLITOOLS_API_KEY="${{ inputs.applitools_api_key }}" CLOUD_USERNAME="${{ inputs.browserstack_username }}" CLOUD_KEY="${{ inputs.browserstack_key }}" PLATFORM="${{ inputs.platform }}"         TAG="${{ inputs.tag }}" CONFIG="${{ inputs.config-path }}" IS_VISUAL="${{ inputs.is-visual }}" ${{ inputs.additional-env }} ./gradlew run || EXIT_CODE=$?
+        echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
 
     - name: Upload ${{ inputs.display-name }} Results
       if: always()
