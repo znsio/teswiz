@@ -52,24 +52,22 @@ runs:
       run: |
         set +e
         echo "🧪 Running ${{ inputs.display-name }}"
-        export APPLITOOLS_API_KEY="${{ inputs.applitools_api_key }}"
+        export TESWIZ_APPLITOOLS_API_KEY="${{ inputs.applitools_api_key }}"
         export CLOUD_USERNAME="${{ inputs.browserstack_username }}"
         export CLOUD_KEY="${{ inputs.browserstack_key }}"
         export IS_VISUAL="${{ inputs.is-visual }}"
         export PLATFORM="${{ inputs.platform }}"
         export CONFIG="${{ inputs.config-path }}"
         export TAG="${{ inputs.tag }}"
+        export RUN_IN_CI=true
 
         if [[ -n "${{ inputs.additional-env }}" ]]; then
           echo "Setting additional environment: ${{ inputs.additional-env }}"
           eval "export ${{ inputs.additional-env }}"
         fi
 
-        ./gradlew run
-        echo "exit_code=$?" >> "$GITHUB_OUTPUT"
-        
         EXIT_CODE=0
-        RUN_IN_CI=true TESWIZ_APPLITOOLS_API_KEY="${{ inputs.applitools_api_key }}" CLOUD_USERNAME="${{ inputs.browserstack_username }}" CLOUD_KEY="${{ inputs.browserstack_key }}" PLATFORM="${{ inputs.platform }}"         TAG="${{ inputs.tag }}" CONFIG="${{ inputs.config-path }}" IS_VISUAL="${{ inputs.is-visual }}" ${{ inputs.additional-env }} ./gradlew run || EXIT_CODE=$?
+        ./gradlew run || EXIT_CODE=$?
         echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
 
     - name: Upload ${{ inputs.display-name }} Results
