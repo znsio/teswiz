@@ -44,8 +44,6 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 
 * **JDK 17**
 * cucumber-jvm (https://cucumber.io)
-* AppiumTestDistribution (https://github.com/AppiumTestDistribution/AppiumTestDistribution) -manages Android and iOS
-  devices, and Appium
 * Appium 2.x (https://appium.io) 
   * https://javadoc.io/doc/io.appium/java-client/8.0.0-beta/deprecated-list.html
 * Selenium WebDriver 4.x (https://selenium.dev)
