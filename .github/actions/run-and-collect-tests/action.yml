@@ -1,52 +1,75 @@
 name: Run and Collect Tests
-description: Run a test suite, capture exit code, and upload artifacts
+description: |
+  Run a test suite, capture its result, and upload test artifacts.
+  Supports parameterized test execution for different platforms and configs.
+
 inputs:
   id:
+    description: "Short identifier for the test suite"
     required: true
-    description: Short identifier for this test run
-  config:
+  config-path:
+    description: "Path to the test configuration file (.properties)"
     required: true
-    description: Path to .properties config file
   tag:
+    description: "Cucumber tag expression to run"
     required: true
-    description: Cucumber tag filter for this run
   platform:
+    description: "Test platform (web, android, api, etc.)"
     required: true
-    description: Platform (e.g. web, android, api)
   applitools_api_key:
+    description: "Applitools API key"
     required: true
-    description: Applitools API Key
   browserstack_username:
+    description: "BrowserStack username"
     required: true
-    description: BrowserStack username
   browserstack_key:
+    description: "BrowserStack key"
     required: true
-    description: BrowserStack access key
+  display-name:
+    description: "Descriptive name of the test suite"
+    required: true
+  artifact-name:
+    description: "Custom artifact name for results"
+    required: true
+  is-visual:
+    description: "Enable visual testing (true/false)"
+    required: true
+  additional-env:
+    description: "Additional environment variables"
+    required: false
+    default: ""
 
 outputs:
   exit_code:
-    description: The exit code from the test execution
+    description: "Exit code from the test run"
 
 runs:
   using: "composite"
   steps:
-    - shell: bash
+    - name: Run ${{ inputs.display-name }}
+      shell: bash
       run: |
-        echo "🔧 Running tests for ${{ inputs.id }}"
         set +e
-        RUN_IN_CI=true \
-        CONFIG=${{ inputs.config }} \
-        PLATFORM=${{ inputs.platform }} \
-        TAG=${{ inputs.tag }} \
-        TESWIZ_APPLITOOLS_API_KEY=${{ inputs.applitools_api_key }} \
-        CLOUD_USERNAME=${{ inputs.browserstack_username }} \
-        CLOUD_KEY=${{ inputs.browserstack_key }} \
+        echo "📦 Running ${{ inputs.display-name }}..."
+        export APPLITOOLS_API_KEY="${{ inputs.applitools_api_key }}"
+        export CLOUD_USERNAME="${{ inputs.browserstack_username }}"
+        export CLOUD_KEY="${{ inputs.browserstack_key }}"
+        export IS_VISUAL="${{ inputs.is-visual }}"
+        export PLATFORM="${{ inputs.platform }}"
+        export CONFIG="${{ inputs.config-path }}"
+        export TAG="${{ inputs.tag }}"
+
+        if [[ -n "${{ inputs.additional-env }}" ]]; then
+          echo "Setting additional environment: ${{ inputs.additional-env }}"
+          eval "export ${{ inputs.additional-env }}"
+        fi
+
         ./gradlew run
         echo "exit_code=$?" >> "$GITHUB_OUTPUT"
 
-    - name: Upload Test Artifacts
+    - name: Upload ${{ inputs.display-name }} Results
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-${{ inputs.id }}
+        name: ${{ inputs.artifact-name }}
         path: target

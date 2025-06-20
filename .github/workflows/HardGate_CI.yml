@@ -31,6 +31,9 @@ jobs:
           artifact-name: "test-results-passing"
           is-visual: "false"
           additional-env: "SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false"
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Run Failing Tests
         id: failing_tests
@@ -43,6 +46,9 @@ jobs:
           artifact-name: "test-results-failing"
           is-visual: "false"
           additional-env: "SET_HARD_GATE=true IS_FAILING_TEST_SUITE=true"
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Check Result of Passing/Failing Tests
         run: |
