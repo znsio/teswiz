@@ -56,21 +56,25 @@ jobs:
           fail=0
           summary="### ❌ HardGate CI Failures\n"
 
-          if [ "${{ steps.passing_tests.outputs.exit_code }}" != "0" ]; then
-            summary+="- ❌ Passing tests failed (exit code: ${{ steps.passing_tests.outputs.exit_code }})\n"
+          PASS_CODE="${{ steps.passing_tests.outputs.exit_code }}"
+          FAIL_CODE="${{ steps.failing_tests.outputs.exit_code }}"
+
+          if [ "$PASS_CODE" != "0" ]; then
+            summary="${summary}- ❌ Passing tests failed (exit code: $PASS_CODE)\n"
             fail=1
           fi
 
-          if [ "${{ steps.failing_tests.outputs.exit_code }}" != "0" ]; then
-            summary+="- ❌ Failing tests failed (exit code: ${{ steps.failing_tests.outputs.exit_code }})\n"
+          if [ "$FAIL_CODE" != "0" ]; then
+            summary="${summary}- ❌ Failing tests failed (exit code: $FAIL_CODE)\n"
             fail=1
           fi
 
-          if [ $fail -ne 0 ]; then
-            summary+="\n**Commit:** ${{ github.sha }}\n"
-            summary+="**Triggered by:** ${{ github.actor }}\n"
-            summary+="**Workflow:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n"
-            echo -e "$summary" >> $GITHUB_STEP_SUMMARY
+          if [ "$fail" -ne 0 ]; then
+            summary="${summary}\n**Commit:** ${{ github.sha }}\n"
+            summary="${summary}**Triggered by:** ${{ github.actor }}\n"
+            summary="${summary}**Workflow:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n"
+            echo -e "$summary" >> "$GITHUB_STEP_SUMMARY"
             exit 1
           else
             echo "✅ All HardGate CI tests passed."
+          fi
