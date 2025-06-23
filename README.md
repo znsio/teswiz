@@ -53,6 +53,28 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 * Build tool: gradle v8
 * cucumber-reporting (https://github.com/damianszczepanik/cucumber-reporting)
 
+## 🚨 Breaking Changes
+
+### From Version `1.0.13` onward
+
+As part of package restructuring, context-related classes have moved to a new package.
+
+#### ❗ Required Update in Imports
+
+Replace:
+
+```java
+import com.context.SessionContext;
+import com.context.TestExecutionContext;
+```
+
+With:
+
+```java
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
+```
+
 ## [Prerequisites](docs/Prerequisites-README.md)
 
 ## [Getting started using teswiz](docs/GettingStartedUsingTeswiz-README.md)

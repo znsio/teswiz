@@ -294,7 +294,7 @@ static def getCurrentTimestamp() {
     return df.format(today)
 }
 
-project.ext.logDir = "./target/" + getMonth() + "/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
+def logDir = "./target/" + getMonth() + "/" + getCurrentDatestamp() + "/" + getCurrentTimestamp()
 
 def copyRpPropertiesIfMissing() {
     def rpFile = file('src/test/resources/reportportal.properties')
@@ -325,9 +325,9 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 tasks.register('run', JavaExec) {
     doFirst {
-        println "Using LOG_DIR: ${project.logDir}"
-        System.setProperty "LOG_DIR", "${project.logDir}"
-        environment "APPLITOOLS_LOG_DIR", "${project.logDir}/applitools_logs"
+        println "Using LOG_DIR: ${logDir}"
+        System.setProperty "LOG_DIR", "${logDir}"
+        environment "APPLITOOLS_LOG_DIR", "${logDir}/applitools_logs"
         environment "APPLITOOLS_API_KEY", System.getenv("TESWIZ_APPLITOOLS_API_KEY")
 
         def hostname = InetAddress.getLocalHost().getHostName()
@@ -401,13 +401,13 @@ tasks.named('test', Test) {
     if (System.getProperty('debug', 'false') == 'true') {
         jvmArgs '-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=n,address=192.168.29.248:9009,suspend=y'
     }
-    println "Using LOG_DIR: ${project.logDir}"
-    systemProperty "LOG_DIR", "${project.logDir}"
+    println "Using LOG_DIR: ${logDir}"
+    systemProperty "LOG_DIR", "${logDir}"
     reports {
         html.required.set(true)
         junitXml.required.set(true)
-        html.outputLocation.set(file("$project.logDir/unit-test-results"))
-        junitXml.outputLocation.set(file("$project.logDir/unit-test-results"))
+        html.outputLocation.set(file("$logDir/unit-test-results"))
+        junitXml.outputLocation.set(file("$logDir/unit-test-results"))
     }
 }
 
