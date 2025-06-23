@@ -25,15 +25,7 @@ Execution failed for task ':compileTestJava'.
 
 Example:
 ```
-    buildscript {
-        ext {
-            gradleVersion = '8.11.1'
-            teswizVersion = '1.0.13'
-        }
-        repositories {
-            mavenLocal()
-        }
-    }
+    def teswizVersion = '1.0.14'
 ```
 
 ### 2. Define the folder where you want to download the teswiz as a jar dependency
@@ -46,96 +38,7 @@ Example:
 
 ### 3. Define a new task that will use the teswizVersion specified in Step 1, and download it from the [teswiz release in Github](https://github.com/znsio/teswiz/releases)
 
-Example:
-```
-    def downloadDependency(String name, String type, Map<String, String> params) {
-        if (!libsDir.exists()) {
-            libsDir.mkdirs()
-        }
-    
-        println "Download dependency: ${name} from ${type}"
-        def jarFile = new File(libsDir, "${name}-${params.version}.jar")
-        if (jarFile.exists()) {
-            println "\tDependency $name already exists at: $jarFile. No need to redownload it"
-            return jarFile
-        }
-    
-        def jarUrl
-        if (type == "github") {
-            println "\tFetching latest GitHub release information for ${params.repoUrl}..."
-            def jsonResponse = new URL(params.repoUrl).text
-            def jsonSlurper = new groovy.json.JsonSlurper()
-            def releaseInfo = jsonSlurper.parseText(jsonResponse)
-    
-            // Ensure assets field is a list and each asset is a Map
-            def assets = releaseInfo.assets
-            if (!(assets instanceof List)) {
-                throw new GradleException("Assets field is not a list: $assets")
-            }
-    
-            def jarAsset = releaseInfo.assets.find { it.name.matches(/${name}-\d+\.\d+\.\d+\.jar/) }
-            if (!jarAsset) {
-                throw new GradleException("No ${name} JAR file found in the latest GitHub release.")
-            }
-            jarUrl = jarAsset.browser_download_url
-        } else if (type == "jitpack") {
-            jarUrl = "https://jitpack.io/${params.group.replace('.', '/')}/${params.artifact}/${params.version}/${params.artifact}-${params.version}${params.fileNameSuffix}.jar"
-        } else {
-            throw new GradleException("Unknown type: $type")
-        }
-    
-        println "\tDownloading ${name} JAR from ${jarUrl}"
-        def downloadCommand
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            downloadCommand = ["cmd", "/c", "curl", "-o", jarFile.absolutePath, jarUrl]
-        } else {
-            downloadCommand = ["wget", "-O", jarFile.absolutePath, jarUrl]
-        }
-        // Explicitly convert all elements to String
-        downloadCommand = downloadCommand.collect { it.toString() }
-    
-        println "\tDownloading using command: ${downloadCommand}"
-    
-        def process = new ProcessBuilder(downloadCommand).redirectErrorStream(true).start()
-        process.inputStream.eachLine { println it }
-        process.waitFor()
-    
-        if (process.exitValue() != 0) {
-            throw new GradleException("Failed to download ${name} JAR.")
-        }
-    
-        println "${name} JAR downloaded to $jarFile"
-        return jarFile
-    }
-    
-    // Define a custom task to download dependencies
-    task downloadDependencies {
-        doLast {
-            println "Downloading required dependencies..."
-            def dependencies = [
-                    [
-                            name  : "teswiz",
-                            type  : "github",
-                            params: [
-                                    repoUrl: "https://api.github.com/repos/znsio/teswiz/releases/tags/$project.teswizVersion",
-                                    artifact: "teswiz",
-                                    version : "$project.teswizVersion",
-                                    fileNameSuffix: ""
-                            ]
-                    ]
-            ]
-    
-            println "\n---------------------------------------------"
-    
-            dependencies.each { dep ->
-                println "Processing dependency: ${dep.name}"
-                downloadDependency(dep.name, dep.type, dep.params)
-                println "\n---------------------------------------------"
-    
-            }
-        }
-    }
-```
+Example: See the `downloadDependencies` task in [build.gradle](../build.gradle)
 
 ### 4. Ensure dependencies are downloaded before compiling
 
