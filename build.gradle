@@ -155,10 +155,13 @@ tasks.register('downloadDependencies') {
         def dependencies = [
 //                [
 //                        name  : "teswiz",
-//                        type  : "github",
+//                        type  : "jitpack",
 //                        params: [
-//                                repoUrl: "https://api.github.com/repos/znsio/teswiz/releases/latest",
-//                                version: "$teswizVersion"
+//                                group         : "com.github.znsio",
+//                                artifact      : "teswiz",
+//                                version       : "$teswizVersion",
+//                                fileNameSuffix: "",
+//                                forceUpdate   : false
 //                        ]
 //                ],
                 [
