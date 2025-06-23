@@ -11,9 +11,29 @@
 ## Latest successful build id:
 [![Latest Commit](https://img.shields.io/badge/commit-0973617-blue.svg)](https://jitpack.io/#znsio/teswiz)
 
+## 🚨 Breaking Changes
+
+### From Version `1.0.13` onward
+
+As part of package restructuring, context-related classes have moved to a new package.
+
+#### ❗ Required Update in Imports
+
+Replace:
+
+```java
+import com.context.SessionContext;
+import com.context.TestExecutionContext;
+```
+
+With:
+
+```java
+import com.znsio.teswiz.context.SessionContext;
+import com.znsio.teswiz.context.TestExecutionContext;
+```
+
 # NOTE
-  
-    Use appium-device-farm v8.4.7-rc.8 or later
 
     Use JDK v17 or higher
 
@@ -52,28 +72,6 @@ Test can run on local browsers / devices, or against any cloud provider, such as
 * Applitools (https://applitools.com)
 * Build tool: gradle v8
 * cucumber-reporting (https://github.com/damianszczepanik/cucumber-reporting)
-
-## 🚨 Breaking Changes
-
-### From Version `1.0.13` onward
-
-As part of package restructuring, context-related classes have moved to a new package.
-
-#### ❗ Required Update in Imports
-
-Replace:
-
-```java
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
-```
-
-With:
-
-```java
-import com.znsio.teswiz.context.SessionContext;
-import com.znsio.teswiz.context.TestExecutionContext;
-```
 
 ## [Prerequisites](docs/Prerequisites-README.md)
 
