@@ -3,8 +3,7 @@ package com.znsio.teswiz;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.runner.Drivers;
-import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.runner.*;
 import com.znsio.teswiz.services.UnirestService;
 import com.znsio.teswiz.tools.*;
 import io.cucumber.java.Scenario;
@@ -145,5 +144,8 @@ class PublicStaticMethodsTest {
         SessionContext.getReportPortalLaunchURL();
         SessionContext.setReportPortalLaunchURL();
 
+        Api.getResponse("");
+        PluginCliRequest.getCliArgs();
+        PluginClI.getInstance();
     }
 }
