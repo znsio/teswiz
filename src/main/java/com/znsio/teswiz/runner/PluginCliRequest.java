@@ -10,19 +10,14 @@ import java.net.URL;
 
 public class PluginCliRequest {
     private static final Logger LOGGER = LogManager.getLogger(PluginCliRequest.class.getName());
-    Api api;
 
-    public PluginCliRequest() {
-        api = new Api();
-    }
-
-    public PluginClI getCliArgs() {
+    public static PluginClI getCliArgs() {
         AppiumServerManager appiumServerManager = new AppiumServerManager();
         String remoteWDHubIP = appiumServerManager.getRemoteWDHubIP();
         URL url = null;
         try {
             url = new URL(remoteWDHubIP);
-            String response = api.getResponse(url.getProtocol() + "://" + url.getHost()
+            String response = Api.getResponse(url.getProtocol() + "://" + url.getHost()
                                               + ":" + url.getPort() + "/device-farm/api/cliArgs");
             final PluginClI[] pluginClIS = new ObjectMapper().readValue(response, PluginClI[].class);
             return pluginClIS[0];

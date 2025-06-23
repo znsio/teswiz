@@ -1,5 +1,6 @@
 package com.znsio.teswiz;
 
+import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.Drivers;
@@ -14,14 +15,14 @@ import org.assertj.core.api.SoftAssertions;
 import java.io.File;
 import java.util.HashMap;
 
-class PublicMethodsTest {
-    private static final Logger LOGGER = LogManager.getLogger(PublicMethodsTest.class.getName());
+class PublicStaticMethodsTest {
+    private static final Logger LOGGER = LogManager.getLogger(PublicStaticMethodsTest.class.getName());
     private final TestExecutionContext context;
     private final SoftAssertions softly;
     private final String currentUserPersona;
     private final Platform currentPlatform;
 
-    PublicMethodsTest(String userPersona, Platform forPlatform) {
+    PublicStaticMethodsTest(String userPersona, Platform forPlatform) {
         long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
         softly = Runner.getSoftAssertion(threadId);
@@ -31,7 +32,7 @@ class PublicMethodsTest {
     }
 
     //    @Test
-    private void teswizPublicMethodsCheck() {
+    private void teswizPublicStaticMethodsCheck() {
         long threadId = Thread.currentThread().getId();
 
         String osName = Runner.OS_NAME;
@@ -138,5 +139,11 @@ class PublicMethodsTest {
         Wait.waitFor(1);
 
         YamlFile.compareFiles("", "");
+
+        SessionContext.getTestExecutionContext(1);
+        SessionContext.remove(1);
+        SessionContext.getReportPortalLaunchURL();
+        SessionContext.setReportPortalLaunchURL();
+
     }
 }

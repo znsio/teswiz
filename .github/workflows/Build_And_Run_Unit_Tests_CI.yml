@@ -38,7 +38,7 @@ jobs:
           distribution: 'temurin'
 
       - name: 🧪 Build with Gradle and Run Unit Tests
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: clean build --refresh-dependencies
 
