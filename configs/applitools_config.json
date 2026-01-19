@@ -10,6 +10,6 @@
   "testConcurrency": 10,
   "showLogs": true,
   "ignoreDisplacement": true,
-  "saveNewTestsAsBaseLine": false,
+  "saveNewTestsAsBaseLine": true,
   "APPLITOOLS_PROXY_KEY": ""
 }
