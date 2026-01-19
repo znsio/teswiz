@@ -7,16 +7,16 @@ buildscript {
 }
 
 plugins {
-    id "org.sonarqube" version "6.2.0.5505"
+    id "org.sonarqube" version "6.3.1.5724"
     id "java"
     id "idea"
     id "com.github.johnrengelman.shadow" version '8.1.1'
     id "maven-publish"
-    id "io.freefair.aspectj.post-compile-weaving" version "8.14"
+    id "io.freefair.aspectj.post-compile-weaving" version "8.14.4"
 }
 
 def teswizVersion = "1.0.14"
-def aspectJVersion = "1.9.24"
+def aspectJVersion = "1.9.25.1"
 def jadbVersion = "1.2.1"
 
 group = "com.github.znsio"
@@ -199,42 +199,42 @@ dependencies {
     implementation files(layout.buildDirectory.files("/classes/main"))
     implementation files(layout.buildDirectory.files("/classes/test"))
 
-    implementation "com.applitools:eyes-images-java5:5.77.1"
-    implementation ("com.applitools:eyes-appium-java5:5.75.2") {
+    implementation "com.applitools:eyes-images-java5:5.81.6"
+    implementation ("com.applitools:eyes-appium-java5:5.79.6") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-remote-driver'
         exclude group: 'io.appium', module: 'java-client'
     }
-    implementation "com.browserstack:browserstack-local-java:1.1.6"
-    implementation 'com.epam.reportportal:agent-java-cucumber6:5.4.2'
-    implementation 'com.epam.reportportal:client-java:5.3.14'
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.1"
+    implementation "com.browserstack:browserstack-local-java:1.1.7"
+    implementation 'com.epam.reportportal:agent-java-cucumber6:5.5.3'
+    implementation 'com.epam.reportportal:client-java:5.4.8'
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.0"
     implementation "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
     implementation "com.github.erosb:everit-json-schema:1.14.6"
     implementation "com.github.vidstige:jadb:$jadbVersion"
-    implementation 'com.jayway.jsonpath:json-path:2.9.0'
+    implementation 'com.jayway.jsonpath:json-path:2.10.0'
     // TODO - migrate to restassured
     implementation "com.konghq:unirest-java:3.14.5"
     implementation "com.squareup.okhttp3:okhttp:4.12.0"
-    implementation "io.appium:java-client:9.4.0"
-    implementation 'io.cucumber:cucumber-java:7.23.0'
-    implementation 'io.cucumber:cucumber-testng:7.23.0'
-    implementation "io.github.bonigarcia:webdrivermanager:6.1.0"
-    implementation "net.masterthought:cucumber-reporting:5.8.2"
-    implementation "org.apache.commons:commons-lang3:3.17.0"
+    implementation "io.appium:java-client:10.0.0"
+    implementation 'io.cucumber:cucumber-java:7.33.0'
+    implementation 'io.cucumber:cucumber-testng:7.33.0'
+    implementation "io.github.bonigarcia:webdrivermanager:6.3.3"
+    implementation "net.masterthought:cucumber-reporting:5.10.2"
+    implementation "org.apache.commons:commons-lang3:3.20.0"
     implementation "org.apache.commons:commons-rng-simple:1.6"
-    implementation 'org.apache.logging.log4j:log4j-1.2-api:2.25.0'
-    implementation 'org.apache.logging.log4j:log4j-core:2.25.0'
-    implementation "org.apache.pdfbox:pdfbox:3.0.5"
-    implementation "org.assertj:assertj-core:3.27.3"
+    implementation 'org.apache.logging.log4j:log4j-1.2-api:2.25.3'
+    implementation 'org.apache.logging.log4j:log4j-core:2.25.3'
+    implementation "org.apache.pdfbox:pdfbox:3.0.6"
+    implementation "org.assertj:assertj-core:3.27.6"
     implementation "org.aspectj:aspectjrt:$aspectJVersion"
-    implementation "org.jetbrains:annotations:26.0.2"
-    testImplementation "org.junit.jupiter:junit-jupiter:5.13.1"
+    implementation "org.jetbrains:annotations:26.0.2-1"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.14.2"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation "org.seleniumhq.selenium:selenium-java:4.33.0"
-    implementation "org.yaml:snakeyaml:2.4"
+    implementation "org.seleniumhq.selenium:selenium-java:4.40.0"
+    implementation "org.yaml:snakeyaml:2.5"
 }
 
 shadowJar {
