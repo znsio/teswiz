@@ -7,12 +7,12 @@ buildscript {
 }
 
 plugins {
-    id "org.sonarqube" version "6.3.1.5724"
+    id "org.sonarqube" version "7.2.2.6593"
     id "java"
     id "idea"
-    id "com.github.johnrengelman.shadow" version '8.1.1'
+    id 'com.gradleup.shadow' version '9.3.1'
     id "maven-publish"
-    id "io.freefair.aspectj.post-compile-weaving" version "8.14.4"
+    id "io.freefair.aspectj.post-compile-weaving" version "9.2.0"
 }
 
 def teswizVersion = "1.0.14"
@@ -196,9 +196,6 @@ tasks.compileJava {
 
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    implementation files(layout.buildDirectory.files("/classes/main"))
-    implementation files(layout.buildDirectory.files("/classes/test"))
-
     implementation "com.applitools:eyes-images-java5:5.81.6"
     implementation ("com.applitools:eyes-appium-java5:5.79.6") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
@@ -217,7 +214,7 @@ dependencies {
     implementation 'com.jayway.jsonpath:json-path:2.10.0'
     // TODO - migrate to restassured
     implementation "com.konghq:unirest-java:3.14.5"
-    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    implementation "com.squareup.okhttp3:okhttp:5.3.2"
     implementation "io.appium:java-client:10.0.0"
     implementation 'io.cucumber:cucumber-java:7.33.0'
     implementation 'io.cucumber:cucumber-testng:7.33.0'
@@ -231,7 +228,7 @@ dependencies {
     implementation "org.assertj:assertj-core:3.27.6"
     implementation "org.aspectj:aspectjrt:$aspectJVersion"
     implementation "org.jetbrains:annotations:26.0.2-1"
-    testImplementation "org.junit.jupiter:junit-jupiter:5.14.2"
+    testImplementation "org.junit.jupiter:junit-jupiter:6.0.2"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation "org.seleniumhq.selenium:selenium-java:4.40.0"
     implementation "org.yaml:snakeyaml:2.5"
