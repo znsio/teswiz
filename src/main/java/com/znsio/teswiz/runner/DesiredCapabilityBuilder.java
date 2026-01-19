@@ -23,7 +23,7 @@ public class DesiredCapabilityBuilder {
     );
 
     public DesiredCapabilities buildDesiredCapability(String capabilityFilePath) {
-        String platform = PluginClI.getInstance().getPlatFormName();
+        String platform = Runner.getPlatform().name();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         JSONObject platformCapabilities;
         JSONObject fullCapabilities;
@@ -60,7 +60,7 @@ public class DesiredCapabilityBuilder {
     private String getAppPathInCapabilities(String platform, JSONObject fullCapabilities) {
         if (fullCapabilities.getJSONObject(platform).has("app")) {
             Object app = fullCapabilities.getJSONObject(platform).get("app");
-            boolean isLocal = PluginClI.getInstance().getPlugin().getDeviceFarm().getCloud() == null;
+            boolean isLocal = Runner.getCloudName() == null;
             boolean isUrl = new UrlValidator().isValid(app.toString());
 
             if (isLocal && !isUrl) {

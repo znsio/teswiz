@@ -42,7 +42,7 @@
   },
   "serverConfig" : {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [],
       "plugin": {
         "device-farm": {
           "platform": "iOS",

@@ -181,7 +181,7 @@ public class AppiumDriverManager {
         testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_LOG, deviceLogFileName);
 
         Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
-        if (PluginClI.getInstance().isCloudExecution()) {
+        if (isCloudExecution()) {
             testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ON, getCloudName());
         } else {
             testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ON, "localDevice");
@@ -191,6 +191,10 @@ public class AppiumDriverManager {
         Drivers.addUserPersonaDeviceLogFileName(userPersona, testExecutionContext.getTestStateAsString(TEST_CONTEXT.DEVICE_LOG), forPlatform);
         currentDriver = new Driver(testExecutionContext.getTestName() + "-" + userPersona, forPlatform, userPersona, appName, appiumDriver);
         return currentDriver;
+    }
+
+    private static boolean isCloudExecution() {
+        return Runner.getCloudName() != null;
     }
 
     private static void disableNotificationsAndToastsOnDevice(Driver currentDriver, String deviceOn, String udid) {
@@ -228,7 +232,7 @@ public class AppiumDriverManager {
     }
 
     private static String getCloudName() {
-        return PluginClI.getInstance().getCloudName();
+        return Runner.getCloudName();
     }
 
     private static boolean isRunningOnBrowserStack() {
@@ -271,18 +275,18 @@ public class AppiumDriverManager {
     }
 
     private static void attachCloudExecutionReportLinkToReportPortal(AppiumDriver driver) {
-        if ((PluginClI.getInstance().isCloudExecution()) && isRunningOnpCloudy()) {
+        if (isCloudExecution() && isRunningOnpCloudy()) {
             String link = (String) driver.executeScript("pCloudy_getReportLink");
             String message = "pCloudy Report link available here: " + link;
             LOGGER.info(message);
             ReportPortal.emitLog(message, "DEBUG", new Date());
-        } else if ((PluginClI.getInstance().isCloudExecution()) && isRunningOnHeadspin()) {
+        } else if (isCloudExecution() && isRunningOnHeadspin()) {
             String sessionId = driver.getSessionId().toString();
             String link = "https://ui-dev.headspin.io/sessions/" + sessionId + "/waterfall";
             String message = "Headspin Report link available here: " + link;
             LOGGER.info(message);
             ReportPortal.emitLog(message, "DEBUG", new Date());
-        } else if ((PluginClI.getInstance().isCloudExecution()) && isRunningOnBrowserStack()) {
+        } else if (isCloudExecution() && isRunningOnBrowserStack()) {
             String sessionId = driver.getSessionId().toString();
             String link = getReportLinkFromBrowserStack(sessionId);
             String message = "BrowserStack Report link available here: " + link;

@@ -145,7 +145,5 @@ class PublicStaticMethodsTest {
         SessionContext.setReportPortalLaunchURL();
 
         Api.getResponse("");
-        PluginCliRequest.getCliArgs();
-        PluginClI.getInstance();
     }
 }
