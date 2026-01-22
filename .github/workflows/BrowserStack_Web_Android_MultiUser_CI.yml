@@ -43,54 +43,6 @@ jobs:
           browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
           browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
-#      - name: Run TheApp Android tests
-#        id: theapp_android
-#        uses: ./.github/actions/run-and-collect-tests
-#        with:
-#          id: theapp-android
-#          display-name: "TheApp Android"
-#          config-path: "./configs/theapp/theapp_browserstack_config.properties"
-#          platform: "android"
-#          tag: "@theapp2 and @invalidLogin1 and @browserstack"
-#          artifact-name: "test-results-theapp-android"
-#          is-visual: "true"
-#          additional-env: ""
-#          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
-#          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
-#          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
-#
-#      - name: Run Calculator Android tests
-#        id: calculator_android
-#        uses: ./.github/actions/run-and-collect-tests
-#        with:
-#          id: calculator-android
-#          display-name: "Calculator Android"
-#          config-path: "./configs/calculator/new_calculator_browserstack_config.properties"
-#          platform: "android"
-#          tag: "@new_calculator and @browserstack"
-#          artifact-name: "test-results-calculator-android"
-#          is-visual: "true"
-#          additional-env: ""
-#          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
-#          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
-#          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
-#
-#      - name: Run Multi-user Android & Web tests
-#        id: multi_user
-#        uses: ./.github/actions/run-and-collect-tests
-#        with:
-#          id: multi-user
-#          display-name: "Multi-user Android & Web"
-#          config-path: "./configs/theapp/theapp_browserstack_config.properties"
-#          platform: "android"
-#          tag: "@multiuser-android-web and @theapp5 and @browserstack"
-#          artifact-name: "test-results-multi-user"
-#          is-visual: "true"
-#          additional-env: ""
-#          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
-#          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
-#          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
-
       - name: Check for Failures and Add Summary
         run: |
           echo "Checking exit codes for all test runs..."
@@ -98,29 +50,11 @@ jobs:
           summary="### ❌ Web + Android CI Test Failures\n"
 
           THEAPP_WEB_CODE="${{ steps.theapp_web.outputs.exit_code }}"
-#          THEAPP_ANDROID_CODE="${{ steps.theapp_android.outputs.exit_code }}"
-#          CALCULATOR_ANDROID_CODE="${{ steps.calculator_android.outputs.exit_code }}"
-#          MULTI_USER_CODE="${{ steps.multi_user.outputs.exit_code }}"
 
           if [ "$THEAPP_WEB_CODE" != "0" ]; then
             summary="${summary}- TheApp Web (exit code: $THEAPP_WEB_CODE)\n"
             fail=1
           fi
-
-#          if [ "$THEAPP_ANDROID_CODE" != "0" ]; then
-#            summary="${summary}- TheApp Android (exit code: $THEAPP_ANDROID_CODE)\n"
-#            fail=1
-#          fi
-#
-#          if [ "$CALCULATOR_ANDROID_CODE" != "0" ]; then
-#            summary="${summary}- Calculator Android (exit code: $CALCULATOR_ANDROID_CODE)\n"
-#            fail=1
-#          fi
-#
-#          if [ "$MULTI_USER_CODE" != "0" ]; then
-#            summary="${summary}- Multi-user (exit code: $MULTI_USER_CODE)\n"
-#            fail=1
-#          fi
 
           if [ "$fail" -ne 0 ]; then
             summary="${summary}\n**Commit:** ${{ github.sha }}\n"
