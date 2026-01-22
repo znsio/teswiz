@@ -292,7 +292,7 @@ class Setup {
         for (Map.Entry<String, String> entry : Setup.configs.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
         }
-        LOGGER.info(printString.toString() + Setup.configs);
+        LOGGER.info(printString.toString());
     }
 
     private static void printBooleanConfigsMap() {
@@ -300,7 +300,7 @@ class Setup {
         for (Map.Entry<String, Boolean> entry : Setup.configsBoolean.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
         }
-        LOGGER.info(printString.toString() + Setup.configsBoolean);
+        LOGGER.info(printString.toString());
     }
 
     private static void printIntegerConfigsMap() {
@@ -308,7 +308,7 @@ class Setup {
         for (Map.Entry<String, Integer> entry : Setup.configsInteger.entrySet()) {
             printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
         }
-        LOGGER.info(printString.toString() + Setup.configsInteger);
+        LOGGER.info(printString.toString());
     }
 
     private static void buildMapOfRequiredProperties() {

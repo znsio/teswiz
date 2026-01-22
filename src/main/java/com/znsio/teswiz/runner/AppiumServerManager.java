@@ -49,11 +49,10 @@ public class AppiumServerManager {
     }
 
     public void startAppiumServer(String host) {
-        LOGGER.info("{}Starting Appium Server on Localhost", LOGGER.getName());
+        LOGGER.info("{} Starting Appium Server on Localhost", LOGGER.getName());
         FileUtils.createDirectory(Runner.USER_DIRECTORY + FileLocations.APPIUM_LOGS_DIRECTORY + "appium_logs.txt");
         AppiumDriverLocalService appiumDriverLocalService;
-        AppiumServiceBuilder builder =
-                null;
+        AppiumServiceBuilder builder = null;
         try {
             builder = getAppiumServerBuilder(host)
                     .withLogFile(new File(
@@ -78,7 +77,7 @@ public class AppiumServerManager {
         }
         appiumDriverLocalService = builder.build();
         appiumDriverLocalService.start();
-        LOGGER.info("{}Appium Server Started at......{}", LOGGER.getName(), appiumDriverLocalService.getUrl());
+        LOGGER.info("{} Appium Server Started at......{}", LOGGER.getName(), appiumDriverLocalService.getUrl());
         setAppiumDriverLocalService(appiumDriverLocalService);
     }
 

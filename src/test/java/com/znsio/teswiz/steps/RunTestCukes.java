@@ -11,6 +11,7 @@ import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.tools.HeartBeat;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -67,7 +68,7 @@ public class RunTestCukes
         ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
         ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
         ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
-        LOGGER.info("Use the following Browsers and devices in UFG config: " + ufgConfig.getBrowsersInfo());
+        LOGGER.info("Use the following Browsers and devices in UFG config: " + JsonPrettyPrinter.prettyPrint(ufgConfig.getBrowsersInfo()));
         context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
     }
 

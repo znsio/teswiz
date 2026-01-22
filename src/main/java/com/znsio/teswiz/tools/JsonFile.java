@@ -23,7 +23,7 @@ public class JsonFile {
     }
 
     public static void saveJsonToFile(Map<String, Map> jsonMap, String fileName) {
-        LOGGER.info("\tSave the following json to file: " + fileName + "   with jsonmap:  " + jsonMap);
+        LOGGER.info("\tSave the following json to file: " + fileName + "   with jsonmap:  " + JsonPrettyPrinter.prettyPrint(jsonMap));
         File file = new File(fileName);
         if (file.exists()) {
             LOGGER.debug("File: " + file + "  exixts.  Delete it first");

@@ -4,6 +4,7 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.logging.log4j.LogManager;
@@ -53,8 +54,7 @@ class DeviceSetup {
                 "cloud");
         cloudConfig.put("devices", listOfDevices);
 
-        LOGGER.info(
-                String.format("Updated Device Lab Capabilities file: %n%s", loadedCapabilityFile));
+        LOGGER.info(String.format("Updated Device Lab Capabilities file: %n%s", JsonPrettyPrinter.prettyPrint(loadedCapabilityFile)));
 
         String updatedCapabilitiesFile = getPathForFileInLogDir(capabilityFile);
         JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitiesFile);
