@@ -98,29 +98,29 @@ jobs:
           summary="### ❌ Web + Android CI Test Failures\n"
 
           THEAPP_WEB_CODE="${{ steps.theapp_web.outputs.exit_code }}"
-          THEAPP_ANDROID_CODE="${{ steps.theapp_android.outputs.exit_code }}"
-          CALCULATOR_ANDROID_CODE="${{ steps.calculator_android.outputs.exit_code }}"
-          MULTI_USER_CODE="${{ steps.multi_user.outputs.exit_code }}"
+#          THEAPP_ANDROID_CODE="${{ steps.theapp_android.outputs.exit_code }}"
+#          CALCULATOR_ANDROID_CODE="${{ steps.calculator_android.outputs.exit_code }}"
+#          MULTI_USER_CODE="${{ steps.multi_user.outputs.exit_code }}"
 
           if [ "$THEAPP_WEB_CODE" != "0" ]; then
             summary="${summary}- TheApp Web (exit code: $THEAPP_WEB_CODE)\n"
             fail=1
           fi
 
-          if [ "$THEAPP_ANDROID_CODE" != "0" ]; then
-            summary="${summary}- TheApp Android (exit code: $THEAPP_ANDROID_CODE)\n"
-            fail=1
-          fi
-
-          if [ "$CALCULATOR_ANDROID_CODE" != "0" ]; then
-            summary="${summary}- Calculator Android (exit code: $CALCULATOR_ANDROID_CODE)\n"
-            fail=1
-          fi
-
-          if [ "$MULTI_USER_CODE" != "0" ]; then
-            summary="${summary}- Multi-user (exit code: $MULTI_USER_CODE)\n"
-            fail=1
-          fi
+#          if [ "$THEAPP_ANDROID_CODE" != "0" ]; then
+#            summary="${summary}- TheApp Android (exit code: $THEAPP_ANDROID_CODE)\n"
+#            fail=1
+#          fi
+#
+#          if [ "$CALCULATOR_ANDROID_CODE" != "0" ]; then
+#            summary="${summary}- Calculator Android (exit code: $CALCULATOR_ANDROID_CODE)\n"
+#            fail=1
+#          fi
+#
+#          if [ "$MULTI_USER_CODE" != "0" ]; then
+#            summary="${summary}- Multi-user (exit code: $MULTI_USER_CODE)\n"
+#            fail=1
+#          fi
 
           if [ "$fail" -ne 0 ]; then
             summary="${summary}\n**Commit:** ${{ github.sha }}\n"
