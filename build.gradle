@@ -196,8 +196,8 @@ tasks.compileJava {
 
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    implementation "com.applitools:eyes-images-java5:5.81.6"
-    implementation ("com.applitools:eyes-appium-java5:5.79.6") {
+    implementation "com.applitools:eyes-images-java5:5.81.7"
+    implementation ("com.applitools:eyes-appium-java5:5.79.7") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
