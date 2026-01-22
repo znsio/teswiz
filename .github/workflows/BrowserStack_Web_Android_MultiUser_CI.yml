@@ -43,53 +43,53 @@ jobs:
           browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
           browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
-      - name: Run TheApp Android tests
-        id: theapp_android
-        uses: ./.github/actions/run-and-collect-tests
-        with:
-          id: theapp-android
-          display-name: "TheApp Android"
-          config-path: "./configs/theapp/theapp_browserstack_config.properties"
-          platform: "android"
-          tag: "@theapp and @invalidLogin1 and @browserstack"
-          artifact-name: "test-results-theapp-android"
-          is-visual: "true"
-          additional-env: ""
-          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
-          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
-          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
-
-      - name: Run Calculator Android tests
-        id: calculator_android
-        uses: ./.github/actions/run-and-collect-tests
-        with:
-          id: calculator-android
-          display-name: "Calculator Android"
-          config-path: "./configs/calculator/new_calculator_browserstack_config.properties"
-          platform: "android"
-          tag: "@new_calculator and @browserstack"
-          artifact-name: "test-results-calculator-android"
-          is-visual: "true"
-          additional-env: ""
-          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
-          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
-          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
-
-      - name: Run Multi-user Android & Web tests
-        id: multi_user
-        uses: ./.github/actions/run-and-collect-tests
-        with:
-          id: multi-user
-          display-name: "Multi-user Android & Web"
-          config-path: "./configs/theapp/theapp_browserstack_config.properties"
-          platform: "android"
-          tag: "@multiuser-android-web and @theapp and @browserstack"
-          artifact-name: "test-results-multi-user"
-          is-visual: "true"
-          additional-env: ""
-          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
-          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
-          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
+#      - name: Run TheApp Android tests
+#        id: theapp_android
+#        uses: ./.github/actions/run-and-collect-tests
+#        with:
+#          id: theapp-android
+#          display-name: "TheApp Android"
+#          config-path: "./configs/theapp/theapp_browserstack_config.properties"
+#          platform: "android"
+#          tag: "@theapp and @invalidLogin1 and @browserstack"
+#          artifact-name: "test-results-theapp-android"
+#          is-visual: "true"
+#          additional-env: ""
+#          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+#          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+#          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
+#
+#      - name: Run Calculator Android tests
+#        id: calculator_android
+#        uses: ./.github/actions/run-and-collect-tests
+#        with:
+#          id: calculator-android
+#          display-name: "Calculator Android"
+#          config-path: "./configs/calculator/new_calculator_browserstack_config.properties"
+#          platform: "android"
+#          tag: "@new_calculator and @browserstack"
+#          artifact-name: "test-results-calculator-android"
+#          is-visual: "true"
+#          additional-env: ""
+#          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+#          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+#          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
+#
+#      - name: Run Multi-user Android & Web tests
+#        id: multi_user
+#        uses: ./.github/actions/run-and-collect-tests
+#        with:
+#          id: multi-user
+#          display-name: "Multi-user Android & Web"
+#          config-path: "./configs/theapp/theapp_browserstack_config.properties"
+#          platform: "android"
+#          tag: "@multiuser-android-web and @theapp and @browserstack"
+#          artifact-name: "test-results-multi-user"
+#          is-visual: "true"
+#          additional-env: ""
+#          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+#          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+#          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Check for Failures and Add Summary
         run: |

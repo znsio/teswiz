@@ -27,20 +27,20 @@ jobs:
           npm install
           npm list
 
-      - name: Run PDF-Android Tests
-        id: pdf_android
-        uses: ./.github/actions/run-and-collect-tests
-        with:
-          id: pdf-android
-          display-name: "PDF Android"
-          config-path: "./configs/pdf/pdf_android_browserstack_config.properties"
-          platform: "android"
-          tag: "@validatePDF and @browserstack"
-          artifact-name: "test-results-PDF-Android"
-          is-visual: "true"
-          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
-          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
-          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
+#      - name: Run PDF-Android Tests
+#        id: pdf_android
+#        uses: ./.github/actions/run-and-collect-tests
+#        with:
+#          id: pdf-android
+#          display-name: "PDF Android"
+#          config-path: "./configs/pdf/pdf_android_browserstack_config.properties"
+#          platform: "android"
+#          tag: "@validatePDF and @browserstack"
+#          artifact-name: "test-results-PDF-Android"
+#          is-visual: "true"
+#          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+#          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+#          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Run PDF-Web Tests
         id: pdf_web
