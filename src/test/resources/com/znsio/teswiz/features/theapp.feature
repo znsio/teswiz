@@ -94,13 +94,14 @@ Feature: Scenarios for "The App"
     When "You" changed to "We"
     Then "We" login again with invalid credentials - "znsio4", "invalid password"
 
-  # CONFIG=./configs/theapp/theapp_local_config.properties TAG="@multiuser-android-web and @theapp12 and @switchUser-multiuser-android-web" PLATFORM=android ./gradlew run
+  # CONFIG=./configs/theapp/theapp_local_android_config.properties TAG="@multiuser-android-web and @theapp12 and @switchUser-multiuser-android-web" PLATFORM=android ./gradlew run
   @multiuser-android-web @theapp12 @android @switchUser-multiuser-android-web
   Scenario: Orchestrating multiple users with changing user persona on different platforms as part of same test (android-web)
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
     And "You" login with invalid credentials - "znsio2", "invalid password" on "web"
     When "You" changed to "We"
     Then "We" login again with invalid credentials - "znsio4", "invalid password"
+    And "I" login again with invalid credentials - "znsio_I", "invalid password"
 
   # CONFIG=./configs/theapp/theapp_local_android_config.properties TAG="@multiuser-android and @theapp13 and @switchUser-multiuser-android" PLATFORM=android ./gradlew run
   @multiuser-android @theapp13 @android @switchUser-multiuser-android
