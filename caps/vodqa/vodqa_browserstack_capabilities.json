@@ -4,7 +4,7 @@
     "automationName": "UIAutomator2",
     "noSign": true,
     "project": "teswiz",
-    "browserstack.appium_version": "2.0.1",
+    "browserstack.appiumVersion": "3.1.0",
     "browserstack.debug": true,
     "browserstack.networkLogs": "true",
     "browserstack.gpsLocation": "22,75",

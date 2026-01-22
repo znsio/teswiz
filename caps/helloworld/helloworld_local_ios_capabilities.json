@@ -17,7 +17,7 @@
   },
   "serverConfig" : {
     "server": {
-      "use-plugins": ["device-farm", "relaxed-caps"],
+      "use-plugins": ["relaxed-caps"],
       "plugin": {
         "device-farm": {
           "platform": "iOS",

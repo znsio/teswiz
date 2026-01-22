@@ -7,7 +7,7 @@
       "projectName": "ab",
       "buildName": "fff",
       "sessionName": "test",
-      "appiumVersion": "2.0.1",
+      "appiumVersion": "3.1.0",
       "local": "false",
       "networkLogs": "true",
       "consoleLogs": "info",

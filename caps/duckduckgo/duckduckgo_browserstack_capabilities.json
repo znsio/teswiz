@@ -3,11 +3,11 @@
     "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/duckduckgo-5.87.0-play-debug.apk",
     "appPackage": "com.duckduckgo.mobile.android.debug",
     "appActivity": "com.duckduckgo.app.launch.Launcher",
-    "appiumVersion": "2.0.1",
+    "appiumVersion": "3.1.0",
     "autoAcceptAlerts": true,
     "autoGrantPermissions": true,
     "automationName": "UIAutomator2",
-    "browserstack.appium_version": "2.0.1",
+    "browserstack.appiumVersion": "3.1.0",
     "browserstack.debug": true,
     "browserstack.networkLogs": "true",
     "browserstack.gpsLocation": "22,75",
@@ -26,9 +26,7 @@
   },
   "serverConfig": {
     "server": {
-      "use-plugins": [
-        "device-farm"
-      ],
+      "use-plugins": [],
       "plugin": {
         "device-farm": {
           "platform": "android",
