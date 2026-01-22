@@ -6,6 +6,10 @@ public class CommandLineResponse {
     private String stdOut;
     private String errOut;
 
+    private boolean timedOut;
+    private long durationMillis;
+    private String command;
+
     public int getExitCode() {
         return exitCode;
     }
@@ -30,8 +34,37 @@ public class CommandLineResponse {
         this.errOut = errOut;
     }
 
+    public boolean isTimedOut() {
+        return timedOut;
+    }
+
+    public void setTimedOut(boolean timedOut) {
+        this.timedOut = timedOut;
+    }
+
+    public long getDurationMillis() {
+        return durationMillis;
+    }
+
+    public void setDurationMillis(long durationMillis) {
+        this.durationMillis = durationMillis;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
+    }
+
     @Override
     public String toString() {
-        return "CommandLineResponse [exitCode=" + exitCode + ", stdOut=" + stdOut + ", errOut=" + errOut + "]";
+        return "CommandLineResponse [exitCode=" + exitCode +
+               ", timedOut=" + timedOut +
+               ", durationMillis=" + durationMillis +
+               ", command=" + command +
+               ", stdOut=" + stdOut +
+               ", errOut=" + errOut + "]";
     }
 }

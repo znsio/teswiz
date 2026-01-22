@@ -26,8 +26,6 @@ import static com.znsio.teswiz.runner.Setup.*;
 
 public class Runner {
     public static final String OS_NAME = System.getProperty("os.name");
-    public static final boolean IS_WINDOWS = OS_NAME.toLowerCase().startsWith("windows");
-    public static final boolean IS_MAC = OS_NAME.toLowerCase().startsWith("mac");
     public static final String USER_DIRECTORY = System.getProperty("user.dir");
     public static final String USER_NAME = System.getProperty("user.name");
     public static final String NOT_SET = "not-set";

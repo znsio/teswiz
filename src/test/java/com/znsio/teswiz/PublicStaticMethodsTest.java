@@ -35,8 +35,9 @@ class PublicStaticMethodsTest {
         long threadId = Thread.currentThread().getId();
 
         String osName = Runner.OS_NAME;
-        boolean isWindows = Runner.IS_WINDOWS;
-        boolean isMac = Runner.IS_MAC;
+        boolean isWindows = OsUtils.isWindows();
+        boolean isMac = OsUtils.isMac();
+        boolean isLinux = OsUtils.isLinux();
         String userDirectory = Runner.USER_DIRECTORY;
         String userName = Runner.USER_NAME;
         String notSet = Runner.NOT_SET;
