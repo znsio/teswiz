@@ -22,7 +22,7 @@
   "appiumServerPath": "./node_modules/appium/build/lib/main.js",
   "serverConfig" : {
     "server": {
-      "use-plugins": ["relaxed-caps-plugin"],
+      "use-plugins": ["device-farm","relaxed-caps-plugin"],
       "plugin": {
         "device-farm": {
           "platform": "android",
