@@ -45,7 +45,7 @@ public class AppiumServerManager {
     }
 
     public String getRemoteWDHubIP() {
-        if (Runner.getCloudName()==Runner.NOT_SET) {
+        if (Runner.getCloudName().equalsIgnoreCase(Runner.NOT_SET)) {
             String appiumServerURL = getAppiumUrl().toString();
             LOGGER.info("{} Appium Server is running at: {}", LOGGER.getName(), appiumServerURL);
             return appiumServerURL;
