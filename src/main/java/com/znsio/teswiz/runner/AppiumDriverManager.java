@@ -173,6 +173,11 @@ public class AppiumDriverManager {
             writeServiceConfig();
             appiumServerManager = new AppiumServerManager();
             appiumDriverManager = new AppiumDriverManager();
+            if (Runner.getCloudName()==NOT_SET) {
+                appiumServerManager.startAppiumServer("127.0.0.1"); //Needs to be removed
+            } else {
+                LOGGER.info("Cloud execution on: {}. No need to start Appium Server", Runner.getCloudName());
+            }
         }
 
         if (Runner.getCloudName()==NOT_SET) {
