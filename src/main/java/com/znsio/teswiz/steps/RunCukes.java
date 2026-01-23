@@ -34,7 +34,7 @@ public class RunCukes
     @Before
     public void beforeScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();
-        LOGGER.info("RunCukes: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
+        LOGGER.info("RunCukes: ThreadId : '%d' :: beforeScenario: '%s'".formatted(threadId, scenario.getName()));
         new Hooks().beforeScenario(scenario);
     }
 

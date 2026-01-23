@@ -1,6 +1,7 @@
 package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.entities.TEST_CONTEXT;
+import com.znsio.teswiz.tools.OsUtils;
 import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
 import net.masterthought.cucumber.Reportable;
@@ -23,7 +24,7 @@ class CustomReports {
     }
 
     static Reportable generateReport() {
-        String reportsDir = Runner.USER_DIRECTORY + File.separator + Setup.getFromConfigs(
+        String reportsDir = OsUtils.getUserDirectory() + File.separator + Setup.getFromConfigs(
                 LOG_DIR) + File.separator + REPORTS_DIR;
         LOGGER.info(
                 "================================================================================================");

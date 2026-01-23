@@ -7,6 +7,7 @@ import com.znsio.teswiz.runner.AppiumServerManager;
 import com.znsio.teswiz.runner.FileLocations;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.tools.FileUtils;
+import com.znsio.teswiz.tools.OsUtils;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -24,7 +25,7 @@ public class CucumberScenarioListener implements ConcurrentEventListener {
     public CucumberScenarioListener() {
         LOGGER.info(String.format("ThreadID: %d: CucumberScenarioListener%n", Thread.currentThread().getId()));
         setLog4jCompatibility();
-        FileUtils.createDirectoryIn(Runner.USER_DIRECTORY, FileLocations.OUTPUT_DIRECTORY);
+        FileUtils.createDirectoryIn(OsUtils.getUserDirectory(), FileLocations.OUTPUT_DIRECTORY);
     }
 
     private void setLog4jCompatibility() {
@@ -59,9 +60,9 @@ public class CucumberScenarioListener implements ConcurrentEventListener {
         String screenshotDirectory = scenarioLogDirectory + FileLocations.SCREENSHOTS_DIRECTORY;
         String deviceLogsDirectory = scenarioLogDirectory + FileLocations.DEVICE_LOGS_DIRECTORY;
 
-        scenarioLogDirectory = FileUtils.createDirectoryIn(Runner.USER_DIRECTORY, scenarioLogDirectory).getAbsolutePath();
-        screenshotDirectory = FileUtils.createDirectoryIn(Runner.USER_DIRECTORY, screenshotDirectory).getAbsolutePath();
-        deviceLogsDirectory = FileUtils.createDirectoryIn(Runner.USER_DIRECTORY, deviceLogsDirectory).getAbsolutePath();
+        scenarioLogDirectory = FileUtils.createDirectoryIn(OsUtils.getUserDirectory(), scenarioLogDirectory).getAbsolutePath();
+        screenshotDirectory = FileUtils.createDirectoryIn(OsUtils.getUserDirectory(), screenshotDirectory).getAbsolutePath();
+        deviceLogsDirectory = FileUtils.createDirectoryIn(OsUtils.getUserDirectory(), deviceLogsDirectory).getAbsolutePath();
         testExecutionContext.addTestState(TEST_CONTEXT.EXAMPLE_RUN_COUNT, currentExampleRowNumberForScenario);
         testExecutionContext.addTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT, runningScenarioNumber);
         testExecutionContext.addTestState(TEST_CONTEXT.NORMALISED_SCENARIO_NAME, normalisedScenarioName);

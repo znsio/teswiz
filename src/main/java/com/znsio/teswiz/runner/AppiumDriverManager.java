@@ -10,6 +10,8 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
+import com.znsio.teswiz.tools.OsUtils;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
@@ -39,6 +41,7 @@ import static com.znsio.teswiz.runner.FileLocations.SERVER_CONFIG_JSON;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static com.znsio.teswiz.runner.Setup.CAPS;
+import static com.znsio.teswiz.runner.Setup.RUN_IN_CI;
 import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 
 public class AppiumDriverManager {
@@ -144,7 +147,7 @@ public class AppiumDriverManager {
 
     private static void writeServiceConfig() {
         JSONObject serverConfig = CustomCapabilities.getInstance().getCapabilityObjectFromKey("serverConfig");
-        try (FileWriter writer = new FileWriter(new File(Runner.USER_DIRECTORY + SERVER_CONFIG_JSON))) {
+        try (FileWriter writer = new FileWriter(new File(OsUtils.getUserDirectory() + SERVER_CONFIG_JSON))) {
             writer.write(serverConfig.toString());
             writer.flush();
         } catch (IOException e) {
@@ -169,8 +172,13 @@ public class AppiumDriverManager {
             CustomCapabilities.getInstance();
             writeServiceConfig();
             appiumServerManager = new AppiumServerManager();
-            appiumServerManager.startAppiumServer("127.0.0.1"); //Needs to be removed
             appiumDriverManager = new AppiumDriverManager();
+        }
+
+        if (Runner.getCloudName()==NOT_SET) {
+            appiumServerManager.startAppiumServer("127.0.0.1"); //Needs to be removed
+        } else {
+
         }
 
         AppiumDriver appiumDriver = allocateDeviceAndStartDriver(testExecutionContext.getTestName());
@@ -585,7 +593,10 @@ public class AppiumDriverManager {
 
     private static DesiredCapabilities buildDesiredCapabilities(String capabilityFilePath) {
         if (new File(capabilityFilePath).exists()) {
-            return new DesiredCapabilityBuilder().buildDesiredCapability(capabilityFilePath);
+            DesiredCapabilities desiredCapabilities = new DesiredCapabilityBuilder().buildDesiredCapability(capabilityFilePath, numberOfAppiumDriversUsed);
+//            desiredCapabilities = BrowserStackSetup.updateBrowserStackCapabilities()
+//            bstackOptions.put("sessionName", Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestName());
+            return desiredCapabilities;
         } else {
             throw new RuntimeException("Capability file not found");
         }

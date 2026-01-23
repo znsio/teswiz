@@ -313,14 +313,14 @@ class DeviceSetup {
         }
     }
 
-    private static String getCloudUrlFromCapabilities() {
+    static String getCloudUrlFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
                 new String[]{"serverConfig", "server", "plugin",
                         "device-farm", "cloud", "url"}, Setup.getLoadedCapabilities());
     }
 
-    private static String getCloudApiUrlFromCapabilities() {
+    static String getCloudApiUrlFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
                 new String[]{"serverConfig", "server", "plugin",

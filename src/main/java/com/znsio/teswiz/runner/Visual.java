@@ -18,6 +18,7 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.exceptions.VisualTestSetupException;
+import com.znsio.teswiz.tools.OsUtils;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import com.znsio.teswiz.tools.Wait;
@@ -268,7 +269,7 @@ public class Visual {
         config.setEnvironmentName(targetEnvironment);
         config.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
         config.setSaveNewTests(getValueFromConfig(APPLITOOLS.SAVE_NEW_TESTS_AS_BASELINE, true));
-        config.setHostOS(OS_NAME);
+        config.setHostOS(OsUtils.getOsName());
         config.setHostApp(appName);
         return config;
     }
@@ -380,7 +381,7 @@ public class Visual {
         appEyes.addProperty(Setup.RUN_IN_CI, valueOf(getValueFromConfig(Setup.RUN_IN_CI)));
         appEyes.addProperty(Setup.TARGET_ENVIRONMENT,
                             valueOf(getValueFromConfig(Setup.TARGET_ENVIRONMENT)));
-        appEyes.addProperty("USER_NAME", USER_NAME);
+        appEyes.addProperty("OsUtils.getUsername()", OsUtils.getUserName());
     }
 
     private String getApplitoolsAPIKey(boolean isVisualTestingEnabled) {
@@ -467,7 +468,7 @@ public class Visual {
         eyesImages.addProperty(Setup.RUN_IN_CI, valueOf(getValueFromConfig(Setup.RUN_IN_CI)));
         eyesImages.addProperty(Setup.TARGET_ENVIRONMENT,
                                valueOf(getValueFromConfig(Setup.TARGET_ENVIRONMENT)));
-        eyesImages.addProperty("USER_NAME", USER_NAME);
+        eyesImages.addProperty("OsUtils.getUsername()", OsUtils.getUserName());
     }
 
     private void addCustomPropertiesInWebTestExecution(Platform platform, Eyes webEyes) {
@@ -479,7 +480,7 @@ public class Visual {
         webEyes.addProperty(Setup.RUN_IN_CI, valueOf(getValueFromConfig(Setup.RUN_IN_CI)));
         webEyes.addProperty(Setup.TARGET_ENVIRONMENT,
                             valueOf(getValueFromConfig(Setup.TARGET_ENVIRONMENT)));
-        webEyes.addProperty("USER_NAME", USER_NAME);
+        webEyes.addProperty("OsUtils.getUsername()", OsUtils.getUserName());
     }
 
     @NotNull
@@ -527,7 +528,7 @@ public class Visual {
 
     @NotNull
     private String getApplitoolsLogFileNameFor(String appType) {
-        String scenarioLogDir = USER_DIRECTORY + context.getTestStateAsString(
+        String scenarioLogDir = OsUtils.getUserDirectory() + context.getTestStateAsString(
                 TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
         return format("%s%sdeviceLogs%sapplitools-%s.log", scenarioLogDir, File.separator,
                       File.separator, appType);

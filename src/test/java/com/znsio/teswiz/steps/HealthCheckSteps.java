@@ -3,6 +3,7 @@ package com.znsio.teswiz.steps;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.tools.OsUtils;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import org.apache.logging.log4j.LogManager;
@@ -19,12 +20,12 @@ public class HealthCheckSteps {
 
     @Given("I print my username")
     public void iPrintMyUsername() {
-        LOGGER.info("My username: " + Runner.USER_NAME);
+        LOGGER.info("My username: " + OsUtils.getUserName());
     }
 
     @Then("I see my current directory")
     public void iSeeMyCurrentDirectory() {
-        LOGGER.info("My directory: " + Runner.USER_DIRECTORY);
+        LOGGER.info("My directory: " + OsUtils.getUserDirectory());
     }
 
     @Given("I print the current platform")

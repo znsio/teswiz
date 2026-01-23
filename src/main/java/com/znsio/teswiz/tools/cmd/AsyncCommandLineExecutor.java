@@ -36,7 +36,7 @@ public class AsyncCommandLineExecutor {
     public AsyncCommandLineExecutor() {
         long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
-        String os = Runner.OS_NAME.toLowerCase();
+        String os = OsUtils.getOsName();
 
         ProcessBuilder processBuilder = os.contains("win")
                                         ? new ProcessBuilder("cmd.exe")

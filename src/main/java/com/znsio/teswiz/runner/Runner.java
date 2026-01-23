@@ -25,9 +25,6 @@ import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Setup.*;
 
 public class Runner {
-    public static final String OS_NAME = System.getProperty("os.name");
-    public static final String USER_DIRECTORY = System.getProperty("user.dir");
-    public static final String USER_NAME = System.getProperty("user.name");
     public static final String NOT_SET = "not-set";
     public static final String DEFAULT = "default";
     public static final String DEBUG = "DEBUG";
