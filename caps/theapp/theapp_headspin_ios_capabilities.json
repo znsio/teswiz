@@ -14,7 +14,7 @@
   },
   "serverConfig" : {
     "server": {
-      "use-plugins": [],
+      "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
           "platform": "iOS",

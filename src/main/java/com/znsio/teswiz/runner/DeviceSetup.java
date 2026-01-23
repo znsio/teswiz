@@ -5,6 +5,7 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
+import com.znsio.teswiz.tools.OsUtils;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.logging.log4j.LogManager;
@@ -199,7 +200,7 @@ class DeviceSetup {
         Pattern versionNamePattern = Pattern.compile("versionName='(\\d+(\\.\\d+)+)'",
                 Pattern.MULTILINE);
         String searchPattern = "grep";
-        if (Runner.IS_WINDOWS) {
+        if (OsUtils.isWindows()) {
             searchPattern = "findstr";
         }
 
@@ -312,14 +313,14 @@ class DeviceSetup {
         }
     }
 
-    private static String getCloudUrlFromCapabilities() {
+    static String getCloudUrlFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
                 new String[]{"serverConfig", "server", "plugin",
                         "device-farm", "cloud", "url"}, Setup.getLoadedCapabilities());
     }
 
-    private static String getCloudApiUrlFromCapabilities() {
+    static String getCloudApiUrlFromCapabilities() {
         String capabilityFile = Setup.getFromConfigs(CAPS);
         return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
                 new String[]{"serverConfig", "server", "plugin",

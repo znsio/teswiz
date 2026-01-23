@@ -48,7 +48,7 @@ public class RunTestCukes
     @Before
     public void beforeTestScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();
-        LOGGER.info("RunTestCukes: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
+        LOGGER.info("RunTestCukes: ThreadId : '%d' :: beforeTestScenario: '%s'".formatted(threadId, scenario.getName()));
         new Hooks().beforeScenario(scenario);
         addApplitoolsUFGConfigurationToContext();
         isEnvironmentHealthy(context.getTestName(), Runner.getFromEnvironmentConfiguration(SAMPLE_TEST_CONTEXT.HEALTH_CHECK_URL));
@@ -57,7 +57,7 @@ public class RunTestCukes
     @After
     public void afterTestScenario(Scenario scenario) {
         long threadId = Thread.currentThread().getId();
-        LOGGER.info("RunTestCukes: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
+        LOGGER.info("RunTestCukes: ThreadId : '%d' :: afterTestScenario: '%s'".formatted(threadId, scenario.getName()));
         this.closeHeartBeatThreads();
         new Hooks().afterScenario(scenario);
     }

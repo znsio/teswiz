@@ -4,6 +4,7 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.CommandLineExecutorException;
 import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.tools.OsUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +36,7 @@ public class AsyncCommandLineExecutor {
     public AsyncCommandLineExecutor() {
         long threadId = Thread.currentThread().getId();
         this.context = Runner.getTestExecutionContext(threadId);
-        String os = Runner.OS_NAME.toLowerCase();
+        String os = OsUtils.getOsName();
 
         ProcessBuilder processBuilder = os.contains("win")
                                         ? new ProcessBuilder("cmd.exe")
@@ -54,7 +55,7 @@ public class AsyncCommandLineExecutor {
 
     public CommandResult sendCommand(String command, int timeoutInSeconds) {
         updateCurrentCommandNumber();
-        final String platformCommand = Runner.IS_WINDOWS
+        final String platformCommand = OsUtils.isWindows()
                                        ? "/c " + command
                                        : command;
 

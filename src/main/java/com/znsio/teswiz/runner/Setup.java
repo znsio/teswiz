@@ -9,6 +9,7 @@ import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
+import com.znsio.teswiz.tools.OsUtils;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.commons.io.FileUtils;
@@ -153,7 +154,7 @@ class Setup {
         setBrowserConfigFilePath();
 
         System.setProperty(LOG_DIR, configs.get(LOG_DIR));
-        LOGGER.info(String.format("Runner called from user directory: %s", Runner.USER_DIRECTORY));
+        LOGGER.info(String.format("Runner called from user directory: %s", OsUtils.getUserDirectory()));
         printLoadedConfigProperties(configFilePath);
 
         environmentConfiguration = loadEnvironmentConfiguration(configs.get(TARGET_ENVIRONMENT));
@@ -255,9 +256,9 @@ class Setup {
                 "AutomationBranch:%s; ExecutedOn:%s; Installer:%s; OS:%s; ParallelCount:%d; " +
                 "Platform:%s; RunInCI:%s; Tags:%s; TargetEnvironment:%s; Username:%s; " +
                 "VisualEnabled:%s; BuildInitiationReason:%s; ",
-                configs.get(BRANCH_NAME), configs.get(EXECUTED_ON), configs.get(APP_PATH), OS_NAME,
+                configs.get(BRANCH_NAME), configs.get(EXECUTED_ON), configs.get(APP_PATH), OsUtils.getOsName(),
                 configsInteger.get(PARALLEL), currentPlatform.name(), configsBoolean.get(RUN_IN_CI),
-                configs.get(TAG_FOR_REPORTPORTAL), configs.get(TARGET_ENVIRONMENT), USER_NAME,
+                configs.get(TAG_FOR_REPORTPORTAL), configs.get(TARGET_ENVIRONMENT), OsUtils.getUserName(),
                 configsBoolean.get(IS_VISUAL), configs.get(BUILD_INITIATION_REASON));
 
         if (!configs.get(APP_VERSION).equals(NOT_SET)) {

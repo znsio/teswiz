@@ -34,11 +34,12 @@ class PublicStaticMethodsTest {
     private void teswizPublicStaticMethodsCheck() {
         long threadId = Thread.currentThread().getId();
 
-        String osName = Runner.OS_NAME;
-        boolean isWindows = Runner.IS_WINDOWS;
-        boolean isMac = Runner.IS_MAC;
-        String userDirectory = Runner.USER_DIRECTORY;
-        String userName = Runner.USER_NAME;
+        String osName = OsUtils.getOsName();
+        boolean isWindows = OsUtils.isWindows();
+        boolean isMac = OsUtils.isMac();
+        boolean isLinux = OsUtils.isLinux();
+        String userDirectory = OsUtils.getUserDirectory();
+        String userName = OsUtils.getUserName();
         String notSet = Runner.NOT_SET;
         String aDefault = Runner.DEFAULT;
         String debug = Runner.DEBUG;

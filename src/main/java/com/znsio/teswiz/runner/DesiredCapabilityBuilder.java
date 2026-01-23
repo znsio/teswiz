@@ -3,6 +3,7 @@ package com.znsio.teswiz.runner;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -19,10 +20,10 @@ public class DesiredCapabilityBuilder {
     // W3C standard capability keys that should NOT be prefixed with "appium:"
     private static final Set<String> W3C_STANDARD_KEYS = Set.of(
             "platformName", "browserName", "acceptInsecureCerts", "pageLoadStrategy",
-            "proxy", "timeouts", "unhandledPromptBehavior"
+            "proxy", "timeouts", "unhandledPromptBehavior", "bstack:options"
     );
 
-    public DesiredCapabilities buildDesiredCapability(String capabilityFilePath) {
+    public DesiredCapabilities buildDesiredCapability(String capabilityFilePath, int numberOfAppiumDriversUsed) {
         String platform = Runner.getPlatform().name();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         JSONObject platformCapabilities;
@@ -38,6 +39,13 @@ public class DesiredCapabilityBuilder {
 
         platformCapabilities = fullCapabilities.getJSONObject(platform);
         JSONObject finalPlatformCapabilities = platformCapabilities;
+
+        if (Runner.getCloudName().equalsIgnoreCase("browserstack")) {
+            JSONArray listOfAvailableDevices = fullCapabilities.getJSONObject("serverConfig").getJSONObject("server").getJSONObject("plugin").getJSONObject("device-farm").getJSONObject("cloud").getJSONArray("devices");
+            JSONObject deviceDetails = listOfAvailableDevices.getJSONObject(numberOfAppiumDriversUsed);
+            String deviceName = deviceDetails.getString("deviceName");
+            desiredCapabilities.setCapability("appium:deviceName", deviceName);
+        }
 
         platformCapabilities.keySet().forEach(key -> {
             Object value = finalPlatformCapabilities.get(key);

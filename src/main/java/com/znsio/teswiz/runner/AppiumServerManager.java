@@ -2,6 +2,7 @@ package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.tools.FileUtils;
+import com.znsio.teswiz.tools.OsUtils;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
@@ -24,8 +25,7 @@ public class AppiumServerManager {
         return appiumDriverLocalService;
     }
 
-    private static void setAppiumDriverLocalService(
-            AppiumDriverLocalService appiumDriverLocalService) {
+    private static void setAppiumDriverLocalService(AppiumDriverLocalService appiumDriverLocalService) {
         AppiumServerManager.appiumDriverLocalService = appiumDriverLocalService;
     }
 
@@ -45,12 +45,47 @@ public class AppiumServerManager {
     }
 
     public String getRemoteWDHubIP() {
-        return getAppiumUrl().toString();
+        if (Runner.getCloudName()==Runner.NOT_SET) {
+            String appiumServerURL = getAppiumUrl().toString();
+            LOGGER.info("{} Appium Server is running at: {}", LOGGER.getName(), appiumServerURL);
+            return appiumServerURL;
+        } else {
+            String cloudUrlFromCapabilities = DeviceSetup.getCloudUrlFromCapabilities();
+            cloudUrlFromCapabilities = ensureWdHub(cloudUrlFromCapabilities);
+            LOGGER.info("{} Using Cloud Appium Server at: {}", LOGGER.getName(), cloudUrlFromCapabilities);
+            return cloudUrlFromCapabilities;
+        }
+    }
+
+    private static String ensureWdHub(String baseUrl) {
+        if (baseUrl == null || baseUrl.trim().isEmpty()) {
+            throw new IllegalArgumentException("Remote hub URL cannot be null/empty");
+        }
+
+        String url = baseUrl.trim();
+
+        // remove trailing slashes
+        while (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+
+        // already correct
+        if (url.endsWith("/wd/hub")) {
+            return url;
+        }
+
+        // partially correct
+        if (url.endsWith("/wd")) {
+            return url + "/hub";
+        }
+
+        // plain base host
+        return url + "/wd/hub";
     }
 
     public void startAppiumServer(String host) {
         LOGGER.info("{} Starting Appium Server on Localhost", LOGGER.getName());
-        FileUtils.createDirectory(Runner.USER_DIRECTORY + FileLocations.APPIUM_LOGS_DIRECTORY + "appium_logs.txt");
+        FileUtils.createDirectory(OsUtils.getUserDirectory() + FileLocations.APPIUM_LOGS_DIRECTORY + "appium_logs.txt");
         AppiumDriverLocalService appiumDriverLocalService;
         AppiumServiceBuilder builder = null;
         try {

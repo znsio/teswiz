@@ -19,8 +19,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 
-import static com.znsio.teswiz.runner.Runner.USER_NAME;
-import static com.znsio.teswiz.runner.Runner.getHostName;
 import static org.openqa.selenium.remote.CapabilityType.ACCEPT_INSECURE_CERTS;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
@@ -44,16 +42,28 @@ class BrowserStackSetup {
         Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
 
         addAppOrBrowserNameToBrowserStackCapablities(deviceLabURL, loadedPlatformCapability, authenticationUser, authenticationKey);
-        loadedPlatformCapability.put("browserstack.user", authenticationUser);
-        loadedPlatformCapability.put("browserstack.key", authenticationKey);
-        loadedPlatformCapability.put("browserstack.LoggedInUser", USER_NAME);
-        loadedPlatformCapability.put("browserstack.MachineName", getHostName());
-        setupLocalTesting(authenticationKey, loadedPlatformCapability);
+        HashMap<String, Object> bstackOptions = new HashMap<String, Object>();
+        bstackOptions.put("userName", authenticationUser);
+        bstackOptions.put("accessKey", authenticationKey);
+        bstackOptions.put("appiumVersion", loadedPlatformCapability.get("browserstack.appiumVersion"));
+        bstackOptions.put("projectName", Setup.getFromConfigs(Setup.APP_NAME));
         String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "")
-                                     .replace("\\", "");
-        loadedPlatformCapability.put("build", Setup.getFromConfigs(
-                Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
-        loadedPlatformCapability.put("project", Setup.getFromConfigs(Setup.APP_NAME));
+                .replace("\\", "");
+        bstackOptions.put("buildName", Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
+//        bstackOptions.put("sessionName", Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestName());
+        bstackOptions.put("debug", "true");
+        bstackOptions.put("networkLogs", "true");
+        bstackOptions.put("appProfiling", "true");
+//        loadedPlatformCapability.put("browserstack.user", authenticationUser);
+//        loadedPlatformCapability.put("browserstack.key", authenticationKey);
+//        loadedPlatformCapability.put("browserstack.LoggedInUser", USER_NAME);
+//        loadedPlatformCapability.put("browserstack.MachineName", getHostName());
+        setupLocalTesting(authenticationKey, bstackOptions);
+//        loadedPlatformCapability.put("build", Setup.getFromConfigs(
+//                Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
+//        bstackOptions.put("project", Setup.getFromConfigs(Setup.APP_NAME));
+        loadedPlatformCapability.put("bstack:options", bstackOptions);
+//        loadedPlatformCapability.put("deviceName", String.valueOf(loadedCapabilityFile.get(platformName).getOrDefault(DEVICE, "")));
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey,
                                                 loadedCapabilityFile);
     }
@@ -78,8 +88,8 @@ class BrowserStackSetup {
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
                     BROWSERSTACK_LOCAL_IDENTIFIER));
             startBrowserStackLocal(authenticationKey, BROWSERSTACK_LOCAL_IDENTIFIER);
-            loadedPlatformCapability.put("browserstack.local", "true");
-            loadedPlatformCapability.put("browserstack.localIdentifier", BROWSERSTACK_LOCAL_IDENTIFIER);
+            loadedPlatformCapability.put("local", "true");
+            loadedPlatformCapability.put("localIdentifier", BROWSERSTACK_LOCAL_IDENTIFIER);
         }
     }
 
