@@ -180,12 +180,6 @@ public class AppiumDriverManager {
             }
         }
 
-        if (Runner.getCloudName()==NOT_SET) {
-            appiumServerManager.startAppiumServer("127.0.0.1"); //Needs to be removed
-        } else {
-
-        }
-
         AppiumDriver appiumDriver = allocateDeviceAndStartDriver(testExecutionContext.getTestName());
         String deviceLogFileName = startDataCapture();
         testExecutionContext.addTestState(TEST_CONTEXT.APPIUM_DRIVER, appiumDriver);
