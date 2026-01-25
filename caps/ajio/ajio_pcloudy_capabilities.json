@@ -38,7 +38,7 @@
     "pCloudy_EnableVideo": "true",
     "pCloudy_EnablePerformanceData": "true",
     "pCloudy_EnableDeviceLogs": "true",
-    "appiumVersion": "2.0.0"
+    "appiumVersion": "3.1.2"
   },
   "serverConfig" : {
     "server": {
