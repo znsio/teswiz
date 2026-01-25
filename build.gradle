@@ -196,8 +196,8 @@ tasks.compileJava {
 
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    implementation "com.applitools:eyes-images-java5:5.81.7"
-    implementation ("com.applitools:eyes-appium-java5:5.79.7") {
+    implementation "com.applitools:eyes-images-java5:5.81.8"
+    implementation ("com.applitools:eyes-appium-java5:5.79.8") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
@@ -225,7 +225,7 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-1.2-api:2.25.3'
     implementation 'org.apache.logging.log4j:log4j-core:2.25.3'
     implementation "org.apache.pdfbox:pdfbox:3.0.6"
-    implementation "org.assertj:assertj-core:3.27.6"
+    implementation "org.assertj:assertj-core:3.27.7"
     implementation "org.aspectj:aspectjrt:$aspectJVersion"
     implementation "org.jetbrains:annotations:26.0.2-1"
     testImplementation "org.junit.jupiter:junit-jupiter:6.0.2"
