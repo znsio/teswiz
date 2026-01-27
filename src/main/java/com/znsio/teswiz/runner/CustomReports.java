@@ -24,8 +24,7 @@ class CustomReports {
     }
 
     static Reportable generateReport() {
-        String reportsDir = OsUtils.getUserDirectory() + File.separator + Setup.getFromConfigs(
-                LOG_DIR) + File.separator + REPORTS_DIR;
+        String reportsDir = Setup.getFromConfigs(LOG_DIR) + File.separator + REPORTS_DIR;
         LOGGER.info(
                 "================================================================================================");
         LOGGER.info(String.format("Generating reports here: '%s'", reportsDir));
