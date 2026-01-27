@@ -364,14 +364,6 @@ public class AppiumDriverManager {
         }
     }
 
-    private static void terminateApp(AndroidDriver androidDriver, String appPackageName) {
-        if (null == androidDriver) {
-            LOGGER.debug("Driver already terminated. Returning.");
-            return;
-        }
-        androidDriver.quit();
-    }
-
     private static void terminateAndroidAppOnDevice(String appPackageName, AppiumDriver appiumDriver) {
         String logMessage;
         ApplicationState applicationState = null;
@@ -385,6 +377,7 @@ public class AppiumDriverManager {
             ReportPortalLogger.logDebugMessage(logMessage);
 
             androidDriver.terminateApp(appPackageName);
+            stopAppiumDriver();
             applicationState = androidDriver.queryAppState(appPackageName);
             logMessage = String.format("App: '%s' Application state after closing app: '%s'%n", appPackageName, applicationState);
             LOGGER.info(logMessage);
@@ -601,7 +594,7 @@ public class AppiumDriverManager {
         }
     }
 
-    public void stopAppiumDriver() {
+    private static void stopAppiumDriver() {
         if (getDriver() != null && getDriver().getSessionId() != null) {
             LOGGER.info("Session Deleting ---- " + getDriver().getSessionId() + "---" + getDriver().getCapabilities().getCapability("udid"));
             getDriver().quit();
