@@ -200,9 +200,10 @@ class Setup {
         try {
             LoggerContext context = (LoggerContext) LogManager.getContext(false);
             if (properties.containsKey(LOG_PROPERTIES_FILE)) {
-                Path logFilePath = Paths.get(properties.get(LOG_PROPERTIES_FILE).toString());
-                configs.put(LOG_PROPERTIES_FILE, logFilePath.toString());
-                file = new File(LOG_PROPERTIES_FILE);
+                file = new File(properties.getProperty(LOG_PROPERTIES_FILE));
+                String logFilePath = file.getAbsolutePath();
+                System.out.println("Using the provided LOG_PROPERTIES_FILE: '" + logFilePath + "'");
+                configs.put(LOG_PROPERTIES_FILE, logFilePath);
             } else {
                 configs.put(LOG_PROPERTIES_FILE, DEFAULT_LOG_PROPERTIES_FILE);
                 file = new File(DEFAULT_LOG_PROPERTIES_FILE);
