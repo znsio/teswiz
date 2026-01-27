@@ -8,8 +8,7 @@ public interface FileLocations {
 
     String OUTPUT_DIRECTORY =
             getOverriddenStringValue("OUTPUT_DIRECTORY") != null
-            ? File.separator + getOverriddenStringValue("OUTPUT_DIRECTORY")
-              + File.separator
+            ? File.separator + getOverriddenStringValue("OUTPUT_DIRECTORY") + File.separator
             : File.separator + "target" + File.separator;
 
     String SERVER_CONFIG_JSON = OUTPUT_DIRECTORY + "server.json";
