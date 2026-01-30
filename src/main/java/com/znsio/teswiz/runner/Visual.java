@@ -778,6 +778,17 @@ public class Visual {
         eyesOnWeb.closeAsync();
         TestResultsSummary allTestResults = seleniumEyesRunner.getAllTestResults(false);
         checkVisualTestResults(allTestResults, userPersona, "web", applitoolsLogFileNameForWeb);
+        LOGGER.info("Close Applitools EyesRunner");
+        seleniumEyesRunner.close();
+    }
+
+    public static void closeBatch() {
+        Map applitoolsConfiguration = getApplitoolsConfiguration();
+        BatchInfo batchInfo = (BatchInfo) applitoolsConfiguration.get(APPLITOOLS.BATCH_NAME);
+        if (null != batchInfo) {
+            LOGGER.info("Marking Applitools batch - '%s' closed".formatted(batchInfo.getName()));
+            batchInfo.setCompleted(true);
+        }
     }
 
     private void getVisualResultsFromApp(String userPersona) {

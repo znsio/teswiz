@@ -5,7 +5,7 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.AppiumServerManager;
 import com.znsio.teswiz.runner.FileLocations;
-import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.tools.FileUtils;
 import com.znsio.teswiz.tools.OsUtils;
 import io.cucumber.plugin.ConcurrentEventListener;
@@ -106,6 +106,7 @@ public class CucumberScenarioListener implements ConcurrentEventListener {
         LOGGER.info("runFinishedHandler: " + event.getResult().toString());
         LOGGER.info(String.format("ThreadID: %d: afterSuite: %n", Thread.currentThread().getId()));
         try {
+            Visual.closeBatch();
             AppiumServerManager.destroyAppiumNode();
             SessionContext.setReportPortalLaunchURL();
         } catch (Exception e) {

@@ -526,6 +526,7 @@ class Setup {
         batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
         batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
         batchInfo.addProperty(REPOSITORY_NAME, new File(System.getProperty("user.dir")).getName());
+        batchInfo.setNotifyOnCompletion(true);
         return batchInfo;
     }
 

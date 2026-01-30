@@ -196,8 +196,8 @@ tasks.compileJava {
 
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    implementation "com.applitools:eyes-images-java5:5.81.8"
-    implementation ("com.applitools:eyes-appium-java5:5.79.8") {
+    implementation "com.applitools:eyes-images-java5:5.81.9"
+    implementation ("com.applitools:eyes-appium-java5:5.79.9") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
@@ -206,7 +206,7 @@ dependencies {
     }
     implementation "com.browserstack:browserstack-local-java:1.1.7"
     implementation 'com.epam.reportportal:agent-java-cucumber6:5.5.3'
-    implementation 'com.epam.reportportal:client-java:5.4.8'
+    implementation 'com.epam.reportportal:client-java:5.4.9'
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.0"
     implementation "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
     implementation "com.github.erosb:everit-json-schema:1.14.6"
@@ -216,8 +216,8 @@ dependencies {
     implementation "com.konghq:unirest-java:3.14.5"
     implementation "com.squareup.okhttp3:okhttp:5.3.2"
     implementation "io.appium:java-client:10.0.0"
-    implementation 'io.cucumber:cucumber-java:7.33.0'
-    implementation 'io.cucumber:cucumber-testng:7.33.0'
+    implementation 'io.cucumber:cucumber-java:7.34.2'
+    implementation 'io.cucumber:cucumber-testng:7.34.2'
     implementation "io.github.bonigarcia:webdrivermanager:6.3.3"
     implementation "net.masterthought:cucumber-reporting:5.10.2"
     implementation "org.apache.commons:commons-lang3:3.20.0"
