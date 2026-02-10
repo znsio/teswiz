@@ -198,7 +198,6 @@ class Setup {
     private static void setLogPropertiesFile() {
         File file;
         try {
-            LoggerContext context = (LoggerContext) LogManager.getContext(false);
             if (properties.containsKey(LOG_PROPERTIES_FILE)) {
                 file = new File(properties.getProperty(LOG_PROPERTIES_FILE));
                 String logFilePath = file.getAbsolutePath();
@@ -208,9 +207,24 @@ class Setup {
                 configs.put(LOG_PROPERTIES_FILE, DEFAULT_LOG_PROPERTIES_FILE);
                 file = new File(DEFAULT_LOG_PROPERTIES_FILE);
             }
-            context.setConfigLocation(file.toURI());
+
+            String configUri = file.toURI().toString();
+
+            // Always set the system property as a baseline (works if Log4j Core is used and loads config early)
+            System.setProperty("log4j.configurationFile", configUri);
+
+            Object ctx = LogManager.getContext(false);
+
+            // Only Log4j Core supports setConfigLocation
+            if (ctx instanceof LoggerContext coreCtx) {
+                coreCtx.setConfigLocation(file.toURI());
+            } else {
+                // You're on SLF4JLoggerContext or something else (because log4j-to-slf4j is present)
+                // You cannot reconfigure Log4j Core via this context.
+                System.out.printf("Log4j is not using Core LoggerContext (found: %s). Skipping runtime Log4j reconfigure; set system property log4j.configurationFile=%s%n", ctx.getClass().getName(), configUri);
+            }
         } catch (Exception e) {
-            throw new InvalidTestDataException("There was a problem while setting log properties file");
+            throw new InvalidTestDataException("There was a problem while setting log properties file", e);
         }
     }
 
