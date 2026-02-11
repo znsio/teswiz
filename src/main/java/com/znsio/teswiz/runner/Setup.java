@@ -28,7 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static com.znsio.teswiz.runner.Runner.*;
+import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static com.znsio.teswiz.tools.OverriddenVariable.*;
 
 class Setup {
@@ -229,16 +229,24 @@ class Setup {
     }
 
     private static void setBrowserConfigFilePath() {
-        if (properties.containsKey(BROWSER_CONFIG_FILE)) {
-            Path browserConfigFilePath = Paths.get(properties.get(BROWSER_CONFIG_FILE).toString());
-            configs.put(BROWSER_CONFIG_FILE, browserConfigFilePath.toString());
-            LOGGER.info(String.format("Using the provided BROWSER_CONFIG_FILE: '%s'", browserConfigFilePath));
-        } else {
-            configs.put(BROWSER_CONFIG_FILE, DEFAULT_BROWSER_CONFIG_FILE);
-            LOGGER.info(String.format("Using the default BROWSER_CONFIG_FILE: '%s'", DEFAULT_BROWSER_CONFIG_FILE));
-        }
-    }
+        final String overridden =
+                getOverriddenStringValue(BROWSER_CONFIG_FILE, DEFAULT_BROWSER_CONFIG_FILE);
 
+        final String resolvedPath =
+                overridden.equalsIgnoreCase(DEFAULT_BROWSER_CONFIG_FILE)
+                ? (properties.containsKey(BROWSER_CONFIG_FILE)
+                   ? properties.getProperty(BROWSER_CONFIG_FILE)
+                   : DEFAULT_BROWSER_CONFIG_FILE)
+                : overridden;
+
+        final String normalized = Paths.get(resolvedPath).toString();
+        configs.put(BROWSER_CONFIG_FILE, normalized);
+
+        final boolean isDefault = normalized.equals(Paths.get(DEFAULT_BROWSER_CONFIG_FILE).toString());
+        LOGGER.info("Using {} BROWSER_CONFIG_FILE: '{}'",
+                    isDefault ? "the default" : "the provided",
+                    normalized);
+    }
     private static void printLoadedConfigProperties(String configFilePath) {
         LOGGER.info(String.format("Loaded property file: %s", configFilePath));
         final String[] propVars = {""};
