@@ -4,8 +4,8 @@
     "@appium/relaxed-caps-plugin": "2.0.2",
     "appium": "3.2.0",
     "appium-device-farm": "11.3.2",
-    "appium-uiautomator2-driver": "6.7.13",
-    "appium-xcuitest-driver": "10.18.2",
+    "appium-uiautomator2-driver": "6.8.1",
+    "appium-xcuitest-driver": "10.21.2",
     "go-ios": "1.0.188"
   },
   "name": "teswiz",
