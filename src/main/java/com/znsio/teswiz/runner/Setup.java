@@ -71,6 +71,7 @@ class Setup {
     static final String HOST_NAME = "HOST_NAME";
     static final String IS_FAILING_TEST_SUITE = "IS_FAILING_TEST_SUITE";
     static final String SET_HARD_GATE = "SET_HARD_GATE";
+    static final String HEADLESS = "HEADLESS";
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
@@ -378,6 +379,7 @@ class Setup {
         configs.put(HOST_NAME, getHostMachineName());
         configsBoolean.put(IS_FAILING_TEST_SUITE, getOverriddenBooleanValue(IS_FAILING_TEST_SUITE, false));
         configsBoolean.put(SET_HARD_GATE, getOverriddenBooleanValue(SET_HARD_GATE, false));
+        configsBoolean.put(HEADLESS, getOverriddenBooleanValue(HEADLESS, false));
     }
 
     static String getHostMachineName() {

@@ -46,6 +46,7 @@ import java.util.logging.Level;
 
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
+import static com.znsio.teswiz.runner.Setup.HEADLESS;
 import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 
 class BrowserDriverManager {
@@ -270,7 +271,7 @@ class BrowserDriverManager {
 
     private static void setHeadlessInFirefoxOptions(JSONObject firefoxConfiguration, FirefoxOptions firefoxOptions) {
         JSONObject headlessOptions = firefoxConfiguration.getJSONObject("headlessOptions");
-        isRunInHeadlessMode = headlessOptions.getBoolean("headless");
+        isRunInHeadlessMode = headlessOptions.getBoolean("headless") || Setup.getBooleanValueFromConfigs(HEADLESS);
         if (isRunInHeadlessMode) {
             firefoxOptions.addArguments("-headless");
         }
@@ -374,7 +375,7 @@ class BrowserDriverManager {
 
     private static void setHeadlessInChromeOptions(JSONObject chromeConfiguration, ChromeOptions chromeOptions) {
         JSONObject headlessOptions = chromeConfiguration.getJSONObject("headlessOptions");
-        isRunInHeadlessMode = headlessOptions.getBoolean("headless");
+        isRunInHeadlessMode = headlessOptions.getBoolean("headless") || Setup.getBooleanValueFromConfigs(HEADLESS);
 
         if (isRunInHeadlessMode) {
             chromeOptions.addArguments("--headless=new");
