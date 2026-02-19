@@ -10,6 +10,7 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.OsUtils;
+import com.znsio.teswiz.tools.StringUtils;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.commons.io.FileUtils;
@@ -24,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -533,7 +533,7 @@ class Setup {
             updateApplitoolsProxyUrl();
             applitoolsConfiguration.put(APPLITOOLS.IS_BENCHMARKING_ENABLED, isBenchmarkingEnabled());
             applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING, isDisableBrowserFetching());
-            applitoolsConfiguration.put(APPLITOOLS.BATCH_NAME, setupApplitoolsBatchInfo());
+            applitoolsConfiguration.put(APPLITOOLS.BATCH_INFO, setupApplitoolsBatchInfo());
         }
         LOGGER.info("applitoolsConfiguration:\n{}", JsonPrettyPrinter.prettyPrint(applitoolsConfiguration));
         return applitoolsConfiguration;
@@ -548,6 +548,9 @@ class Setup {
         batchInfo.addProperty(RUN_IN_CI, String.valueOf(configsBoolean.get(RUN_IN_CI)));
         batchInfo.addProperty(TARGET_ENVIRONMENT, configs.get(TARGET_ENVIRONMENT));
         batchInfo.addProperty(REPOSITORY_NAME, new File(System.getProperty("user.dir")).getName());
+        String batchId = StringUtils.normaliseScenarioName(configs.get(LOG_DIR));
+        System.setProperty("batchid", batchId);
+        batchInfo.setId(batchId);
         batchInfo.setNotifyOnCompletion(true);
         return batchInfo;
     }

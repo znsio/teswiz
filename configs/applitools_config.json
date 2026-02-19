@@ -1,5 +1,5 @@
 {
-  "serverUrl": "https://eyesapi.applitools.com/",
+  "serverUrl": "https://eyes.applitools.com/",
   "defaultMatchLevel": "strict",
   "enableBenchmarkPerValidation": true,
   "sendDOM": true,

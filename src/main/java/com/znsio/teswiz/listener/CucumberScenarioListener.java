@@ -8,6 +8,7 @@ import com.znsio.teswiz.runner.FileLocations;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.tools.FileUtils;
 import com.znsio.teswiz.tools.OsUtils;
+import com.znsio.teswiz.tools.StringUtils;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -55,7 +56,7 @@ public class CucumberScenarioListener implements ConcurrentEventListener {
         LOGGER.info("\tCurrent Example Row Number: " + currentExampleRowNumberForScenario);
         TestExecutionContext testExecutionContext = new TestExecutionContext(scenarioName + "-" + currentExampleRowNumberForScenario);
 
-        String normalisedScenarioName = normaliseScenarioName(scenarioName);
+        String normalisedScenarioName = StringUtils.normaliseScenarioName(scenarioName);
         String scenarioLogDirectory = FileLocations.REPORTS_DIRECTORY + runningScenarioNumber + "-" + normalisedScenarioName + "_" + currentExampleRowNumberForScenario + File.separator;
         String screenshotDirectory = scenarioLogDirectory + FileLocations.SCREENSHOTS_DIRECTORY;
         String deviceLogsDirectory = scenarioLogDirectory + FileLocations.DEVICE_LOGS_DIRECTORY;
@@ -70,10 +71,6 @@ public class CucumberScenarioListener implements ConcurrentEventListener {
         testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_DIRECTORY, screenshotDirectory);
         testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_LOGS_DIRECTORY, deviceLogsDirectory);
 
-    }
-
-    private String normaliseScenarioName(String scenarioName) {
-        return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_");
     }
 
     private Integer updateCurrentExampleRowNumberForScenario(String scenarioName) {

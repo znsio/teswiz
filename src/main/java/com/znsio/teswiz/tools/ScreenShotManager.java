@@ -28,7 +28,7 @@ public class ScreenShotManager {
 
     public void takeScreenShot(WebDriver driver, String fileName) {
         if (null != driver) {
-            fileName = normaliseScenarioName(getPrefix() + "-" + fileName);
+            fileName = StringUtils.normaliseScenarioName(getPrefix() + "-" + fileName);
             File destinationFile = createScreenshotFile(directoryPath, fileName);
             LOGGER.debug("The screenshot will be placed here : {}", destinationFile.getAbsolutePath());
             try {
@@ -44,11 +44,6 @@ public class ScreenShotManager {
         } else {
             LOGGER.warn("Driver is not instantiated for this test");
         }
-    }
-
-    private String normaliseScenarioName(String scenarioName) {
-        return scenarioName.replaceAll("[`~ !@#$%^&*()\\-=+\\[\\]{}\\\\|;:'\",<.>/?]", "_")
-                .replaceAll("__", "_").replaceAll("__", "_");
     }
 
     private int getPrefix() {

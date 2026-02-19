@@ -2,6 +2,8 @@ package com.znsio.teswiz.runner;
 
 import com.applitools.eyes.*;
 import com.applitools.eyes.appium.AppiumCheckSettings;
+import com.applitools.eyes.fluent.BatchClose;
+import com.applitools.eyes.fluent.EnabledBatchClose;
 import com.applitools.eyes.selenium.*;
 import com.applitools.eyes.selenium.fluent.SeleniumCheckSettings;
 import com.applitools.eyes.selenium.fluent.Target;
@@ -41,10 +43,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.znsio.teswiz.runner.Runner.*;
@@ -264,7 +264,7 @@ public class Visual {
                 getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         config.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
         config.setApiKey(getApplitoolsAPIKey(isVisualTestingEnabled));
-        config.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
+        config.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_INFO));
         config.setBranchName(valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
         config.setEnvironmentName(targetEnvironment);
         config.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
@@ -359,7 +359,7 @@ public class Visual {
         appEyes.setServerUrl(
                 getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         appEyes.setApiKey(getApplitoolsAPIKey(isVisualTestingEnabled));
-        appEyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
+        appEyes.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_INFO));
         appEyes.setBranchName(valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
         appEyes.setEnvName(targetEnvironment);
         appEyes.setMatchLevel(
@@ -493,7 +493,7 @@ public class Visual {
                 getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
         configuration.setApiKey(getValueFromConfig(APPLITOOLS.API_KEY, NOT_SET));
         configuration.setApiKey(getApplitoolsAPIKey(isVisualTestingEnabled));
-        configuration.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_NAME));
+        configuration.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_INFO));
 
         configuration.setBranchName(valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
         configuration.setEnvironmentName(targetEnvironment);
@@ -779,15 +779,32 @@ public class Visual {
         TestResultsSummary allTestResults = seleniumEyesRunner.getAllTestResults(false);
         checkVisualTestResults(allTestResults, userPersona, "web", applitoolsLogFileNameForWeb);
         LOGGER.info("Close Applitools EyesRunner");
-        seleniumEyesRunner.close();
     }
 
     public static void closeBatch() {
         Map applitoolsConfiguration = getApplitoolsConfiguration();
-        BatchInfo batchInfo = (BatchInfo) applitoolsConfiguration.get(APPLITOOLS.BATCH_NAME);
+        BatchInfo batchInfo = (BatchInfo) applitoolsConfiguration.get(APPLITOOLS.BATCH_INFO);
         if (null != batchInfo) {
             LOGGER.info("Marking Applitools batch - '%s' closed".formatted(batchInfo.getName()));
-            batchInfo.setCompleted(true);
+            if (Runner.isVisualTestingEnabled()) {
+                LOGGER.info("Close Applitools batch using BatchClose");
+
+                String serverUrl = (String) applitoolsConfiguration.get(APPLITOOLS.SERVER_URL);
+                serverUrl = serverUrl.replaceAll("api", "");
+                List<String> batchIds = Collections.singletonList(System.getProperty("batchid"));
+                String apiKey = (String) applitoolsConfiguration.get(APPLITOOLS.API_KEY);
+
+                BatchClose batchClose = new BatchClose();
+                batchClose.setApiKey(apiKey);
+                batchClose.setUrl(serverUrl);
+                String proxyUrl = (String) applitoolsConfiguration.get(APPLITOOLS.PROXY_URL);
+                if (null != proxyUrl) {
+                    LOGGER.info(format("Set proxyUrl for BatchClose: %s", proxyUrl));
+                    batchClose.setProxy(new ProxySettings(proxyUrl));
+                }
+                batchClose.setBatchId(batchIds).close();
+                LOGGER.info("Applitools Batch is closed");
+            }
         }
     }
 

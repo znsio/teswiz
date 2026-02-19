@@ -2,7 +2,7 @@ package com.znsio.teswiz.entities;
 
 public class APPLITOOLS {
     public static final String API_KEY = "APPLITOOLS_API_KEY";
-    public static final String BATCH_NAME = "batchName";
+    public static final String BATCH_INFO = "batchName";
     public static final String DEFAULT_MATCH_LEVEL = "defaultMatchLevel";
     public static final String SHOW_LOGS = "showLogs";
     public static final String VIEWPORT_SIZE = "viewportSize";
