@@ -1,4 +1,5 @@
 import java.text.SimpleDateFormat
+import org.codehaus.groovy.runtime.GStringImpl
 
 buildscript {
     ext {
@@ -10,7 +11,7 @@ plugins {
     id "idea"
 }
 
-def teswizVersion = "1.0.14"
+def teswizVersion = "1.0.15"
 
 group = "com.github.znsio"
 version = "$teswizVersion"

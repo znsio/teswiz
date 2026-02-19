@@ -25,7 +25,7 @@ Execution failed for task ':compileTestJava'.
 
 Example:
 ```
-    def teswizVersion = '1.0.14'
+    def teswizVersion = '1.0.15'
 ```
 
 ### 2. Define the folder where you want to download the teswiz as a jar dependency
