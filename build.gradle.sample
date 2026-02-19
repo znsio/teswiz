@@ -187,7 +187,7 @@ dependencies {
 }
 
 wrapper {
-    gradleVersion = "8.14.2"
+    gradleVersion = "9.3.1"
 }
 
 static def getCurrentDatestamp() {
