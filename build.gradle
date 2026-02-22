@@ -230,7 +230,7 @@ dependencies {
     implementation "org.jetbrains:annotations:26.1.0"
     testImplementation "org.junit.jupiter:junit-jupiter:6.0.3"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation "org.seleniumhq.selenium:selenium-java:4.40.0"
+    implementation "org.seleniumhq.selenium:selenium-java:4.41.0"
     implementation "org.yaml:snakeyaml:2.5"
 }
 
