@@ -211,7 +211,7 @@ dependencies {
     implementation "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
     implementation "com.github.erosb:everit-json-schema:1.14.6"
     implementation "com.github.vidstige:jadb:$jadbVersion"
-    implementation 'com.jayway.jsonpath:json-path:2.10.0'
+    implementation 'com.jayway.jsonpath:json-path:3.0.0'
     // TODO - migrate to restassured
     implementation "com.konghq:unirest-java:3.14.5"
     implementation "com.squareup.okhttp3:okhttp:5.3.2"
