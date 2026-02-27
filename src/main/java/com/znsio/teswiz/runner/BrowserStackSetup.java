@@ -43,9 +43,13 @@ class BrowserStackSetup {
 
         addAppOrBrowserNameToBrowserStackCapablities(deviceLabURL, loadedPlatformCapability, authenticationUser, authenticationKey);
         HashMap<String, Object> bstackOptions = new HashMap<String, Object>();
+        copyLegacyBrowserStackOptionsToBstackOptions(loadedPlatformCapability, bstackOptions);
         bstackOptions.put("userName", authenticationUser);
         bstackOptions.put("accessKey", authenticationKey);
-        bstackOptions.put("appiumVersion", loadedPlatformCapability.get("browserstack.appiumVersion"));
+        Object appiumVersion = loadedPlatformCapability.get("browserstack.appiumVersion");
+        if (null != appiumVersion) {
+            bstackOptions.put("appiumVersion", appiumVersion);
+        }
         bstackOptions.put("projectName", Setup.getFromConfigs(Setup.APP_NAME));
         String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "")
                 .replace("\\", "");
@@ -63,6 +67,7 @@ class BrowserStackSetup {
 //                Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
 //        bstackOptions.put("project", Setup.getFromConfigs(Setup.APP_NAME));
         loadedPlatformCapability.put("bstack:options", bstackOptions);
+        removeLegacyBrowserStackCapabilities(loadedPlatformCapability);
 //        loadedPlatformCapability.put("deviceName", String.valueOf(loadedCapabilityFile.get(platformName).getOrDefault(DEVICE, "")));
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey,
                                                 loadedCapabilityFile);
@@ -107,9 +112,7 @@ class BrowserStackSetup {
 
         capabilities.setCapability("browserName", loadedPlatformCapability.get("browserName"));
 
-        Map<String, String> browserstackOptions =
-                (Map<String, String>) loadedPlatformCapability.get(
-                "browserstackOptions");
+        Map<String, String> browserstackOptions = getBrowserStackOptionsForWeb(loadedPlatformCapability);
         browserstackOptions.put("projectName", Setup.getFromConfigs(Setup.APP_NAME));
         browserstackOptions.put("buildName",
                                 Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
@@ -127,6 +130,40 @@ class BrowserStackSetup {
         capabilities.setCapability("bstack:options", browserstackOptions);
 
         return capabilities;
+    }
+
+    private static Map<String, String> getBrowserStackOptionsForWeb(Map loadedPlatformCapability) {
+        Object browserstackOptionsRaw = loadedPlatformCapability.get("browserstackOptions");
+        if (browserstackOptionsRaw instanceof Map) {
+            return (Map<String, String>) browserstackOptionsRaw;
+        }
+        Object bstackOptionsRaw = loadedPlatformCapability.get("bstack:options");
+        if (bstackOptionsRaw instanceof Map) {
+            return (Map<String, String>) bstackOptionsRaw;
+        }
+        return new HashMap<>();
+    }
+
+    private static void copyLegacyBrowserStackOptionsToBstackOptions(Map loadedPlatformCapability,
+                                                                      Map<String, Object> bstackOptions) {
+        loadedPlatformCapability.forEach((key, value) -> {
+            String keyAsString = String.valueOf(key);
+            if (keyAsString.startsWith("browserstack.")) {
+                String normalizedKey = keyAsString.substring("browserstack.".length());
+                bstackOptions.put(normalizedKey, value);
+            }
+        });
+    }
+
+    private static void removeLegacyBrowserStackCapabilities(Map loadedPlatformCapability) {
+        List<String> keysToRemove = new ArrayList<>();
+        loadedPlatformCapability.forEach((key, value) -> {
+            String keyAsString = String.valueOf(key);
+            if (keyAsString.startsWith("browserstack.")) {
+                keysToRemove.add(keyAsString);
+            }
+        });
+        keysToRemove.forEach(loadedPlatformCapability::remove);
     }
 
     private static String getAppIdFromBrowserStack(String authenticationUser,

@@ -536,7 +536,7 @@ class BrowserDriverManager {
             } else if (cloudName.equalsIgnoreCase("browserstack")) {
                 String authenticationUser = Runner.getCloudUser();
                 String authenticationKey = Runner.getCloudKey();
-                remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub.browserstack.com/wd/hub";
+                remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub-cloud.browserstack.com/wd/hub";
                 capabilities = BrowserStackSetup.updateBrowserStackCapabilities(capabilities);
             } else if (cloudName.equalsIgnoreCase("lambdatest")) {
                 String authenticationUser = Runner.getCloudUser();
