@@ -1,23 +1,30 @@
 package com.znsio.teswiz.runner;
 
-import com.znsio.teswiz.context.TestExecutionContext;
-import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.entities.TEST_CONTEXT;
-import com.znsio.teswiz.exceptions.EnvironmentSetupException;
-import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import com.znsio.teswiz.tools.JsonFile;
-import com.znsio.teswiz.tools.JsonSchemaValidator;
-import com.znsio.teswiz.tools.OsUtils;
-import com.znsio.teswiz.tools.ReportPortalLogger;
-import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
-import io.github.bonigarcia.wdm.WebDriverManager;
+import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.MutableCapabilities;
+import org.openqa.selenium.NoSuchSessionException;
+import org.openqa.selenium.Proxy;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnsupportedCommandException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -32,22 +39,23 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
-import java.awt.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-
+import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.entities.TEST_CONTEXT;
+import com.znsio.teswiz.exceptions.EnvironmentSetupException;
+import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 import static com.znsio.teswiz.runner.Setup.HEADLESS;
+import com.znsio.teswiz.tools.JsonFile;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
+import com.znsio.teswiz.tools.JsonSchemaValidator;
+import com.znsio.teswiz.tools.OsUtils;
 import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
+import com.znsio.teswiz.tools.ReportPortalLogger;
+import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 class BrowserDriverManager {
     private static final Logger LOGGER = LogManager.getLogger(BrowserDriverManager.class.getName());
@@ -68,9 +76,10 @@ class BrowserDriverManager {
 
     @NotNull
     static Driver createWebDriverForUser(String userPersona, String browserName,
-                                         Platform forPlatform, TestExecutionContext context) {
+            Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format(
-                "createWebDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: " + "'%s', Number of WebDrivers: '%d'%n",
+                "createWebDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: "
+                        + "'%s', Number of WebDrivers: '%d'%n",
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
         LOGGER.debug("Active thread count: " + Thread.activeCount());
 
@@ -84,10 +93,12 @@ class BrowserDriverManager {
         context.addTestState(TEST_CONTEXT.WEB_BROWSER_ON, runningOn);
         WebDriver newWebDriver = createNewWebDriver(userPersona, browserName, context);
         loadBaseUrl(baseUrl, newWebDriver);
-        Driver currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName, newWebDriver, isRunInHeadlessMode);
+        Driver currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName, newWebDriver,
+                isRunInHeadlessMode);
         numberOfWebDriversUsed++;
 
-        LOGGER.info(String.format("createWebDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', Number of WebDrivers: '%d'",
+        LOGGER.info(String.format(
+                "createWebDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', Number of WebDrivers: '%d'",
                 userPersona, forPlatform.name(), appName, numberOfWebDriversUsed));
         return currentDriver;
     }
@@ -97,7 +108,8 @@ class BrowserDriverManager {
         LOGGER.info("Navigated to baseUrl: " + baseUrl);
     }
 
-    private static void checkNumberOfWebDriversInstantiated(String userPersona, com.znsio.teswiz.entities.Platform forPlatform) {
+    private static void checkNumberOfWebDriversInstantiated(String userPersona,
+            com.znsio.teswiz.entities.Platform forPlatform) {
         if (numberOfWebDriversUsed >= MAX_NUMBER_OF_WEB_DRIVERS) {
             throw new InvalidTestDataException(String.format(
                     "Current number of WebDriver instances used: '%d'. " + "Unable to create " +
@@ -110,10 +122,12 @@ class BrowserDriverManager {
     @org.jetbrains.annotations.NotNull
     private static JSONObject getBrowserConfig(TestExecutionContext context) {
         String browserConfigFile = Runner.getBrowserConfigFile();
-        String updatedBrowserConfigFileForThisTest = context.getTestStateAsString(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST);
+        String updatedBrowserConfigFileForThisTest = context
+                .getTestStateAsString(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST);
         if (null != updatedBrowserConfigFileForThisTest) {
             browserConfigFile = updatedBrowserConfigFileForThisTest;
-            LOGGER.debug("Using UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST (instead of default BROWSER_CONFIG_FILE): " + browserConfigFile);
+            LOGGER.debug("Using UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST (instead of default BROWSER_CONFIG_FILE): "
+                    + browserConfigFile);
         }
         LOGGER.info("Using BROWSER_CONFIG_FILE: " + browserConfigFile);
         JSONObject browserConfig = Runner.getBrowserConfigFileContents(browserConfigFile);
@@ -144,19 +158,21 @@ class BrowserDriverManager {
     private static void checkConnectivityToBaseUrl(String baseUrl) {
         if (numberOfWebDriversUsed == 0) {
             LOGGER.info(String.format("Check connectivity to baseUrl: '%s'", baseUrl));
-            String[] curlCommand = new String[]{"curl -m 60 --insecure -I " + baseUrl};
+            String[] curlCommand = new String[] { "curl -m 60 --insecure -I " + baseUrl };
             CommandLineExecutor.execCommand(curlCommand);
         }
     }
 
     @NotNull
     private static WebDriver createNewWebDriver(String forUserPersona, String browserName,
-                                                TestExecutionContext testExecutionContext) {
+            TestExecutionContext testExecutionContext) {
         JSONObject browserConfig = getBrowserConfig(testExecutionContext);
-        LOGGER.info(String.format("Create new webdriver instance for: %s, on: %s, with browserConfig: %s", forUserPersona, browserName, browserConfig));
+        LOGGER.info(String.format("Create new webdriver instance for: %s, on: %s, with browserConfig: %s",
+                forUserPersona, browserName, browserConfig));
 
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
-        WebDriver driver = createWebDriver(forUserPersona, testExecutionContext, browserName, browserConfigForBrowserType);
+        WebDriver driver = createWebDriver(forUserPersona, testExecutionContext, browserName,
+                browserConfigForBrowserType);
 
         if (null == driver) {
             throw new EnvironmentSetupException(
@@ -167,7 +183,8 @@ class BrowserDriverManager {
         return driver;
     }
 
-    private static WebDriver createWebDriver(String forUserPersona, TestExecutionContext testExecutionContext, String browserName, JSONObject browserConfigForBrowserType) {
+    private static WebDriver createWebDriver(String forUserPersona, TestExecutionContext testExecutionContext,
+            String browserName, JSONObject browserConfigForBrowserType) {
         WebDriver driver = null;
         switch (browserName.toLowerCase()) {
             case "chrome":
@@ -189,8 +206,8 @@ class BrowserDriverManager {
 
     @NotNull
     private static WebDriver createChromeDriver(String forUserPersona,
-                                                TestExecutionContext testExecutionContext,
-                                                JSONObject chromeConfiguration) {
+            TestExecutionContext testExecutionContext,
+            JSONObject chromeConfiguration) {
 
         ChromeOptions chromeOptions = getChromeOptions(forUserPersona, testExecutionContext, chromeConfiguration);
         shouldBrowserBeMaximized = chromeConfiguration.getBoolean(MAXIMIZE);
@@ -198,9 +215,8 @@ class BrowserDriverManager {
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions)
                 : new ChromeDriver(chromeOptions);
         LOGGER.info("Chrome driver created");
-        Capabilities capabilities =
-                Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
-                        : ((ChromeDriver) driver).getCapabilities();
+        Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
+                : ((ChromeDriver) driver).getCapabilities();
         Drivers.addUserPersonaDriverCapabilities(forUserPersona, capabilities);
         LOGGER.debug("Chrome driver capabilities extracted for further use");
         manageWindowSizeAndHeadlessMode(driver);
@@ -208,13 +224,15 @@ class BrowserDriverManager {
     }
 
     @org.jetbrains.annotations.NotNull
-    private static ChromeOptions getChromeOptions(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject chromeConfiguration) {
+    private static ChromeOptions getChromeOptions(String forUserPersona, TestExecutionContext testExecutionContext,
+            JSONObject chromeConfiguration) {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setAcceptInsecureCerts(chromeConfiguration.getBoolean(ACCEPT_INSECURE_CERTS));
 
         String browserVersion = getOverriddenStringValue(BROWSER_VERSION,
                 chromeConfiguration.getString("browserVersion"));
-        if ((Runner.getPlatform().equals(Platform.web) || Runner.getPlatform().equals(Platform.electron)) && !browserVersion.equalsIgnoreCase("latest")) {
+        if ((Runner.getPlatform().equals(Platform.web) || Runner.getPlatform().equals(Platform.electron))
+                && !browserVersion.equalsIgnoreCase("latest")) {
             chromeOptions.setBrowserVersion(browserVersion);
         }
 
@@ -224,7 +242,7 @@ class BrowserDriverManager {
         setProxyInChromeOptions(chromeOptions, chromeConfiguration);
         setHeadlessInChromeOptions(chromeConfiguration, chromeOptions);
         setEmulationModeInChromeOptions(testExecutionContext, chromeOptions);
-        LOGGER.info(String.format("ChromeOptions: %s", chromeOptions.asMap()));
+        LOGGER.info(String.format("ChromeOptions: %s", JsonPrettyPrinter.prettyPrint(chromeOptions.asMap())));
         return chromeOptions;
     }
 
@@ -237,8 +255,8 @@ class BrowserDriverManager {
     }
 
     private static WebDriver createFirefoxDriver(String forUserPersona,
-                                                 TestExecutionContext testExecutionContext,
-                                                 JSONObject firefoxConfiguration) {
+            TestExecutionContext testExecutionContext,
+            JSONObject firefoxConfiguration) {
 
         FirefoxOptions firefoxOptions = getFirefoxOptions(forUserPersona, testExecutionContext, firefoxConfiguration);
         shouldBrowserBeMaximized = firefoxConfiguration.getBoolean(MAXIMIZE);
@@ -246,9 +264,8 @@ class BrowserDriverManager {
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(firefoxOptions)
                 : new FirefoxDriver(firefoxOptions);
         LOGGER.info("Firefox driver created");
-        Capabilities capabilities =
-                Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
-                        : ((FirefoxDriver) driver).getCapabilities();
+        Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
+                : ((FirefoxDriver) driver).getCapabilities();
         Drivers.addUserPersonaDriverCapabilities(forUserPersona, capabilities);
         LOGGER.debug("Firefox driver capabilities extracted for further use");
         manageWindowSizeAndHeadlessMode(driver);
@@ -256,7 +273,8 @@ class BrowserDriverManager {
     }
 
     @NotNull
-    private static FirefoxOptions getFirefoxOptions(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject firefoxConfiguration) {
+    private static FirefoxOptions getFirefoxOptions(String forUserPersona, TestExecutionContext testExecutionContext,
+            JSONObject firefoxConfiguration) {
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         firefoxOptions.setAcceptInsecureCerts(firefoxConfiguration.getBoolean(ACCEPT_INSECURE_CERTS));
         setBrowserLogFileName(forUserPersona, testExecutionContext, "Firefox");
@@ -282,7 +300,8 @@ class BrowserDriverManager {
         if (null != proxyUrl) {
             String noProxyFor = getNoProxy(firefoxConfiguration);
             Proxy.ProxyType proxyType = getProxyType(firefoxConfiguration);
-            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor + "', and proxyType: '" + proxyType + "'");
+            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor
+                    + "', and proxyType: '" + proxyType + "'");
             Proxy proxy = new Proxy().setHttpProxy(proxyUrl)
                     .setNoProxy(noProxyFor)
                     .setProxyType(proxyType);
@@ -294,7 +313,8 @@ class BrowserDriverManager {
         return jsonObject.keySet().contains("noProxy") ? jsonObject.getString("noProxy") : null;
     }
 
-    private static void setLoggingPrefsInFirefoxOptions(JSONObject firefoxConfiguration, FirefoxOptions firefoxOptions) {
+    private static void setLoggingPrefsInFirefoxOptions(JSONObject firefoxConfiguration,
+            FirefoxOptions firefoxOptions) {
         boolean enableVerboseLogging = firefoxConfiguration.getBoolean(VERBOSE_LOGGING);
         LoggingPreferences logPrefs = new LoggingPreferences();
         if (enableVerboseLogging) {
@@ -341,14 +361,17 @@ class BrowserDriverManager {
         if (null != proxyUrl) {
             String noProxyFor = getNoProxy(chromeConfiguration);
             Proxy.ProxyType proxyType = getProxyType(chromeConfiguration);
-            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor + "', and proxyType: '" + proxyType + "'");
+            LOGGER.info("Setting Proxy for browser: " + "'" + proxyUrl + "' with noProxy for: '" + noProxyFor
+                    + "', and proxyType: '" + proxyType + "'");
             Proxy proxy = new Proxy().setHttpProxy(proxyUrl).setNoProxy(noProxyFor).setProxyType(proxyType);
             chromeOptions.setCapability("proxy", proxy);
         }
     }
 
     private static Proxy.ProxyType getProxyType(JSONObject jsonObject) {
-        return jsonObject.keySet().contains("proxyType") ? Proxy.ProxyType.valueOf(jsonObject.getString("proxyType").toUpperCase()) : Proxy.ProxyType.MANUAL;
+        return jsonObject.keySet().contains("proxyType")
+                ? Proxy.ProxyType.valueOf(jsonObject.getString("proxyType").toUpperCase())
+                : Proxy.ProxyType.MANUAL;
     }
 
     private static void setPreferencesInChromeOptions(JSONObject chromeConfiguration, ChromeOptions chromeOptions) {
@@ -364,7 +387,8 @@ class BrowserDriverManager {
         chromeOptions.setExperimentalOption("prefs", preferences);
     }
 
-    private static void setEmulationModeInChromeOptions(TestExecutionContext testExecutionContext, ChromeOptions chromeOptions) {
+    private static void setEmulationModeInChromeOptions(TestExecutionContext testExecutionContext,
+            ChromeOptions chromeOptions) {
         if (null != testExecutionContext.getTestState(TEST_CONTEXT.MOBILE_EMULATION_DEVICE)) {
             Map<String, String> mobileEmulation = new java.util.HashMap<>();
             mobileEmulation.put("deviceName", testExecutionContext.getTestStateAsString(
@@ -418,27 +442,28 @@ class BrowserDriverManager {
     }
 
     private static WebDriver createSafariDriver(String forUserPersona,
-                                                TestExecutionContext testExecutionContext,
-                                                JSONObject safariConfigurations) {
+            TestExecutionContext testExecutionContext,
+            JSONObject safariConfigurations) {
         SafariOptions safariOptions = getSafariOptions(forUserPersona, testExecutionContext, safariConfigurations);
         shouldBrowserBeMaximized = safariConfigurations.getBoolean(MAXIMIZE);
 
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(safariOptions)
                 : new SafariDriver(safariOptions);
         LOGGER.info("Safari driver created");
-        Capabilities capabilities =
-                Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
-                        : ((SafariDriver) driver).getCapabilities();
+        Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
+                : ((SafariDriver) driver).getCapabilities();
         Drivers.addUserPersonaDriverCapabilities(forUserPersona, capabilities);
         LOGGER.debug("Safari driver capabilities extracted for further use");
-        // webpush notifications are disabled bydefault in safari , headless is not supported by
+        // webpush notifications are disabled bydefault in safari , headless is not
+        // supported by
         // safari browser and user profiles cannot be set in safari
         manageWindowSizeAndHeadlessMode(driver);
         return driver;
     }
 
     @NotNull
-    private static SafariOptions getSafariOptions(String forUserPersona, TestExecutionContext testExecutionContext, JSONObject safariConfigurations) {
+    private static SafariOptions getSafariOptions(String forUserPersona, TestExecutionContext testExecutionContext,
+            JSONObject safariConfigurations) {
         SafariOptions safariOptions = new SafariOptions();
         safariOptions.setCapability(ACCEPT_INSECURE_CERTS, safariConfigurations.getBoolean(ACCEPT_INSECURE_CERTS));
         setBrowserLogFileName(forUserPersona, testExecutionContext, "Safari");
@@ -459,28 +484,31 @@ class BrowserDriverManager {
     }
 
     private static String setBrowserLogFileName(String forUserPersona,
-                                       TestExecutionContext testExecutionContext,
-                                       String browserType) {
-        String scenarioLogDir = OsUtils.getUserDirectory() + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+            TestExecutionContext testExecutionContext,
+            String browserType) {
+        String scenarioLogDir = OsUtils.getUserDirectory()
+                + testExecutionContext.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
         String currentPersona = testExecutionContext.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
         String browserLogDirectory = testExecutionContext.getTestStateAsString(TEST_CONTEXT.DEVICE_LOGS_DIRECTORY);
         Integer scenarioCount = (Integer) testExecutionContext.getTestState(TEST_CONTEXT.EXAMPLE_RUN_COUNT);
 
         browserType = browserType.toLowerCase();
-        String fileName = String.format("%s-Browser-%s-%s-run-%s.log", scenarioCount, numberOfWebDriversUsed+1, currentPersona, browserType);
+        String fileName = String.format("%s-Browser-%s-%s-run-%s.log", scenarioCount, numberOfWebDriversUsed + 1,
+                currentPersona, browserType);
 
         File logFile = new File(browserLogDirectory, fileName);
         fileName = logFile.getAbsolutePath();
         LOGGER.info("Capturing browser logs for '{}' here: '{}'", currentPersona, logFile.getAbsolutePath());
 
-        ReportPortalLogger.logDebugMessage(String.format("Capturing browser logs for '%s' here: '%s'", currentPersona, logFile.getAbsolutePath()));
+        ReportPortalLogger.logDebugMessage(
+                String.format("Capturing browser logs for '%s' here: '%s'", currentPersona, logFile.getAbsolutePath()));
         System.setProperty("webdriver." + browserType + ".logfile", fileName);
         addBrowserLogFileNameFor(forUserPersona, Platform.web.name(), browserType, fileName);
         return fileName;
     }
 
     private static void addBrowserLogFileNameFor(String userPersona, String forPlatform,
-                                                 String browserType, String logFileName) {
+            String browserType, String logFileName) {
         UserPersonaDetails userPersonaDetails = Drivers.getUserPersonaDetails(
                 Runner.getTestExecutionContext(Thread.currentThread().getId()));
         userPersonaDetails.addBrowserLogFileNameFor(userPersona, forPlatform, browserType,
@@ -492,7 +520,8 @@ class BrowserDriverManager {
         try {
             String cloudName = Runner.getCloudName();
             String webDriverHubSuffix = "/wd/hub";
-            String remoteUrl = "http://" + Runner.getRemoteDriverGridHostName() + ":" + Runner.getRemoteDriverGridPort() + webDriverHubSuffix;
+            String remoteUrl = "http://" + Runner.getRemoteDriverGridHostName() + ":" + Runner.getRemoteDriverGridPort()
+                    + webDriverHubSuffix;
             if (cloudName.equalsIgnoreCase("headspin")) {
                 String authenticationKey = Runner.getCloudKey();
                 String capabilityFile = System.getProperty(CAPS);
@@ -509,9 +538,15 @@ class BrowserDriverManager {
                 String authenticationKey = Runner.getCloudKey();
                 remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub.browserstack.com/wd/hub";
                 capabilities = BrowserStackSetup.updateBrowserStackCapabilities(capabilities);
+            } else if (cloudName.equalsIgnoreCase("lambdatest")) {
+                String authenticationUser = Runner.getCloudUser();
+                String authenticationKey = Runner.getCloudKey();
+                remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub.lambdatest.com/wd/hub";
+                capabilities = LambdaTestSetup.updateLambdaTestCapabilities(capabilities);
             }
 
-            LOGGER.info(String.format("Starting RemoteWebDriver using url: %s with capabilities: '%s'", remoteUrl, capabilities));
+            LOGGER.info(String.format("Starting RemoteWebDriver using url: %s with capabilities: '%s'", remoteUrl,
+                    JsonPrettyPrinter.prettyPrint(capabilities)));
             RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(remoteUrl), capabilities);
             LOGGER.info(String.format("RemoteWebDriver created using url: %s", remoteUrl));
             return remoteWebDriver;
@@ -521,8 +556,7 @@ class BrowserDriverManager {
     }
 
     static void closeWebDriver(String userPersona,
-                               @NotNull
-                               Driver driver) {
+            @NotNull Driver driver) {
         String browserNameForUser = Drivers.getBrowserNameForUser(userPersona);
         String logFileName = getBrowserLogFileNameFor(userPersona, Platform.web.name(), browserNameForUser);
         fetchBrowserLogsFromRemoteBrowser(driver, logFileName);
@@ -576,7 +610,7 @@ class BrowserDriverManager {
     }
 
     private static String getBrowserLogFileNameFor(String userPersona, String forPlatform,
-                                                   String browserType) {
+            String browserType) {
         UserPersonaDetails userPersonaDetails = Drivers.getUserPersonaDetails(
                 Runner.getTestExecutionContext(Thread.currentThread().getId()));
         return userPersonaDetails.getBrowserLogFileNameFor(userPersona, forPlatform, browserType);
@@ -584,9 +618,10 @@ class BrowserDriverManager {
 
     @NotNull
     static Driver createElectronDriverForUser(String userPersona, String browserName,
-                                              Platform forPlatform, TestExecutionContext context) {
+            Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format(
-                "createElectronDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: " + "'%s', Number of ElectronDrivers: '%d'%n",
+                "createElectronDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: "
+                        + "'%s', Number of ElectronDrivers: '%d'%n",
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
         LOGGER.debug("Active thread count: " + Thread.activeCount());
 
@@ -599,7 +634,8 @@ class BrowserDriverManager {
         String runningOn = Runner.isRunningInCI() ? "CI" : "local";
         context.addTestState(TEST_CONTEXT.ELECTRON_BROWSER_ON, runningOn);
         JSONObject browserConfig = getBrowserConfig(context);
-        LOGGER.info(String.format("Create new electrondriver instance for: %s, on: %s, with browserConfig: %s", userPersona, browserName, browserConfig));
+        LOGGER.info(String.format("Create new electrondriver instance for: %s, on: %s, with browserConfig: %s",
+                userPersona, browserName, browserConfig));
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
         ChromeOptions chromeOptions = getChromeOptions(userPersona, context, browserConfigForBrowserType);
         addWindowSizeToChromeOptions(browserConfigForBrowserType, chromeOptions);
@@ -607,10 +643,11 @@ class BrowserDriverManager {
 
         shouldBrowserBeMaximized = browserConfigForBrowserType.getBoolean(MAXIMIZE);
 
-        String chromeVersion = getOverriddenStringValue(BROWSER_VERSION, browserConfigForBrowserType.getString("browserVersion"));
+        String chromeVersion = getOverriddenStringValue(BROWSER_VERSION,
+                browserConfigForBrowserType.getString("browserVersion"));
         WebDriverManager webDriverManager = WebDriverManager.chromedriver()
-                                                    .clearDriverCache()
-                                                    .driverVersion(chromeVersion);
+                .clearDriverCache()
+                .driverVersion(chromeVersion);
         String proxyUrl = Runner.getProxyURL();
         if (null != proxyUrl) {
             LOGGER.info(String.format("Adding proxy: %s to WebDriverManager", proxyUrl));
@@ -621,9 +658,8 @@ class BrowserDriverManager {
         WebDriver driver = Runner.isRunningInCI() ? createRemoteWebDriver(chromeOptions)
                 : new ChromeDriver(chromeOptions);
         LOGGER.info("Electron driver created");
-        Capabilities capabilities =
-                Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
-                        : ((ChromeDriver) driver).getCapabilities();
+        Capabilities capabilities = Runner.isRunningInCI() ? ((RemoteWebDriver) driver).getCapabilities()
+                : ((ChromeDriver) driver).getCapabilities();
         Drivers.addUserPersonaDriverCapabilities(userPersona, capabilities);
         LOGGER.debug("Electron driver capabilities extracted for further use");
 
@@ -631,9 +667,11 @@ class BrowserDriverManager {
             handleWindowForElectronApplication(driver, browserConfigForBrowserType);
         }
 
-        Driver currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName, driver, isRunInHeadlessMode);
+        Driver currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName, driver,
+                isRunInHeadlessMode);
         numberOfWebDriversUsed++;
-        LOGGER.info(String.format("createElectronDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', Number of ElectronDrivers: '%d'",
+        LOGGER.info(String.format(
+                "createElectronDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', Number of ElectronDrivers: '%d'",
                 userPersona, forPlatform.name(), appName, numberOfWebDriversUsed));
         return currentDriver;
     }
@@ -647,8 +685,10 @@ class BrowserDriverManager {
 
         while (windowHandles.size() <= 1) {
             windowHandles = driver.getWindowHandles();
-            if (System.currentTimeMillis() - startTime > browserConfigForBrowserType.getInt("electronAppLoadTime") * 1000L) {
-                throw new TimeoutException("No Loading page window available, disable the electronAppLoadingPage parameter");
+            if (System.currentTimeMillis() - startTime > browserConfigForBrowserType.getInt("electronAppLoadTime")
+                    * 1000L) {
+                throw new TimeoutException(
+                        "No Loading page window available, disable the electronAppLoadingPage parameter");
             }
         }
 

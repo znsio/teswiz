@@ -254,6 +254,12 @@ public class AppiumDriverManager {
         return isHeadspin;
     }
 
+    private static boolean isRunningOnLambdaTest() {
+        boolean isLambdaTest = getCloudName().equalsIgnoreCase("lambdatest");
+        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
+        return isLambdaTest;
+    }
+
     static String getCurlProxyCommand() {
         String curlProxyCommand = "";
         if (null != getOverriddenStringValue("PROXY_URL")) {
@@ -297,6 +303,12 @@ public class AppiumDriverManager {
             String sessionId = driver.getSessionId().toString();
             String link = getReportLinkFromBrowserStack(sessionId);
             String message = "BrowserStack Report link available here: " + link;
+            LOGGER.info(message);
+            ReportPortal.emitLog(message, "DEBUG", new Date());
+        } else if (isCloudExecution() && isRunningOnLambdaTest()) {
+            String sessionId = driver.getSessionId().toString();
+            String link = "https://automation.lambdatest.com/logs/?sessionID=" + sessionId;
+            String message = "LambdaTest Report link available here: " + link;
             LOGGER.info(message);
             ReportPortal.emitLog(message, "DEBUG", new Date());
         }

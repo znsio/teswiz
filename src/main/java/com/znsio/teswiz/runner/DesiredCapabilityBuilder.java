@@ -20,7 +20,8 @@ public class DesiredCapabilityBuilder {
     // W3C standard capability keys that should NOT be prefixed with "appium:"
     private static final Set<String> W3C_STANDARD_KEYS = Set.of(
             "platformName", "browserName", "acceptInsecureCerts", "pageLoadStrategy",
-            "proxy", "timeouts", "unhandledPromptBehavior", "bstack:options"
+            "proxy", "timeouts", "unhandledPromptBehavior", "bstack:options", "lt:options",
+            "LT:Options"
     );
 
     public DesiredCapabilities buildDesiredCapability(String capabilityFilePath, int numberOfAppiumDriversUsed) {
@@ -40,11 +41,14 @@ public class DesiredCapabilityBuilder {
         platformCapabilities = fullCapabilities.getJSONObject(platform);
         JSONObject finalPlatformCapabilities = platformCapabilities;
 
-        if (Runner.getCloudName().equalsIgnoreCase("browserstack")) {
+        if (Runner.getCloudName().equalsIgnoreCase("browserstack")
+                || Runner.getCloudName().equalsIgnoreCase("lambdatest")) {
             JSONArray listOfAvailableDevices = fullCapabilities.getJSONObject("serverConfig").getJSONObject("server").getJSONObject("plugin").getJSONObject("device-farm").getJSONObject("cloud").getJSONArray("devices");
-            JSONObject deviceDetails = listOfAvailableDevices.getJSONObject(numberOfAppiumDriversUsed);
-            String deviceName = deviceDetails.getString("deviceName");
-            desiredCapabilities.setCapability("appium:deviceName", deviceName);
+            if (listOfAvailableDevices.length() > numberOfAppiumDriversUsed) {
+                JSONObject deviceDetails = listOfAvailableDevices.getJSONObject(numberOfAppiumDriversUsed);
+                String deviceName = deviceDetails.getString("deviceName");
+                desiredCapabilities.setCapability("appium:deviceName", deviceName);
+            }
         }
 
         platformCapabilities.keySet().forEach(key -> {

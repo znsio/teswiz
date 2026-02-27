@@ -1,0 +1,53 @@
+{
+  "android": {
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
+    "appPackage": "com.appiumpro.the_app",
+    "appActivity": "com.appiumpro.the_app.MainActivity",
+    "automationName": "UIAutomator2",
+    "autoAcceptAlerts": true,
+    "autoGrantPermissions": true,
+    "device": "Galaxy S23",
+    "platformVersion": "13",
+    "platformName": "Android",
+    "newCommandTimeout": 300,
+    "fullReset": true,
+    "noSign": true,
+    "unicodeKeyboard": true,
+    "resetKeyboard": true,
+    "lt:options": {
+      "isRealMobile": true,
+      "video": true,
+      "visual": true,
+      "network": true
+    }
+  },
+  "web": {
+    "browserName": "chrome",
+    "version": "latest",
+    "platform": "Windows 11",
+    "resolution": "1920x1080",
+    "tunnel": false,
+    "network": true,
+    "console": true,
+    "visual": true
+  },
+  "serverConfig": {
+    "server": {
+      "use-plugins": ["device-farm"],
+      "plugin": {
+        "device-farm": {
+          "platform": "android",
+          "skipChromeDownload": true,
+          "cloud": {
+            "cloudName": "lambdatest",
+            "url": "https://mobile-hub.lambdatest.com",
+            "apiUrl": "https://manual-api.lambdatest.com",
+            "devices": [],
+            "web": {}
+          }
+        }
+      }
+    }
+  },
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
+}
