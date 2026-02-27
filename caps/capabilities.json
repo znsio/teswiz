@@ -1,0 +1,17 @@
+{
+  "android": {
+    "automationName": "UiAutomator2"
+  },
+  "serverConfig": {
+    "server": {
+      "plugin": {
+        "device-farm": {
+          "cloud": {
+            "cloudName": "lambdatest",
+            "devices": []
+          }
+        }
+      }
+    }
+  }
+}
