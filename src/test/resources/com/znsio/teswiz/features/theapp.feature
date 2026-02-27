@@ -14,6 +14,8 @@ Feature: Scenarios for "The App"
 #  CONFIG=./configs/theapp/theapp_local_ios_config.properties PLATFORM=iOS TAG="@theapp2 and @invalidLogin1" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=web TAG="@theapp2 and @invalidLogin1 and @browserstack" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_lambdatest_web_config.properties CLOUD_USERNAME=$LT_CLOUD_USERNAME CLOUD_KEY=$LT_CLOUD_KEY PLATFORM=web TAG="@theapp2 and @invalidLogin1 and @lambdatest" ./gradlew run
+#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_lambdatest_android_config.properties CLOUD_USERNAME=$LT_CLOUD_USERNAME CLOUD_KEY=$LT_CLOUD_KEY PLATFORM=android TAG="@theapp2 and @invalidLogin1 and @lambdatest" ./gradlew run
+#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_lambdatest_ios_config.properties CLOUD_USERNAME=$LT_CLOUD_USERNAME CLOUD_KEY=$LT_CLOUD_KEY PLATFORM=iOS TAG="@theapp2 and @invalidLogin1 and @lambdatest" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=android TAG="@theapp2 and @invalidLogin1 and @browserstack" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_headspin_android_config.properties CLOUD_KEY=$HEADSPIN_CLOUD_KEY PLATFORM=android TAG="@theapp2 and @invalidLogin1 and @headspin" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_headspin_ios_config.properties CLOUD_KEY=$HEADSPIN_CLOUD_KEY PLATFORM=iOS TAG="@theapp2 and @invalidLogin1 and @headspin" ./gradlew run
