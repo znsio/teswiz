@@ -288,22 +288,8 @@ class BrowserStackSetup {
             String errorMessage = null != error && !error.isJsonNull()
                     ? error.getAsString()
                     : String.format("Missing 'app_url' in response: %s", uploadResponse);
-            LOGGER.warn(String.format(
-                    "Failed to upload app '%s' to BrowserStack. Attempting fallback to recent_apps lookup. Error: %s",
-                    appPath, errorMessage));
-            try {
-                String existingAppIdFromBrowserStack = getAppIdFromBrowserStack(authenticationKey,
-                                                                                 appPath, uploadUrl);
-                LOGGER.info(String.format(
-                        "Fallback succeeded. Using existing BrowserStack app id from recent_apps: '%s'",
-                        existingAppIdFromBrowserStack));
-                Setup.addToConfigs(Setup.APP_PATH, existingAppIdFromBrowserStack);
-                return existingAppIdFromBrowserStack;
-            } catch(InvalidTestDataException fallbackException) {
-                throw new InvalidTestDataException(String.format(
-                        "Failed to upload app '%s' to BrowserStack. Upload error: %s. Fallback to recent_apps also failed: %s",
-                        appPath, errorMessage, fallbackException.getMessage()), fallbackException);
-            }
+            throw new InvalidTestDataException(String.format(
+                    "Failed to upload app '%s' to BrowserStack. %s", appPath, errorMessage));
         }
         String uploadedApkId = appUrl.getAsString();
         LOGGER.info(String.format("App: '%s' uploaded to BrowserStack. Response: '%s'", appPath,
