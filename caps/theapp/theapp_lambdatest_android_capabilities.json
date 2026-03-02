@@ -19,8 +19,20 @@
       "isRealMobile": true,
       "video": true,
       "network": true,
+      "appProfiling": true,
       "visual": true
     }
+  },
+  "web": {
+    "browserName": "chrome",
+    "version": "latest",
+    "platform": "Windows 11",
+    "resolution": "1920x1080",
+    "tunnel": false,
+    "network": true,
+    "appProfiling": true,
+    "console": true,
+    "visual": true
   },
   "serverConfig": {
     "server": {
@@ -33,7 +45,8 @@
             "cloudName": "lambdatest",
             "url": "https://mobile-hub.lambdatest.com",
             "apiUrl": "https://manual-api.lambdatest.com",
-            "devices": []
+            "devices": [],
+            "web": {}
           }
         }
       }

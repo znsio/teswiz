@@ -190,7 +190,7 @@ class BrowserStackSetup {
         LOGGER.info(String.format("getAppIdFromBrowserStack: for %s", appPath));
         String appIdFromBrowserStack;
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_UPLOAD_APP)) {
-            appIdFromBrowserStack = uploadAPKToBrowserStack(
+            appIdFromBrowserStack = uploadToBrowserStack(
                     authenticationUser + ":" + authenticationKey, appPath, apiUrl);
         } else {
             LOGGER.info("Skip uploading the apk to Device Farm");
@@ -270,27 +270,25 @@ class BrowserStackSetup {
                 listOfDevices);
     }
 
-    private static String uploadAPKToBrowserStack(String authenticationKey, String appPath,
+    private static String uploadToBrowserStack(String authenticationKey, String appPath,
                                                   String uploadUrl) {
-        LOGGER.info(String.format("uploadAPKToBrowserStack for: '%s'%n", authenticationKey));
+        LOGGER.info(String.format("uploadToBrowserStack for: '%s'%n", authenticationKey));
 
-        String[] curlCommand = new String[]{
-                "curl --insecure " + Setup.getCurlProxyCommand() + " -u \"" + authenticationKey + "\"",
-                "-X POST \"" + uploadUrl + "upload\"",
-                "-F \"file=@" + appPath + "\"", "-F \"custom_id=" + getAppName(appPath) + "\""};
-        CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(
+        String[] curlCommand = buildUploadAppCurlCommand(authenticationKey, appPath, uploadUrl,
+                Setup.getCurlProxyCommand());
+        CommandLineResponse uploadToBrowserStackResponse = CommandLineExecutor.execCommand(
                 curlCommand);
 
         JsonObject uploadResponse;
         try {
-            uploadResponse = JsonFile.convertToMap(uploadAPKToBrowserStackResponse.getStdOut())
+            uploadResponse = JsonFile.convertToMap(uploadToBrowserStackResponse.getStdOut())
                                      .getAsJsonObject();
         } catch(IllegalStateException | JsonSyntaxException e) {
             throw new InvalidTestDataException(String.format(
                     "Failed to parse BrowserStack upload response for app: '%s'. ExitCode: %d, StdOut: '%s', StdErr: '%s'",
-                    appPath, uploadAPKToBrowserStackResponse.getExitCode(),
-                    uploadAPKToBrowserStackResponse.getStdOut(),
-                    uploadAPKToBrowserStackResponse.getErrOut()), e);
+                    appPath, uploadToBrowserStackResponse.getExitCode(),
+                    uploadToBrowserStackResponse.getStdOut(),
+                    uploadToBrowserStackResponse.getErrOut()), e);
         }
 
         JsonElement appUrl = uploadResponse.get("app_url");
@@ -309,6 +307,29 @@ class BrowserStackSetup {
         return uploadedApkId;
     }
 
+    static String[] buildUploadAppCurlCommand(String authenticationKey,
+                                              String appPath,
+                                              String uploadUrl,
+                                              String curlProxyCommand) {
+        List<String> curlCommand = new ArrayList<>();
+        curlCommand.add("curl --insecure " + curlProxyCommand + " -u \"" + authenticationKey + "\"");
+        curlCommand.add("-X POST \"" + uploadUrl + "upload\"");
+        curlCommand.add("-F \"file=@" + appPath + "\"");
+        curlCommand.add("-F \"custom_id=" + getAppName(appPath) + "\"");
+        if (isIOSAppUpload(appPath)) {
+            curlCommand.add("-F \"ios_keychain_support=true\"");
+        }
+        return curlCommand.toArray(new String[0]);
+    }
+
+    private static boolean isIOSAppUpload(String appPath) {
+        if (null == appPath) {
+            return false;
+        }
+        String normalizedPath = appPath.toLowerCase();
+        return normalizedPath.endsWith(".ipa") || normalizedPath.endsWith(".zip");
+    }
+
     private static String getAppIdFromBrowserStack(String authenticationKey, String appPath,
                                                    String apiUrl) {
         String appName = getAppName(appPath);
@@ -319,12 +340,12 @@ class BrowserStackSetup {
                 "-X GET \"" + apiUrl + "recent_apps/" + appName + "\""};
         String uploadedAppIdFromBrowserStack;
         try {
-            CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(
+            CommandLineResponse uploadToBrowserStackResponse = CommandLineExecutor.execCommand(
                     curlCommand);
-            LOGGER.debug("uploadAPKToBrowserStackResponse: " + uploadAPKToBrowserStackResponse);
+            LOGGER.debug("uploadToBrowserStackResponse: " + uploadToBrowserStackResponse);
 
             JsonArray uploadResponse = JsonFile.convertToArray(
-                    uploadAPKToBrowserStackResponse.getStdOut());
+                    uploadToBrowserStackResponse.getStdOut());
             uploadedAppIdFromBrowserStack = uploadResponse.get(0).getAsJsonObject().get("app_url")
                                                           .getAsString();
         } catch(IllegalStateException | NullPointerException | JsonSyntaxException e) {

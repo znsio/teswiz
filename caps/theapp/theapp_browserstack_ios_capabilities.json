@@ -18,6 +18,16 @@
       "visual": true
     }
   },
+  "web": {
+    "browserName": "chrome",
+    "browserstackOptions": {
+      "os": "Windows",
+      "osVersion": "11",
+      "browserVersion": "latest",
+      "debug": "true",
+      "networkLogs": "true"
+    }
+  },
   "serverConfig": {
     "server": {
       "use-plugins": ["device-farm"],
@@ -27,9 +37,9 @@
           "skipChromeDownload": true,
           "iosDeviceType": "real",
           "cloud": {
-            "cloudName": "lambdatest",
-            "url": "https://mobile-hub.lambdatest.com",
-            "apiUrl": "https://manual-api.lambdatest.com",
+            "cloudName": "browserstack",
+            "url": "https://hub-cloud.browserstack.com",
+            "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
             "devices": [],
             "web": {}
           }

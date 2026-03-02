@@ -111,6 +111,7 @@ class LambdaTestSetup {
 
         setOptionIfPresent(ltOptions, "resolution", loadedPlatformCapability, "resolution");
         setOptionIfPresent(ltOptions, "network", loadedPlatformCapability, "network");
+        setOptionIfPresent(ltOptions, "appProfiling", loadedPlatformCapability, "appProfiling");
         setOptionIfPresent(ltOptions, "console", loadedPlatformCapability, "console");
         setOptionIfPresent(ltOptions, "visual", loadedPlatformCapability, "visual");
         setOptionIfPresent(ltOptions, "tunnel", loadedPlatformCapability, "tunnel");

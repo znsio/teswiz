@@ -56,6 +56,7 @@ class LambdaTestSetupTest {
         assertThat(ltOptions.get("w3c")).isEqualTo(true);
         assertThat(ltOptions.get("resolution")).isEqualTo("1920x1080");
         assertThat(ltOptions.get("network")).isEqualTo(true);
+        assertThat(ltOptions.get("appProfiling")).isEqualTo(true);
         assertThat(ltOptions.get("console")).isEqualTo(true);
         assertThat(ltOptions.get("visual")).isEqualTo(true);
         assertThat(ltOptions.get("tunnel")).isEqualTo(false);
@@ -76,6 +77,7 @@ class LambdaTestSetupTest {
                     "os_version": "10",
                     "resolution": "1024x768",
                     "network": true,
+                    "appProfiling": false,
                     "console": true,
                     "visual": true,
                     "tunnel": true
@@ -108,6 +110,56 @@ class LambdaTestSetupTest {
         Map<String, Object> ltOptions = (Map<String, Object>) capabilities.getCapability("LT:Options");
         assertThat(ltOptions.get("resolution")).isEqualTo("1024x768");
         assertThat(ltOptions.get("tunnel")).isEqualTo(true);
+        assertThat(ltOptions.get("network")).isEqualTo(true);
+        assertThat(ltOptions.get("appProfiling")).isEqualTo(false);
+    }
+
+    @Test
+    void shouldUseMobileLambdaTestNetworkAndAppProfilingFromCapabilities() throws IOException {
+        setupConfig("./configs/theapp/theapp_lambdatest_android_config.properties");
+        Path tempCaps = Files.createTempFile("lt-mobile-caps-", ".json");
+        String tempCapabilities = """
+                {
+                  "android": {
+                    "app": "lt://APP123",
+                    "browserName": "chrome",
+                    "platformName": "Android",
+                    "deviceName": "Galaxy S23",
+                    "platformVersion": "13",
+                    "lt:options": {
+                      "network": false,
+                      "visual": true
+                    }
+                  },
+                  "serverConfig": {
+                    "server": {
+                      "plugin": {
+                        "device-farm": {
+                          "cloud": {
+                            "cloudName": "lambdatest",
+                            "url": "https://mobile-hub.lambdatest.com",
+                            "apiUrl": "https://manual-api.lambdatest.com",
+                            "devices": []
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                """;
+        Files.writeString(tempCaps, tempCapabilities);
+        Setup.addToConfigs(Setup.CAPS, tempCaps.toString());
+        Setup.addToConfigs(Setup.CLOUD_UPLOAD_APP, "false");
+        System.setProperty(Setup.CLOUD_UPLOAD_APP, "false");
+
+        LambdaTestSetup.updateLambdaTestCapabilities("https://manual-api.lambdatest.com");
+
+        Map<String, Map> updatedCaps = JsonFile.loadJsonFile(Setup.getFromConfigs(Setup.CAPS));
+        Map<String, Object> androidCaps = updatedCaps.get("android");
+        Map<String, Object> ltOptions = (Map<String, Object>) androidCaps.get("lt:options");
+
+        assertThat(ltOptions.get("network")).isEqualTo(false);
+        assertThat(ltOptions.get("appProfiling")).isNull();
     }
 
     @Test

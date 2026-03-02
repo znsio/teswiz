@@ -20,6 +20,7 @@
     "resolution": "1920x1080",
     "tunnel": false,
     "network": true,
+    "appProfiling": true,
     "console": true,
     "visual": true
   },
