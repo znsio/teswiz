@@ -10,7 +10,7 @@ plugins {
     id "org.sonarqube" version "7.2.2.6593"
     id "java"
     id "idea"
-    id 'com.gradleup.shadow' version '9.3.1'
+    id 'com.gradleup.shadow' version '9.3.2'
     id "maven-publish"
     id "io.freefair.aspectj.post-compile-weaving" version "9.2.0"
 }
@@ -196,8 +196,8 @@ tasks.compileJava {
 
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    implementation "com.applitools:eyes-images-java5:5.81.11"
-    implementation ("com.applitools:eyes-appium-java5:5.79.11") {
+    implementation "com.applitools:eyes-images-java5:5.81.12"
+    implementation ("com.applitools:eyes-appium-java5:5.79.12") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
