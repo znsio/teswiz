@@ -58,7 +58,29 @@ Reports will be uploaded to reportportal.io, that you would need to setup separa
 src/test/resources/reportportal.properties file or provide the path to the file using this environment
 variable: `REPORT_PORTAL_FILE`
 
-Test can run on local browsers / devices, or against any cloud provider, such as HeadSpin, BrowserStack, SauceLabs, pCloudy.
+Test can run on local browsers / devices, or against any cloud provider, such as TestMu AI (formerly LambdaTest), HeadSpin, BrowserStack, SauceLabs, pCloudy.
+
+## Cloud provider notes
+
+### TestMu AI (formerly LambdaTest)
+
+* Supported config/capability samples in this repo:
+  * `configs/theapp/theapp_lambdatest_web_config.properties`
+  * `configs/theapp/theapp_lambdatest_android_config.properties`
+  * `configs/theapp/theapp_lambdatest_ios_config.properties`
+  * `caps/theapp/theapp_lambdatest_web_capabilities.json`
+  * `caps/theapp/theapp_lambdatest_android_capabilities.json`
+  * `caps/theapp/theapp_lambdatest_ios_capabilities.json`
+* Web runs use W3C-safe capabilities, with LambdaTest-specific keys inside `LT:Options`.
+* Mobile runs use LambdaTest-specific keys inside `lt:options`.
+* `network` and `appProfiling` are read from capability files (not hardcoded by framework).
+
+### BrowserStack
+
+* Web runs use `bstack:options` / `browserstackOptions` mapping for BrowserStack-specific options.
+* Native app uploads:
+  * For iOS uploads (`.ipa` and `.zip`), upload command includes `ios_keychain_support=true`.
+  * For non-iOS uploads (for example `.apk`), that flag is not added.
 
 ## Tech stack used
 
