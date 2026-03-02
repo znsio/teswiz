@@ -1,5 +1,11 @@
 package com.znsio.teswiz.businessLayer.vodqa;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.assertj.core.api.SoftAssertions;
+import org.openqa.selenium.Dimension;
+
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
@@ -7,12 +13,6 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.screen.vodqa.DragAndDropScreen;
 import com.znsio.teswiz.screen.vodqa.VodqaScreen;
 import com.znsio.teswiz.screen.vodqa.WebViewScreen;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.Dimension;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class VodqaBL {
     private static final Logger LOGGER = LogManager.getLogger(VodqaBL.class.getName());
@@ -55,9 +55,11 @@ public class VodqaBL {
         return this;
     }
 
-    public VodqaBL selectScreenAndSwipeByPassingPercentageAttributes(int atPercentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth, String screenName) {
+    public VodqaBL selectScreenAndSwipeByPassingPercentageAttributes(int atPercentScreenHeight,
+            int fromPercentScreenWidth, int toPercentScreenWidth, String screenName) {
         VodqaScreen.get().selectScreen(screenName)
-                .swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth);
+                .swipeByPassingPercentageAttributes(atPercentScreenHeight, fromPercentScreenWidth,
+                        toPercentScreenWidth);
         return this;
     }
 
@@ -74,7 +76,8 @@ public class VodqaBL {
 
     public VodqaBL verifyUserMoveToNextPage(String pageHeading) {
         LOGGER.info("performTapActionInTheMiddle(): verify the operation has been executed successfully or not");
-        assertThat(VodqaScreen.get().isPreviousPageHeadingVisible(pageHeading)).as(String.format("User is still on %s page", pageHeading)).isFalse();
+        softly.assertThat(VodqaScreen.get().isPreviousPageHeadingVisible(pageHeading))
+                .as(String.format("User is still on %s page", pageHeading)).isFalse();
         return this;
     }
 
@@ -110,13 +113,15 @@ public class VodqaBL {
     }
 
     public VodqaBL isElementWithTextVisible(String elementText) {
-        boolean isScrollSuccessful= VodqaScreen.get().isElementWithTextVisible(elementText);
+        boolean isScrollSuccessful = VodqaScreen.get().isElementWithTextVisible(elementText);
         assertThat(isScrollSuccessful).as("Scroll was not successful, text is not visible").isTrue();
         return this;
     }
 
-    public VodqaBL scrollVerticallyByPercentageOnVerticalSwipingScreen(int fromPercentHeight, int toPercentHeight, int percentWidth) {
-        VodqaScreen.get().openVerticalSwipingScreen().scrollVerticallyByPercentage(fromPercentHeight, toPercentHeight, percentWidth);
+    public VodqaBL scrollVerticallyByPercentageOnVerticalSwipingScreen(int fromPercentHeight, int toPercentHeight,
+            int percentWidth) {
+        VodqaScreen.get().openVerticalSwipingScreen().scrollVerticallyByPercentage(fromPercentHeight, toPercentHeight,
+                percentWidth);
         return this;
     }
 
@@ -152,20 +157,23 @@ public class VodqaBL {
     public VodqaBL pinchAndZoomInOnAnElement() {
         VodqaScreen vodqaScreen = VodqaScreen.get();
         Dimension elementDimension = vodqaScreen.navigateToUImageView().getImageElementDimension();
-        assertThat(vodqaScreen.pinchAndZoomInOnAnElement().isPinchAndZoomInSuccessful(elementDimension)).as("Pinch and Zoom In on an element failed").isTrue();
+        assertThat(vodqaScreen.pinchAndZoomInOnAnElement().isPinchAndZoomInSuccessful(elementDimension))
+                .as("Pinch and Zoom In on an element failed").isTrue();
         return this;
     }
 
     public VodqaBL pinchAndZoomOutOnAnElement() {
         VodqaScreen vodqaScreen = VodqaScreen.get();
         Dimension elementDimension = vodqaScreen.navigateToUImageView().getImageElementDimension();
-        assertThat(vodqaScreen.pinchAndZoomOutOnAnElement().isPinchAndZoomOutSuccessful(elementDimension)).as("Pinch and Zoom Out on an element failed").isTrue();
+        assertThat(vodqaScreen.pinchAndZoomOutOnAnElement().isPinchAndZoomOutSuccessful(elementDimension))
+                .as("Pinch and Zoom Out on an element failed").isTrue();
         return this;
     }
 
     public VodqaBL performMultiTouchForBothSilders(float sliderValue) {
         VodqaScreen.get().multiTouchOnElements();
-        assertThat(VodqaScreen.get().getSliderValue()).as("Multi Touch failed as slider value is not equal").isEqualTo(sliderValue);
+        assertThat(VodqaScreen.get().getSliderValue()).as("Multi Touch failed as slider value is not equal")
+                .isEqualTo(sliderValue);
         return this;
     }
 }

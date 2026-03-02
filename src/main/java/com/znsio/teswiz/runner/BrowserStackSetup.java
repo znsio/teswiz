@@ -1,5 +1,19 @@
 package com.znsio.teswiz.runner;
 
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.MutableCapabilities;
+import static org.openqa.selenium.remote.CapabilityType.ACCEPT_INSECURE_CERTS;
+import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
+
 import com.browserstack.local.Local;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -12,16 +26,6 @@ import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.Randomizer;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.MutableCapabilities;
-
-import java.io.File;
-import java.net.URL;
-import java.util.*;
-
-import static org.openqa.selenium.remote.CapabilityType.ACCEPT_INSECURE_CERTS;
-import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
 class BrowserStackSetup {
     private static final Logger LOGGER = LogManager.getLogger(BrowserStackSetup.class.getName());
@@ -55,21 +59,15 @@ class BrowserStackSetup {
         String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "")
                 .replace("\\", "");
         bstackOptions.put("buildName", Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
-//        bstackOptions.put("sessionName", Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestName());
+        bstackOptions.put("sessionName",
+                          Runner.getTestExecutionContext(Thread.currentThread().getId())
+                                .getTestName());
         bstackOptions.put("debug", "true");
         bstackOptions.put("networkLogs", "true");
         bstackOptions.put("appProfiling", "true");
-//        loadedPlatformCapability.put("browserstack.user", authenticationUser);
-//        loadedPlatformCapability.put("browserstack.key", authenticationKey);
-//        loadedPlatformCapability.put("browserstack.LoggedInUser", USER_NAME);
-//        loadedPlatformCapability.put("browserstack.MachineName", getHostName());
         setupLocalTesting(authenticationKey, bstackOptions);
-//        loadedPlatformCapability.put("build", Setup.getFromConfigs(
-//                Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
-//        bstackOptions.put("project", Setup.getFromConfigs(Setup.APP_NAME));
         loadedPlatformCapability.put("bstack:options", bstackOptions);
         removeLegacyBrowserStackCapabilities(loadedPlatformCapability);
-//        loadedPlatformCapability.put("deviceName", String.valueOf(loadedCapabilityFile.get(platformName).getOrDefault(DEVICE, "")));
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey,
                                                 loadedCapabilityFile);
     }

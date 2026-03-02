@@ -10,7 +10,17 @@
     "browserstack.gpsLocation": "22,75",
     "browserstack.locale": "IN"
   },
-  "serverConfig" : {
+  "web": {
+    "browserName": "chrome",
+    "browserstackOptions": {
+      "os": "Windows",
+      "osVersion": "11",
+      "browserVersion": "latest",
+      "debug": "true",
+      "networkLogs": "true"
+    }
+  },
+  "serverConfig": {
     "server": {
       "use-plugins": ["device-farm"],
       "plugin": {
@@ -21,8 +31,8 @@
             "cloudName": "browserstack",
             "url": "https://hub-cloud.browserstack.com",
             "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
-            "devices": [
-            ]
+            "devices": [],
+            "web": {}
           }
         }
       }
