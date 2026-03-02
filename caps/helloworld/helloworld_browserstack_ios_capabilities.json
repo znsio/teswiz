@@ -1,38 +1,33 @@
 {
-  "android": {
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/VodQA.apk",
-    "automationName": "UIAutomator2",
-    "noSign": true,
+  "iOS": {
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/refs/heads/main/Sample.ipa",
+    "automationName": "xcuitest",
+    "device": "iPhone 12",
+    "noReset": false,
+    "platformName": "ios",
+    "platformVersion": "16.6",
     "project": "teswiz",
     "browserstack.appiumVersion": "3.1.0",
+    "browserstack.capture.video": true,
     "browserstack.debug": true,
     "browserstack.networkLogs": "true",
     "browserstack.gpsLocation": "22,75",
     "browserstack.locale": "IN"
-  },
-  "web": {
-    "browserName": "chrome",
-    "browserstackOptions": {
-      "os": "Windows",
-      "osVersion": "11",
-      "browserVersion": "latest",
-      "debug": "true",
-      "networkLogs": "true"
-    }
   },
   "serverConfig": {
     "server": {
       "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
-          "platform": "android",
+          "platform": "iOS",
           "skipChromeDownload": true,
+          "remoteConnectionTimeout": 300000,
+          "iosDeviceType": "real",
           "cloud": {
             "cloudName": "browserstack",
             "url": "https://hub-cloud.browserstack.com",
             "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
-            "devices": [],
-            "web": {}
+            "devices": []
           }
         }
       }

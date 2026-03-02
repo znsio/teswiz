@@ -3,19 +3,42 @@
 Feature: Vodqa test
 
   #  CONFIG=./configs/vodqa/vodqa_local_config.properties PLATFORM=android TAG=scrollUsing2Points ./gradlew run
-  #  RUN_IN_CI=true CONFIG=./configs/vodqa/vodqa_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=android TAG="@scrollUsing2Points and @browserstack" ./gradlew run
-  @android @scrollUsing2Points
+  #  RUN_IN_CI=true CONFIG=./configs/vodqa/vodqa_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=android TAG="@vodqa and @browserstack" ./gradlew run
+  @android @scrollUsing2Points @browserstack
   Scenario: Validating scroll functionality using 2 points
     Given I login to vodqa application using valid credentials
     When I scroll from one to another element point on vertical swiping screen
     Then Element text "Jasmine" should be visible
 
+
   #  CONFIG=./configs/vodqa/vodqa_local_config.properties PLATFORM=android TAG=tapInMiddleOfScreen ./gradlew run
-  @android @tapInMiddleOfScreen
+  #  RUN_IN_CI=true CONFIG=./configs/vodqa/vodqa_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=android TAG="@vodqa and @browserstack" ./gradlew run@android @tapInMiddleOfScreen
+  @android @browserstack
   Scenario: User tap in the middle of the screen
     Given I login to vodqa application using valid credentials
     When I tap in the middle of the screen
     Then I am able to move from "Samples List" page to next page
+
+#  CONFIG=./configs/vodqa/vodqa_local_config.properties TAG="@multiuser-android-web and @vodqa1" ./gradlew run
+#  RUN_IN_CI=true CONFIG=./configs/vodqa/vodqa_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY TAG="@multiuser-android-web and @vodqa1 and @browserstack" ./gradlew run
+  @multiuser-android-web @vodqa1 @browserstack
+  Scenario: Orchestrating multiple users on different platforms as part of same test (android-web)
+    Given "I" login to vodqa application using valid credentials on "android"
+    And "I" tap in the middle of the screen
+    When "You" login with invalid credentials - "znsio2", "invalid password" on "web"
+    And "I" am able to move from "Samples List" page to next page
+    Then "You" login again with invalid credentials - "znsio4", "invalid password"
+
+
+#  CONFIG=./configs/vodqa/vodqa_local_config.properties TAG="@multiuser-android and @vodqa2" ./gradlew run
+#  RUN_IN_CI=true CONFIG=./configs/vodqa/vodqa_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY TAG="@multiuser-android and @vodqa2 and @browserstack" ./gradlew run
+  @multiuser-android @vodqa2 @browserstack
+  Scenario: Orchestrating multiple users on platforms as part of same test (android)
+    Given "I" login to vodqa application using valid credentials on "android"
+    And "I" tap in the middle of the screen
+    When "You" login to vodqa application using valid credentials on "android"
+    And "You" scroll from one to another element point on vertical swiping screen
+    Then "You" see element text "Jasmine" should be visible
 
   #  CONFIG=./configs/vodqa/vodqa_local_config.properties PLATFORM=android TAG=scrollDownByScreenSize ./gradlew run
   @android @scrollDownByScreenSize

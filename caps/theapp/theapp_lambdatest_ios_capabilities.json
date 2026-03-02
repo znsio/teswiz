@@ -1,0 +1,41 @@
+{
+  "iOS": {
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp.ipa",
+    "automationName": "XCUITest",
+    "platformName": "iOS",
+    "deviceName": "iPhone 15",
+    "platformVersion": "17",
+    "autoAcceptAlerts": true,
+    "newCommandTimeout": 300,
+    "fullReset": true,
+    "noReset": false,
+    "printPageSourceOnFindFailure": true,
+    "lt:options": {
+      "isRealMobile": true,
+      "video": true,
+      "network": true,
+      "appProfiling": true,
+      "visual": true
+    }
+  },
+  "serverConfig": {
+    "server": {
+      "use-plugins": ["device-farm"],
+      "plugin": {
+        "device-farm": {
+          "platform": "iOS",
+          "skipChromeDownload": true,
+          "iosDeviceType": "real",
+          "cloud": {
+            "cloudName": "lambdatest",
+            "url": "https://mobile-hub.lambdatest.com",
+            "apiUrl": "https://manual-api.lambdatest.com",
+            "devices": [],
+            "web": {}
+          }
+        }
+      }
+    }
+  },
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
+}

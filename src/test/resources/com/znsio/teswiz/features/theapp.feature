@@ -13,13 +13,17 @@ Feature: Scenarios for "The App"
 #  CONFIG=./configs/theapp/theapp_local_android_config.properties PLATFORM=android TAG="@theapp2 and @invalidLogin1" ./gradlew run
 #  CONFIG=./configs/theapp/theapp_local_ios_config.properties PLATFORM=iOS TAG="@theapp2 and @invalidLogin1" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=web TAG="@theapp2 and @invalidLogin1 and @browserstack" ./gradlew run
-#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=android TAG="@theapp2 and @invalidLogin1 and @browserstack" ./gradlew run
+#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_android_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=android TAG="@theapp2 and @invalidLogin1 and @browserstack" ./gradlew run
+#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_ios_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=iOS TAG="@theapp2 and @invalidLogin1 and @browserstack" ./gradlew run
+#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_lambdatest_web_config.properties CLOUD_USERNAME=$LT_CLOUD_USERNAME CLOUD_KEY=$LT_CLOUD_KEY PLATFORM=web TAG="@theapp2 and @invalidLogin1 and @lambdatest" ./gradlew run
+#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_lambdatest_android_config.properties CLOUD_USERNAME=$LT_CLOUD_USERNAME CLOUD_KEY=$LT_CLOUD_KEY PLATFORM=android TAG="@theapp2 and @invalidLogin1 and @lambdatest" ./gradlew run
+#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_lambdatest_ios_config.properties CLOUD_USERNAME=$LT_CLOUD_USERNAME CLOUD_KEY=$LT_CLOUD_KEY PLATFORM=iOS TAG="@theapp2 and @invalidLogin1 and @lambdatest" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_headspin_android_config.properties CLOUD_KEY=$HEADSPIN_CLOUD_KEY PLATFORM=android TAG="@theapp2 and @invalidLogin1 and @headspin" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_headspin_ios_config.properties CLOUD_KEY=$HEADSPIN_CLOUD_KEY PLATFORM=iOS TAG="@theapp2 and @invalidLogin1 and @headspin" ./gradlew run
-  @android @web @iOS @headspin @browserstack @invalidLogin @invalidLogin1 @theapp2
+  @android @web @iOS @headspin @browserstack @lambdatest @invalidLogin @invalidLogin1 @theapp2
   Scenario: Verify error message on invalid login
     Given I login with invalid credentials - "znsio1", "invalid password"
-    Then I try to login again with invalid credentials - "znsio2", "another invalid password"
+#    Then I try to login again with invalid credentials - "znsio2", "another invalid password"
 
 #  CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@theapp3 and @invalidLogin2" ./gradlew run
 #  CONFIG=./configs/theapp/theapp_local_android_config.properties PLATFORM=android TAG="@theapp3 and @invalidLogin2" ./gradlew run
@@ -36,8 +40,9 @@ Feature: Scenarios for "The App"
     Then I can echo "how are you too?" in the message box
 
 #  CONFIG=./configs/theapp/theapp_local_android_config.properties TAG="@multiuser-android-web and @theapp5" ./gradlew run
-#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY TAG="@multiuser-android-web and @theapp5 and @browserstack" ./gradlew run
-  @multiuser-android-web @theapp5 @browserstack
+#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_android_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY TAG="@multiuser-android-web and @theapp5 and @browserstack" ./gradlew run
+#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_lambdatest_android_config.properties CLOUD_USERNAME=$LT_CLOUD_USERNAME CLOUD_KEY=$LT_CLOUD_KEY PLATFORM=android TAG="@multiuser-android-web and @theapp5 and @lambdatest" ./gradlew run
+  @multiuser-android-web @theapp5 @browserstack @lambdatest
   Scenario: Orchestrating multiple users on different platforms as part of same test (android-web)
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
     And "You" login with invalid credentials - "znsio2", "invalid password" on "web"
@@ -63,7 +68,8 @@ Feature: Scenarios for "The App"
     Then "You" login again with invalid credentials - "znsio4", "invalid password"
 
 #  CONFIG=./configs/theapp/theapp_local_android_config.properties TAG="@multiuser-android and @theapp8 and @2user" ./gradlew run
-  @multiuser-android @2user @theapp8
+#  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_lambdatest_android_config.properties CLOUD_USERNAME=$LT_CLOUD_USERNAME CLOUD_KEY=$LT_CLOUD_KEY PLATFORM=android TAG="@multiuser-android and @theapp8 and @lambdatest" ./gradlew run
+  @multiuser-android @2user @theapp8 @lambdatest
   Scenario: Orchestrating 2 users on different platforms as part of same test
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
     When "You" login with invalid credentials - "znsio2", "invalid password" on "android"

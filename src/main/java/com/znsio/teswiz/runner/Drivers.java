@@ -91,6 +91,14 @@ public class Drivers {
             executorObject.put("action", "setSessionName");
             executorObject.put("arguments", argumentsObject);
             jse.executeScript(String.format("browserstack_executor: %s", executorObject));
+        } else if (Runner.getCloudName().equalsIgnoreCase("lambdatest")) {
+            LOGGER.info(String.format("updateTestNameInCloud for LambdaTest: '%s'", updatedTestName));
+            final JavascriptExecutor jse = (JavascriptExecutor) driver;
+            try {
+                jse.executeScript(String.format("lambda-name=%s", updatedTestName));
+            } catch (RuntimeException e) {
+                LOGGER.warn("Unable to set LambdaTest session name using executor command: {}", e.getMessage());
+            }
         }
     }
 
@@ -230,6 +238,8 @@ public class Drivers {
 
         if (Runner.getCloudName().equalsIgnoreCase("browserstack")) {
             updateTestStatusInBrowserStack((JavascriptExecutor) driver, scenarioStatus, scenarioFailureReasons);
+        } else if (Runner.getCloudName().equalsIgnoreCase("lambdatest")) {
+            updateTestStatusInLambdaTest((JavascriptExecutor) driver, scenarioStatus, scenarioFailureReasons);
         }
     }
 
@@ -242,6 +252,17 @@ public class Drivers {
         executorObject.put("action", "setSessionStatus");
         executorObject.put("arguments", argumentsObject);
         driver.executeScript(String.format("browserstack_executor: %s", executorObject));
+    }
+
+    private static void updateTestStatusInLambdaTest(JavascriptExecutor driver, String scenarioStatus, String scenarioFailureReasons) {
+        LOGGER.info(String.format("updateTestStatusInCloud for LambdaTest: '%s'", scenarioStatus));
+        String sanitizedFailureReason = scenarioFailureReasons.replace("\n", " ").replace("\r", " ");
+        try {
+            driver.executeScript(String.format("lambda-status=%s", scenarioStatus));
+            driver.executeScript(String.format("lambda-comment=%s", sanitizedFailureReason));
+        } catch (RuntimeException e) {
+            LOGGER.warn("Unable to set LambdaTest session status using executor command: {}", e.getMessage());
+        }
     }
 
     private static void validateVisualTestResults(String userPersona, Driver driver) {

@@ -240,6 +240,10 @@ class DeviceSetup {
                 deviceLabURL = getCloudApiUrlFromCapabilities();
                 BrowserStackSetup.updateBrowserStackCapabilities(deviceLabURL);
                 break;
+            case "lambdatest":
+                deviceLabURL = getCloudApiUrlFromCapabilities();
+                LambdaTestSetup.updateLambdaTestCapabilities(deviceLabURL);
+                break;
             default:
                 throw new InvalidTestDataException(
                     String.format(CLOUD_NAME_NOT_SUPPORTED_MESSAGE, cloudName));
@@ -365,6 +369,7 @@ class DeviceSetup {
                 break;
             case "headspin":
             case "pcloudy":
+            case "lambdatest":
             case "saucelabs":
                 LOGGER.info(String.format("No cleanup required for cloud: '%s'", cloudName));
                 break;

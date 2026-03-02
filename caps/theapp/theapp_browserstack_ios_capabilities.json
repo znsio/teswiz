@@ -1,14 +1,22 @@
 {
-  "android": {
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/VodQA.apk",
-    "automationName": "UIAutomator2",
-    "noSign": true,
-    "project": "teswiz",
-    "browserstack.appiumVersion": "3.1.0",
-    "browserstack.debug": true,
-    "browserstack.networkLogs": "true",
-    "browserstack.gpsLocation": "22,75",
-    "browserstack.locale": "IN"
+  "iOS": {
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp.ipa",
+    "automationName": "XCUITest",
+    "platformName": "iOS",
+    "deviceName": "iPhone 15",
+    "platformVersion": "17",
+    "autoAcceptAlerts": true,
+    "newCommandTimeout": 300,
+    "fullReset": true,
+    "noReset": false,
+    "printPageSourceOnFindFailure": true,
+    "lt:options": {
+      "isRealMobile": true,
+      "video": true,
+      "network": true,
+      "appProfiling": true,
+      "visual": true
+    }
   },
   "web": {
     "browserName": "chrome",
@@ -25,8 +33,9 @@
       "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
-          "platform": "android",
+          "platform": "iOS",
           "skipChromeDownload": true,
+          "iosDeviceType": "real",
           "cloud": {
             "cloudName": "browserstack",
             "url": "https://hub-cloud.browserstack.com",

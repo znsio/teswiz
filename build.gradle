@@ -196,8 +196,8 @@ tasks.compileJava {
 
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    implementation "com.applitools:eyes-images-java5:5.81.10"
-    implementation ("com.applitools:eyes-appium-java5:5.79.10") {
+    implementation "com.applitools:eyes-images-java5:5.81.11"
+    implementation ("com.applitools:eyes-appium-java5:5.79.11") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
@@ -207,11 +207,11 @@ dependencies {
     implementation "com.browserstack:browserstack-local-java:1.1.7"
     implementation 'com.epam.reportportal:agent-java-cucumber6:5.5.3'
     implementation 'com.epam.reportportal:client-java:5.4.10'
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.0"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.1"
     implementation "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
     implementation "com.github.erosb:everit-json-schema:1.14.6"
     implementation "com.github.vidstige:jadb:$jadbVersion"
-    implementation 'com.jayway.jsonpath:json-path:2.10.0'
+    implementation 'com.jayway.jsonpath:json-path:3.0.0'
     // TODO - migrate to restassured
     implementation "com.konghq:unirest-java:3.14.5"
     implementation "com.squareup.okhttp3:okhttp:5.3.2"
@@ -230,8 +230,8 @@ dependencies {
     implementation "org.jetbrains:annotations:26.1.0"
     testImplementation "org.junit.jupiter:junit-jupiter:6.0.3"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation "org.seleniumhq.selenium:selenium-java:4.40.0"
-    implementation "org.yaml:snakeyaml:2.5"
+    implementation "org.seleniumhq.selenium:selenium-java:4.41.0"
+    implementation "org.yaml:snakeyaml:2.6"
 }
 
 shadowJar {

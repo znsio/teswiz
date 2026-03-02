@@ -40,7 +40,7 @@ Place this file under:
   uses: ./.github/actions/run-and-collect-tests
   with:
     id: theapp-android
-    config-path: ./configs/theapp/theapp_browserstack_config.properties
+    config-path: ./configs/theapp/theapp_browserstack_android_config.properties
     tag: "@theapp and @invalidLogin1 and @browserstack"
     platform: android
     applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}

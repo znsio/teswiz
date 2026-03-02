@@ -1,14 +1,15 @@
 package com.znsio.teswiz.listener;
 
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
 import com.epam.reportportal.cucumber.ScenarioReporter;
 import com.epam.reportportal.utils.MemoizingSupplier;
 import com.epam.ta.reportportal.ws.model.StartTestItemRQ;
 import com.znsio.teswiz.runner.AppiumServerManager;
-import org.apache.log4j.Logger;
-
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CucumberScenarioReporterListener extends ScenarioReporter {
 
@@ -19,7 +20,7 @@ public class CucumberScenarioReporterListener extends ScenarioReporter {
     public AppiumServerManager appiumServerManager;
 
     private static final Map<String, String> MIME_TYPES_EXTENSIONS =
-            new HashMap() {
+            new HashMap<>() {
                 {
                     this.put("image/bmp", "bmp");
                     this.put("image/gif", "gif");
