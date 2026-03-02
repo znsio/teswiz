@@ -2,6 +2,7 @@ package com.znsio.teswiz.runner;
 
 import com.browserstack.local.Local;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.znsio.teswiz.entities.Platform;
@@ -150,6 +151,12 @@ class BrowserStackSetup {
             String keyAsString = String.valueOf(key);
             if (keyAsString.startsWith("browserstack.")) {
                 String normalizedKey = keyAsString.substring("browserstack.".length());
+                if ("locale".equals(normalizedKey)) {
+                    LOGGER.warn(String.format(
+                            "Ignoring unsupported BrowserStack option '%s' in bstack:options. Use appium locale capabilities instead if needed.",
+                            keyAsString));
+                    return;
+                }
                 bstackOptions.put(normalizedKey, value);
             }
         });
@@ -263,9 +270,42 @@ class BrowserStackSetup {
         CommandLineResponse uploadAPKToBrowserStackResponse = CommandLineExecutor.execCommand(
                 curlCommand);
 
-        JsonObject uploadResponse = JsonFile.convertToMap(
-                uploadAPKToBrowserStackResponse.getStdOut()).getAsJsonObject();
-        String uploadedApkId = uploadResponse.get("app_url").getAsString();
+        JsonObject uploadResponse;
+        try {
+            uploadResponse = JsonFile.convertToMap(uploadAPKToBrowserStackResponse.getStdOut())
+                                     .getAsJsonObject();
+        } catch(IllegalStateException | JsonSyntaxException e) {
+            throw new InvalidTestDataException(String.format(
+                    "Failed to parse BrowserStack upload response for app: '%s'. ExitCode: %d, StdOut: '%s', StdErr: '%s'",
+                    appPath, uploadAPKToBrowserStackResponse.getExitCode(),
+                    uploadAPKToBrowserStackResponse.getStdOut(),
+                    uploadAPKToBrowserStackResponse.getErrOut()), e);
+        }
+
+        JsonElement appUrl = uploadResponse.get("app_url");
+        if (null == appUrl || appUrl.isJsonNull()) {
+            JsonElement error = uploadResponse.get("error");
+            String errorMessage = null != error && !error.isJsonNull()
+                    ? error.getAsString()
+                    : String.format("Missing 'app_url' in response: %s", uploadResponse);
+            LOGGER.warn(String.format(
+                    "Failed to upload app '%s' to BrowserStack. Attempting fallback to recent_apps lookup. Error: %s",
+                    appPath, errorMessage));
+            try {
+                String existingAppIdFromBrowserStack = getAppIdFromBrowserStack(authenticationKey,
+                                                                                 appPath, uploadUrl);
+                LOGGER.info(String.format(
+                        "Fallback succeeded. Using existing BrowserStack app id from recent_apps: '%s'",
+                        existingAppIdFromBrowserStack));
+                Setup.addToConfigs(Setup.APP_PATH, existingAppIdFromBrowserStack);
+                return existingAppIdFromBrowserStack;
+            } catch(InvalidTestDataException fallbackException) {
+                throw new InvalidTestDataException(String.format(
+                        "Failed to upload app '%s' to BrowserStack. Upload error: %s. Fallback to recent_apps also failed: %s",
+                        appPath, errorMessage, fallbackException.getMessage()), fallbackException);
+            }
+        }
+        String uploadedApkId = appUrl.getAsString();
         LOGGER.info(String.format("App: '%s' uploaded to BrowserStack. Response: '%s'", appPath,
                                   uploadResponse));
         Setup.addToConfigs(Setup.APP_PATH, uploadedApkId);
