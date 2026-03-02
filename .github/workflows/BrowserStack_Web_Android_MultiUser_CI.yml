@@ -42,6 +42,39 @@ jobs:
           applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
           browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
           browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
+      
+      - name: Run vodQA Multi-User Android tests
+        id: vodqa_multi_user_android
+        uses: ./.github/actions/run-and-collect-tests
+        with:
+          id: vodqa-multi-user-android
+          display-name: "vodQA Multi-User Android"
+          config-path: "./configs/vodqa/vodqa_browserstack_config.properties"
+          platform: "android"
+          tag: "@multiuser-android and @vodqa2 and @browserstack"
+          artifact-name: "test-results-vodqa-multi-user-android"
+          is-visual: "true"
+          additional-env: ""
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
+
+            
+      - name: Run vodQA Multi-User-Android-Web tests
+        id: vodqa_multi_user_android_web
+        uses: ./.github/actions/run-and-collect-tests
+        with:
+          id: vodqa-multi-user-android-web
+          display-name: "vodQA Multi-User Android-Web"
+          config-path: "./configs/vodqa/vodqa_browserstack_config.properties"
+          platform: "android"
+          tag: "@multiuser-android-web and @vodqa1 and @browserstack"
+          artifact-name: "test-results-vodqa-multi-user-android-web"
+          is-visual: "true"
+          additional-env: ""
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
 
       - name: Check for Failures and Add Summary
         run: |
@@ -50,9 +83,20 @@ jobs:
           summary="### ❌ Web + Android CI Test Failures\n"
 
           THEAPP_WEB_CODE="${{ steps.theapp_web.outputs.exit_code }}"
-
+          VODQA_MULTI_USER_ANDROID_CODE="${{ steps.vodqa_multi_user_android.outputs.exit_code }}"
+          VODQA_MULTI_USER_ANDROID_WEB_CODE="${{ steps.vodqa_multi_user_android_web.outputs.exit_code }}"
           if [ "$THEAPP_WEB_CODE" != "0" ]; then
             summary="${summary}- TheApp Web (exit code: $THEAPP_WEB_CODE)\n"
+            fail=1
+          fi
+
+          if [ "$VODQA_MULTI_USER_ANDROID_CODE" != "0" ]; then
+            summary="${summary}- vodQA Multi-User Android (exit code: $VODQA_MULTI_USER_ANDROID_CODE)\n"
+            fail=1
+          fi
+
+          if [ "$VODQA_MULTI_USER_ANDROID_WEB_CODE" != "0" ]; then
+            summary="${summary}- vodQA Multi-User Android-Web (exit code: $VODQA_MULTI_USER_ANDROID_WEB_CODE)\n"
             fail=1
           fi
 
