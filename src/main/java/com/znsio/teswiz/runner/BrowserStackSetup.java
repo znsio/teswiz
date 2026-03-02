@@ -30,6 +30,10 @@ import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 class BrowserStackSetup {
     private static final Logger LOGGER = LogManager.getLogger(BrowserStackSetup.class.getName());
     private static final String DEVICE = "device";
+    private static final String BROWSERSTACK_KEY_PREFIX = "browserstack.";
+    private static final String BSTACK_OPTIONS_CAPABILITY = "bstack:options";
+    private static final String BROWSERSTACK_OPTIONS_CAPABILITY = "browserstackOptions";
+    private static final String LOCALE = "locale";
     private static Local bsLocal;
     private static final String BROWSERSTACK_LOCAL_IDENTIFIER = Randomizer.randomize(10);
 
@@ -44,11 +48,12 @@ class BrowserStackSetup {
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
-        Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
+        Map<String, Object> loadedPlatformCapability = loadedCapabilityFile.get(platformName);
 
-        addAppOrBrowserNameToBrowserStackCapablities(deviceLabURL, loadedPlatformCapability, authenticationUser, authenticationKey);
-        HashMap<String, Object> bstackOptions = new HashMap<String, Object>();
-        copyLegacyBrowserStackOptionsToBstackOptions(loadedPlatformCapability, bstackOptions);
+        addAppOrBrowserNameToBrowserStackCapabilities(deviceLabURL, loadedPlatformCapability,
+                                                      authenticationUser, authenticationKey);
+        Map<String, Object> bstackOptions = new HashMap<>();
+        migrateLegacyBrowserStackOptions(loadedPlatformCapability, bstackOptions);
         bstackOptions.put("userName", authenticationUser);
         bstackOptions.put("accessKey", authenticationKey);
         Object appiumVersion = loadedPlatformCapability.get("browserstack.appiumVersion");
@@ -59,34 +64,35 @@ class BrowserStackSetup {
         String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "")
                 .replace("\\", "");
         bstackOptions.put("buildName", Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
-        bstackOptions.put("sessionName",
-                          Runner.getTestExecutionContext(Thread.currentThread().getId())
-                                .getTestName());
+        bstackOptions.put("sessionName", getSessionName());
         bstackOptions.put("debug", "true");
         bstackOptions.put("networkLogs", "true");
         bstackOptions.put("appProfiling", "true");
         setupLocalTesting(authenticationKey, bstackOptions);
-        loadedPlatformCapability.put("bstack:options", bstackOptions);
-        removeLegacyBrowserStackCapabilities(loadedPlatformCapability);
+        loadedPlatformCapability.put(BSTACK_OPTIONS_CAPABILITY, bstackOptions);
         updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey,
                                                 loadedCapabilityFile);
     }
 
-    private static void addAppOrBrowserNameToBrowserStackCapablities(String deviceLabURL, Map loadedPlatformCapability, String authenticationUser, String authenticationKey) {
+    private static void addAppOrBrowserNameToBrowserStackCapabilities(String deviceLabURL,
+                                                                      Map<String, Object> loadedPlatformCapability,
+                                                                      String authenticationUser,
+                                                                      String authenticationKey) {
         Object browserName = loadedPlatformCapability.get(BROWSER_NAME);
         if (null != browserName) {
-            LOGGER.info(String.format("app Id retreived from browser stack is: %s", browserName));
+            LOGGER.info(String.format("app Id retrieved from browser stack is: %s", browserName));
             loadedPlatformCapability.put("browserstack.browserName", browserName);
         } else {
             String appPath = new File(Setup.getFromConfigs(Setup.APP_PATH)).getAbsolutePath();
             String appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser,
                     authenticationKey, appPath, deviceLabURL);
-            LOGGER.info(String.format("app Id retreived from browser stack is: %s", appIdFromBrowserStack));
+            LOGGER.info(String.format("app Id retrieved from browser stack is: %s", appIdFromBrowserStack));
             loadedPlatformCapability.put("app", appIdFromBrowserStack);
         }
     }
 
-    private static void setupLocalTesting(String authenticationKey, Map loadedPlatformCapability) {
+    private static void setupLocalTesting(String authenticationKey,
+                                          Map<String, ? super String> loadedPlatformCapability) {
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
@@ -104,19 +110,20 @@ class BrowserStackSetup {
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
 
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
-        Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
+        Map<String, Object> loadedPlatformCapability = loadedCapabilityFile.get(platformName);
 
         String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "")
                                      .replace("\\", "");
 
         capabilities.setCapability("browserName", loadedPlatformCapability.get("browserName"));
 
-        Map<String, String> browserstackOptions = getBrowserStackOptionsForWeb(loadedPlatformCapability);
+        Map<String, Object> browserstackOptions = getBrowserStackOptionsForWeb(
+                loadedPlatformCapability);
         browserstackOptions.put("projectName", Setup.getFromConfigs(Setup.APP_NAME));
         browserstackOptions.put("buildName",
                                 Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
 
-        browserstackOptions.put("sessionName", Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestName());
+        browserstackOptions.put("sessionName", getSessionName());
         if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
             LOGGER.info(String.format(
                     "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
@@ -126,46 +133,52 @@ class BrowserStackSetup {
             browserstackOptions.put("local", "true");
             browserstackOptions.put("localIdentifier", BROWSERSTACK_LOCAL_IDENTIFIER);
         }
-        capabilities.setCapability("bstack:options", browserstackOptions);
+        capabilities.setCapability(BSTACK_OPTIONS_CAPABILITY, browserstackOptions);
 
         return capabilities;
     }
 
-    private static Map<String, String> getBrowserStackOptionsForWeb(Map loadedPlatformCapability) {
-        Object browserstackOptionsRaw = loadedPlatformCapability.get("browserstackOptions");
-        if (browserstackOptionsRaw instanceof Map) {
-            return (Map<String, String>) browserstackOptionsRaw;
+    private static String getSessionName() {
+        try {
+            return Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestName();
+        } catch(RuntimeException e) {
+            String fallbackSessionName = Setup.getFromConfigs(Setup.LAUNCH_NAME);
+            LOGGER.warn(String.format(
+                    "Unable to resolve test context name. Falling back to launch name for sessionName: '%s'",
+                    fallbackSessionName));
+            return fallbackSessionName;
         }
-        Object bstackOptionsRaw = loadedPlatformCapability.get("bstack:options");
+    }
+
+    private static Map<String, Object> getBrowserStackOptionsForWeb(
+            Map<String, Object> loadedPlatformCapability) {
+        Object browserstackOptionsRaw = loadedPlatformCapability.get(
+                BROWSERSTACK_OPTIONS_CAPABILITY);
+        if (browserstackOptionsRaw instanceof Map) {
+            return (Map<String, Object>) browserstackOptionsRaw;
+        }
+        Object bstackOptionsRaw = loadedPlatformCapability.get(BSTACK_OPTIONS_CAPABILITY);
         if (bstackOptionsRaw instanceof Map) {
-            return (Map<String, String>) bstackOptionsRaw;
+            return (Map<String, Object>) bstackOptionsRaw;
         }
         return new HashMap<>();
     }
 
-    private static void copyLegacyBrowserStackOptionsToBstackOptions(Map loadedPlatformCapability,
-                                                                      Map<String, Object> bstackOptions) {
+    private static void migrateLegacyBrowserStackOptions(Map<String, Object> loadedPlatformCapability,
+                                                         Map<String, Object> bstackOptions) {
+        List<String> keysToRemove = new ArrayList<>();
         loadedPlatformCapability.forEach((key, value) -> {
-            String keyAsString = String.valueOf(key);
-            if (keyAsString.startsWith("browserstack.")) {
-                String normalizedKey = keyAsString.substring("browserstack.".length());
-                if ("locale".equals(normalizedKey)) {
+            if (key.startsWith(BROWSERSTACK_KEY_PREFIX)) {
+                String normalizedKey = key.substring(BROWSERSTACK_KEY_PREFIX.length());
+                if (LOCALE.equals(normalizedKey)) {
                     LOGGER.warn(String.format(
                             "Ignoring unsupported BrowserStack option '%s' in bstack:options. Use appium locale capabilities instead if needed.",
-                            keyAsString));
+                            key));
+                    keysToRemove.add(key);
                     return;
                 }
                 bstackOptions.put(normalizedKey, value);
-            }
-        });
-    }
-
-    private static void removeLegacyBrowserStackCapabilities(Map loadedPlatformCapability) {
-        List<String> keysToRemove = new ArrayList<>();
-        loadedPlatformCapability.forEach((key, value) -> {
-            String keyAsString = String.valueOf(key);
-            if (keyAsString.startsWith("browserstack.")) {
-                keysToRemove.add(keyAsString);
+                keysToRemove.add(key);
             }
         });
         keysToRemove.forEach(loadedPlatformCapability::remove);
@@ -224,7 +237,7 @@ class BrowserStackSetup {
                                                                 Map<String, Map> loadedCapabilityFile) {
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
         String platformName = Setup.getPlatform().name();
-        ArrayList listOfDevices = new ArrayList();
+        ArrayList<Map<String, String>> listOfDevices = new ArrayList<>();
 
         String platformVersion = String.valueOf(
                 loadedCapabilityFile.get(platformName).getOrDefault("platformVersion", ""));
@@ -247,7 +260,7 @@ class BrowserStackSetup {
         LOGGER.info(String.format("Adding '%d' available devices for executing on BrowserStack",
                                   deviceCount));
         for(int numDevices = 0; numDevices < deviceCount; numDevices++) {
-            HashMap<String, String> deviceInfo = new HashMap();
+            Map<String, String> deviceInfo = new HashMap<>();
             deviceInfo.put("platform", platformName.toLowerCase());
             deviceInfo.put("os_version", availableDevices.get(numDevices).getOs_version());
             deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
