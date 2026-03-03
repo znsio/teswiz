@@ -1,6 +1,7 @@
 package com.znsio.teswiz.context;
 
 import org.apache.log4j.Logger;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -74,7 +75,7 @@ public class SessionContext {
         if (isReportPortalEnabledInProperties) {
             String rpLaunchId = System.getProperty("rp.launch.id");
             LOGGER.debug(String.format("System property: rp.launch.id: '%s'",
-                                       rpLaunchId));
+                    SensitiveDataMasker.mask(rpLaunchId)));
             reportPortalLaunchURL = String.format("%s/ui/#%s/launches/all/%s",
                                                   reportPortalProperties.getProperty("rp.endpoint"),
                                                   reportPortalProperties.getProperty("rp.project"),

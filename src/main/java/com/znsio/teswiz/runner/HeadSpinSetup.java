@@ -4,6 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +60,8 @@ class HeadSpinSetup {
     }
 
     private static String uploadAPKToHeadspin(String authenticationKey, String appPath, String deviceLabURL) {
-        LOGGER.info(String.format("uploadAPKToHeadspin for: '%s'%n", authenticationKey));
+        LOGGER.info(String.format("uploadAPKToHeadspin for: '%s'%n",
+                SensitiveDataMasker.mask(authenticationKey)));
         String[] curlCommand = new String[]{
                 "curl --insecure " + Setup.getCurlProxyCommand() + " -X POST ",
                 "https://" + authenticationKey + "@" + deviceLabURL + "/app/upload " +
@@ -70,7 +73,7 @@ class HeadSpinSetup {
                 .getAsJsonObject();
         String uploadedApkId = uploadResponse.get("app_id").getAsString();
         LOGGER.info(String.format("App: '%s' uploaded to Headspin. Response: '%s'", appPath,
-                uploadResponse));
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(uploadResponse))));
 
         JsonObject listOfAppPackages = getListOfAppPackagesFromHeadSpin(authenticationKey, deviceLabURL);
         String uploadedAppName = NOT_SET;

@@ -23,7 +23,9 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.Randomizer;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 
@@ -224,7 +226,8 @@ class BrowserStackSetup {
                 bsLocalArgs.put("proxyPort", String.valueOf(port));
             }
 
-            LOGGER.info(String.format("Start BrowserStackLocal using: %s", bsLocalArgs));
+            LOGGER.info(String.format("Start BrowserStackLocal using: %s",
+                    SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(bsLocalArgs))));
             bsLocal.start(bsLocalArgs);
             LOGGER.info(String.format("Is BrowserStackLocal started? - %s", bsLocal.isRunning()));
         } catch(Exception e) {
@@ -272,7 +275,8 @@ class BrowserStackSetup {
 
     private static String uploadToBrowserStack(String authenticationKey, String appPath,
                                                   String uploadUrl) {
-        LOGGER.info(String.format("uploadToBrowserStack for: '%s'%n", authenticationKey));
+        LOGGER.info(String.format("uploadToBrowserStack for: '%s'%n",
+                SensitiveDataMasker.mask(authenticationKey)));
 
         String[] curlCommand = buildUploadAppCurlCommand(authenticationKey, appPath, uploadUrl,
                 Setup.getCurlProxyCommand());
@@ -302,7 +306,7 @@ class BrowserStackSetup {
         }
         String uploadedApkId = appUrl.getAsString();
         LOGGER.info(String.format("App: '%s' uploaded to BrowserStack. Response: '%s'", appPath,
-                                  uploadResponse));
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(uploadResponse))));
         Setup.addToConfigs(Setup.APP_PATH, uploadedApkId);
         return uploadedApkId;
     }
@@ -334,7 +338,7 @@ class BrowserStackSetup {
                                                    String apiUrl) {
         String appName = getAppName(appPath);
         LOGGER.info(String.format("getAppIdFromBrowserStack for: '%s' and appName: '%s'%n",
-                                  authenticationKey, appName));
+                SensitiveDataMasker.mask(authenticationKey), appName));
         String[] curlCommand = new String[]{
                 "curl --insecure " + Setup.getCurlProxyCommand() + " -u \"" + authenticationKey + "\"",
                 "-X GET \"" + apiUrl + "recent_apps/" + appName + "\""};
@@ -342,7 +346,8 @@ class BrowserStackSetup {
         try {
             CommandLineResponse uploadToBrowserStackResponse = CommandLineExecutor.execCommand(
                     curlCommand);
-            LOGGER.debug("uploadToBrowserStackResponse: " + uploadToBrowserStackResponse);
+            LOGGER.debug("uploadToBrowserStackResponse: {}",
+                    SensitiveDataMasker.mask(String.valueOf(uploadToBrowserStackResponse)));
 
             JsonArray uploadResponse = JsonFile.convertToArray(
                     uploadToBrowserStackResponse.getStdOut());

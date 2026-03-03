@@ -53,6 +53,7 @@ import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.OsUtils;
 import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 import com.znsio.teswiz.tools.ReportPortalLogger;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -168,7 +169,8 @@ class BrowserDriverManager {
             TestExecutionContext testExecutionContext) {
         JSONObject browserConfig = getBrowserConfig(testExecutionContext);
         LOGGER.info(String.format("Create new webdriver instance for: %s, on: %s, with browserConfig: %s",
-                forUserPersona, browserName, browserConfig));
+                forUserPersona, browserName,
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(browserConfig.toMap()))));
 
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
         WebDriver driver = createWebDriver(forUserPersona, testExecutionContext, browserName,
@@ -545,10 +547,12 @@ class BrowserDriverManager {
                 capabilities = LambdaTestSetup.updateLambdaTestCapabilities(capabilities);
             }
 
-            LOGGER.info(String.format("Starting RemoteWebDriver using url: %s with capabilities: '%s'", remoteUrl,
-                    JsonPrettyPrinter.prettyPrint(capabilities)));
+            LOGGER.info(String.format("Starting RemoteWebDriver using url: %s with capabilities: '%s'",
+                    SensitiveDataMasker.mask(remoteUrl),
+                    SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(capabilities))));
             RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(remoteUrl), capabilities);
-            LOGGER.info(String.format("RemoteWebDriver created using url: %s", remoteUrl));
+            LOGGER.info(String.format("RemoteWebDriver created using url: %s",
+                    SensitiveDataMasker.mask(remoteUrl)));
             return remoteWebDriver;
         } catch (MalformedURLException e) {
             throw new EnvironmentSetupException("Unable to create a new RemoteWebDriver", e);
@@ -635,7 +639,8 @@ class BrowserDriverManager {
         context.addTestState(TEST_CONTEXT.ELECTRON_BROWSER_ON, runningOn);
         JSONObject browserConfig = getBrowserConfig(context);
         LOGGER.info(String.format("Create new electrondriver instance for: %s, on: %s, with browserConfig: %s",
-                userPersona, browserName, browserConfig));
+                userPersona, browserName,
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(browserConfig.toMap()))));
         JSONObject browserConfigForBrowserType = browserConfig.getJSONObject(browserName.toLowerCase());
         ChromeOptions chromeOptions = getChromeOptions(userPersona, context, browserConfigForBrowserType);
         addWindowSizeToChromeOptions(browserConfigForBrowserType, chromeOptions);

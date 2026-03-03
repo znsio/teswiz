@@ -23,7 +23,8 @@ public class JsonFile {
     }
 
     public static void saveJsonToFile(Map<String, Map> jsonMap, String fileName) {
-        LOGGER.info("\tSave the following json to file: " + fileName + "   with jsonmap:  " + JsonPrettyPrinter.prettyPrint(jsonMap));
+        LOGGER.info("\tSave the following json to file: {}   with jsonmap:  {}",
+                fileName, SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(jsonMap)));
         File file = new File(fileName);
         if (file.exists()) {
             LOGGER.debug("File: " + file + "  exixts.  Delete it first");
@@ -50,7 +51,8 @@ public class JsonFile {
         Map<String, Map> map = loadJsonFile(fileName);
         LOGGER.debug("\tNode: " + node);
         Map<String, Map> envMap = map.get(node);
-        LOGGER.debug("\tLoaded map: " + envMap);
+        LOGGER.debug("\tLoaded map: {}",
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(envMap)));
         if (null == envMap) {
             throw new InvalidTestDataException(
                     String.format("Node: '%s' not found in file: '%s'", node, fileName));
@@ -89,7 +91,7 @@ public class JsonFile {
             }
         }
         String retValue = String.valueOf(loadedMap.get(nodeTree[nodeTree.length - 1]));
-        LOGGER.debug("\tFound value: " + retValue);
+        LOGGER.debug("\tFound value: {}", SensitiveDataMasker.mask(retValue));
         return retValue;
     }
 
@@ -97,7 +99,8 @@ public class JsonFile {
         Map<String, Map> map = loadJsonFile(fileName);
         LOGGER.debug("\tPlatform: " + node);
         ArrayList<Map> envMap = (ArrayList<Map>) map.get(node);
-        LOGGER.debug("\tLoaded arraylist: " + envMap);
+        LOGGER.debug("\tLoaded arraylist: {}",
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(envMap)));
         return envMap;
     }
 

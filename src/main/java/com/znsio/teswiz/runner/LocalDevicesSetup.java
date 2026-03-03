@@ -4,6 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.logging.log4j.LogManager;
@@ -71,10 +73,11 @@ class LocalDevicesSetup {
                                                              String args) throws IOException,
             JadbException {
         InputStream inputStream = device.executeShell(command, args);
-        LOGGER.info("\tadb command: '" + command + "', args: '" + args + "', ");
+        LOGGER.info("\tadb command: '{}', args: '{}'",
+                SensitiveDataMasker.mask(command), SensitiveDataMasker.mask(args));
         String adbCommandOutput = Stream.readAll(inputStream, StandardCharsets.UTF_8)
                 .replaceAll("\n$", "");
-        LOGGER.info("\tOutput: " + adbCommandOutput);
+        LOGGER.info("\tOutput: {}", SensitiveDataMasker.mask(adbCommandOutput));
         return adbCommandOutput;
     }
 
@@ -97,7 +100,8 @@ class LocalDevicesSetup {
             JsonArray deviceList = asJsonObject.get("deviceList").getAsJsonArray();
             numberOfDevices = deviceList.size();
             LOGGER.info(String.format("Number of iOS real devices: %d", numberOfDevices));
-            LOGGER.debug(deviceList);
+            LOGGER.debug("Connected iOS devices: {}",
+                    SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(deviceList)));
         } else {
             numberOfDevices = commandOutput.split("\n").length;
             LOGGER.info(String.format("Number of iOS simulators: %d", numberOfDevices));
@@ -121,4 +125,3 @@ class LocalDevicesSetup {
         Setup.addToConfigs(EXECUTED_ON, "Local Devices");
     }
 }
-

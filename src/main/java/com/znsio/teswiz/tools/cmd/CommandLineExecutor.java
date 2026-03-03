@@ -3,6 +3,7 @@ package com.znsio.teswiz.tools.cmd;
 import com.znsio.teswiz.exceptions.CommandLineExecutorException;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.tools.OsUtils;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -90,7 +91,8 @@ public class CommandLineExecutor {
             int timeoutInSeconds,
             boolean useShell,
             List<String> directCommandParts) {
-        String message = "\tExecuting Command: " + displayCommand;
+        String maskedDisplayCommand = SensitiveDataMasker.mask(displayCommand);
+        String message = "\tExecuting Command: " + maskedDisplayCommand;
         long start = System.nanoTime();
 
         CommandLineResponse response = new CommandLineResponse();
@@ -142,7 +144,7 @@ public class CommandLineExecutor {
                     response.getExitCode(),
                     response.isTimedOut(),
                     response.getDurationMillis(),
-                    response
+                    SensitiveDataMasker.mask(response.toString())
             );
             LOGGER.info(responseMessage);
 

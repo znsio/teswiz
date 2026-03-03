@@ -3,6 +3,7 @@ package com.znsio.teswiz.runner;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.tools.FileUtils;
 import com.znsio.teswiz.tools.OsUtils;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
@@ -55,7 +56,8 @@ public class AppiumServerManager {
         } else {
             String cloudUrlFromCapabilities = DeviceSetup.getCloudUrlFromCapabilities();
             cloudUrlFromCapabilities = ensureWdHub(cloudUrlFromCapabilities);
-            LOGGER.info("{} Using Cloud Appium Server at: {}", LOGGER.getName(), cloudUrlFromCapabilities);
+            LOGGER.info("{} Using Cloud Appium Server at: {}", LOGGER.getName(),
+                    SensitiveDataMasker.mask(cloudUrlFromCapabilities));
             return cloudUrlFromCapabilities;
         }
     }

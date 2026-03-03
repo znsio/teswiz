@@ -5,6 +5,8 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 import io.cucumber.core.cli.Main;
 import net.masterthought.cucumber.Reportable;
 import org.apache.logging.log4j.LogManager;
@@ -67,7 +69,8 @@ public class Runner {
                 .map(arg -> "\t" + arg + ",")
                 .collect(Collectors.joining("\n", "\t[\n", "\n\t]"));
 
-        LOGGER.info("Begin running tests with args:\n{}", prettyArgs);
+        LOGGER.info("Begin running tests with args:\n{}",
+                SensitiveDataMasker.mask(prettyArgs));
 //        LOGGER.info("Begin running tests with args: {}", args);
         String[] array = args.toArray(String[]::new);
         try {
@@ -192,9 +195,8 @@ public class Runner {
         System.setProperty("OUTPUT_DIRECTORY", logDir);
         LOGGER.info("teswiz Runner");
         LOGGER.info("Provided parameters:");
-        for (String arg : args) {
-            LOGGER.info("\t" + arg);
-        }
+        LOGGER.info("{}",
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(args)));
         if (args.length != 3) {
             throw new InvalidTestDataException(
                     "Expected following parameters: 'String configFilePath, String " +

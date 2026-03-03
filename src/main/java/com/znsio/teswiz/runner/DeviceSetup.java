@@ -6,6 +6,7 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.OsUtils;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.logging.log4j.LogManager;
@@ -94,15 +95,16 @@ class DeviceSetup {
 
     static void verifyAppExistsAtMentionedPath() {
         String appPath = Setup.getFromConfigs(APP_PATH);
-        LOGGER.info(String.format("Original path to apk/app: %s", appPath));
+        LOGGER.info(String.format("Original path to apk/app: %s", SensitiveDataMasker.mask(appPath)));
         if (appPath.equals(NOT_SET)) {
             if (null == Setup.getLoadedCapabilities().get(Runner.getPlatform().name()).get("browserName")) {
                 appPath = downloadAppToDirectoryIfNeeded(getAppPathFromCapabilities(), DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
             }
-            LOGGER.info(String.format("Updated path to apk/app: %s", appPath));
+            LOGGER.info(String.format("Updated path to apk/app: %s", SensitiveDataMasker.mask(appPath)));
         } else {
             appPath = downloadAppToDirectoryIfNeeded(appPath, DEFAULT_TEMP_SAMPLE_APP_DIRECTORY);
-            LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s", appPath));
+            LOGGER.info(String.format("\tUsing AppPath provided as environment variable -  %s",
+                    SensitiveDataMasker.mask(appPath)));
         }
         Setup.addToConfigs(APP_PATH, appPath);
     }
@@ -112,20 +114,23 @@ class DeviceSetup {
         String localFilePath = saveToLocalDirectory + File.separator + fileName;
         if (isAppPathAUrl(appPath)) {
             LOGGER.info(String.format("App url '%s' is provided in capabilities. Download it, if " +
-                                              "not already available at '%s'", appPath, localFilePath));
+                                              "not already available at '%s'",
+                    SensitiveDataMasker.mask(appPath), SensitiveDataMasker.mask(localFilePath)));
             downloadFileIfDoesNotExist(appPath, localFilePath, saveToLocalDirectory);
             LOGGER.info("Changing value of appPath from URL to file path");
-            LOGGER.info(String.format("Before change, appPath value: %s", appPath));
+            LOGGER.info(String.format("Before change, appPath value: %s", SensitiveDataMasker.mask(appPath)));
             appPath = localFilePath;
-            LOGGER.info(String.format("After change, appPath value: %s", localFilePath));
+            LOGGER.info(String.format("After change, appPath value: %s", SensitiveDataMasker.mask(localFilePath)));
         } else {
-            LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
+            LOGGER.info(String.format("App file path '%s' is provided in capabilities.",
+                    SensitiveDataMasker.mask(appPath)));
             if (!(new File(appPath).exists())) {
                 throw new InvalidTestDataException(String.format("App file path '%s' provided in capabilities is incorrect", appPath));
             }
         }
-        LOGGER.info(String.format("App file path '%s' is provided in capabilities.", appPath));
-        LOGGER.info(String.format("File available at App file path '%s'", appPath));
+        LOGGER.info(String.format("App file path '%s' is provided in capabilities.",
+                SensitiveDataMasker.mask(appPath)));
+        LOGGER.info(String.format("File available at App file path '%s'", SensitiveDataMasker.mask(appPath)));
         return appPath;
     }
 
@@ -280,7 +285,8 @@ class DeviceSetup {
             responseCode = connection.getResponseCode();
             connection.disconnect();
         } catch (IOException e) {
-            LOGGER.info(MessageFormat.format("isAppUrlValid response message: {0}'', responseCode: {1}", responseMessage, responseCode));
+            LOGGER.info(MessageFormat.format("isAppUrlValid response message: {0}'', responseCode: {1}",
+                    SensitiveDataMasker.mask(responseMessage), responseCode));
             throw new InvalidTestDataException(String.format("Failed to make a connection using url: '%s'", appPathUrl) + e);
         }
 

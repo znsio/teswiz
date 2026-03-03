@@ -10,6 +10,7 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.OsUtils;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.StringUtils;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
@@ -250,9 +251,10 @@ class Setup {
     }
     private static void printLoadedConfigProperties(String configFilePath) {
         LOGGER.info(String.format("Loaded property file: %s", configFilePath));
-        final String[] propVars = {""};
-        properties.forEach((k, v) -> propVars[0] += ("\t" + k + ":" + v + "\n"));
-        LOGGER.info(String.format("Config properties: %s:%n%s", configFilePath, propVars[0]));
+        Map<String, String> propertyValues = new LinkedHashMap<>();
+        properties.forEach((k, v) -> propertyValues.put(String.valueOf(k), String.valueOf(v)));
+        LOGGER.info(String.format("Config properties: %s:%n%s", configFilePath,
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(propertyValues))));
     }
 
     private static Map<String, Map> loadEnvironmentConfiguration(String environment) {
@@ -313,27 +315,21 @@ class Setup {
     }
 
     private static void printStringConfigsMap() {
-        StringBuilder printString = new StringBuilder("Using string values" + ": \n");
-        for (Map.Entry<String, String> entry : Setup.configs.entrySet()) {
-            printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
-        }
-        LOGGER.info(printString.toString());
+        LOGGER.info("Using string values:{}{}",
+                System.lineSeparator(),
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(Setup.configs)));
     }
 
     private static void printBooleanConfigsMap() {
-        StringBuilder printString = new StringBuilder("Using boolean values" + ": \n");
-        for (Map.Entry<String, Boolean> entry : Setup.configsBoolean.entrySet()) {
-            printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
-        }
-        LOGGER.info(printString.toString());
+        LOGGER.info("Using boolean values:{}{}",
+                System.lineSeparator(),
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(Setup.configsBoolean)));
     }
 
     private static void printIntegerConfigsMap() {
-        StringBuilder printString = new StringBuilder("Using integer values" + ": \n");
-        for (Map.Entry<String, Integer> entry : Setup.configsInteger.entrySet()) {
-            printString.append("\t").append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
-        }
-        LOGGER.info(printString.toString());
+        LOGGER.info("Using integer values:{}{}",
+                System.lineSeparator(),
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(Setup.configsInteger)));
     }
 
     private static void buildMapOfRequiredProperties() {
@@ -537,7 +533,8 @@ class Setup {
             applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING, isDisableBrowserFetching());
             applitoolsConfiguration.put(APPLITOOLS.BATCH_INFO, setupApplitoolsBatchInfo());
         }
-        LOGGER.info("applitoolsConfiguration:\n{}", JsonPrettyPrinter.prettyPrint(applitoolsConfiguration));
+        LOGGER.info("applitoolsConfiguration:\n{}",
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(applitoolsConfiguration)));
         return applitoolsConfiguration;
     }
 

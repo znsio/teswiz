@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.tools.JsonFile;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.logging.log4j.LogManager;
@@ -70,7 +71,9 @@ class PCloudySetup {
                                                             String authenticationKey,
                                                             String deviceLabURL) {
         LOGGER.info(
-                String.format("uploadAPKTopCloudy for: '%s':'%s'%n", emailID, authenticationKey));
+                String.format("uploadAPKTopCloudy for: '%s':'%s'%n",
+                        SensitiveDataMasker.mask(emailID),
+                        SensitiveDataMasker.mask(authenticationKey)));
         String appPath = getFromConfigs(APP_PATH);
 
         String authToken = getPCloudyAuthToken(emailID, authenticationKey, appPath, deviceLabURL);
@@ -113,15 +116,16 @@ class PCloudySetup {
                                             "\"" + emailID + ":" + authenticationKey + "\"",
                                             deviceLabURL + "/api/access"};
         CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken);
-        LOGGER.info("\tauthTokenResponse: " + authTokenResponse.getStdOut());
+        LOGGER.info("\tauthTokenResponse: {}",
+                SensitiveDataMasker.mask(authTokenResponse.getStdOut()));
         if(authTokenResponse.getStdOut().contains("error")) {
             throw new EnvironmentSetupException(
                     String.format("Unable to get auth: '%s' to '%s'%n%s", appPath, deviceLabURL,
-                                  authTokenResponse));
+                                  SensitiveDataMasker.mask(String.valueOf(authTokenResponse))));
         }
         String authToken = JsonFile.convertToMap(authTokenResponse.getStdOut())
                                    .getAsJsonObject(RESULT).get("token").getAsString();
-        LOGGER.info("\tauthToken: " + authToken);
+        LOGGER.info("\tauthToken: {}", SensitiveDataMasker.mask(authToken));
         return authToken;
     }
 
@@ -158,11 +162,13 @@ class PCloudySetup {
                 deviceLabURL + "/api/upload_file"};
 
         CommandLineResponse uploadApkResponse = CommandLineExecutor.execCommand(listOfDevices);
-        LOGGER.info("\tuploadApkResponse: " + uploadApkResponse.getStdOut());
+        LOGGER.info("\tuploadApkResponse: {}",
+                SensitiveDataMasker.mask(uploadApkResponse.getStdOut()));
         JsonObject result = JsonFile.convertToMap(uploadApkResponse.getStdOut()).getAsJsonObject(RESULT);
         int uploadStatus = result.get("code").getAsInt();
         if(200 != uploadStatus) {
-            throw new EnvironmentSetupException(String.format("Unable to upload app to pCloudy: '%s' to '%s'%n%s", appPath, deviceLabURL, uploadApkResponse));
+            throw new EnvironmentSetupException(String.format("Unable to upload app to pCloudy: '%s' to '%s'%n%s",
+                    appPath, deviceLabURL, SensitiveDataMasker.mask(String.valueOf(uploadApkResponse))));
         }
         String uploadedFileName = result.get("file").getAsString();
         LOGGER.info("\tuploadAppToPCloudy: Uploaded: " + uploadedFileName);
@@ -193,7 +199,8 @@ class PCloudySetup {
 
         CommandLineResponse listFilesInPCloudyResponse = CommandLineExecutor.execCommand(
                 listOfUploadedFiles);
-        LOGGER.info("\tlistFilesInPCloudyResponse: " + listFilesInPCloudyResponse.getStdOut());
+        LOGGER.info("\tlistFilesInPCloudyResponse: {}",
+                SensitiveDataMasker.mask(listFilesInPCloudyResponse.getStdOut()));
         JsonObject result = JsonFile.convertToMap(listFilesInPCloudyResponse.getStdOut())
                                     .getAsJsonObject(RESULT);
         JsonElement resultCode = result.get("code");
@@ -201,7 +208,7 @@ class PCloudySetup {
         if(200 != uploadStatus) {
             throw new EnvironmentSetupException(
                     String.format("Unable to get list of uploaded files%n%s",
-                                  listFilesInPCloudyResponse));
+                                  SensitiveDataMasker.mask(String.valueOf(listFilesInPCloudyResponse))));
         }
 
         return listFilesInPCloudyResponse;

@@ -5,8 +5,10 @@ import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.UserPersonaDetails;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.AsyncCommandLineExecutor;
 import io.cucumber.java.Scenario;
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -74,38 +77,48 @@ public class Hooks {
 
     private void addEnvironmentVariablesToReportPortal() {
         Map<String, String> envVars = System.getenv();
-        StringBuilder envVarInfo = new StringBuilder();
-
-        envVars.entrySet().stream()
-                .filter(entry -> excludeLoggingEnvVariables.stream().noneMatch(excludedKey ->
-                        entry.getKey().toLowerCase().contains(excludedKey.toLowerCase())))
-                .forEach(entry -> envVarInfo.append("\t").append(entry.getKey()).append(":").append(entry.getValue()).append("\n"));
-
-        envVars.entrySet().stream()
-                .filter(entry -> excludeLoggingEnvVariables.stream().anyMatch(excludedKey ->
-                        entry.getKey().toLowerCase().contains(excludedKey.toLowerCase())))
-                .forEach(entry -> envVarInfo.append("\t").append(entry.getKey()).append(":").append("*****").append("\n"));
+        Map<String, String> maskedEnvVars = new LinkedHashMap<>();
+        envVars.forEach((key, value) -> {
+            if (isSensitiveProperty(key)) {
+                maskedEnvVars.put(key, "*****");
+            } else {
+                maskedEnvVars.put(key, value);
+            }
+        });
 
         ReportPortalLogger.logDebugMessage(
-                String.format("Hooks: Environment Variables:%n%s", envVarInfo));
+                String.format("Hooks: Environment Variables:%n%s",
+                        SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(maskedEnvVars))));
     }
 
     private void addSystemPropertiesToReportPortal() {
         Properties props = System.getProperties();
-        StringBuilder propVars = new StringBuilder();
-
-        props.entrySet().stream()
-                .filter(entry -> excludeLoggingSystemProperties.stream().noneMatch(excludedKey ->
-                        entry.getKey().toString().toLowerCase().contains(excludedKey.toLowerCase())))
-                .forEach(entry -> propVars.append("\t").append(entry.getKey()).append(":").append(entry.getValue()).append("\n"));
-
-        props.entrySet().stream()
-                .filter(entry -> excludeLoggingSystemProperties.stream().anyMatch(excludedKey ->
-                        entry.getKey().toString().toLowerCase().contains(excludedKey.toLowerCase())))
-                .forEach(entry -> propVars.append("\t").append(entry.getKey()).append(":").append("*****").append("\n"));
+        Map<String, String> maskedProperties = new LinkedHashMap<>();
+        props.forEach((key, value) -> {
+            String propertyName = String.valueOf(key);
+            if (isSensitiveProperty(propertyName)) {
+                maskedProperties.put(propertyName, "*****");
+            } else {
+                maskedProperties.put(propertyName, String.valueOf(value));
+            }
+        });
 
         ReportPortalLogger.logDebugMessage(
-                String.format("Hooks: System Properties:%n%s", propVars));
+                String.format("Hooks: System Properties:%n%s",
+                        SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(maskedProperties))));
+    }
+
+    private boolean isSensitiveProperty(String propertyName) {
+        String normalizedPropertyName = propertyName.toLowerCase();
+        return excludeLoggingSystemProperties.stream().anyMatch(excludedKey ->
+                normalizedPropertyName.contains(excludedKey.toLowerCase()))
+                || excludeLoggingEnvVariables.stream().anyMatch(excludedKey ->
+                normalizedPropertyName.contains(excludedKey.toLowerCase()))
+                || normalizedPropertyName.contains("token")
+                || normalizedPropertyName.contains("secret")
+                || normalizedPropertyName.contains("auth")
+                || normalizedPropertyName.contains("credential")
+                || normalizedPropertyName.contains("apikey");
     }
 
     private void closeTheAsyncCommandLineExecutor() {

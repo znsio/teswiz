@@ -9,6 +9,8 @@ import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
 
 import java.io.File;
 import java.io.IOException;
@@ -218,7 +220,9 @@ public class CustomCapabilities {
     private void validateCapabilitySchema(JSONObject loadedCapabilities) {
         String schemaFileName = getSchemaFileName();
         try {
-            LOGGER.debug("Validating capabilities schema: {}", loadedCapabilities);
+            LOGGER.debug("Validating capabilities schema: {}",
+                    SensitiveDataMasker.mask(
+                            JsonPrettyPrinter.prettyPrint(loadedCapabilities.toMap())));
             InputStream inputStream = getClass().getResourceAsStream(schemaFileName);
             assert inputStream != null;
             JSONObject rawSchema = new JSONObject(new JSONTokener(inputStream));
