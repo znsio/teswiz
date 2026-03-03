@@ -26,11 +26,11 @@
     "browserstack.locale": "IN",
     "project": "teswiz",
     "percy.enabled": "true",
-    "percy.ignoreErrors": "true"
+    "percy.ignoreErrors": "true",
+    "appiumServerLogLevel": "info"
   },
   "cloud": {
-    "android": [
-    ]
+    "android": []
   },
   "hostMachines": [
     {

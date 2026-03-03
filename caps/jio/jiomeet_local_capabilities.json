@@ -16,11 +16,14 @@
     "platformName": "android",
     "printPageSourceOnFindFailure": true,
     "skipUnlock": true,
-    "noReset": false
+    "noReset": false,
+    "appiumServerLogLevel": "info"
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "android",

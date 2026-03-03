@@ -12,11 +12,14 @@
     "printPageSourceOnFindFailure": true,
     "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
     "deviceName": "android",
-    "noSign": true
+    "noSign": true,
+    "appiumServerLogLevel": "info"
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "android",

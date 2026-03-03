@@ -3,9 +3,11 @@
     "platformName": "windows",
     "app": "C:\\Windows\\System32\\notepad.exe"
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "android",

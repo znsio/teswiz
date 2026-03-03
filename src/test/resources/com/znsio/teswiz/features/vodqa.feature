@@ -12,7 +12,7 @@ Feature: Vodqa test
 
 
   #  CONFIG=./configs/vodqa/vodqa_local_config.properties PLATFORM=android TAG=tapInMiddleOfScreen ./gradlew run
-  #  RUN_IN_CI=true CONFIG=./configs/vodqa/vodqa_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=android TAG="@vodqa and @browserstack" ./gradlew run@android @tapInMiddleOfScreen
+  #  RUN_IN_CI=true CONFIG=./configs/vodqa/vodqa_browserstack_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=android TAG="@vodqa and @browserstack" ./gradlew run
   @android @browserstack
   Scenario: User tap in the middle of the screen
     Given I login to vodqa application using valid credentials

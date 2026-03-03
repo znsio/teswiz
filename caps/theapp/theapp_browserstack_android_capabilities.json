@@ -21,7 +21,8 @@
     "platformName": "Android",
     "project": "teswiz",
     "resetKeyboard": true,
-    "unicodeKeyboard": true
+    "unicodeKeyboard": true,
+    "appiumServerLogLevel": "info"
   },
   "web": {
     "browserName": "chrome",
@@ -35,7 +36,9 @@
   },
   "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "android",
@@ -44,8 +47,7 @@
             "cloudName": "browserstack",
             "url": "https://hub-cloud.browserstack.com",
             "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
-            "devices": [
-            ],
+            "devices": [],
             "web": {}
           }
         }

@@ -11,11 +11,15 @@
     "automationName": "XCUITest",
     "usePrebuiltWDA": false,
     "appium:iPhoneOnly": true,
-    "noReset": true
+    "noReset": true,
+    "appiumServerLogLevel": "info"
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm","relaxed-caps"],
+      "use-plugins": [
+        "device-farm",
+        "relaxed-caps"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "iOS",

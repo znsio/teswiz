@@ -1,6 +1,6 @@
 {
   "web": {
-    "browserName":"chrome",
+    "browserName": "chrome",
     "browserstackOptions": {
       "deviceName": "Samsung Galaxy S20",
       "osVersion": "13.0",
@@ -15,9 +15,11 @@
       "timezone": "Kolkata"
     }
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "web",
@@ -26,8 +28,7 @@
             "cloudName": "browserstack",
             "url": "https://hub-cloud.browserstack.com",
             "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
-            "devices": [
-            ],
+            "devices": [],
             "web": {}
           }
         }

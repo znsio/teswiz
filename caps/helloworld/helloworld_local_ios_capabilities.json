@@ -13,11 +13,15 @@
     "printPageSourceOnFindFailure": true,
     "shouldUseSingletonTestManager": false,
     "simpleIsVisibleCheck": true,
-    "usePrebuiltWDA": false
+    "usePrebuiltWDA": false,
+    "appiumServerLogLevel": "info"
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm","relaxed-caps"],
+      "use-plugins": [
+        "device-farm",
+        "relaxed-caps"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "iOS",

@@ -19,7 +19,8 @@
       "video": true,
       "visual": true,
       "network": true
-    }
+    },
+    "appiumServerLogLevel": "info"
   },
   "web": {
     "browserName": "chrome",
@@ -33,7 +34,9 @@
   },
   "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "android",

@@ -11,7 +11,8 @@
     "noSign": true,
     "platformName": "android",
     "printPageSourceOnFindFailure": true,
-    "uiautomator2ServerInstallTimeout": 10000
+    "uiautomator2ServerInstallTimeout": 10000,
+    "appiumServerLogLevel": "info"
   },
   "web": {
     "browserName": "chrome",
@@ -23,9 +24,11 @@
       "networkLogs": "true"
     }
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "web",
@@ -34,8 +37,7 @@
             "cloudName": "browserstack",
             "url": "https://hub-cloud.browserstack.com",
             "apiUrl": "https://api-cloud.browserstack.com/app-automate/",
-            "devices": [
-            ],
+            "devices": [],
             "web": {}
           }
         }

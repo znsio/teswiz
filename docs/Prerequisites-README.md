@@ -44,13 +44,19 @@ You should see the following:
 There should be no errors reported
 
 ## Setting Variables for Project Setup
-Add appiumServerPath to the capabilities.json file:
+Add `appiumServerPath` to the capabilities.json file:
 
     "appiumServerPath": "./node_modules/appium/build/lib/main.js"
+
+Optionally set `appiumServerLogLevel` inside the `android` or `iOS` section in capabilities.json.
+If this key is not set (or is blank), teswiz starts Appium with log level `info`.
+
+    "android": {
+      "appiumServerLogLevel": "info"
+    }
 
 ## Install and configure Appium Inspector
 
 Latest [Appium Inspector](https://github.com/appium/appium-inspector/releases) supporting Appium 2
 
 Appium Inspector [Capability guidelines and examples](https://appium.io/docs/en/2.0/guides/caps/)
-

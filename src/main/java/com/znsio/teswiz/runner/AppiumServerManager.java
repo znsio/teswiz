@@ -9,6 +9,7 @@ import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.net.URL;
@@ -19,6 +20,8 @@ import java.time.Duration;
 public class AppiumServerManager {
 
     private static final Logger LOGGER = LogManager.getLogger(AppiumServerManager.class.getName());
+    private static final String APPIUM_SERVER_LOG_LEVEL_CAPABILITY = "appiumServerLogLevel";
+    private static final String DEFAULT_APPIUM_SERVER_LOG_LEVEL = "info";
     private static AppiumDriverLocalService appiumDriverLocalService;
 
     private static AppiumDriverLocalService getAppiumDriverLocalService() {
@@ -98,7 +101,7 @@ public class AppiumServerManager {
                     .withTimeout(Duration.ofSeconds(60))
                     .withArgument(() -> "--config", System.getProperty("user.dir") + FileLocations.SERVER_CONFIG_JSON)
                     .withArgument(GeneralServerFlag.RELAXED_SECURITY)
-                    .withArgument(() -> "--log-level", "debug")
+                    .withArgument(() -> "--log-level", getAppiumServerLogLevel())
                     .usingAnyFreePort();
         } catch (Exception e) {
             throw new EnvironmentSetupException("Unable to start Appium Server", e);
@@ -141,6 +144,35 @@ public class AppiumServerManager {
         LOGGER.info("Picking UserSpecified Base Path");
         return CustomCapabilities.getInstance()
                 .getCapabilities().get("basePath").toString();
+    }
+
+    private String getAppiumServerLogLevel() {
+        String appiumServerLogLevel = getCapabilitySectionLogLevel("android");
+        if (StringUtils.isBlank(appiumServerLogLevel)) {
+            appiumServerLogLevel = getCapabilitySectionLogLevel("iOS");
+        }
+        if (StringUtils.isBlank(appiumServerLogLevel)) {
+            appiumServerLogLevel = DEFAULT_APPIUM_SERVER_LOG_LEVEL;
+        }
+        LOGGER.info("Using Appium server log level: {}", appiumServerLogLevel);
+        return appiumServerLogLevel;
+    }
+
+    private String getCapabilitySectionLogLevel(String sectionName) {
+        JSONObject capabilities = CustomCapabilities.getInstance().getCapabilities();
+        if (!capabilities.has(sectionName)) {
+            return null;
+        }
+        Object sectionObject = capabilities.get(sectionName);
+        if (!(sectionObject instanceof JSONObject)) {
+            return null;
+        }
+        JSONObject platformCapabilities = (JSONObject) sectionObject;
+        if (!platformCapabilities.has(APPIUM_SERVER_LOG_LEVEL_CAPABILITY)) {
+            return null;
+        }
+        String configuredLogLevel = platformCapabilities.get(APPIUM_SERVER_LOG_LEVEL_CAPABILITY).toString();
+        return StringUtils.isBlank(configuredLogLevel) ? null : configuredLogLevel.trim();
     }
 
 }

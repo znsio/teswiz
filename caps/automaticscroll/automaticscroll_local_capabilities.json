@@ -11,11 +11,14 @@
     "enablePerformanceLogging": true,
     "printPageSourceOnFindFailure": true,
     "deviceName": "android",
-    "noSign": true
+    "noSign": true,
+    "appiumServerLogLevel": "info"
   },
   "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "android",

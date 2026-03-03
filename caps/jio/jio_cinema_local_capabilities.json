@@ -15,11 +15,14 @@
     "noSign": true,
     "platformName": "android",
     "printPageSourceOnFindFailure": true,
-    "skipUnlock": true
+    "skipUnlock": true,
+    "appiumServerLogLevel": "info"
   },
   "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "android",

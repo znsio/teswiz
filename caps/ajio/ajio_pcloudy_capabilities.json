@@ -13,7 +13,7 @@
     "appium:autoGrantPermissions": true,
     "appium:no_reset": true,
     "appium:appiumVersion": "2.0.0",
-    "pcloudy:options" : {
+    "pcloudy:options": {
       "pCloudy_DurationInMinutes": 10,
       "pCloudy_WildNet": "false",
       "pCloudy_EnableVideo": "true",
@@ -21,7 +21,8 @@
       "pCloudy_EnableDeviceLogs": "true",
       "pCloudy_Username": "user",
       "pCloudy_ApiKey": "key"
-    }
+    },
+    "appiumServerLogLevel": "info"
   },
   "iOS": {
     "app": "./temp/AJIO_test_9_8_29.ipa",
@@ -38,11 +39,14 @@
     "pCloudy_EnableVideo": "true",
     "pCloudy_EnablePerformanceData": "true",
     "pCloudy_EnableDeviceLogs": "true",
-    "appiumVersion": "3.1.2"
+    "appiumVersion": "3.1.2",
+    "appiumServerLogLevel": "info"
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "iOS",
@@ -52,8 +56,7 @@
             "cloudName": "pCloudy",
             "apiUrl": "https://device.pcloudy.com",
             "url": "https://device.pcloudy.com/appiumcloud",
-            "devices": [
-            ]
+            "devices": []
           }
         }
       }

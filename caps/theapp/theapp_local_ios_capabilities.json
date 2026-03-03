@@ -12,11 +12,15 @@
     "platformName": "iOS",
     "preventWDAAttachments": true,
     "printPageSourceOnFindFailure": true,
-    "usePrebuiltWDA": false
+    "usePrebuiltWDA": false,
+    "appiumServerLogLevel": "info"
   },
   "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm", "relaxed-caps"],
+      "use-plugins": [
+        "device-farm",
+        "relaxed-caps"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "iOS",

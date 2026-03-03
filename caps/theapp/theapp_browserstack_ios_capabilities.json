@@ -16,7 +16,8 @@
       "network": true,
       "appProfiling": true,
       "visual": true
-    }
+    },
+    "appiumServerLogLevel": "info"
   },
   "web": {
     "browserName": "chrome",
@@ -30,7 +31,9 @@
   },
   "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "iOS",

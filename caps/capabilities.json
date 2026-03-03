@@ -1,6 +1,7 @@
 {
   "android": {
-    "automationName": "UiAutomator2"
+    "automationName": "UiAutomator2",
+    "appiumServerLogLevel": "info"
   },
   "serverConfig": {
     "server": {

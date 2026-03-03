@@ -12,11 +12,14 @@
     "browserstack.debug": true,
     "browserstack.networkLogs": "true",
     "browserstack.gpsLocation": "22,75",
-    "browserstack.locale": "IN"
+    "browserstack.locale": "IN",
+    "appiumServerLogLevel": "info"
   },
   "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "iOS",

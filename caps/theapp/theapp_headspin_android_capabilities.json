@@ -15,11 +15,14 @@
     "autoAcceptAlerts": true,
     "headspin:capture.video": true,
     "headspin:appiumVersion": "2.0.0",
-    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk"
+    "app": "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/raw/main/TheApp-release.apk",
+    "appiumServerLogLevel": "info"
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "android",
@@ -29,8 +32,7 @@
             "cloudName": "headspin",
             "url": "https://appium-dev.headspin.io:443/v0/token/wd/hub",
             "apiUrl": "api-dev.headspin.io/v1",
-            "devices": [
-            ]
+            "devices": []
           }
         }
       }

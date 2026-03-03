@@ -10,11 +10,14 @@
     "platformVersion": "16.6",
     "printPageSourceOnFindFailure": true,
     "autoAcceptAlerts": true,
-    "headspin:newCommandTimeout": 120000
+    "headspin:newCommandTimeout": 120000,
+    "appiumServerLogLevel": "info"
   },
-  "serverConfig" : {
+  "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "iOS",
@@ -25,8 +28,7 @@
             "cloudName": "headspin",
             "url": "https://appium-dev.headspin.io:443/v0/token/wd/hub",
             "apiUrl": "api-dev.headspin.io/v1",
-            "devices": [
-            ]
+            "devices": []
           }
         }
       }

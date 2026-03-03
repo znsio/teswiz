@@ -11,7 +11,8 @@
     "noSign": true,
     "platformName": "android",
     "printPageSourceOnFindFailure": true,
-    "uiautomator2ServerInstallTimeout": 10000
+    "uiautomator2ServerInstallTimeout": 10000,
+    "appiumServerLogLevel": "info"
   },
   "web": {
     "browserName": "chrome",
@@ -26,7 +27,9 @@
   },
   "serverConfig": {
     "server": {
-      "use-plugins": ["device-farm"],
+      "use-plugins": [
+        "device-farm"
+      ],
       "plugin": {
         "device-farm": {
           "platform": "web",
