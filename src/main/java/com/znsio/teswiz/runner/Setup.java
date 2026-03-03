@@ -73,6 +73,7 @@ class Setup {
     static final String IS_FAILING_TEST_SUITE = "IS_FAILING_TEST_SUITE";
     static final String SET_HARD_GATE = "SET_HARD_GATE";
     static final String HEADLESS = "HEADLESS";
+    static final String SHOW_SENSITIVE_DATA = "SHOW_SENSITIVE_DATA";
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
@@ -125,6 +126,7 @@ class Setup {
         configsBoolean.clear();
         configsInteger.clear();
         applitoolsConfiguration.clear();
+        SensitiveDataMasker.setShowSensitiveData(false);
     }
 
     @NotNull
@@ -182,6 +184,7 @@ class Setup {
     static void loadAndUpdateConfigParameters(String configFilePath) {
         configs.put(CONFIG_FILE, configFilePath);
         buildMapOfRequiredProperties();
+        SensitiveDataMasker.setShowSensitiveData(getBooleanValueFromConfigs(SHOW_SENSITIVE_DATA));
     }
 
     private static void setupDirectories() {
@@ -376,6 +379,9 @@ class Setup {
         configsBoolean.put(IS_FAILING_TEST_SUITE, getOverriddenBooleanValue(IS_FAILING_TEST_SUITE, false));
         configsBoolean.put(SET_HARD_GATE, getOverriddenBooleanValue(SET_HARD_GATE, false));
         configsBoolean.put(HEADLESS, getOverriddenBooleanValue(HEADLESS, false));
+        configsBoolean.put(SHOW_SENSITIVE_DATA, getOverriddenBooleanValue(
+                SHOW_SENSITIVE_DATA,
+                getBooleanValueFromPropertiesIfAvailable(SHOW_SENSITIVE_DATA, false)));
     }
 
     static String getHostMachineName() {

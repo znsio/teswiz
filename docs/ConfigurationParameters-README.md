@@ -48,6 +48,7 @@ These can be overridden by providing the same either as environment variables or
     REPORT_PORTAL_FILE=./src/test/resources/reportportal.properties -> ReportPortal.io configuration
     RP_DESCRIPTION=<description of the test execution to be shown in reportportal's launch description. Default: End-2-End scenarios>
     RUN_IN_CI=false -> Are tests running in CI?
+    SHOW_SENSITIVE_DATA=false -> If true, do not mask sensitive values in logs. Default is false.
     SET_HARD_GATE=true -> Enables Hard Gate for test execution. See [Hard Gate](HardGate.md) for more information 
     TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE
     TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data

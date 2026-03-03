@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 
 public final class SensitiveDataMasker {
     private static final String MASK = "***";
+    private static volatile boolean showSensitiveData = false;
 
     private static final Pattern URL_CREDENTIALS = Pattern.compile(
             "(?i)(https?://)([^:/\\s]+):([^@\\s]+)@");
@@ -22,7 +23,14 @@ public final class SensitiveDataMasker {
 
     private SensitiveDataMasker() {}
 
+    public static void setShowSensitiveData(boolean showSensitiveDataInLogs) {
+        showSensitiveData = showSensitiveDataInLogs;
+    }
+
     public static String maskSecret(String value) {
+        if (showSensitiveData) {
+            return value;
+        }
         if (value == null) {
             return value;
         }
@@ -33,6 +41,9 @@ public final class SensitiveDataMasker {
     }
 
     public static String mask(String value) {
+        if (showSensitiveData) {
+            return value;
+        }
         if (value == null) {
             return value;
         }
