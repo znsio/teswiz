@@ -251,7 +251,11 @@ public class Drivers {
         argumentsObject.put("reason", scenarioFailureReasons);
         executorObject.put("action", "setSessionStatus");
         executorObject.put("arguments", argumentsObject);
-        driver.executeScript(String.format("browserstack_executor: %s", executorObject));
+        try {
+            driver.executeScript(String.format("browserstack_executor: %s", executorObject));
+        } catch (RuntimeException e) {
+            LOGGER.warn("Unable to set BrowserStack session status using executor command: {}", e.getMessage());
+        }
     }
 
     private static void updateTestStatusInLambdaTest(JavascriptExecutor driver, String scenarioStatus, String scenarioFailureReasons) {
