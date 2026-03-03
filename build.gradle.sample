@@ -11,7 +11,7 @@ plugins {
     id "idea"
 }
 
-def teswizVersion = "1.0.16"
+def teswizVersion = "1.0.17"
 
 group = "com.github.znsio"
 version = "$teswizVersion"
@@ -155,7 +155,7 @@ tasks.register('downloadDependencies') {
                                 artifact      : "teswiz",
                                 version       : "$teswizVersion",
                                 fileNameSuffix: "",
-                                forceUpdate   : false
+                                forceUpdate   : true
                         ]
                 ]
         ]
@@ -181,9 +181,9 @@ dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
     implementation files(layout.buildDirectory.files("/classes/main"))
     implementation files(layout.buildDirectory.files("/classes/test"))
-    implementation("com.github.znsio:teswiz:${teswizVersion}") {
-        transitive = false
-    }
+//    implementation("com.github.znsio:teswiz:${teswizVersion}") {
+//        transitive = false
+//    }
 }
 
 wrapper {
