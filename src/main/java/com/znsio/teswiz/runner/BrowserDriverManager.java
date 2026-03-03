@@ -23,8 +23,8 @@ import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.UnsupportedCommandException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -592,7 +592,7 @@ class BrowserDriverManager {
             }
             writer.flush();
             LOGGER.info("Browser log saved in: " + fileName);
-        } catch (NoSuchSessionException | IOException | UnsupportedCommandException e) {
+        } catch (IOException | WebDriverException e) {
             LOGGER.error("Error writing " + logLabel + " log for file: " + logFileName + ": Error: " + e.getMessage());
         }
     }
