@@ -8,6 +8,9 @@ on:
   schedule:
     - cron: '35 23 * * 1'
 
+env:
+  APPLITOOLS_BATCH_NAME_SUFFIX: " - #${{ github.run_number }}"
+
 jobs:
   analyze:
     name: Analyze

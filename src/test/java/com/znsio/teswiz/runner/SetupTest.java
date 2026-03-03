@@ -1,5 +1,6 @@
 package com.znsio.teswiz.runner;
 
+import com.applitools.eyes.BatchInfo;
 import com.znsio.teswiz.entities.APPLITOOLS;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +25,7 @@ class SetupTest {
     public void beforeMethod() {
         System.clearProperty(APPLITOOLS.PROXY_KEY);
         System.clearProperty(APPLITOOLS.PROXY_URL);
+        System.clearProperty(Setup.APPLITOOLS_BATCH_NAME_SUFFIX);
     }
 
     @Test
@@ -141,5 +143,17 @@ class SetupTest {
         assertThat(applitoolsConfiguration.get(APPLITOOLS.PROXY_KEY)).as("Applitools Proxy key is invalid").hasToString(
                 proxyKey);
         assertThat(applitoolsConfiguration.get(APPLITOOLS.PROXY_URL)).as("Applitools Proxy url is invalid").isNotNull();
+    }
+
+    @Test
+    void checkApplitoolsBatchNameSuffix() {
+        String batchNameSuffix = " - #661";
+        System.setProperty(Setup.APPLITOOLS_BATCH_NAME_SUFFIX, batchNameSuffix);
+        Setup.load(configFilePath);
+        Setup.loadAndUpdateConfigParameters(configFilePath);
+        Setup.initialiseApplitoolsConfiguration();
+        Map applitoolsConfiguration = Runner.getApplitoolsConfiguration();
+        BatchInfo batchInfo = (BatchInfo) applitoolsConfiguration.get(APPLITOOLS.BATCH_INFO);
+        assertThat(batchInfo.getName()).as("Applitools Batch name suffix is not set as expected").endsWith(batchNameSuffix);
     }
 }

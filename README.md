@@ -60,6 +60,14 @@ variable: `REPORT_PORTAL_FILE`
 
 Test can run on local browsers / devices, or against any cloud provider, such as TestMu AI (formerly LambdaTest), HeadSpin, BrowserStack, SauceLabs, pCloudy.
 
+## CI Batch Name Suffix for Applitools
+
+To append a CI-specific suffix to the Applitools batch name, set `APPLITOOLS_BATCH_NAME_SUFFIX`.
+
+Example for GitHub Actions:
+
+`additional-env: "APPLITOOLS_BATCH_NAME_SUFFIX=' - #${{ github.run_number }}'"`
+
 ## Cloud provider notes
 
 ### TestMu AI (formerly LambdaTest)

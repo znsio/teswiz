@@ -91,6 +91,7 @@ class Setup {
     private static final String PROXY_KEY = "PROXY_KEY";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
     static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
+    static final String APPLITOOLS_BATCH_NAME_SUFFIX = "APPLITOOLS_BATCH_NAME_SUFFIX";
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
     private static final Logger LOGGER = LogManager.getLogger(Setup.class.getName());
@@ -557,7 +558,16 @@ class Setup {
 
     @NotNull
     private static BatchInfo setupApplitoolsBatchInfo() {
-        BatchInfo batchInfo = new BatchInfo(configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT));
+        String batchName = configs.get(LAUNCH_NAME) + "-" + configs.get(TARGET_ENVIRONMENT);
+        String batchNameSuffix = getOverriddenStringValue(APPLITOOLS_BATCH_NAME_SUFFIX, "");
+        if (!batchNameSuffix.isBlank()) {
+            if (!Character.isWhitespace(batchNameSuffix.charAt(0))) {
+                batchNameSuffix = " " + batchNameSuffix;
+            }
+            batchName += batchNameSuffix;
+        }
+
+        BatchInfo batchInfo = new BatchInfo(batchName);
         batchInfo.addProperty(APP_NAME, configs.get(APP_NAME));
         batchInfo.addProperty(BRANCH_NAME, configs.get(BRANCH_NAME));
         batchInfo.addProperty(PLATFORM, currentPlatform.name());

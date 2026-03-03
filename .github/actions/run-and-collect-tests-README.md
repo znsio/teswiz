@@ -49,7 +49,7 @@ Place this file under:
     display-name: "TheApp Android"
     artifact-name: test-results-theapp-android
     is-visual: false
-    additional-env: "SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false"
+    additional-env: "SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false APPLITOOLS_BATCH_NAME_SUFFIX=' - #${{ github.run_number }}'"
 ```
 
 ## 📦 Artifacts

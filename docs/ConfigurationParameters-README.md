@@ -15,6 +15,7 @@ These can be overridden by providing the same either as environment variables or
     APP_NAME=teswiz -> Name of your application
     APP_PACKAGE_NAME=io.cloudgrey.the_app -> android app package name
     APP_PATH=./temp/abc.apk -> path to android / windows app name
+    APPLITOOLS_BATCH_NAME_SUFFIX= - #661 -> Optional suffix appended to Applitools batch name (useful in CI runs)
     APPLITOOLS_CONFIGURATION=./configs/applitools_config.json -> Applitools configuration 
     BASE_URL_FOR_WEB=BASE_URL -> Key name of the property in TEST_DATA_FILE for environment specific base url
     BRANCH_NAME -> Key name of environment variable which should be used to get the current Branch name. 
