@@ -276,7 +276,7 @@ class BrowserStackSetup {
     private static String uploadToBrowserStack(String authenticationKey, String appPath,
                                                   String uploadUrl) {
         LOGGER.info(String.format("uploadToBrowserStack for: '%s'%n",
-                SensitiveDataMasker.mask(authenticationKey)));
+                SensitiveDataMasker.maskSecret(authenticationKey)));
 
         String[] curlCommand = buildUploadAppCurlCommand(authenticationKey, appPath, uploadUrl,
                 Setup.getCurlProxyCommand());
@@ -338,7 +338,7 @@ class BrowserStackSetup {
                                                    String apiUrl) {
         String appName = getAppName(appPath);
         LOGGER.info(String.format("getAppIdFromBrowserStack for: '%s' and appName: '%s'%n",
-                SensitiveDataMasker.mask(authenticationKey), appName));
+                SensitiveDataMasker.maskSecret(authenticationKey), appName));
         String[] curlCommand = new String[]{
                 "curl --insecure " + Setup.getCurlProxyCommand() + " -u \"" + authenticationKey + "\"",
                 "-X GET \"" + apiUrl + "recent_apps/" + appName + "\""};

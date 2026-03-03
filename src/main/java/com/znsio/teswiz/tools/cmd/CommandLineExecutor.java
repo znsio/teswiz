@@ -2,6 +2,7 @@ package com.znsio.teswiz.tools.cmd;
 
 import com.znsio.teswiz.exceptions.CommandLineExecutorException;
 import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.OsUtils;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
 import org.apache.commons.io.IOUtils;
@@ -140,11 +141,16 @@ public class CommandLineExecutor {
             response.setDurationMillis(durationMs);
 
             String responseMessage = String.format(
-                    "\tExit code: %d (timedOut=%s, durationMs=%d)%n\tResponse:%n%s\t",
+                    "\tExit code: %d (timedOut=%s, durationMs=%d)%n"
+                    + "\tCommand:%n%s%n"
+                    + "\tStdOut:%n%s%n"
+                    + "\tStdErr:%n%s",
                     response.getExitCode(),
                     response.isTimedOut(),
                     response.getDurationMillis(),
-                    SensitiveDataMasker.mask(response.toString())
+                    SensitiveDataMasker.mask(response.getCommand()),
+                    SensitiveDataMasker.mask(prettyPrintIfJson(response.getStdOut())),
+                    SensitiveDataMasker.mask(prettyPrintIfJson(response.getErrOut()))
             );
             LOGGER.info(responseMessage);
 
@@ -175,5 +181,23 @@ public class CommandLineExecutor {
         } catch (Exception e) {
             return "";
         }
+    }
+
+    private static String prettyPrintIfJson(String rawOutput) {
+        if (rawOutput == null) {
+            return rawOutput;
+        }
+        if (rawOutput.isBlank()) {
+            return rawOutput;
+        }
+        String trimmedOutput = rawOutput.trim();
+        if (!(trimmedOutput.startsWith("{") || trimmedOutput.startsWith("["))) {
+            return rawOutput;
+        }
+        String prettyOutput = JsonPrettyPrinter.prettyPrint(trimmedOutput);
+        if (prettyOutput.startsWith("\u26a0\ufe0f Failed to pretty print JSON")) {
+            return rawOutput;
+        }
+        return prettyOutput;
     }
 }

@@ -215,7 +215,9 @@ public class AppiumDriverManager {
         } else {
             testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ON, "localDevice");
         }
-        LOGGER.info("Capabilities for the first appium driver{}", appiumDriverCapabilities);
+        LOGGER.info("Capabilities for the first appium driver:\n{}",
+                SensitiveDataMasker.mask(
+                        JsonPrettyPrinter.prettyPrint(appiumDriverCapabilities.asMap())));
         Drivers.addUserPersonaDriverCapabilities(userPersona, appiumDriverCapabilities);
         Drivers.addUserPersonaDeviceLogFileName(userPersona,
                 testExecutionContext.getTestStateAsString(TEST_CONTEXT.DEVICE_LOG), forPlatform);
@@ -307,7 +309,8 @@ public class AppiumDriverManager {
                     + ":" + cloudPassword + "\" -X GET \"https://api-cloud.browserstack.com/app-automate/sessions/"
                     + sessionId + ".json\"" };
             CommandLineResponse commandLineResponse = CommandLineExecutor.execCommand(curlCommand);
-            LOGGER.info("Response from BrowserStack - '{}'", commandLineResponse.getStdOut());
+            LOGGER.info("Response from BrowserStack - '{}'",
+                    JsonPrettyPrinter.prettyPrint(SensitiveDataMasker.maskSecret(commandLineResponse.getStdOut())));
             JSONObject pr = new JSONObject(commandLineResponse.getStdOut());
             JSONObject automation_session = pr.getJSONObject("automation_session");
             browserStackTestResultUrl = automation_session.getString("browser_url");

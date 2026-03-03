@@ -533,8 +533,19 @@ class Setup {
             applitoolsConfiguration.put(APPLITOOLS.DISABLE_BROWSER_FETCHING, isDisableBrowserFetching());
             applitoolsConfiguration.put(APPLITOOLS.BATCH_INFO, setupApplitoolsBatchInfo());
         }
+        Map<String, Object> maskedApplitoolsConfiguration = new LinkedHashMap<>(applitoolsConfiguration);
+        if (maskedApplitoolsConfiguration.containsKey(APPLITOOLS.API_KEY)) {
+            maskedApplitoolsConfiguration.put(APPLITOOLS.API_KEY,
+                    SensitiveDataMasker.maskSecret(
+                            String.valueOf(maskedApplitoolsConfiguration.get(APPLITOOLS.API_KEY))));
+        }
+        if (maskedApplitoolsConfiguration.containsKey(APPLITOOLS.PROXY_URL)) {
+            maskedApplitoolsConfiguration.put(APPLITOOLS.PROXY_URL,
+                    SensitiveDataMasker.mask(
+                            String.valueOf(maskedApplitoolsConfiguration.get(APPLITOOLS.PROXY_URL))));
+        }
         LOGGER.info("applitoolsConfiguration:\n{}",
-                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(applitoolsConfiguration)));
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(maskedApplitoolsConfiguration)));
         return applitoolsConfiguration;
     }
 
@@ -556,7 +567,7 @@ class Setup {
 
     private static void updateApplitoolsProxyUrl() {
         String providedProxyKey = (String) applitoolsConfiguration.getOrDefault(APPLITOOLS.PROXY_KEY, APPLITOOLS.PROXY_KEY);
-        if (providedProxyKey.isBlank()) {
+        if (providedProxyKey == null || providedProxyKey.isBlank()) {
             providedProxyKey = APPLITOOLS.PROXY_KEY;
         }
         applitoolsConfiguration.put(APPLITOOLS.PROXY_KEY, getOverriddenStringValue(APPLITOOLS.PROXY_KEY, providedProxyKey));

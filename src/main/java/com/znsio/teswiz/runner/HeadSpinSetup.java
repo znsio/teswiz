@@ -61,7 +61,7 @@ class HeadSpinSetup {
 
     private static String uploadAPKToHeadspin(String authenticationKey, String appPath, String deviceLabURL) {
         LOGGER.info(String.format("uploadAPKToHeadspin for: '%s'%n",
-                SensitiveDataMasker.mask(authenticationKey)));
+                SensitiveDataMasker.maskSecret(authenticationKey)));
         String[] curlCommand = new String[]{
                 "curl --insecure " + Setup.getCurlProxyCommand() + " -X POST ",
                 "https://" + authenticationKey + "@" + deviceLabURL + "/app/upload " +

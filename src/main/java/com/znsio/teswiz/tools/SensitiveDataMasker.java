@@ -22,8 +22,21 @@ public final class SensitiveDataMasker {
 
     private SensitiveDataMasker() {}
 
+    public static String maskSecret(String value) {
+        if (value == null) {
+            return value;
+        }
+        if (value.isBlank()) {
+            return value;
+        }
+        return MASK;
+    }
+
     public static String mask(String value) {
-        if (value == null || value.isBlank()) {
+        if (value == null) {
+            return value;
+        }
+        if (value.isBlank()) {
             return value;
         }
 
