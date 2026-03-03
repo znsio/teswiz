@@ -15,7 +15,7 @@ plugins {
     id "io.freefair.aspectj.post-compile-weaving" version "9.2.0"
 }
 
-def teswizVersion = "1.0.17"
+def teswizVersion = "1.0.18"
 def aspectJVersion = "1.9.25.1"
 def jadbVersion = "1.2.1"
 
