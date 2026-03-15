@@ -7,10 +7,10 @@ buildscript {
 }
 
 plugins {
-    id "org.sonarqube" version "7.2.2.6593"
+    id "org.sonarqube" version "7.2.3.7755"
     id "java"
     id "idea"
-    id 'com.gradleup.shadow' version '9.3.2'
+    id 'com.gradleup.shadow' version '9.4.0'
     id "maven-publish"
     id "io.freefair.aspectj.post-compile-weaving" version "9.2.0"
 }
@@ -196,15 +196,15 @@ tasks.compileJava {
 
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    implementation "com.applitools:eyes-images-java5:5.81.12"
-    implementation ("com.applitools:eyes-appium-java5:5.79.12") {
+    implementation "com.applitools:eyes-images-java5:5.81.16"
+    implementation ("com.applitools:eyes-appium-java5:5.79.16") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-remote-driver'
         exclude group: 'io.appium', module: 'java-client'
     }
-    implementation "com.browserstack:browserstack-local-java:1.1.7"
+    implementation "com.browserstack:browserstack-local-java:1.1.8"
     implementation 'com.epam.reportportal:agent-java-cucumber6:5.5.3'
     implementation 'com.epam.reportportal:client-java:5.4.10'
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.1"
@@ -215,16 +215,16 @@ dependencies {
     // TODO - migrate to restassured
     implementation "com.konghq:unirest-java:3.14.5"
     implementation "com.squareup.okhttp3:okhttp:5.3.2"
-    implementation "io.appium:java-client:10.0.0"
-    implementation 'io.cucumber:cucumber-java:7.34.2'
-    implementation 'io.cucumber:cucumber-testng:7.34.2'
+    implementation "io.appium:java-client:10.1.0"
+    implementation 'io.cucumber:cucumber-java:7.34.3'
+    implementation 'io.cucumber:cucumber-testng:7.34.3'
     implementation "io.github.bonigarcia:webdrivermanager:6.3.3"
     implementation "net.masterthought:cucumber-reporting:5.10.2"
     implementation "org.apache.commons:commons-lang3:3.20.0"
     implementation "org.apache.commons:commons-rng-simple:1.6"
     implementation 'org.apache.logging.log4j:log4j-1.2-api:2.25.3'
     implementation 'org.apache.logging.log4j:log4j-core:2.25.3'
-    implementation "org.apache.pdfbox:pdfbox:3.0.6"
+    implementation "org.apache.pdfbox:pdfbox:3.0.7"
     implementation "org.assertj:assertj-core:3.27.7"
     implementation "org.aspectj:aspectjrt:$aspectJVersion"
     implementation "org.jetbrains:annotations:26.1.0"
