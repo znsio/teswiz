@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "@appium/doctor": "2.1.15",
-    "@appium/relaxed-caps-plugin": "2.0.2",
-    "appium": "3.2.0",
+    "@appium/relaxed-caps-plugin": "2.1.0",
+    "appium": "3.2.2",
     "appium-device-farm": "11.3.2",
     "appium-uiautomator2-driver": "7.0.0",
-    "appium-xcuitest-driver": "10.24.2",
+    "appium-xcuitest-driver": "10.32.1",
     "go-ios": "1.0.188"
   },
   "name": "teswiz",
