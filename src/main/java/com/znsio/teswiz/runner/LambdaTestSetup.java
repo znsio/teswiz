@@ -189,8 +189,30 @@ class LambdaTestSetup {
             LOGGER.info(String.format("App uploaded to LambdaTest with app url: %s", appIdFromLambdaTest));
             loadedPlatformCapability.put("app", appIdFromLambdaTest);
         } else {
-            LOGGER.info("Skip uploading the apk to LambdaTest. Ensure APP_PATH points to a valid LambdaTest app URL.");
+            String lambdaTestAppReference = getLambdaTestAppReference(loadedPlatformCapability);
+            LOGGER.info(String.format("Skip uploading the app to LambdaTest. Using app reference: %s",
+                    lambdaTestAppReference));
+            loadedPlatformCapability.put("app", lambdaTestAppReference);
         }
+    }
+
+    private static String getLambdaTestAppReference(Map loadedPlatformCapability) {
+        String configuredAppPath = Setup.getFromConfigs(Setup.APP_PATH);
+        if (isLambdaTestAppReference(configuredAppPath)) {
+            return configuredAppPath;
+        }
+
+        Object capabilityApp = loadedPlatformCapability.get("app");
+        if (capabilityApp != null && isLambdaTestAppReference(String.valueOf(capabilityApp))) {
+            return String.valueOf(capabilityApp);
+        }
+
+        throw new InvalidTestDataException(
+                "CLOUD_UPLOAD_APP=false for LambdaTest requires APP_PATH or the platform capability 'app' to be a valid LambdaTest app id like 'lt://APP123'.");
+    }
+
+    private static boolean isLambdaTestAppReference(String appReference) {
+        return appReference != null && appReference.startsWith("lt://");
     }
 
     private static String uploadAppToLambdaTest(String authenticationUser,

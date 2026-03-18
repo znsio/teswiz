@@ -23,6 +23,7 @@ public class AppPathTest {
     private static final String appPathAsIncorrectUrl = "https://github.com/anandbagmar/sampleAppsForNativeMobileAutomation/ra/main/VodQA.apk";
     private static final String appPathAsCorrectFilePath = expectedAppPath;
     private static final String appPathAsIncorrectFilePath = System.getProperty("user.dir") + File.separator + "temp" + File.separator + "unitTests" + File.separator + "smleApps" + File.separator + fileName;
+    private static final String lambdaTestAppReference = "lt://APP123";
 
     @BeforeAll
     public static void setupBefore() {
@@ -115,6 +116,12 @@ public class AppPathTest {
         String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(appPathAsCorrectFilePath, directoryPath);
         assertTrue(new File(actualAppPath).canRead());
         assertEquals(expectedAppPath, actualAppPath);
+    }
+
+    @Test
+    void givenLambdaTestAppReference_WhenCheckingAppPath_ThenReturnReferenceWithoutLocalValidation() {
+        String actualAppPath = DeviceSetup.downloadAppToDirectoryIfNeeded(lambdaTestAppReference, directoryPath);
+        assertEquals(lambdaTestAppReference, actualAppPath);
     }
 
     private void deleteFile(String filePath) {

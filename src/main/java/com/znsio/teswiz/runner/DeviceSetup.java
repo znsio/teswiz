@@ -36,6 +36,8 @@ import static com.znsio.teswiz.runner.Setup.*;
 
 class DeviceSetup {
     private static final Logger LOGGER = LogManager.getLogger(DeviceSetup.class.getName());
+    private static final String LAMBDATEST_APP_PREFIX = "lt://";
+    private static final String BROWSERSTACK_APP_PREFIX = "bs://";
     private static final String DEFAULT_TEMP_SAMPLE_APP_DIRECTORY =
             System.getProperty("user.dir") + File.separator +
                     "temp" + File.separator + "sampleApps";
@@ -110,6 +112,11 @@ class DeviceSetup {
     }
 
     public static String downloadAppToDirectoryIfNeeded(String appPath, String saveToLocalDirectory) {
+        if (isCloudHostedAppReference(appPath)) {
+            LOGGER.info(String.format("Cloud hosted app reference '%s' provided. Skipping local file validation.",
+                    SensitiveDataMasker.mask(appPath)));
+            return appPath;
+        }
         String fileName = new File(appPath).getName();
         String localFilePath = saveToLocalDirectory + File.separator + fileName;
         if (isAppPathAUrl(appPath)) {
@@ -132,6 +139,13 @@ class DeviceSetup {
                 SensitiveDataMasker.mask(appPath)));
         LOGGER.info(String.format("File available at App file path '%s'", SensitiveDataMasker.mask(appPath)));
         return appPath;
+    }
+
+    static boolean isCloudHostedAppReference(String appPath) {
+        if (null == appPath) {
+            return false;
+        }
+        return appPath.startsWith(LAMBDATEST_APP_PREFIX) || appPath.startsWith(BROWSERSTACK_APP_PREFIX);
     }
 
     private static void downloadFile(String url, String filePath, String saveToDirectory) {

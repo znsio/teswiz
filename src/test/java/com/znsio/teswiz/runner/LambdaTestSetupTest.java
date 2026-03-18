@@ -2,6 +2,7 @@ package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LambdaTestSetupTest {
     private static final String LAMBDATEST_WEB_CONFIG = "./configs/theapp/theapp_lambdatest_web_config.properties";
@@ -24,6 +26,7 @@ class LambdaTestSetupTest {
     void cleanUp() {
         SessionContext.remove(Thread.currentThread().getId());
         System.clearProperty(Setup.CLOUD_UPLOAD_APP);
+        System.clearProperty(Setup.APP_PATH);
     }
 
     @Test
@@ -160,6 +163,89 @@ class LambdaTestSetupTest {
 
         assertThat(ltOptions.get("network")).isEqualTo(false);
         assertThat(ltOptions.get("appProfiling")).isNull();
+    }
+
+    @Test
+    void shouldUseLambdaTestAppReferenceFromAppPathWhenUploadIsDisabled() throws IOException {
+        System.setProperty(Setup.CLOUD_UPLOAD_APP, "false");
+        System.setProperty(Setup.APP_PATH, "lt://APP123");
+        setupConfig("./configs/theapp/theapp_lambdatest_ios_config.properties");
+        Path tempCaps = Files.createTempFile("lt-mobile-ios-caps-", ".json");
+        String tempCapabilities = """
+                {
+                  "iOS": {
+                    "app": "temp/sampleApps/TheApp.ipa",
+                    "platformName": "iOS",
+                    "deviceName": "iPhone 15",
+                    "platformVersion": "17",
+                    "lt:options": {
+                      "network": true
+                    }
+                  },
+                  "serverConfig": {
+                    "server": {
+                      "plugin": {
+                        "device-farm": {
+                          "cloud": {
+                            "cloudName": "lambdatest",
+                            "url": "https://mobile-hub.lambdatest.com",
+                            "apiUrl": "https://manual-api.lambdatest.com",
+                            "devices": []
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                """;
+        Files.writeString(tempCaps, tempCapabilities);
+        Setup.addToConfigs(Setup.CAPS, tempCaps.toString());
+
+        LambdaTestSetup.updateLambdaTestCapabilities("https://manual-api.lambdatest.com");
+
+        Map<String, Map> updatedCaps = JsonFile.loadJsonFile(Setup.getFromConfigs(Setup.CAPS));
+        Map<String, Object> iosCaps = updatedCaps.get("iOS");
+
+        assertThat(iosCaps.get("app")).isEqualTo("lt://APP123");
+    }
+
+    @Test
+    void shouldFailFastWhenLambdaTestUploadIsDisabledWithoutAppReference() throws IOException {
+        System.setProperty(Setup.CLOUD_UPLOAD_APP, "false");
+        System.setProperty(Setup.APP_PATH, "temp/sampleApps/TheApp.ipa");
+        setupConfig("./configs/theapp/theapp_lambdatest_ios_config.properties");
+        Path tempCaps = Files.createTempFile("lt-mobile-ios-missing-app-ref-", ".json");
+        String tempCapabilities = """
+                {
+                  "iOS": {
+                    "app": "temp/sampleApps/TheApp.ipa",
+                    "platformName": "iOS",
+                    "deviceName": "iPhone 15",
+                    "platformVersion": "17"
+                  },
+                  "serverConfig": {
+                    "server": {
+                      "plugin": {
+                        "device-farm": {
+                          "cloud": {
+                            "cloudName": "lambdatest",
+                            "url": "https://mobile-hub.lambdatest.com",
+                            "apiUrl": "https://manual-api.lambdatest.com",
+                            "devices": []
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                """;
+        Files.writeString(tempCaps, tempCapabilities);
+        Setup.addToConfigs(Setup.CAPS, tempCaps.toString());
+
+        InvalidTestDataException exception = assertThrows(InvalidTestDataException.class,
+                () -> LambdaTestSetup.updateLambdaTestCapabilities("https://manual-api.lambdatest.com"));
+
+        assertThat(exception.getMessage()).contains("valid LambdaTest app id");
     }
 
     @Test
