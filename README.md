@@ -82,6 +82,10 @@ Example for GitHub Actions:
 * Web runs use W3C-safe capabilities, with LambdaTest-specific keys inside `LT:Options`.
 * Mobile runs use LambdaTest-specific keys inside `lt:options`.
 * `network` and `appProfiling` are read from capability files (not hardcoded by framework).
+* Native app uploads:
+  * If `CLOUD_UPLOAD_APP=true`, teswiz uploads the app to LambdaTest and uses the returned `lt://...` app id automatically.
+  * If `CLOUD_UPLOAD_APP=false`, you must provide `APP_PATH=lt://...` as an environment variable, system property, or in the config file.
+  * Do not use a local file path such as `temp/sampleApps/TheApp.ipa` when `CLOUD_UPLOAD_APP=false`.
 
 ### BrowserStack
 
