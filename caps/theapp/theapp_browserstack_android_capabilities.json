@@ -17,8 +17,9 @@
     "newCommandTimeout": 300,
     "fullReset": true,
     "noSign": true,
-    "os_version": "12",
+    "os_version": "13",
     "platformName": "Android",
+    "printPageSourceOnFindFailure": true,
     "project": "teswiz",
     "resetKeyboard": true,
     "unicodeKeyboard": true,
@@ -36,9 +37,7 @@
   },
   "serverConfig": {
     "server": {
-      "use-plugins": [
-        "device-farm"
-      ],
+      "use-plugins": ["device-farm"],
       "plugin": {
         "device-farm": {
           "platform": "android",

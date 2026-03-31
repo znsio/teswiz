@@ -19,6 +19,7 @@
     "noSign": true,
     "os_version": "12",
     "platformName": "Android",
+    "printPageSourceOnFindFailure": true,
     "project": "teswiz",
     "resetKeyboard": true,
     "unicodeKeyboard": true,
