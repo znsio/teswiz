@@ -49,6 +49,8 @@ import com.applitools.eyes.selenium.StitchMode;
 import com.applitools.eyes.selenium.fluent.SeleniumCheckSettings;
 import com.applitools.eyes.selenium.fluent.Target;
 import com.applitools.eyes.visualgrid.model.DeviceName;
+import com.applitools.eyes.visualgrid.model.AndroidMultiDeviceTarget;
+import com.applitools.eyes.visualgrid.model.IosMultiDeviceTarget;
 import com.applitools.eyes.visualgrid.model.RenderBrowserInfo;
 import com.applitools.eyes.visualgrid.model.ScreenOrientation;
 import com.applitools.eyes.visualgrid.services.VisualGridRunner;
@@ -393,6 +395,7 @@ public class Visual {
         appEyes.setSaveNewTests(getValueFromConfig(APPLITOOLS.SAVE_NEW_TESTS_AS_BASELINE, true));
         appEyes.setIgnoreDisplacements(getValueFromConfig(APPLITOOLS.IGNORE_DISPLACEMENT, true));
         appEyes.setIgnoreCaret(true);
+        addNativeMobileLayoutConfig(appEyes);
         String applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
         appEyes.setLogHandler(new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
     }
@@ -464,6 +467,31 @@ public class Visual {
         int ufgConcurrency = getValueFromConfig(APPLITOOLS.CONCURRENCY, DEFAULT_UFG_CONCURRENCY);
         seleniumEyesRunner = isUFG ? new VisualGridRunner(ufgConcurrency) : new ClassicRunner();
         seleniumEyesRunner.setDontCloseBatches(true);
+    }
+
+    private void addNativeMobileLayoutConfig(com.applitools.eyes.appium.Eyes appEyes) {
+        if (!getValueFromConfig(APPLITOOLS.USE_NML, false)) {
+            return;
+        }
+
+        if (null != context.getTestState(APPLITOOLS.NML_CONFIG)) {
+            Configuration config = appEyes.getConfiguration();
+            if (Platform.iOS.equals(getPlatform())) {
+                IosMultiDeviceTarget[] iosTargets =
+                        (IosMultiDeviceTarget[]) context.getTestState(APPLITOOLS.NML_CONFIG);
+                for (IosMultiDeviceTarget iosTarget : iosTargets) {
+                    config.addMultiDeviceTarget(iosTarget);
+                }
+            } else if (Platform.android.equals(getPlatform())) {
+                AndroidMultiDeviceTarget[] androidTargets =
+                        (AndroidMultiDeviceTarget[]) context.getTestState(APPLITOOLS.NML_CONFIG);
+                for (AndroidMultiDeviceTarget androidTarget : androidTargets) {
+                    config.addMultiDeviceTarget(androidTarget);
+                }
+            }
+            appEyes.setConfiguration(config);
+            LOGGER.info(format("Using NML devices config for %s", getPlatform()));
+        }
     }
 
     private void setBaselineEnvName(com.applitools.eyes.appium.Eyes appEyes) {

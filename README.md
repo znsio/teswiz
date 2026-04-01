@@ -54,6 +54,10 @@ them against
 Applitools (https://applitools.com/) Visual AI, and Applitools Ultrafast Grid (https://applitools.com/product-ultrafast-test-cloud/) is integrated with this framework, to provide
 Visual AI testing as part of functional automation.
 
+teswiz also supports:
+* Applitools Native Mobile Layout through `useNML`
+* Verifying application with Figma designs by setting Applitools `baselineEnvName` from scenario tags in the format `@eyes-...`
+
 Reports will be uploaded to reportportal.io, that you would need to setup separately, and provide the server details in
 src/test/resources/reportportal.properties file or provide the path to the file using this environment
 variable: `REPORT_PORTAL_FILE`

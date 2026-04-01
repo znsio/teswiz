@@ -11,6 +11,7 @@ Feature: Scenarios for "The App"
 
 #  CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@theapp2 and @invalidLogin1" ./gradlew run
 #  CONFIG=./configs/theapp/theapp_local_android_config.properties PLATFORM=android TAG="@theapp2 and @invalidLogin1" ./gradlew run
+#  CONFIG=./configs/theapp/theapp_local_nml_android_config.properties PLATFORM=android TAG="@theapp2 and @invalidLogin1" ./gradlew run
 #  CONFIG=./configs/theapp/theapp_local_ios_config.properties PLATFORM=iOS TAG="@theapp2 and @invalidLogin1" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_web_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=web TAG="@theapp2 and @invalidLogin1 and @browserstack" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_android_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY PLATFORM=android TAG="@theapp2 and @invalidLogin1 and @browserstack" ./gradlew run

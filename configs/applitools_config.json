@@ -7,6 +7,7 @@
   "takeFullPageScreenShot": true,
   "viewportSize": "1280x900",
   "useUFG": true,
+  "useNML": false,
   "testConcurrency": 10,
   "showLogs": true,
   "ignoreDisplacement": true,

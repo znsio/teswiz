@@ -2,11 +2,14 @@ package com.znsio.teswiz.steps;
 
 import com.applitools.eyes.selenium.BrowserType;
 import com.applitools.eyes.selenium.Configuration;
+import com.applitools.eyes.visualgrid.model.AndroidMultiDeviceTarget;
 import com.applitools.eyes.visualgrid.model.DeviceName;
+import com.applitools.eyes.visualgrid.model.IosMultiDeviceTarget;
 import com.applitools.eyes.visualgrid.model.ScreenOrientation;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.APPLITOOLS;
+import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
@@ -51,6 +54,7 @@ public class RunTestCukes
         LOGGER.info("RunTestCukes: ThreadId : '%d' :: beforeTestScenario: '%s'".formatted(threadId, scenario.getName()));
         new Hooks().beforeScenario(scenario);
         addApplitoolsUFGConfigurationToContext();
+        addApplitoolsNMLConfigurationToContext();
         isEnvironmentHealthy(context.getTestName(), Runner.getFromEnvironmentConfiguration(SAMPLE_TEST_CONTEXT.HEALTH_CHECK_URL));
     }
 
@@ -70,6 +74,29 @@ public class RunTestCukes
         ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
         LOGGER.info("Use the following Browsers and devices in UFG config: " + JsonPrettyPrinter.prettyPrint(ufgConfig.getBrowsersInfo()));
         context.addTestState(APPLITOOLS.UFG_CONFIG, ufgConfig);
+    }
+
+    private void addApplitoolsNMLConfigurationToContext() {
+        Platform currentPlatform = Runner.getPlatform();
+
+        if (Platform.iOS.equals(currentPlatform)) {
+            IosMultiDeviceTarget[] iosTargets = new IosMultiDeviceTarget[]{
+                    IosMultiDeviceTarget.iPhone_14(),
+                    IosMultiDeviceTarget.iPhone_14_Pro_Max()
+            };
+            LOGGER.info("Use the following devices in NML config: " + JsonPrettyPrinter.prettyPrint(iosTargets));
+            context.addTestState(APPLITOOLS.NML_CONFIG, iosTargets);
+        } else if (Platform.android.equals(currentPlatform)) {
+            AndroidMultiDeviceTarget[] androidTargets = new AndroidMultiDeviceTarget[]{
+                    AndroidMultiDeviceTarget.Galaxy_S25(),
+                    AndroidMultiDeviceTarget.Galaxy_S25_Ultra(),
+                    AndroidMultiDeviceTarget.Pixel_9()
+            };
+            LOGGER.info("Use the following devices in NML config: " + JsonPrettyPrinter.prettyPrint(androidTargets));
+            context.addTestState(APPLITOOLS.NML_CONFIG, androidTargets);
+        } else {
+            LOGGER.info("Skipping NML config for platform: " + currentPlatform);
+        }
     }
 
     private void isEnvironmentHealthy(String testName, String healthCheckUrl) {

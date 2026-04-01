@@ -56,6 +56,36 @@ shown below:
   ufgConfig.addDeviceEmulation(DeviceName.Nexus_6P, ScreenOrientation.LANDSCAPE);
 ```
 
+**To enable Applitools Native Mobile Layout, follow these steps:**
+* In `applitools_config.json`, set `"useNML": true`
+* In your custom hooks file, add the platform-specific native mobile device targets to `TestExecutionContext`
+* teswiz will apply that configuration only to `appEyes`
+
+Example:
+
+```java
+import com.applitools.eyes.visualgrid.model.AndroidMultiDeviceTarget;
+import com.applitools.eyes.visualgrid.model.IosMultiDeviceTarget;
+
+private void addApplitoolsNMLConfigurationToContext() {
+    if (Platform.iOS.equals(Runner.getPlatform())) {
+        context.addTestState(APPLITOOLS.NML_CONFIG, new IosMultiDeviceTarget[]{
+                IosMultiDeviceTarget.iPhone_14(),
+                IosMultiDeviceTarget.iPhone_14_Pro_Max()
+        });
+    } else if (Platform.android.equals(Runner.getPlatform())) {
+        context.addTestState(APPLITOOLS.NML_CONFIG, new AndroidMultiDeviceTarget[]{
+                AndroidMultiDeviceTarget.Galaxy_S25(),
+                AndroidMultiDeviceTarget.Galaxy_S25_Ultra(),
+                AndroidMultiDeviceTarget.Pixel_9()
+        });
+    }
+}
+```
+
+`NML_CONFIG` can contain one or many `IosMultiDeviceTarget` or `AndroidMultiDeviceTarget` values. teswiz will apply
+all items present in the array to `appEyes`.
+
 # Implementing Visual Validation using Applitools Visual AI
 From your screen methods, whenever you want to do visual validation, you can call one of these methods:
 
@@ -65,6 +95,25 @@ Example:
 
     visually.check(SCREEN_NAME, "entered login details",
                        Target.window().fully().layout(userNameElement, passwordElement));
+
+# Setting Baseline Environment Name using scenario tags
+
+If a scenario has a tag in the format `@eyes-...`, teswiz extracts the suffix and stores it in the
+`TestExecutionContext`.
+
+Example:
+
+```gherkin
+@eyes-Applitools Home_1920
+Scenario: Validate Applitools Home page
+```
+
+For the above example, teswiz extracts `Applitools Home_1920` and uses it as the value for
+`setBaselineEnvName(...)`.
+
+This is applied automatically for both:
+* `webEyes`
+* `appEyes`
 
 # Running the tests with Applitools Visual AI
 
