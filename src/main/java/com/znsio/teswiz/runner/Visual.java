@@ -1,10 +1,51 @@
 package com.znsio.teswiz.runner;
 
-import com.applitools.eyes.*;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import static java.lang.String.format;
+import static java.lang.String.valueOf;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.assertj.core.api.SoftAssertions;
+import org.jetbrains.annotations.NotNull;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+
+import com.applitools.eyes.BatchInfo;
+import com.applitools.eyes.EyesException;
+import com.applitools.eyes.EyesRunner;
+import com.applitools.eyes.FileLogger;
+import com.applitools.eyes.MatchLevel;
+import com.applitools.eyes.ProxySettings;
+import com.applitools.eyes.RectangleSize;
+import com.applitools.eyes.TestResultContainer;
+import com.applitools.eyes.TestResults;
+import com.applitools.eyes.TestResultsStatus;
+import com.applitools.eyes.TestResultsSummary;
 import com.applitools.eyes.appium.AppiumCheckSettings;
 import com.applitools.eyes.fluent.BatchClose;
-import com.applitools.eyes.fluent.EnabledBatchClose;
-import com.applitools.eyes.selenium.*;
+import com.applitools.eyes.selenium.BrowserType;
+import com.applitools.eyes.selenium.ClassicRunner;
+import com.applitools.eyes.selenium.Configuration;
+import com.applitools.eyes.selenium.Eyes;
+import com.applitools.eyes.selenium.StitchMode;
 import com.applitools.eyes.selenium.fluent.SeleniumCheckSettings;
 import com.applitools.eyes.selenium.fluent.Target;
 import com.applitools.eyes.visualgrid.model.DeviceName;
@@ -20,36 +61,19 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.exceptions.VisualTestSetupException;
+import static com.znsio.teswiz.runner.Runner.DEFAULT;
+import static com.znsio.teswiz.runner.Runner.NOT_SET;
+import static com.znsio.teswiz.runner.Runner.getApplitoolsConfiguration;
+import static com.znsio.teswiz.runner.Runner.getHostName;
+import static com.znsio.teswiz.runner.Runner.getPlatform;
+import static com.znsio.teswiz.runner.Runner.getSoftAssertion;
+import static com.znsio.teswiz.runner.Runner.getTargetEnvironment;
+import static com.znsio.teswiz.runner.Runner.isVisualTestingEnabled;
+import static com.znsio.teswiz.runner.Runner.shouldFailTestOnVisualDifference;
 import com.znsio.teswiz.tools.OsUtils;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import com.znsio.teswiz.tools.Wait;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
-import org.assertj.core.api.SoftAssertions;
-import org.jetbrains.annotations.NotNull;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.znsio.teswiz.runner.Runner.*;
-import static java.lang.String.format;
-import static java.lang.String.valueOf;
 
 public class Visual {
     private static final Logger LOGGER = LogManager.getLogger(Visual.class.getName());
@@ -324,6 +348,7 @@ public class Visual {
         LOGGER.debug(format("instantiateAppiumEyes: isVisualTestingEnabled: %s",
                             isVisualTestingEnabled));
         com.applitools.eyes.appium.Eyes appEyes = new com.applitools.eyes.appium.Eyes();
+        setBaselineEnvName(appEyes);
 
         configureExecutionForApp(isVisualTestingEnabled, appEyes);
 
@@ -403,6 +428,7 @@ public class Visual {
 
         configureEyesRunnerForWeb(isUFG);
         Eyes webEyes = new Eyes(seleniumEyesRunner);
+        setBaselineEnvName(webEyes);
         Configuration configuration = configureUFGExecutionForWeb(isVisualTestingEnabled, webEyes, isUFG);
 
         webEyes.setConfiguration(configuration);
@@ -438,6 +464,22 @@ public class Visual {
         int ufgConcurrency = getValueFromConfig(APPLITOOLS.CONCURRENCY, DEFAULT_UFG_CONCURRENCY);
         seleniumEyesRunner = isUFG ? new VisualGridRunner(ufgConcurrency) : new ClassicRunner();
         seleniumEyesRunner.setDontCloseBatches(true);
+    }
+
+    private void setBaselineEnvName(com.applitools.eyes.appium.Eyes appEyes) {
+        String baselineEnvName = context.getTestStateAsString(TEST_CONTEXT.APPLITOOLS_BASELINE_ENV_NAME);
+        if (null != baselineEnvName && !baselineEnvName.isBlank()) {
+            LOGGER.info(format("Set Applitools baseline env name for app: %s", baselineEnvName));
+            appEyes.setBaselineEnvName(baselineEnvName);
+        }
+    }
+
+    private void setBaselineEnvName(Eyes webEyes) {
+        String baselineEnvName = context.getTestStateAsString(TEST_CONTEXT.APPLITOOLS_BASELINE_ENV_NAME);
+        if (null != baselineEnvName && !baselineEnvName.isBlank()) {
+            LOGGER.info(format("Set Applitools baseline env name for web: %s", baselineEnvName));
+            webEyes.setBaselineEnvName(baselineEnvName);
+        }
     }
 
     private void setProxyForWebExecution(Eyes webEyes) {

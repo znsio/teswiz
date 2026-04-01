@@ -30,4 +30,5 @@ public class TEST_CONTEXT {
     public static final String HOOKS_INITIALIZED = "hooksInitialized";
     public static final String DEVICE_LOGS_DIRECTORY = "deviceLogs";
     public static final String SCENARIO_RUN_COUNT = "scenarioRunCount";
+    public static final String APPLITOOLS_BASELINE_ENV_NAME = "applitoolsBaselineEnvName";
 }
