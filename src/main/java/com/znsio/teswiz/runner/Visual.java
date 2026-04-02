@@ -48,8 +48,8 @@ import com.applitools.eyes.selenium.Eyes;
 import com.applitools.eyes.selenium.StitchMode;
 import com.applitools.eyes.selenium.fluent.SeleniumCheckSettings;
 import com.applitools.eyes.selenium.fluent.Target;
-import com.applitools.eyes.visualgrid.model.DeviceName;
 import com.applitools.eyes.visualgrid.model.AndroidMultiDeviceTarget;
+import com.applitools.eyes.visualgrid.model.DeviceName;
 import com.applitools.eyes.visualgrid.model.IosMultiDeviceTarget;
 import com.applitools.eyes.visualgrid.model.RenderBrowserInfo;
 import com.applitools.eyes.visualgrid.model.ScreenOrientation;
@@ -398,6 +398,7 @@ public class Visual {
         addNativeMobileLayoutConfig(appEyes);
         String applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
         appEyes.setLogHandler(new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
+        setBaselineEnvName(appEyes);
     }
 
     private void addCustomPropertiesInAppTestExecution(Platform platform, com.applitools.eyes.appium.Eyes appEyes) {
@@ -431,7 +432,6 @@ public class Visual {
 
         configureEyesRunnerForWeb(isUFG);
         Eyes webEyes = new Eyes(seleniumEyesRunner);
-        setBaselineEnvName(webEyes);
         Configuration configuration = configureUFGExecutionForWeb(isVisualTestingEnabled, webEyes, isUFG);
 
         webEyes.setConfiguration(configuration);
@@ -497,16 +497,16 @@ public class Visual {
     private void setBaselineEnvName(com.applitools.eyes.appium.Eyes appEyes) {
         String baselineEnvName = context.getTestStateAsString(TEST_CONTEXT.APPLITOOLS_BASELINE_ENV_NAME);
         if (null != baselineEnvName && !baselineEnvName.isBlank()) {
-            LOGGER.info(format("Set Applitools baseline env name for app: %s", baselineEnvName));
+            LOGGER.info(format("Set Applitools baseline env name for app: '%s'", baselineEnvName));
             appEyes.setBaselineEnvName(baselineEnvName);
         }
     }
 
-    private void setBaselineEnvName(Eyes webEyes) {
+    private void setBaselineEnvName(Configuration configuration) {
         String baselineEnvName = context.getTestStateAsString(TEST_CONTEXT.APPLITOOLS_BASELINE_ENV_NAME);
         if (null != baselineEnvName && !baselineEnvName.isBlank()) {
-            LOGGER.info(format("Set Applitools baseline env name for web: %s", baselineEnvName));
-            webEyes.setBaselineEnvName(baselineEnvName);
+            LOGGER.info(format("Set Applitools baseline env name for web: '%s'", baselineEnvName));
+            configuration.setBaselineEnvName(baselineEnvName);
         }
     }
 
@@ -580,6 +580,8 @@ public class Visual {
                 getValueFromConfig(APPLITOOLS.TAKE_FULL_PAGE_SCREENSHOT, true));
         configuration.setSaveNewTests(
                 getValueFromConfig(APPLITOOLS.SAVE_NEW_TESTS_AS_BASELINE, true));
+        setBaselineEnvName(configuration);
+
         return configuration;
     }
 
