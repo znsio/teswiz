@@ -73,6 +73,19 @@ Use this skill for changes inside the `znsio/teswiz` repo.
   - `docs/RunningVisualTests-README.md`
 - Keep docs aligned with the current supported flow; remove stale references rather than documenting both old and new patterns.
 
+## Release checklist
+
+- Bump the repo version in:
+  - `build.gradle`
+  - `build.gradle.sample`
+  - `package.json`
+- If `package-lock.json` carries the root package version, keep it aligned with `package.json`.
+- Add or update top-level `Changelog.MD` with release notes for the new version.
+- When asked what else is required for release, also check for:
+  - stale docs that mention the previous release behavior
+  - release badges or version examples that should be refreshed
+  - focused verification commands appropriate to the changed areas
+
 ## Maintenance
 
 - Update this skill whenever repo conventions change for:
