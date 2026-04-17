@@ -2,6 +2,7 @@
   "prod": {
     "BASE_URL_API": "https://the-internet.herokuapp.com",
     "BASE_URL": "https://the-internet.herokuapp.com/",
+    "APPLITOOLS_BASE_URL": "https://google.co.in/",
     "IMAGES_BASE_URL": "https://images.google.com/",
     "BING_BASE_URL": "https://bing.com/images",
     "JIOMEET_BASE_URL": "https://jiomeetpro.jio.com/home",
@@ -13,6 +14,5 @@
   "dev": {
     "CONFENGINE_BASE_URL": "https://www.dev.confengine.com/"
   },
-  "local": {
-  }
+  "local": {}
 }

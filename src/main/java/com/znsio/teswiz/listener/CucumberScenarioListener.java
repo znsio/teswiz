@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class CucumberScenarioListener implements ConcurrentEventListener {
     private static final Logger LOGGER = Logger.getLogger(CucumberScenarioListener.class.getName());
@@ -71,19 +70,6 @@ public class CucumberScenarioListener implements ConcurrentEventListener {
         testExecutionContext.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioLogDirectory);
         testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_DIRECTORY, screenshotDirectory);
         testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_LOGS_DIRECTORY, deviceLogsDirectory);
-        getApplitoolsBaselineEnvName(event).ifPresent(
-                baselineEnvName -> testExecutionContext.addTestState(
-                        TEST_CONTEXT.APPLITOOLS_BASELINE_ENV_NAME, baselineEnvName));
-
-    }
-
-    private Optional<String> getApplitoolsBaselineEnvName(TestCaseStarted event) {
-        return event.getTestCase().getTags().stream()
-                .map(Object::toString)
-                .filter(tag -> tag.startsWith("@eyes-"))
-                .map(tag -> tag.substring("@eyes-".length()).trim())
-                .filter(tagSuffix -> !tagSuffix.isEmpty())
-                .findFirst();
     }
 
     private Integer updateCurrentExampleRowNumberForScenario(String scenarioName) {

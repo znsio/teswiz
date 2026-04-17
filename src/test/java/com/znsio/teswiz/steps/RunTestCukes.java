@@ -1,5 +1,12 @@
 package com.znsio.teswiz.steps;
 
+import java.util.HashMap;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.assertj.core.api.Assertions;
+import org.testng.annotations.DataProvider;
+
 import com.applitools.eyes.selenium.BrowserType;
 import com.applitools.eyes.selenium.Configuration;
 import com.applitools.eyes.visualgrid.model.AndroidMultiDeviceTarget;
@@ -16,16 +23,11 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.tools.HeartBeat;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.ReportPortalLogger;
+
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.assertj.core.api.Assertions;
-import org.testng.annotations.DataProvider;
-
-import java.util.HashMap;
 
 public class RunTestCukes
         extends AbstractTestNGCucumberTests {
@@ -68,8 +70,8 @@ public class RunTestCukes
 
     private void addApplitoolsUFGConfigurationToContext() {
         Configuration ufgConfig = new Configuration();
-        ufgConfig.addBrowser(1024, 1024, BrowserType.CHROME);
-        ufgConfig.addBrowser(1024, 1024, BrowserType.FIREFOX);
+        ufgConfig.addBrowser(1920, 1024, BrowserType.CHROME);
+        ufgConfig.addBrowser(1600, 1024, BrowserType.FIREFOX);
         ufgConfig.addDeviceEmulation(DeviceName.iPhone_X, ScreenOrientation.PORTRAIT);
         ufgConfig.addDeviceEmulation(DeviceName.OnePlus_7T_Pro, ScreenOrientation.LANDSCAPE);
         LOGGER.info("Use the following Browsers and devices in UFG config: " + JsonPrettyPrinter.prettyPrint(ufgConfig.getBrowsersInfo()));

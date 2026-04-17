@@ -1,6 +1,9 @@
 package com.znsio.teswiz.runner;
 
+import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.exceptions.VisualTestSetupException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.Loader;
@@ -80,6 +83,43 @@ class VisualTest {
         Assertions.assertThatThrownBy(() -> Visual.getPagesToProcess(expectedPagesToProcess, pdfDocument))
                 .isInstanceOf(InvalidTestDataException.class)
                 .hasMessageContaining("Invalid page numbers provided to process the pdf: [10]");
+    }
+
+    @Test
+    void getFigmaApplitoolsConfigShouldReturnNullWhenNoValuesAreProvided() {
+        TestExecutionContext context = new TestExecutionContext("no-figma-values");
+
+        Visual.FigmaApplitoolsConfig figmaApplitoolsConfig = Visual.getFigmaApplitoolsConfig(context);
+
+        assertThat(figmaApplitoolsConfig).isNull();
+    }
+
+    @Test
+    void getFigmaApplitoolsConfigShouldReturnTrimmedValuesWhenAllValuesAreProvided() {
+        TestExecutionContext context = new TestExecutionContext("valid-figma-values");
+        context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_APP_NAME, " Applitools ");
+        context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_TEST_NAME, " Important pages ");
+        context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_BASELINE_ENV_NAME, " vodqa_screens ");
+
+        Visual.FigmaApplitoolsConfig figmaApplitoolsConfig = Visual.getFigmaApplitoolsConfig(context);
+
+        assertThat(figmaApplitoolsConfig).isNotNull();
+        assertThat(figmaApplitoolsConfig.getAppName()).isEqualTo("Applitools");
+        assertThat(figmaApplitoolsConfig.getTestName()).isEqualTo("Important pages");
+        assertThat(figmaApplitoolsConfig.getBaselineEnvName()).isEqualTo("vodqa_screens");
+    }
+
+    @Test
+    void getFigmaApplitoolsConfigShouldThrowWhenOnlySomeValuesAreProvided() {
+        TestExecutionContext context = new TestExecutionContext("partial-figma-values");
+        context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_APP_NAME, "Applitools");
+        context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_TEST_NAME, "Important pages");
+
+        Assertions.assertThatThrownBy(() -> Visual.getFigmaApplitoolsConfig(context))
+                .isInstanceOf(VisualTestSetupException.class)
+                .hasMessageContaining(TEST_CONTEXT.APPLITOOLS_FIGMA_APP_NAME)
+                .hasMessageContaining(TEST_CONTEXT.APPLITOOLS_FIGMA_TEST_NAME)
+                .hasMessageContaining(TEST_CONTEXT.APPLITOOLS_FIGMA_BASELINE_ENV_NAME);
     }
 
 }

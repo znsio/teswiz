@@ -56,7 +56,8 @@ Visual AI testing as part of functional automation.
 
 teswiz also supports:
 * Applitools Native Mobile Layout through `useNML`
-* Verifying application with Figma designs by setting Applitools `baselineEnvName` from scenario tags in the format `@eyes-...`
+* Verifying application with Figma designs using the explicit step
+  `I have my Figma design with app name "...", test name "..." and baseline name "..." available in Applitools`
 
 Reports will be uploaded to reportportal.io, that you would need to setup separately, and provide the server details in
 src/test/resources/reportportal.properties file or provide the path to the file using this environment

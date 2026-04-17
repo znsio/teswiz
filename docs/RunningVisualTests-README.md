@@ -96,24 +96,22 @@ Example:
     visually.check(SCREEN_NAME, "entered login details",
                        Target.window().fully().layout(userNameElement, passwordElement));
 
-# Setting Baseline Environment Name using scenario tags
+# Using explicit Figma / Applitools naming
 
-If a scenario has a tag in the format `@eyes-...`, teswiz extracts the suffix and stores it in the
-`TestExecutionContext`.
-
-Example:
+If you want to compare against an existing Figma-published Applitools baseline, use the explicit step below:
 
 ```gherkin
-@eyes-Applitools Home_1920
-Scenario: Validate Applitools Home page
+Given I have my Figma design with app name "Applitools", test name "Important pages" and baseline name "vodqa_screens" available in Applitools
 ```
 
-For the above example, teswiz extracts `Applitools Home_1920` and uses it as the value for
-`setBaselineEnvName(...)`.
+When this step is called, teswiz stores the provided app name, test name, and baseline environment name in the
+`TestExecutionContext`.
 
-This is applied automatically for both:
+If all three values are valid, teswiz uses them when creating the Applitools session for both:
 * `webEyes`
 * `appEyes`
+
+If any one of the three values is missing or blank, the test fails with a `VisualTestSetupException`.
 
 # Running the tests with Applitools Visual AI
 

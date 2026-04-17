@@ -101,6 +101,30 @@ public class Visual {
     private String applitoolsLogFileNameForWeb = NOT_SET;
     private EyesRunner seleniumEyesRunner;
 
+    static class FigmaApplitoolsConfig {
+        private final String appName;
+        private final String testName;
+        private final String baselineEnvName;
+
+        FigmaApplitoolsConfig(String appName, String testName, String baselineEnvName) {
+            this.appName = appName;
+            this.testName = testName;
+            this.baselineEnvName = baselineEnvName;
+        }
+
+        String getAppName() {
+            return appName;
+        }
+
+        String getTestName() {
+            return testName;
+        }
+
+        String getBaselineEnvName() {
+            return baselineEnvName;
+        }
+    }
+
     public Visual(String driverType, Platform platform, WebDriver innerDriver, String testName,
             String userPersona, String appName) {
         boolean isVisualTestingEnabled = isVisualTestingEnabled();
@@ -350,13 +374,22 @@ public class Visual {
         LOGGER.debug(format("instantiateAppiumEyes: isVisualTestingEnabled: %s",
                             isVisualTestingEnabled));
         com.applitools.eyes.appium.Eyes appEyes = new com.applitools.eyes.appium.Eyes();
+        FigmaApplitoolsConfig figmaApplitoolsConfig = getFigmaApplitoolsConfig(context);
 
-        appName = getAppNameWithPlatformWhenNoBaselineEnvName(platform, appName);
+        if (null != figmaApplitoolsConfig) {
+            appName = figmaApplitoolsConfig.getAppName();
+            testName = figmaApplitoolsConfig.getTestName();
+        } else {
+            appName = appName + "-" + platform;
+        }
         configureExecutionForApp(isVisualTestingEnabled, appEyes);
 
         addCustomPropertiesInAppTestExecution(platform, appEyes);
         try {
             setProxyForAppExecution(appEyes);
+            setBaselineEnvName(appEyes, null != figmaApplitoolsConfig
+                    ? figmaApplitoolsConfig.getBaselineEnvName()
+                    : null);
             appEyes.open(innerDriver, appName, testName);
             LOGGER.debug(format("instantiateAppiumEyes: Is Applitools Visual Testing enabled? - %s", !appEyes.getIsDisabled()));
         } catch (IllegalArgumentException e) {
@@ -397,7 +430,6 @@ public class Visual {
         addNativeMobileLayoutConfig(appEyes);
         String applitoolsLogFileNameForApp = getApplitoolsLogFileNameFor("app");
         appEyes.setLogHandler(new FileLogger(applitoolsLogFileNameForApp, true, isVerboseLoggingEnabled));
-        setBaselineEnvName(appEyes);
     }
 
     private void addCustomPropertiesInAppTestExecution(Platform platform, com.applitools.eyes.appium.Eyes appEyes) {
@@ -428,10 +460,21 @@ public class Visual {
         LOGGER.debug(format("instantiateWebEyes: isVisualTestingEnabled: %s",
                             isVisualTestingEnabled));
         boolean isUFG = getValueFromConfig(APPLITOOLS.USE_UFG, false);
+        FigmaApplitoolsConfig figmaApplitoolsConfig = getFigmaApplitoolsConfig(context);
+
+        if (null != figmaApplitoolsConfig) {
+            appName = figmaApplitoolsConfig.getAppName();
+            testName = figmaApplitoolsConfig.getTestName();
+        } else {
+            appName = appName + "-" + platform;
+        }
 
         configureEyesRunnerForWeb(isUFG);
         Eyes webEyes = new Eyes(seleniumEyesRunner);
-        Configuration configuration = configureUFGExecutionForWeb(isVisualTestingEnabled, webEyes, isUFG);
+        Configuration configuration = configureUFGExecutionForWeb(isVisualTestingEnabled, webEyes, isUFG,
+                                                                  null != figmaApplitoolsConfig
+                                                                          ? figmaApplitoolsConfig.getBaselineEnvName()
+                                                                          : null);
 
         webEyes.setConfiguration(configuration);
 
@@ -439,7 +482,6 @@ public class Visual {
         webEyes.setIsDisabled(!isVisualTestingEnabled);
         webEyes.setLogHandler(new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
 
-        appName = getAppNameWithPlatformWhenNoBaselineEnvName(platform, appName);
         addCustomPropertiesInWebTestExecution(platform, webEyes);
 
         RectangleSize setBrowserViewPortSize = getBrowserViewPortSize(driverType, innerDriver);
@@ -493,23 +535,14 @@ public class Visual {
         }
     }
 
-    private void setBaselineEnvName(com.applitools.eyes.appium.Eyes appEyes) {
-        String baselineEnvName = context.getTestStateAsString(TEST_CONTEXT.APPLITOOLS_BASELINE_ENV_NAME);
+    private void setBaselineEnvName(com.applitools.eyes.appium.Eyes appEyes, String baselineEnvName) {
         if (null != baselineEnvName && !baselineEnvName.isBlank()) {
             LOGGER.info(format("Set Applitools baseline env name for app: '%s'", baselineEnvName));
             appEyes.setBaselineEnvName(baselineEnvName);
         }
     }
 
-    private String getAppNameWithPlatformWhenNoBaselineEnvName(Platform platform, String appName) {
-        String baselineEnvName = context.getTestStateAsString(TEST_CONTEXT.APPLITOOLS_BASELINE_ENV_NAME);
-        return (null != baselineEnvName && !baselineEnvName.isBlank())
-                ? appName
-                : appName + "-" + platform;
-    }
-
-    private void setBaselineEnvName(Configuration configuration) {
-        String baselineEnvName = context.getTestStateAsString(TEST_CONTEXT.APPLITOOLS_BASELINE_ENV_NAME);
+    private void setBaselineEnvName(Configuration configuration, String baselineEnvName) {
         if (null != baselineEnvName && !baselineEnvName.isBlank()) {
             LOGGER.info(format("Set Applitools baseline env name for web: '%s'", baselineEnvName));
             configuration.setBaselineEnvName(baselineEnvName);
@@ -560,7 +593,8 @@ public class Visual {
     }
 
     @NotNull
-    private Configuration configureUFGExecutionForWeb(boolean isVisualTestingEnabled, Eyes webEyes, boolean isUFG) {
+    private Configuration configureUFGExecutionForWeb(boolean isVisualTestingEnabled, Eyes webEyes, boolean isUFG,
+                                                      String baselineEnvName) {
         Configuration configuration = webEyes.getConfiguration();
         if (isUFG) {
             configuration.setBrowsersInfo(addBrowserAndDeviceConfigForUFG(isUFG, configuration));
@@ -575,6 +609,7 @@ public class Visual {
         configuration.setEnvironmentName(targetEnvironment);
         configuration.setMatchLevel(
                 (MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
+        configuration.setIgnoreDisplacements(getValueFromConfig(APPLITOOLS.IGNORE_DISPLACEMENT, true));
 
         configuration.setDisableBrowserFetching(
                 getValueFromConfig(APPLITOOLS.DISABLE_BROWSER_FETCHING, true));
@@ -586,7 +621,7 @@ public class Visual {
                 getValueFromConfig(APPLITOOLS.TAKE_FULL_PAGE_SCREENSHOT, true));
         configuration.setSaveNewTests(
                 getValueFromConfig(APPLITOOLS.SAVE_NEW_TESTS_AS_BASELINE, true));
-        setBaselineEnvName(configuration);
+        setBaselineEnvName(configuration, baselineEnvName);
 
         return configuration;
     }
@@ -594,6 +629,42 @@ public class Visual {
     private String getValueFromConfig(String key, String defaultValue) {
         return (null == applitoolsConfig.get(key) || applitoolsConfig.get(key).equals("null"))
                ? defaultValue : valueOf(applitoolsConfig.get(key));
+    }
+
+    static FigmaApplitoolsConfig getFigmaApplitoolsConfig(TestExecutionContext context) {
+        String appName = getTrimmedTestState(context, TEST_CONTEXT.APPLITOOLS_FIGMA_APP_NAME);
+        String testName = getTrimmedTestState(context, TEST_CONTEXT.APPLITOOLS_FIGMA_TEST_NAME);
+        String baselineEnvName = getTrimmedTestState(context, TEST_CONTEXT.APPLITOOLS_FIGMA_BASELINE_ENV_NAME);
+
+        boolean hasAppName = null != appName;
+        boolean hasTestName = null != testName;
+        boolean hasBaselineEnvName = null != baselineEnvName;
+
+        if (!hasAppName && !hasTestName && !hasBaselineEnvName) {
+            return null;
+        }
+
+        if (hasAppName && hasTestName && hasBaselineEnvName) {
+            return new FigmaApplitoolsConfig(appName, testName, baselineEnvName);
+        }
+
+        throw new VisualTestSetupException(
+                format("Invalid Figma Applitools configuration in TestExecutionContext. Expected non-blank values for '%s', '%s' and '%s'. Found app name: '%s', test name: '%s', baseline env name: '%s'",
+                        TEST_CONTEXT.APPLITOOLS_FIGMA_APP_NAME,
+                        TEST_CONTEXT.APPLITOOLS_FIGMA_TEST_NAME,
+                        TEST_CONTEXT.APPLITOOLS_FIGMA_BASELINE_ENV_NAME,
+                        valueOf(context.getTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_APP_NAME)),
+                        valueOf(context.getTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_TEST_NAME)),
+                        valueOf(context.getTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_BASELINE_ENV_NAME))));
+    }
+
+    private static String getTrimmedTestState(TestExecutionContext context, String key) {
+        Object value = context.getTestState(key);
+        if (null == value) {
+            return null;
+        }
+        String trimmedValue = value.toString().trim();
+        return trimmedValue.isEmpty() ? null : trimmedValue;
     }
 
     private Object getValueFromConfig(String key) {
