@@ -25,11 +25,12 @@ public class FigmaSteps {
         LOGGER.info(String.format(
                 "I have my Figma design with app name: '%s', test name: '%s', baseline name: '%s'",
                 appName, testName, baselineName));
-        addFigmaDesignDetailsToContext(appName, testName, baselineName);
+        addFigmaDesignDetailsToContext(context, appName, testName, baselineName);
         Drivers.createDriverFor(TEST_CONTEXT.I, Runner.getPlatform(), context);
     }
 
-    void addFigmaDesignDetailsToContext(String appName, String testName, String baselineName) {
+    static void addFigmaDesignDetailsToContext(TestExecutionContext context, String appName, String testName,
+                                               String baselineName) {
         context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_APP_NAME, appName);
         context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_TEST_NAME, testName);
         context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_BASELINE_ENV_NAME, baselineName);

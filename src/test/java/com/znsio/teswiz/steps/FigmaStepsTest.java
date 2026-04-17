@@ -11,9 +11,8 @@ class FigmaStepsTest {
     @Test
     void addFigmaDesignDetailsToContextShouldStoreAllValues() {
         TestExecutionContext context = new TestExecutionContext("figma-step");
-        FigmaSteps figmaSteps = new FigmaSteps();
 
-        figmaSteps.addFigmaDesignDetailsToContext("Applitools", "Important pages", "vodqa_screens");
+        FigmaSteps.addFigmaDesignDetailsToContext(context, "Applitools", "Important pages", "vodqa_screens");
 
         assertThat(context.getTestStateAsString(TEST_CONTEXT.APPLITOOLS_FIGMA_APP_NAME))
                 .isEqualTo("Applitools");

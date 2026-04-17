@@ -42,6 +42,8 @@ Use this skill for changes inside the `znsio/teswiz` repo.
   - `APPLITOOLS_FIGMA_APP_NAME`
   - `APPLITOOLS_FIGMA_TEST_NAME`
   - `APPLITOOLS_FIGMA_BASELINE_ENV_NAME`
+- For unit tests, prefer the static helper on `FigmaSteps` that writes these values to a provided
+  `TestExecutionContext` instead of relying on `SessionContext` side effects.
 - `Visual` must treat those three values as all-or-nothing:
   - if all are non-blank, use them before `eyes.open(...)`
   - if some are present and some are missing/blank, fail with `VisualTestSetupException`
