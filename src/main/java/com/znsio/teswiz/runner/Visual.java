@@ -350,11 +350,10 @@ public class Visual {
         LOGGER.debug(format("instantiateAppiumEyes: isVisualTestingEnabled: %s",
                             isVisualTestingEnabled));
         com.applitools.eyes.appium.Eyes appEyes = new com.applitools.eyes.appium.Eyes();
-        setBaselineEnvName(appEyes);
 
+        appName = getAppNameWithPlatformWhenNoBaselineEnvName(platform, appName);
         configureExecutionForApp(isVisualTestingEnabled, appEyes);
 
-        appName = appName + "-" + platform;
         addCustomPropertiesInAppTestExecution(platform, appEyes);
         try {
             setProxyForAppExecution(appEyes);
@@ -440,7 +439,7 @@ public class Visual {
         webEyes.setIsDisabled(!isVisualTestingEnabled);
         webEyes.setLogHandler(new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
 
-        appName = appName + "-" + platform;
+        appName = getAppNameWithPlatformWhenNoBaselineEnvName(platform, appName);
         addCustomPropertiesInWebTestExecution(platform, webEyes);
 
         RectangleSize setBrowserViewPortSize = getBrowserViewPortSize(driverType, innerDriver);
@@ -500,6 +499,13 @@ public class Visual {
             LOGGER.info(format("Set Applitools baseline env name for app: '%s'", baselineEnvName));
             appEyes.setBaselineEnvName(baselineEnvName);
         }
+    }
+
+    private String getAppNameWithPlatformWhenNoBaselineEnvName(Platform platform, String appName) {
+        String baselineEnvName = context.getTestStateAsString(TEST_CONTEXT.APPLITOOLS_BASELINE_ENV_NAME);
+        return (null != baselineEnvName && !baselineEnvName.isBlank())
+                ? appName
+                : appName + "-" + platform;
     }
 
     private void setBaselineEnvName(Configuration configuration) {
