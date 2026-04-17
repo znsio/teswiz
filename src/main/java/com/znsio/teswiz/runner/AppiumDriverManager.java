@@ -656,6 +656,7 @@ public class AppiumDriverManager {
             DesiredCapabilities desiredCapabilities) {
         LOGGER.info("startAppiumDriverInstance for {} using capability file: {}", testMethodName,
                 ConfigFileManager.CAPS.get());
+        Visual.addMobileCapabilitiesToTestContextForVisualTesting(desiredCapabilities);
         AppiumDriver currentDriverSession = initialiseDriver(desiredCapabilities);
         setDriver(currentDriverSession);
         return currentDriverSession;

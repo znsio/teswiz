@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.0.21
+
+### Visual testing
+
+- Fixed Applitools mobile capability setup for Appium visual runs so it uses the initialized Applitools configuration map correctly.
+- Scoped Applitools mobile capability injection to runs where both `IS_VISUAL=true` and `useNML=true`.
+- Simplified proxy settings initialization in `Visual.addMobileCapabilitiesToTestContextForVisualTesting`.
+
 ## v1.0.20
 
 ### Visual testing

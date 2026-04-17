@@ -54,6 +54,9 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - UFG test-specific setup is currently added from:
   `src/test/java/com/znsio/teswiz/steps/RunTestCukes.java`
 - Native Mobile Layout uses `useNML` and `APPLITOOLS.NML_CONFIG`
+- Mobile capability injection for Applitools Appium should be gated by both:
+  - `Runner.isVisualTestingEnabled()`
+  - `useNML=true` in `configs/applitools_config.json`
 - When adjusting NML device handling, keep support for one or many device targets.
 
 ## Testing guidance

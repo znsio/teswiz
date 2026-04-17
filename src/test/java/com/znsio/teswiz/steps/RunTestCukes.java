@@ -81,23 +81,27 @@ public class RunTestCukes
     private void addApplitoolsNMLConfigurationToContext() {
         Platform currentPlatform = Runner.getPlatform();
 
-        if (Platform.iOS.equals(currentPlatform)) {
-            IosMultiDeviceTarget[] iosTargets = new IosMultiDeviceTarget[]{
+        if (null == currentPlatform) {
+            LOGGER.info("Skipping NML config for platform: " + currentPlatform);
+        } else switch (currentPlatform) {
+            case iOS:
+                IosMultiDeviceTarget[] iosTargets = new IosMultiDeviceTarget[]{
                     IosMultiDeviceTarget.iPhone_14(),
                     IosMultiDeviceTarget.iPhone_14_Pro_Max()
-            };
-            LOGGER.info("Use the following devices in NML config: " + JsonPrettyPrinter.prettyPrint(iosTargets));
-            context.addTestState(APPLITOOLS.NML_CONFIG, iosTargets);
-        } else if (Platform.android.equals(currentPlatform)) {
-            AndroidMultiDeviceTarget[] androidTargets = new AndroidMultiDeviceTarget[]{
+                };  LOGGER.info("Use the following devices in NML config: " + JsonPrettyPrinter.prettyPrint(iosTargets));
+                context.addTestState(APPLITOOLS.NML_CONFIG, iosTargets);
+                break;
+            case android:
+                AndroidMultiDeviceTarget[] androidTargets = new AndroidMultiDeviceTarget[]{
                     AndroidMultiDeviceTarget.Galaxy_S25(),
                     AndroidMultiDeviceTarget.Galaxy_S25_Ultra(),
                     AndroidMultiDeviceTarget.Pixel_9()
-            };
-            LOGGER.info("Use the following devices in NML config: " + JsonPrettyPrinter.prettyPrint(androidTargets));
-            context.addTestState(APPLITOOLS.NML_CONFIG, androidTargets);
-        } else {
-            LOGGER.info("Skipping NML config for platform: " + currentPlatform);
+                };  LOGGER.info("Use the following devices in NML config: " + JsonPrettyPrinter.prettyPrint(androidTargets));
+                context.addTestState(APPLITOOLS.NML_CONFIG, androidTargets);
+                break;
+            default:
+                LOGGER.info("Skipping NML config for platform: " + currentPlatform);
+                break;
         }
     }
 
