@@ -27,7 +27,7 @@ Feature: Scenarios for "The App"
 #    Then I try to login again with invalid credentials - "znsio2", "another invalid password"
 
   #  IS_VISUAL=true APP_NAME=vodqa CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@vodqa and @invalidLogin1" ./gradlew run
-  @web @invalidLogin @invalidLogin1 @vodqa @eyes-vodqa_screens_1344
+  @web @invalidLogin @invalidLogin1 @vodqa
   Scenario: vodqa_screens
     Given I login with invalid credentials - "znsio1", "invalid password"
 
