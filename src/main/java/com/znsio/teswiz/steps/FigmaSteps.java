@@ -18,7 +18,6 @@ public class FigmaSteps {
 
     public FigmaSteps() {
         context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
-        LOGGER.info("context: " + context.getTestName());
     }
 
     @When("I have my Figma design with app name {string}, test name {string} and baseline name {string} available in Applitools")
