@@ -7,12 +7,12 @@ buildscript {
 }
 
 plugins {
-    id "org.sonarqube" version "7.2.3.7755"
+    id "org.sonarqube" version "7.3.0.8198"
     id "java"
     id "idea"
     id 'com.gradleup.shadow' version '9.4.1'
     id "maven-publish"
-    id "io.freefair.aspectj.post-compile-weaving" version "9.2.0"
+    id "io.freefair.aspectj.post-compile-weaving" version "9.5.0"
 }
 
 def teswizVersion = "1.0.21"
@@ -196,8 +196,8 @@ tasks.compileJava {
 
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    implementation "com.applitools:eyes-images-java5:5.81.21"
-    implementation ("com.applitools:eyes-appium-java5:5.79.21") {
+    implementation "com.applitools:eyes-images-java5:5.81.24"
+    implementation ("com.applitools:eyes-appium-java5:5.79.24") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
@@ -206,8 +206,8 @@ dependencies {
     }
     implementation "com.browserstack:browserstack-local-java:1.1.8"
     implementation 'com.epam.reportportal:agent-java-cucumber6:5.5.7'
-    implementation 'com.epam.reportportal:client-java:5.4.13'
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.2"
+    implementation 'com.epam.reportportal:client-java:5.4.14'
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.21.3"
     implementation "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
     implementation "com.github.erosb:everit-json-schema:1.14.6"
     implementation "com.github.vidstige:jadb:$jadbVersion"
@@ -215,13 +215,13 @@ dependencies {
     // TODO - migrate to restassured
     implementation "com.konghq:unirest-java:3.14.5"
     implementation "com.squareup.okhttp3:okhttp:5.3.2"
-    implementation "io.appium:java-client:10.1.0"
+    implementation "io.appium:java-client:10.1.1"
     implementation 'io.cucumber:cucumber-java:7.34.3'
     implementation 'io.cucumber:cucumber-testng:7.34.3'
     implementation "io.github.bonigarcia:webdrivermanager:6.3.4"
     implementation "net.masterthought:cucumber-reporting:5.11.0"
     implementation "org.apache.commons:commons-lang3:3.20.0"
-    implementation "org.apache.commons:commons-rng-simple:1.6"
+    implementation "org.apache.commons:commons-rng-simple:1.7"
     implementation 'org.apache.logging.log4j:log4j-1.2-api:2.25.4'
     implementation 'org.apache.logging.log4j:log4j-core:2.25.4'
     implementation "org.apache.pdfbox:pdfbox:3.0.7"
