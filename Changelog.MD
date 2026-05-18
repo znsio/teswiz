@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.22
+
+### Build and dependency updates
+
+- Updated the Gradle wrapper to `9.5.1`.
+- Improved Gradle launcher script compatibility in `gradlew` and `gradlew.bat`.
+- Refreshed npm dependencies in `package.json` and regenerated `package-lock.json`.
+- Updated Gradle plugin and dependency versions in `build.gradle`.
+
 ## v1.0.21
 
 ### Visual testing
