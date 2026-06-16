@@ -1,5 +1,7 @@
 # FAQs / Troubleshooting guide
 
+If you are trying to figure out why a specific test failed, start with [DebuggingTests-README.md](DebuggingTests-README.md).
+
 ### Setting Environment Variables:
 
 You can set environment variables

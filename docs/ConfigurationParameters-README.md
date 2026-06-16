@@ -30,7 +30,7 @@ These can be overridden by providing the same either as environment variables or
     CLOUD_USE_PROXY=true -> If we need proxy for connecting to the cloud device farm using the curl command. Default: false
     CLOUD_USE_LOCAL_TESTING=false -> If we want to enable local testing (currently only in BrowserStack) -  
     ENVIRONMENT_CONFIG_FILE=./src/test/resources/environments.json -> Environment specific configuration file
-    IS_FAILING_TEST=false -> Do not run failing tests. Refer to [Hard Gate](HardGate.md) for more information
+    IS_FAILING_TEST_SUITE=false -> Do not run failing tests. Refer to [Hard Gate](HardGate.md) for more information
     IS_VISUAL=false -> Should enable Applitools Visual Testing? If yes, set to true
     FAIL_TEST_ON_VISUAL_DIFFERENCE=true -> 
         If visual testing is enabled, and this is set to true, then the test will fail if there are any visual differences found

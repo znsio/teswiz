@@ -43,3 +43,10 @@ Sample command
      * `CLOUD_USE_PROXY` = true
 
  #### * Note: Check the necessary proxy settings if required 
+
+### BrowserStack-specific notes
+
+* Web runs use `bstack:options` / `browserstackOptions` mapping for BrowserStack-specific options.
+* Native app uploads:
+  * For iOS uploads (`.ipa` and `.zip`), upload command includes `ios_keychain_support=true`.
+  * For non-iOS uploads (for example `.apk`), that flag is not added.

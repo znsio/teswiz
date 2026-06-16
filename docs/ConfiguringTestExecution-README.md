@@ -29,6 +29,25 @@ Sample command:
 
 For other cloud configurations, refer here: https://github.com/AppiumTestDistribution/AppiumTestDistribution
 
+#### Run on TestMu AI (formerly LambdaTest)
+
+teswiz supports running against TestMu AI using the sample configs and capabilities in the repository.
+
+* Supported config/capability samples:
+  * `configs/theapp/theapp_lambdatest_web_config.properties`
+  * `configs/theapp/theapp_lambdatest_android_config.properties`
+  * `configs/theapp/theapp_lambdatest_ios_config.properties`
+  * `caps/theapp/theapp_lambdatest_web_capabilities.json`
+  * `caps/theapp/theapp_lambdatest_android_capabilities.json`
+  * `caps/theapp/theapp_lambdatest_ios_capabilities.json`
+* Web runs use W3C-safe capabilities, with TestMu-specific keys inside `LT:Options`.
+* Mobile runs use TestMu-specific keys inside `lt:options`.
+* `network` and `appProfiling` are read from capability files rather than being hardcoded by the framework.
+* Native app uploads:
+  * If `CLOUD_UPLOAD_APP=true`, teswiz uploads the app to TestMu AI and uses the returned `lt://...` app id automatically.
+  * If `CLOUD_UPLOAD_APP=false`, you must provide `APP_PATH=lt://...` as an environment variable, system property, or in the config file.
+  * Do not use a local file path such as `temp/sampleApps/TheApp.ipa` when `CLOUD_UPLOAD_APP=false`.
+
 ### Run iOS app tests
 
     PLATFORM=iOS ./gradlew run
