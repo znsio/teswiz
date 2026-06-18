@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.23
+
+### Build and dependency updates
+
+- Changed dependency download behavior so `forceUpdate` now defaults to `false`.
+- Added a Gradle override so `-PforceUpdate=true` forces a fresh jar download when needed.
+- Updated the README guidance to document the Gradle property-based override.
+- Kept `build.gradle.sample` aligned with the new default and override flow.
+
 ## v1.0.22
 
 ### Build and dependency updates

@@ -25,7 +25,7 @@ Execution failed for task ':compileTestJava'.
 
 Example:
 ```
-    def teswizVersion = '1.0.22'
+    def teswizVersion = '1.0.23'
 ```
 
 If you do not set a version explicitly, the scaffold now resolves to the latest tagged teswiz release.
