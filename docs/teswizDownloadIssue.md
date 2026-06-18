@@ -92,4 +92,10 @@ You may need to add the following in your build.gradle file:
 
 ## To force re-download of teswiz jar:
 
-* Delete the directory or the downloaded jar, and then run the `./gradlew clean run` command. This will automatically re-download the teswiz jar for you.
+* Run the build with the `forceUpdate` Gradle property set to `true`:
+
+```bash
+./gradlew clean run -PforceUpdate=true
+```
+
+* If you omit the property, teswiz will reuse the downloaded jar when it already exists in `libs/`.

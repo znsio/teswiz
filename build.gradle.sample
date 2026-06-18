@@ -156,8 +156,9 @@ def downloadDependency(String name, String type, Map<String, String> params) {
 
     println "Processing dependency: ${name} from ${type}"
     def jarFile = new File(libsDir, "${name}-${params.version}.jar")
+    def forceUpdate = params.forceUpdate?.toString()?.toBoolean() ?: false
 
-    if (params.forceUpdate?.toString() == "true") {
+    if (forceUpdate) {
         if (jarFile.exists()) {
             println "\t🧹 Force update enabled. Deleting existing jar: $jarFile"
             jarFile.delete()
@@ -248,7 +249,7 @@ tasks.register('downloadDependencies') {
                                 artifact      : "teswiz",
                                 version       : "$teswizVersion",
                                 fileNameSuffix: "",
-                                forceUpdate   : true
+                                forceUpdate   : project.findProperty('forceUpdate')?.toString()?.toBoolean() ?: false
                         ]
                 ]
         ]

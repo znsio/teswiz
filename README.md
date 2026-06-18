@@ -40,6 +40,10 @@ import com.znsio.teswiz.context.TestExecutionContext;
 # To Build
 `./gradlew clean build`
 
+If you need to force a fresh dependency download, pass the Gradle property:
+
+`./gradlew clean build -PforceUpdate=true`
+
 # What is this repository about?
 
 This repository implements automated tests for Android & iOS apps, specified using cucumber-jvm and intelligently run
