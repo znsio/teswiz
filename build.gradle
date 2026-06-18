@@ -22,12 +22,18 @@ def jadbVersion = "1.2.1"
 group = "com.github.znsio"
 version = "$teswizVersion"
 
+def minimumSupportedJavaVersion = JavaVersion.VERSION_17
+def currentJavaVersion = JavaVersion.current()
+if (!currentJavaVersion.isCompatibleWith(minimumSupportedJavaVersion)) {
+    throw new GradleException(
+            "teswiz requires JDK 17 or higher. Current JDK: ${System.getProperty('java.version')} " +
+                    "at ${System.getProperty('java.home')}. Set JAVA_HOME to a JDK 17+ installation and rerun."
+    )
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
 }
 
 repositories {
@@ -413,12 +419,6 @@ tasks.named('test', Test) {
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += ['--release', '17']
-}
-
-tasks.withType(JavaExec).configureEach {
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
 }
 
 shadowJar.finalizedBy sourcesJar
