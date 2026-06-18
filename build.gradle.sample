@@ -1,5 +1,6 @@
 import java.text.SimpleDateFormat
 import org.codehaus.groovy.runtime.GStringImpl
+import groovy.json.JsonSlurper
 
 buildscript {
     ext {
@@ -11,7 +12,76 @@ plugins {
     id "idea"
 }
 
-def teswizVersion = "1.0.22"
+def teswizVersionChoice = findProperty("teswizVersion") ?: System.getenv("TESWIZ_VERSION")
+
+static boolean isSnapshotChoice(String versionChoice) {
+    def normalizedChoice = versionChoice?.trim()?.toLowerCase()
+    return normalizedChoice == "snapshot" || normalizedChoice == "latest-snapshot"
+}
+
+static String normalizeReleaseTag(String tagName) {
+    return tagName?.replaceFirst(/^v/, "")
+}
+
+def loadTeswizReleases() {
+    def releasesJson = new URL("https://api.github.com/repos/znsio/teswiz/releases").text
+    def releases = new JsonSlurper().parseText(releasesJson)
+    if (!(releases instanceof List)) {
+        throw new GradleException("Unable to read teswiz releases from GitHub.")
+    }
+    return releases
+}
+
+def resolveLatestTaggedTeswizVersion() {
+    def releases = loadTeswizReleases()
+    def latestStableRelease = releases.find { release -> !release.draft && !release.prerelease }
+    if (!latestStableRelease) {
+        throw new GradleException("No tagged teswiz release found in GitHub releases.")
+    }
+
+    def resolvedVersion = normalizeReleaseTag(latestStableRelease.tag_name?.toString())
+    if (!resolvedVersion) {
+        throw new GradleException("Unable to resolve latest teswiz release version.")
+    }
+    println "Resolved teswiz default choice to latest tagged release ${resolvedVersion}"
+    return resolvedVersion
+}
+
+def resolveTeswizSnapshotVersion() {
+    def releases = loadTeswizReleases()
+    def snapshotRelease = releases.find { release ->
+        release.prerelease && !release.draft && (
+                (release.tag_name?.toString()?.toUpperCase()?.contains("SNAPSHOT")) ||
+                        (release.name?.toString()?.toUpperCase()?.contains("SNAPSHOT"))
+        )
+    }
+
+    if (!snapshotRelease) {
+        throw new GradleException("No teswiz SNAPSHOT release found in GitHub releases.")
+    }
+
+    def resolvedVersion = normalizeReleaseTag(snapshotRelease.tag_name?.toString())
+    if (!resolvedVersion) {
+        throw new GradleException("Unable to resolve teswiz SNAPSHOT release version.")
+    }
+    println "Resolved teswiz SNAPSHOT choice to ${resolvedVersion}"
+    return resolvedVersion
+}
+
+def resolveTeswizVersion(String versionChoice) {
+    def normalizedChoice = versionChoice?.trim()
+    if (!normalizedChoice) {
+        return resolveLatestTaggedTeswizVersion()
+    }
+
+    if (!isSnapshotChoice(normalizedChoice)) {
+        return normalizedChoice
+    }
+
+    return resolveTeswizSnapshotVersion()
+}
+
+def teswizVersion = resolveTeswizVersion(teswizVersionChoice)
 
 group = "com.github.znsio"
 version = "$teswizVersion"
@@ -108,10 +178,26 @@ def downloadDependency(String name, String type, Map<String, String> params) {
     if (type == "github") {
         println "\tFetching latest GitHub release information for ${params.repoUrl}..."
         def jsonResponse = new URL(params.repoUrl).text
-        def jsonSlurper = new groovy.json.JsonSlurper()
-        def releaseInfo = jsonSlurper.parseText(jsonResponse)
+        def releaseInfo = new JsonSlurper().parseText(jsonResponse)
+        def release = releaseInfo
+        if (releaseInfo instanceof List) {
+            release = releaseInfo.find { item ->
+                def itemVersion = normalizeReleaseTag(item.tag_name?.toString())
+                if (isSnapshotChoice(params.version?.toString())) {
+                    return item.prerelease && !item.draft && (
+                            item.tag_name?.toString()?.toUpperCase()?.contains("SNAPSHOT") ||
+                                    item.name?.toString()?.toUpperCase()?.contains("SNAPSHOT")
+                    )
+                }
+                return itemVersion == params.version?.toString()
+            }
+        }
 
-        def assets = releaseInfo.assets
+        if (!release) {
+            throw new GradleException("No matching GitHub release found for ${name} version ${params.version}.")
+        }
+
+        def assets = release.assets
         if (!(assets instanceof List)) {
             throw new GradleException("Assets field is not a list: $assets")
         }
@@ -155,8 +241,9 @@ tasks.register('downloadDependencies') {
         def dependencies = [
                 [
                         name  : "teswiz",
-                        type  : "jitpack",
+                        type  : "github",
                         params: [
+                                repoUrl       : "https://api.github.com/repos/znsio/teswiz/releases",
                                 group         : "com.github.znsio",
                                 artifact      : "teswiz",
                                 version       : "$teswizVersion",

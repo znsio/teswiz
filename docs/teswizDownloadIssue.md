@@ -28,6 +28,16 @@ Example:
     def teswizVersion = '1.0.22'
 ```
 
+If you do not set a version explicitly, the scaffold now resolves to the latest tagged teswiz release.
+
+If you want the latest teswiz snapshot build instead of a tagged release, use:
+
+```
+    def teswizVersion = 'SNAPSHOT'
+```
+
+That choice resolves to the latest prerelease published in the `znsio/teswiz` GitHub releases.
+
 ### 2. Define the folder where you want to download the teswiz as a jar dependency
 
 Example:
