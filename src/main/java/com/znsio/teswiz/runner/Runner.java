@@ -33,6 +33,7 @@ public class Runner {
     public static final String INFO = "INFO";
     public static final String WARN = "WARN";
 
+    private static final String TESWIZ_STEPS_PACKAGE = "com.znsio.teswiz.steps";
     private static final Logger LOGGER = LogManager.getLogger(Runner.class.getName());
     private static final String INVALID_KEY_MESSAGE = "Invalid key name ('%s') provided";
 
@@ -62,6 +63,10 @@ public class Runner {
     private void run(List<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);
+        // Always include teswiz's built-in, reusable step definitions (e.g. FigmaSteps,
+        // CommonSteps) so consuming projects can use them without configuring extra glue.
+        args.add("--glue");
+        args.add(TESWIZ_STEPS_PACKAGE);
         args.add(featuresDir);
         boolean isHardGate = isHardGateSet();
         boolean isRunningFailingTests = isRunningFailingTestSuite();
