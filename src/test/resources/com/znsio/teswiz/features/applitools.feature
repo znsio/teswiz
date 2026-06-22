@@ -5,6 +5,7 @@ Feature: Scenarios for "Applitools"
   @web @figma
   Scenario: Compare Applitools important pages with Figma design
     Given I have my Figma design with app name "Applitools website", test name "Applitools Full Pages" and baseline name "Applitools Full Pages_1506" available in Applitools
+    When I go the application page
     And I visually check the "integrations page" at "https://applitools.com/platform/integrations/"
     And I visually check the "what's new page" at "https://applitools.com/platform/whats-new/"
 
