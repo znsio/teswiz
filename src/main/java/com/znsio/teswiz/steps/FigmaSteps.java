@@ -6,8 +6,6 @@ import org.apache.logging.log4j.Logger;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
-import com.znsio.teswiz.runner.Drivers;
-import com.znsio.teswiz.runner.Runner;
 
 import io.cucumber.java.en.When;
 
@@ -26,7 +24,6 @@ public class FigmaSteps {
                 "I have my Figma design with app name: '%s', test name: '%s', baseline name: '%s'",
                 appName, testName, baselineName));
         addFigmaDesignDetailsToContext(context, appName, testName, baselineName);
-        Drivers.createDriverFor(TEST_CONTEXT.I, Runner.getPlatform(), context);
     }
 
     static void addFigmaDesignDetailsToContext(TestExecutionContext context, String appName, String testName,
