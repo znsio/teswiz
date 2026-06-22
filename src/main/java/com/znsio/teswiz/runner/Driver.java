@@ -64,6 +64,7 @@ public class Driver {
     private final boolean isRunningInHeadlessMode;
     private static final String TO = "' to '";
     private Visual visually;
+    private static final int MAX_SCROLL_ATTEMPTS = 15;
 
     Driver(String testName, Platform forPlatform, String userPersona, String appName, AppiumDriver appiumDriver) {
         this.driver = appiumDriver;
@@ -75,7 +76,8 @@ public class Driver {
         instantiateEyes(testName, appiumDriver);
     }
 
-    Driver(String testName, Platform forPlatform, String userPersona, String appName, WebDriver webDriver, boolean isRunInHeadlessMode) {
+    Driver(String testName, Platform forPlatform, String userPersona, String appName, WebDriver webDriver,
+            boolean isRunInHeadlessMode) {
         this.driver = webDriver;
         this.type = WEB_DRIVER;
         this.userPersona = userPersona;
@@ -99,7 +101,6 @@ public class Driver {
         this.visually = new Visual(this.type, this.driverForPlatform, testName, userPersona, pdfFileName);
     }
 
-
     private void instantiateEyes(String testName, AppiumDriver innerDriver) {
         this.visually = new Visual(this.type, this.driverForPlatform, innerDriver, testName, userPersona, appName);
     }
@@ -113,7 +114,8 @@ public class Driver {
     }
 
     public WebElement waitForClickabilityOf(String elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait))).until(ExpectedConditions.elementToBeClickable(findElementByAccessibilityId(elementId)));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)))
+                .until(ExpectedConditions.elementToBeClickable(findElementByAccessibilityId(elementId)));
     }
 
     public WebElement findElementByAccessibilityId(String locator) {
@@ -153,9 +155,11 @@ public class Driver {
         AppiumDriver appiumDriver = (AppiumDriver) this.driver;
         PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
         Sequence scroller = new Sequence(touch, 1);
-        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), fromPoint.getX(), fromPoint.getY()));
+        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(),
+                fromPoint.getX(), fromPoint.getY()));
         scroller.addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), toPoint.getX(), toPoint.getY()));
+        scroller.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(),
+                toPoint.getX(), toPoint.getY()));
         scroller.addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         LOGGER.info("fromPoint width: %d, fromPoint height: %d".formatted(fromPoint.getX(), fromPoint.getY()));
         LOGGER.info("toPoint width: %d, toPoint height: %d".formatted(toPoint.getX(), toPoint.getY()));
@@ -163,11 +167,14 @@ public class Driver {
     }
 
     public WebElement scrollToAnElementByText(String text) {
-        return driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector())" + ".scrollIntoView(new UiSelector().text(\"" + text + "\"));"));
+        return driver.findElement(AppiumBy.androidUIAutomator(
+                "new UiScrollable(new UiSelector())" + ".scrollIntoView(new UiSelector().text(\"" + text + "\"));"));
     }
 
     public WebElement scrollToAnElementByText(String text, int maxSwipes) {
-        return driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).setMaxSearchSwipes(" + maxSwipes + ").scrollIntoView(new UiSelector().text(\"" + text + "\"));"));
+        return driver.findElement(
+                AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).setMaxSearchSwipes("
+                        + maxSwipes + ").scrollIntoView(new UiSelector().text(\"" + text + "\"));"));
     }
 
     public boolean isElementPresent(By locator) {
@@ -221,10 +228,15 @@ public class Driver {
         Dimension screenSize = appiumDriver.manage().window().getSize();
         int midHeight = screenSize.height / 2;
         int midWidth = screenSize.width / 2;
-        LOGGER.info(String.format("tapOnMiddleOfScreen: Screen dimensions: '%s'. Tapping on coordinates: %d:%d%n", screenSize, midWidth, midHeight));
+        LOGGER.info(String.format("tapOnMiddleOfScreen: Screen dimensions: '%s'. Tapping on coordinates: %d:%d%n",
+                screenSize, midWidth, midHeight));
         PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
         Sequence clickPosition = new Sequence(touch, 1);
-        clickPosition.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), midWidth, midHeight)).addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg())).addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        clickPosition
+                .addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), midWidth,
+                        midHeight))
+                .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         appiumDriver.perform(Arrays.asList(clickPosition));
         waitFor(1);
     }
@@ -262,9 +274,12 @@ public class Driver {
     }
 
     private void checkPercentagesAreValid(int... percentages) {
-        boolean arePercentagesValid = Arrays.stream(percentages).allMatch(percentage -> percentage >= 0 && percentage <= 100);
+        boolean arePercentagesValid = Arrays.stream(percentages)
+                .allMatch(percentage -> percentage >= 0 && percentage <= 100);
         if (!arePercentagesValid) {
-            throw new RuntimeException(String.format("Invalid percentage value - percentage value should be between 0 - 100. but are %s", Arrays.toString(percentages)));
+            throw new RuntimeException(
+                    String.format("Invalid percentage value - percentage value should be between 0 - 100. but are %s",
+                            Arrays.toString(percentages)));
         }
     }
 
@@ -284,13 +299,17 @@ public class Driver {
         swipe(height, fromWidth, toWidth);
     }
 
-    public void swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth, int toPercentScreenWidth) {
-        LOGGER.info(String.format("percent attributes passed to method are: percentScreenHeight: %s, fromPercentScreenWidth: %s, toPercentScreenWidth: %s", percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth));
+    public void swipeByPassingPercentageAttributes(int percentScreenHeight, int fromPercentScreenWidth,
+            int toPercentScreenWidth) {
+        LOGGER.info(String.format(
+                "percent attributes passed to method are: percentScreenHeight: %s, fromPercentScreenWidth: %s, toPercentScreenWidth: %s",
+                percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth));
         checkPercentagesAreValid(percentScreenHeight, fromPercentScreenWidth, toPercentScreenWidth);
         int height = getWindowHeight() * percentScreenHeight / 100;
         int fromWidth = getWindowWidth() * fromPercentScreenWidth / 100;
         int toWidth = getWindowWidth() * toPercentScreenWidth / 100;
-        LOGGER.info(String.format("swipe gesture at height: %s, from width: %s, to width: %s", height, fromWidth, toWidth));
+        LOGGER.info(
+                String.format("swipe gesture at height: %s, from width: %s, to width: %s", height, fromWidth, toWidth));
         swipe(height, fromWidth, toWidth);
     }
 
@@ -318,9 +337,11 @@ public class Driver {
         Dimension screenSize = appiumDriver.manage().window().getSize();
         PointerInput touch = new PointerInput(PointerInput.Kind.TOUCH, "touch");
         Sequence dragNotificationBar = new Sequence(touch, 1);
-        dragNotificationBar.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(), screenSize.width / 2, 0));
+        dragNotificationBar.addAction(touch.createPointerMove(Duration.ofSeconds(0), PointerInput.Origin.viewport(),
+                screenSize.width / 2, 0));
         dragNotificationBar.addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
-        dragNotificationBar.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), screenSize.width / 2, screenSize.height));
+        dragNotificationBar.addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(),
+                screenSize.width / 2, screenSize.height));
         dragNotificationBar.addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         appiumDriver.perform(singletonList(dragNotificationBar));
         appiumDriver.perform(singletonList(dragNotificationBar));
@@ -337,7 +358,8 @@ public class Driver {
         } else if (Runner.getPlatform() == Platform.iOS) {
             ((IOSDriver) driver).runAppInBackground(Duration.ofSeconds(numberOfSeconds));
         } else {
-            throw new NotImplementedException("putAppInBackgroundFor method is not implemented for " + Runner.getPlatform());
+            throw new NotImplementedException(
+                    "putAppInBackgroundFor method is not implemented for " + Runner.getPlatform());
         }
     }
 
@@ -367,16 +389,22 @@ public class Driver {
     }
 
     public void longPress(By elementId, long durationInSeconds) {
-        WebElement elementToBeLongTapped = new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.elementToBeClickable(elementId));
+        WebElement elementToBeLongTapped = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.elementToBeClickable(elementId));
         final Point location = elementToBeLongTapped.getLocation();
         final PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         final Sequence sequence = new Sequence(finger, 1);
-        sequence.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), location.x, location.y)).addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg())).addAction(new Pause(finger, Duration.ofSeconds(durationInSeconds))).addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        sequence.addAction(
+                finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), location.x, location.y))
+                .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(new Pause(finger, Duration.ofSeconds(durationInSeconds)))
+                .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         ((AppiumDriver) driver).perform(Collections.singletonList(sequence));
     }
 
     public void pushFileToDevice(String filePathToPush, String devicePath) {
-        LOGGER.info("Pushing the file: '" + filePathToPush + TO + Runner.getPlatform().name() + "' " + "device " + "on path: '" + devicePath + "'");
+        LOGGER.info("Pushing the file: '" + filePathToPush + TO + Runner.getPlatform().name() + "' " + "device "
+                + "on path: '" + devicePath + "'");
         try {
             switch (Runner.getPlatform()) {
                 case android:
@@ -389,7 +417,8 @@ public class Driver {
                     throw new InvalidTestDataException("pushFile is supported only on Android/iOS platform");
             }
         } catch (IOException e) {
-            throw new FileNotUploadedException(String.format("Error in pushing the file: '%s%s%s' device on path: '%s'", filePathToPush, TO, Runner.getPlatform().name(), devicePath), e);
+            throw new FileNotUploadedException(String.format("Error in pushing the file: '%s%s%s' device on path: '%s'",
+                    filePathToPush, TO, Runner.getPlatform().name(), devicePath), e);
         }
     }
 
@@ -405,7 +434,8 @@ public class Driver {
     }
 
     public WebElement waitForClickabilityOf(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.elementToBeClickable(elementId)));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait))
+                .until(ExpectedConditions.elementToBeClickable(elementId)));
     }
 
     public List<WebElement> findElementsByAccessibilityId(String elementId) {
@@ -421,11 +451,13 @@ public class Driver {
     }
 
     public WebElement waitTillElementIsPresent(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.presenceOfElementLocated(elementId)));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait))
+                .until(ExpectedConditions.presenceOfElementLocated(elementId)));
     }
 
     public WebElement waitTillElementIsVisible(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.visibilityOfElementLocated(elementId)));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait))
+                .until(ExpectedConditions.visibilityOfElementLocated(elementId)));
     }
 
     public List<WebElement> waitTillVisibilityOfAllElements(By elementId) {
@@ -433,7 +465,8 @@ public class Driver {
     }
 
     public List<WebElement> waitTillVisibilityOfAllElements(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.visibilityOfAllElementsLocatedBy(elementId)));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait))
+                .until(ExpectedConditions.visibilityOfAllElementsLocatedBy(elementId)));
     }
 
     public WebElement waitTillElementIsVisible(String elementId) {
@@ -441,7 +474,8 @@ public class Driver {
     }
 
     public WebElement waitTillElementIsVisible(String elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.visibilityOf(findElementByAccessibilityId(elementId))));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait))
+                .until(ExpectedConditions.visibilityOf(findElementByAccessibilityId(elementId))));
     }
 
     public List<WebElement> waitTillPresenceOfAllElements(By elementId) {
@@ -449,7 +483,8 @@ public class Driver {
     }
 
     public List<WebElement> waitTillPresenceOfAllElements(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.presenceOfAllElementsLocatedBy(elementId)));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait))
+                .until(ExpectedConditions.presenceOfAllElementsLocatedBy(elementId)));
     }
 
     public void setWindowSize(int width, int height) {
@@ -500,12 +535,42 @@ public class Driver {
     }
 
     public void scrollTillElementIntoView(By elementId) {
-        WebElement element = driver.findElement(elementId);
-        scrollTillElementIntoView(element);
+        if (isNativeMobilePlatform()) {
+            scrollNativeElementIntoView(elementId);
+        } else {
+            scrollTillElementIntoView(driver.findElement(elementId));
+        }
+    }
+
+    private void scrollNativeElementIntoView(By elementId) {
+        for (int attempt = 0; attempt < MAX_SCROLL_ATTEMPTS; attempt++) {
+            List<WebElement> matches = driver.findElements(elementId);
+            if (!matches.isEmpty() && isElementDisplayed(matches.get(0))) {
+                return;
+            }
+            scrollDownByScreenSize();
+        }
+        throw new NoSuchElementException("scrollTillElementIntoView: element '" + elementId
+                + "' was not visible after " + MAX_SCROLL_ATTEMPTS + " scroll attempts");
     }
 
     public void scrollTillElementIntoView(WebElement element) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+        if (isNativeMobilePlatform()) {
+            // On native mobile, scrolling needs a re-findable locator. If the caller
+            // already has a WebElement and it's on screen, nothing to do; otherwise
+            // they should use the By-based overload (the only reliable native path).
+            if (!isElementDisplayed(element)) {
+                LOGGER.warn("scrollTillElementIntoView(WebElement) cannot scroll on native "
+                        + "mobile platforms - the element is off-screen and not re-findable. "
+                        + "Use scrollTillElementIntoView(By) instead.");
+            }
+        } else {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+        }
+    }
+
+    private boolean isNativeMobilePlatform() {
+        return driverForPlatform == Platform.android || driverForPlatform == Platform.iOS;
     }
 
     public void switchToNextTab() {
@@ -531,14 +596,17 @@ public class Driver {
             LOGGER.info("Uploading file: " + filePath + " to the browser");
             driver.findElement(locator).sendKeys(filePath);
         } catch (Exception e) {
-            throw new FileNotUploadedException(String.format("Error in uploading the file: '%s%s%s", filePath, TO, Runner.getPlatform().name()), e);
+            throw new FileNotUploadedException(
+                    String.format("Error in uploading the file: '%s%s%s", filePath, TO, Runner.getPlatform().name()),
+                    e);
         }
     }
 
     /**
      * This method injects the media to browserstack to perform,
      * image scanning eg: QRcode,barcode etc
-     * Throws NotImplementedException if platform is NOT android, and cloudName is NOT browserstack
+     * Throws NotImplementedException if platform is NOT android, and cloudName is
+     * NOT browserstack
      *
      * @param uploadFileURL is an absolute path where a media file is located
      */
@@ -554,11 +622,14 @@ public class Driver {
     }
 
     /**
-     * This method injects the already uploaded media in browserstack(media url) to browserstack real device,
+     * This method injects the already uploaded media in browserstack(media url) to
+     * browserstack real device,
      * image scanning eg: QRcode,barcode etc
-     * Throws NotImplementedException if platform is NOT android, and cloudName is NOT browserstack
+     * Throws NotImplementedException if platform is NOT android, and cloudName is
+     * NOT browserstack
      *
-     * @param browserStackMediaUrl is a media url generated after uploading a file to browserstack cloud using BS API
+     * @param browserStackMediaUrl is a media url generated after uploading a file
+     *                             to browserstack cloud using BS API
      */
     public void injectMediaUrlToBrowserstackDevice(String browserStackMediaUrl) {
         String cloudName = Runner.getCloudName();
@@ -578,7 +649,7 @@ public class Driver {
         int width = (int) (dimension.width * 0.5);
         int fromHeight = (int) (dimension.height * 0.7);
         int toHeight = (int) (dimension.height * 0.6);
-        int[] height = {fromHeight, toHeight};
+        int[] height = { fromHeight, toHeight };
         if (direction.equals(Direction.UP)) {
             Arrays.sort(height);
         }
@@ -588,7 +659,8 @@ public class Driver {
     }
 
     public void setAttributeValue(WebElement element, String attribute, String value) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute(arguments[1],arguments[2])", element, attribute, value);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute(arguments[1],arguments[2])", element,
+                attribute, value);
     }
 
     public void dragAndDrop(By draggableLocator, By dropZoneLocator) {
@@ -605,7 +677,12 @@ public class Driver {
         int middleXCoordinate_dropZone = dropZoneElement.getLocation().x + dropZoneElement.getSize().width / 2;
         int middleYCoordinate_dropZone = dropZoneElement.getLocation().y + dropZoneElement.getSize().height / 2;
 
-        sequence.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), middleXCoordinate_dragElement, middleYCoordinate_dragElement)).addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg())).addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(), middleXCoordinate_dropZone, middleYCoordinate_dropZone)).addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        sequence.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(),
+                middleXCoordinate_dragElement, middleYCoordinate_dragElement))
+                .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(touch.createPointerMove(Duration.ofSeconds(1), PointerInput.Origin.viewport(),
+                        middleXCoordinate_dropZone, middleYCoordinate_dropZone))
+                .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         appiumDriver.perform(List.of(sequence));
     }
@@ -616,7 +693,12 @@ public class Driver {
         int y = element.getLocation().getY();
         PointerInput touch = new PointerInput(PointerInput.Kind.MOUSE, "touch");
         Sequence clickPosition = new Sequence(touch, 1);
-        clickPosition.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x, y)).addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg())).addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg())).addAction(new Pause(touch, ofMillis(10))).addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg())).addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        clickPosition.addAction(touch.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x, y))
+                .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(new Pause(touch, ofMillis(10)))
+                .addAction(touch.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(touch.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
         appiumDriver.perform(Arrays.asList(clickPosition));
     }
 
@@ -630,7 +712,8 @@ public class Driver {
         int endX = screenSize.width / 2;
         int endY = screenSize.height / 2;
 
-        LOGGER.info("Start co-ordinates- X axis: " + startX + " & Y axis: " + startY + ", End co-ordinates- X axis: " + endX + " & Y axis: " + endY);
+        LOGGER.info("Start co-ordinates- X axis: " + startX + " & Y axis: " + startY + ", End co-ordinates- X axis: "
+                + endX + " & Y axis: " + endY);
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence flick = new Sequence(finger, 0);
         flick.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), startX, startY));
@@ -644,40 +727,46 @@ public class Driver {
     public void horizontalSwipeWithGesture(WebElement element, Direction direction) {
         RemoteWebElement remoteWebElement = (RemoteWebElement) element;
         if ((direction.equals(Direction.LEFT)) || direction.equals(Direction.RIGHT)) {
-            ((JavascriptExecutor) driver).executeScript("mobile: swipeGesture", Map.of("elementId", remoteWebElement.getId(), "direction", direction.toString(), "percent", 1, "speed", 80));
+            ((JavascriptExecutor) driver).executeScript("mobile: swipeGesture", Map.of("elementId",
+                    remoteWebElement.getId(), "direction", direction.toString(), "percent", 1, "speed", 80));
         } else {
             throw new InvalidTestDataException("Invalid Direction");
         }
     }
 
-    private Sequence fingerAction(String fingerName, Point locus, int startRadius, int endRadius, double angle, Duration duration) {
+    private Sequence fingerAction(String fingerName, Point locus, int startRadius, int endRadius, double angle,
+            Duration duration) {
 
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, fingerName);
         Sequence fingerPath = new Sequence(finger, 0);
 
-        int fingerStartXPoint = (int) Math.floor(locus.x + startRadius * Math.cos(angle)); //converting from polar coordinates to cartesian
+        int fingerStartXPoint = (int) Math.floor(locus.x + startRadius * Math.cos(angle)); // converting from polar
+                                                                                           // coordinates to cartesian
         int fingerStartYPoint = (int) Math.floor(locus.y - startRadius * Math.sin(angle));
 
         int fingerEndXPoint = (int) Math.floor(locus.x + endRadius * Math.cos(angle));
         int fingerEndYPoint = (int) Math.floor(locus.y - endRadius * Math.sin(angle));
 
         LOGGER.debug("fingerStartXPoint: %d, fingerStartYPoint: %d \nfingerEndXPoint: %d, fingerEndYPoint: %d"
-                             .formatted(fingerStartXPoint, fingerStartYPoint, fingerEndXPoint, fingerEndYPoint));
+                .formatted(fingerStartXPoint, fingerStartYPoint, fingerEndXPoint, fingerEndYPoint));
         fingerPath
-                .addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), fingerStartXPoint, fingerStartYPoint))
+                .addAction(finger.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), fingerStartXPoint,
+                        fingerStartYPoint))
                 .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
                 .addAction(new Pause(finger, Duration.ofMillis(10)))
-                .addAction(finger.createPointerMove(duration, PointerInput.Origin.viewport(), fingerEndXPoint, fingerEndYPoint))
+                .addAction(finger.createPointerMove(duration, PointerInput.Origin.viewport(), fingerEndXPoint,
+                        fingerEndYPoint))
                 .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         return fingerPath;
     }
 
-    private Collection<Sequence> pinchAndZoom(Point locus, int startRadius, int endRadius, int pinchAngle, Duration duration) {
+    private Collection<Sequence> pinchAndZoom(Point locus, int startRadius, int endRadius, int pinchAngle,
+            Duration duration) {
 
         double angle = Math.PI / 2 - (2 * Math.PI / 360 * pinchAngle); // convert degree angle into radians
         LOGGER.debug("Locus: %s, startRadius: %d, endRadius: %d, pinchAngle: %d, duration: %s"
-                             .formatted(locus, startRadius, endRadius, pinchAngle, duration));
+                .formatted(locus, startRadius, endRadius, pinchAngle, duration));
 
         Sequence finger1Path = fingerAction("finger1", locus, startRadius, endRadius, angle, duration);
 
@@ -729,7 +818,8 @@ public class Driver {
 
         int xCoordinate_secondElement = (screenSize.width - 40) / 2;
         int yCoordinate_secondElement = SecondElement.getLocation().y;
-        multiTouch(xCoordinate_firstElement, yCoordinate_firstElement, xCoordinate_secondElement, yCoordinate_secondElement);
+        multiTouch(xCoordinate_firstElement, yCoordinate_firstElement, xCoordinate_secondElement,
+                yCoordinate_secondElement);
     }
 
     private void multiTouch(int x_element1, int y_element1, int x_element2, int y_element2) {
@@ -742,15 +832,18 @@ public class Driver {
         Sequence multiTouchAction = new Sequence(finger1, 1);
         Sequence multiTouchAction2 = new Sequence(finger2, 1);
 
-        LOGGER.info("Performing tap action simultaneously on elements present at co-ordinates X1: %d Y1: %d and X2: %d Y2: %d"
-                            .formatted(x_element1, y_element1, x_element2, y_element2));
+        LOGGER.info(
+                "Performing tap action simultaneously on elements present at co-ordinates X1: %d Y1: %d and X2: %d Y2: %d"
+                        .formatted(x_element1, y_element1, x_element2, y_element2));
         multiTouchAction
-                .addAction(finger1.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x_element1, y_element1))
+                .addAction(finger1.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x_element1,
+                        y_element1))
                 .addAction(finger1.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
                 .addAction(finger1.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
         multiTouchAction2
-                .addAction(finger2.createPointerMove(Duration.ofMillis(1), PointerInput.Origin.viewport(), x_element2, y_element2))
+                .addAction(finger2.createPointerMove(Duration.ofMillis(1), PointerInput.Origin.viewport(), x_element2,
+                        y_element2))
                 .addAction(finger2.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
                 .addAction(finger2.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
 
@@ -775,7 +868,8 @@ public class Driver {
     }
 
     public boolean waitTillElementIsInvisible(By elementId, int numberOfSecondsToWait) {
-        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait)).until(ExpectedConditions.invisibilityOfElementLocated(elementId)));
+        return (new WebDriverWait(driver, Duration.ofSeconds(numberOfSecondsToWait))
+                .until(ExpectedConditions.invisibilityOfElementLocated(elementId)));
     }
 
     public boolean isElementDisplayed(By locator) {
@@ -783,12 +877,21 @@ public class Driver {
         return !elementList.isEmpty() && elementList.get(0).isDisplayed();
     }
 
+    public boolean isElementDisplayed(WebElement element) {
+        try {
+            return element.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public String getClipboardText() {
         return switch (Runner.getPlatform()) {
             case android -> ((AndroidDriver) driver).getClipboardText();
             case iOS -> ((IOSDriver) driver).getClipboardText();
             default ->
-                    throw new NotImplementedException("getClipboardText method is not implemented for " + Runner.getPlatform());
+                throw new NotImplementedException(
+                        "getClipboardText method is not implemented for " + Runner.getPlatform());
         };
     }
 
@@ -801,7 +904,7 @@ public class Driver {
                         "setClipboardText method is not implemented for " + Runner.getPlatform());
         }
     }
-    
+
     public WebElement click(By elementId) {
         WebElement element = waitForClickabilityOf(elementId);
         element.click();
