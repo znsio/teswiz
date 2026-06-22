@@ -1,24 +1,30 @@
 package com.znsio.teswiz.runner;
 
-import com.google.common.collect.ImmutableMap;
-import com.znsio.teswiz.context.TestExecutionContext;
-import com.znsio.teswiz.entities.Direction;
-import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.exceptions.FileNotUploadedException;
-import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import io.appium.java_client.AppiumBy;
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.HidesKeyboard;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.HasNotifications;
-import io.appium.java_client.android.StartsActivity;
-import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.remote.SupportsContextSwitching;
+import java.io.File;
+import java.io.IOException;
+import java.time.Duration;
+import static java.time.Duration.ofMillis;
+import static java.time.Duration.ofSeconds;
+import java.util.Arrays;
+import static java.util.Arrays.asList;
+import java.util.Collection;
+import java.util.Collections;
+import static java.util.Collections.singletonList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
@@ -27,16 +33,22 @@ import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.Duration;
-import java.util.*;
-
+import com.google.common.collect.ImmutableMap;
+import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.entities.Direction;
+import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.exceptions.FileNotUploadedException;
+import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import static com.znsio.teswiz.tools.Wait.waitFor;
-import static java.time.Duration.ofMillis;
-import static java.time.Duration.ofSeconds;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
+
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.HidesKeyboard;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.HasNotifications;
+import io.appium.java_client.android.StartsActivity;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.SupportsContextSwitching;
 
 public class Driver {
     public static final String WEB_DRIVER = "WebDriver";
@@ -785,7 +797,87 @@ public class Driver {
             case android -> ((AndroidDriver) driver).setClipboardText(text);
             case iOS -> ((IOSDriver) driver).setClipboardText(text);
             default ->
-                    throw new NotImplementedException("setClipboardText method is not implemented for " + Runner.getPlatform());
+                throw new NotImplementedException(
+                        "setClipboardText method is not implemented for " + Runner.getPlatform());
+        }
+    }
+    
+    public WebElement click(By elementId) {
+        WebElement element = waitForClickabilityOf(elementId);
+        element.click();
+        return element;
+    }
+
+    public WebElement click(By elementId, int numberOfSecondsToWait) {
+        WebElement element = waitForClickabilityOf(elementId, numberOfSecondsToWait);
+        element.click();
+        return element;
+    }
+
+    public boolean switchToWebViewContextSafely() {
+        try {
+            setWebViewContext();
+            return true;
+        } catch (RuntimeException e) {
+            if (driverForPlatform == Platform.android) {
+                throw e;
+            }
+            LOGGER.warn("Best-effort web view context switch failed on {}: {}",
+                    driverForPlatform, e.getMessage());
+            return false;
+        }
+    }
+
+    public void switchToNativeContextSafely() {
+        try {
+            setNativeAppContext();
+        } catch (RuntimeException e) {
+            if (driverForPlatform == Platform.android) {
+                throw e;
+            }
+            LOGGER.warn("Best-effort native context switch failed on {}: {}",
+                    driverForPlatform, e.getMessage());
+        }
+    }
+
+    public void clickAndWaitForElement(By elementToClick, By elementToWaitFor) {
+        clickAndWaitForElement(elementToClick, elementToWaitFor, 3, 10);
+    }
+
+    public void clickAndWaitForElement(By elementToClick, By elementToWaitFor,
+            int maxAttempts, int timeoutPerAttemptInSeconds) {
+        RuntimeException lastFailure = null;
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                waitForClickabilityOf(elementToClick, timeoutPerAttemptInSeconds).click();
+                waitTillElementIsPresent(elementToWaitFor, timeoutPerAttemptInSeconds);
+                return;
+            } catch (RuntimeException e) {
+                lastFailure = e;
+                waitFor(1);
+            }
+        }
+        throw new RuntimeException(
+                "Unable to click '" + elementToClick + "' and reach '" + elementToWaitFor + "'",
+                lastFailure);
+    }
+
+    public void clickWithFallbackAndWaitForDisappearance(By primary, By fallback,
+            By elementToDisappear,
+            int timeoutInSeconds) {
+        waitTillElementIsPresent(elementToDisappear, timeoutInSeconds);
+        try {
+            waitForClickabilityOf(primary, timeoutInSeconds).click();
+            waitTillElementIsInvisible(elementToDisappear, timeoutInSeconds);
+            return;
+        } catch (RuntimeException ignored) {
+            // primary may not be hit-testable; fall through to the secondary control
+        }
+        try {
+            waitForClickabilityOf(fallback, timeoutInSeconds).click();
+            waitTillElementIsInvisible(elementToDisappear, timeoutInSeconds);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Unable to dismiss dialog: " + elementToDisappear, e);
         }
     }
 }
