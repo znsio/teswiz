@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.0.24
+
+### Driver enhancements
+
+- Enhanced click methods and context switching functionality in the driver.
+
+### Build and dependency updates
+
+- Updated `appium-xcuitest-driver` to version `11.13.0`.
+- Updated Gradle to `9.6.0`.
+- Updated all Java dependencies.
+- Updated GitHub Actions to v7.
+- Refreshed npm/node packages.
+
 ## v1.0.23
 
 ### Build and dependency updates
