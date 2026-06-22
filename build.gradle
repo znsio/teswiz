@@ -15,7 +15,7 @@ plugins {
     id "io.freefair.aspectj.post-compile-weaving" version "9.5.0"
 }
 
-def teswizVersion = "1.0.24"
+def teswizVersion = "1.0.25"
 def aspectJVersion = "1.9.25.1"
 def jadbVersion = "1.3.0"
 
@@ -335,7 +335,7 @@ tasks.register('run', JavaExec) {
         println "Using LOG_DIR: ${logDir}"
         System.setProperty "LOG_DIR", "${logDir}"
         environment "APPLITOOLS_LOG_DIR", "${logDir}/applitools_logs"
-        environment "APPLITOOLS_API_KEY", System.getenv("TESWIZ_APPLITOOLS_API_KEY")
+        environment "APPLITOOLS_API_KEY", System.getenv("APPLITOOLS_API_KEY")
 
         def hostname = InetAddress.getLocalHost().getHostName()
         println "Hostname: $hostname"

@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.0.25
+
+### Runner
+
+- Auto-include the `com.znsio.teswiz.steps` package as a second `--glue` entry so reusable built-in steps (`FigmaSteps`, `CommonSteps`, etc.) are discoverable in consuming projects without extra glue configuration.
+
+### Driver enhancements
+
+- Added a maximum scroll attempts limit and improved element visibility checks.
+
+### Figma and Applitools
+
+- Added the missing step to navigate to the application page in the Figma design scenario.
+- Updated UFG device emulation to iPhone 15 Pro in the UFG configuration.
+- Removed unused driver imports and driver creation call in the Figma step.
+
 ## v1.0.24
 
 ### Driver enhancements
