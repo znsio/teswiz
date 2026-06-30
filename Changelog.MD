@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Driver enhancements
+
+- Added a reusable page source dump helper that writes `dom-dump-<index>.html` for web and `hierarchy-dump-<index>.xml` for Android/iOS into the active scenario log directory.
+- Added per-scenario dump indexing so repeated calls create sequential files that reset with each scenario.
+
+### Tests
+
+- Updated the TheApp invalid-login scenario to execute the second login attempt again so the web flow covers the reusable invalid-login path.
+
 ## v1.0.25
 
 ### Runner

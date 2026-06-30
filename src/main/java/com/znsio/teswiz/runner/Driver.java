@@ -2,6 +2,9 @@ package com.znsio.teswiz.runner;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import static java.time.Duration.ofMillis;
 import static java.time.Duration.ofSeconds;
@@ -34,9 +37,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.common.collect.ImmutableMap;
+import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Direction;
 import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.FileNotUploadedException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import static com.znsio.teswiz.tools.Wait.waitFor;
@@ -353,13 +358,16 @@ public class Driver {
     }
 
     public void putAppInBackgroundFor(int numberOfSeconds) {
-        if (Runner.getPlatform() == Platform.android) {
-            ((AndroidDriver) driver).runAppInBackground(Duration.ofSeconds(numberOfSeconds));
-        } else if (Runner.getPlatform() == Platform.iOS) {
-            ((IOSDriver) driver).runAppInBackground(Duration.ofSeconds(numberOfSeconds));
-        } else {
-            throw new NotImplementedException(
-                    "putAppInBackgroundFor method is not implemented for " + Runner.getPlatform());
+        switch (Runner.getPlatform()) {
+            case android:
+                ((AndroidDriver) driver).runAppInBackground(Duration.ofSeconds(numberOfSeconds));
+                break;
+            case iOS:
+                ((IOSDriver) driver).runAppInBackground(Duration.ofSeconds(numberOfSeconds));
+                break;
+            default:
+                throw new NotImplementedException(
+                        "putAppInBackgroundFor method is not implemented for " + Runner.getPlatform());
         }
     }
 
@@ -374,6 +382,45 @@ public class Driver {
 
     public WebDriver getInnerDriver() {
         return driver;
+    }
+
+    public Path printAndSavePageSourceDump() {
+        String pageSource = capturePageSource();
+        int dumpIndex = getNextPageSourceDumpIndex();
+        Path outputFile = resolvePageSourceDumpPath(dumpIndex);
+
+        try {
+            Files.createDirectories(outputFile.getParent());
+            Files.writeString(outputFile, pageSource, StandardCharsets.UTF_8);
+            LOGGER.info("Saved page source dump to: {}", outputFile.toAbsolutePath());
+            return outputFile;
+        } catch (IOException e) {
+            throw new RuntimeException("Could not save page source dump to: " + outputFile.toAbsolutePath(), e);
+        }
+    }
+
+    private String capturePageSource() {
+        return driver.getPageSource();
+    }
+
+    private int getNextPageSourceDumpIndex() {
+        TestExecutionContext context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
+        Integer currentIndex = (Integer) context.getTestState(TEST_CONTEXT.PAGE_SOURCE_DUMP_INDEX);
+        int nextIndex = currentIndex == null ? 1 : currentIndex + 1;
+        context.addTestState(TEST_CONTEXT.PAGE_SOURCE_DUMP_INDEX, nextIndex);
+        return nextIndex;
+    }
+
+    private Path resolvePageSourceDumpPath(int dumpIndex) {
+        TestExecutionContext context = SessionContext.getTestExecutionContext(Thread.currentThread().getId());
+        String scenarioLogDirectory = context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+        if (scenarioLogDirectory == null || scenarioLogDirectory.isBlank()) {
+            throw new IllegalStateException("Scenario log directory is unavailable for page source dump");
+        }
+        String dumpFileName = (driverForPlatform == Platform.android || driverForPlatform == Platform.iOS)
+                ? "hierarchy-dump-" + dumpIndex + ".xml"
+                : "dom-dump-" + dumpIndex + ".html";
+        return Path.of(scenarioLogDirectory, dumpFileName);
     }
 
     public String getType() {
@@ -852,14 +899,17 @@ public class Driver {
 
     public void relaunchApp() {
         String appPackageName = Runner.getAppPackageName();
-        if (Runner.getPlatform().equals(Platform.android)) {
-            ((AndroidDriver) driver).terminateApp(appPackageName);
-            ((AndroidDriver) driver).activateApp(appPackageName);
-        } else if (Runner.getPlatform().equals(Platform.iOS)) {
-            ((IOSDriver) driver).terminateApp(appPackageName);
-            ((IOSDriver) driver).activateApp(appPackageName);
-        } else {
-            throw new NotImplementedException("relaunchApp method is not implemented for " + Runner.getPlatform());
+        switch (Runner.getPlatform()) {
+            case android:
+                ((AndroidDriver) driver).terminateApp(appPackageName);
+                ((AndroidDriver) driver).activateApp(appPackageName);
+                break;
+            case iOS:
+                ((IOSDriver) driver).terminateApp(appPackageName);
+                ((IOSDriver) driver).activateApp(appPackageName);
+                break;
+            default:
+                throw new NotImplementedException("relaunchApp method is not implemented for " + Runner.getPlatform());
         }
     }
 

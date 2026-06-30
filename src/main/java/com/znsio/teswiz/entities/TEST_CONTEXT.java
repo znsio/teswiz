@@ -13,6 +13,7 @@ public class TEST_CONTEXT {
     public static final String SCENARIO_LOG_DIRECTORY = "scenarioDirectory";
     public static final String EXAMPLE_RUN_COUNT = "scenarioRunCount";
     public static final String SCREENSHOT_DIRECTORY = "scenarioScreenshotsDirectory";
+    public static final String PAGE_SOURCE_DUMP_INDEX = "pageSourceDumpIndex";
     public static final String SCREENSHOT_MANAGER = "screenShotManager";
     public static final String SOFT_ASSERTIONS = "softAssertions";
     public static final String WEB_BROWSER_ON = "webBrowserOn";
