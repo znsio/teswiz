@@ -1,11 +1,12 @@
 # Changelog
 
-## Unreleased
+## v1.0.26
 
 ### Driver enhancements
 
 - Added a reusable page source dump helper that writes `dom-dump-<index>.html` for web and `hierarchy-dump-<index>.xml` for Android/iOS into the active scenario log directory.
 - Added per-scenario dump indexing so repeated calls create sequential files that reset with each scenario.
+- Reorganized driver import statements for clarity.
 
 ### Tests
 
