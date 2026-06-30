@@ -4,9 +4,31 @@
     "@appium/relaxed-caps-plugin": "2.2.4",
     "appium": "3.5.2",
     "appium-device-farm": "11.3.2",
-    "appium-uiautomator2-driver": "7.6.2",
-    "appium-xcuitest-driver": "11.15.0",
+    "appium-uiautomator2-driver": "8.0.0",
+    "appium-xcuitest-driver": "11.16.3",
     "go-ios": "1.2.0"
+  },
+  "overrides": {
+    "@xmldom/xmldom": "0.9.10",
+    "axios": "1.18.1",
+    "fast-uri": "3.1.2",
+    "form-data": "4.0.6",
+    "http-proxy-middleware": "3.0.7",
+    "lodash": "4.18.1",
+    "glob": "10.5.0",
+    "ip": "2.0.1",
+    "minimatch": "10.2.5",
+    "multer": "2.2.0",
+    "node-forge": "1.4.0",
+    "path-to-regexp": "0.1.13",
+    "picomatch": "4.0.4",
+    "request": {
+      "form-data": "2.5.6"
+    },
+    "serialize-javascript": "7.0.3",
+    "shell-quote": "1.8.4",
+    "tar": "7.5.11",
+    "tmp": "0.2.7"
   },
   "name": "teswiz",
   "description": "[![0.0.3](https://jitpack.io/v/znsio/teswiz.svg)](https://jitpack.io/#znsio/teswiz) [![0.0.3](https://jitci.com/gh/znsio/teswiz/svg)](https://jitci.com/gh/znsio/teswiz) [![CI](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml) [![CodeQL](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/codeql-analysis.yml)",
