@@ -1,18 +1,20 @@
 package com.znsio.teswiz.runner;
 
+import static com.znsio.teswiz.tools.Wait.waitFor;
+import static java.time.Duration.ofMillis;
+import static java.time.Duration.ofSeconds;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import static java.time.Duration.ofMillis;
-import static java.time.Duration.ofSeconds;
 import java.util.Arrays;
-import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.Collections;
-import static java.util.Collections.singletonList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +46,6 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.FileNotUploadedException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import static com.znsio.teswiz.tools.Wait.waitFor;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
