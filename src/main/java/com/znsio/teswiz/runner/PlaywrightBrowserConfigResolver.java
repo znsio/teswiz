@@ -11,11 +11,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 
 class PlaywrightBrowserConfigResolver {
     PlaywrightBrowserConfig resolve(String browserName, TestExecutionContext context) {
         JSONObject browserConfig = BrowserConfigLoader.load(context);
+        maybeRegisterMigrationArtifact(context, browserConfig);
         String browserKey = browserName.toLowerCase();
         if (!browserConfig.has(browserKey)) {
             throw new InvalidTestDataException(
@@ -77,6 +79,15 @@ class PlaywrightBrowserConfigResolver {
 
         return new PlaywrightBrowserConfig(browserName, headless, launchArgs, channel, executablePath,
                 contextOptions, launchOptions);
+    }
+
+    private void maybeRegisterMigrationArtifact(TestExecutionContext context, JSONObject browserConfig) {
+        String sourceConfigPath = context.getTestStateAsString(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST);
+        if (null == sourceConfigPath || sourceConfigPath.isBlank()) {
+            sourceConfigPath = Runner.getBrowserConfigFile();
+        }
+        PlaywrightBrowserConfigMigrationReporter.registerMigrationArtifact(context, sourceConfigPath, browserConfig,
+                new PlaywrightBrowserConfigMigrator());
     }
 
     private void addNormalizedArguments(JSONArray arguments, List<String> launchArgs) {

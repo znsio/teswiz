@@ -103,6 +103,8 @@ An optional Playwright-specific override block can be added under a browser entr
 }
 ```
 
+When `WEB_ENGINE=playwright-ts` is used with a legacy browser config that does not yet have Playwright blocks, teswiz also generates a Playwright-ready recommended config in the current reports directory and prints a visible end-of-execution message with the generated file path and replacement guidance. The source config is not modified automatically.
+
 # Overriding the BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE for Web execution
 The BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE once set, cannot be changed for the test execution.
 However, there may be reasons when you need to use a different BASE_URL_FOR_WEB or a different BROWSER_CONFIG_FILE for specific tests.
