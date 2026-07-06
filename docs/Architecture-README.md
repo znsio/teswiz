@@ -66,6 +66,15 @@ Current examples:
 * `LambdaTestWebExecutionProvider`
 * `HeadSpinWebExecutionProvider`
 
+### `com.znsio.teswiz.web.provider.selenium`
+
+Owns Selenium-specific cloud capability setup extracted from `runner` so provider-specific web capability building can evolve without bloating orchestration classes.
+
+Current examples:
+
+* `BrowserStackWebCapabilitySetup`
+* `LambdaTestWebCapabilitySetup`
+
 ### `com.znsio.teswiz.web.playwright`
 
 Owns the Playwright TS worker bridge and Selenium-compatible driver facade used internally by teswiz.
@@ -106,6 +115,7 @@ When adding new code for the dual-engine architecture:
 * keep `runner` focused on stable orchestration-facing APIs
 * prefer engine-specific code under `web.playwright`
 * prefer provider-specific web execution code under `web.provider`
+* prefer Selenium web cloud capability setup under `web.provider.selenium`
 * prefer reporting adaptation code under `reporting`
 * prefer browser-config evolution code under `config.browser`
 * prefer visual-engine adaptation code under `visual`

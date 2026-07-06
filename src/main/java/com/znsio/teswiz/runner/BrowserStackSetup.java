@@ -28,6 +28,7 @@ import com.znsio.teswiz.tools.Randomizer;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
+import com.znsio.teswiz.web.provider.selenium.BrowserStackWebCapabilitySetup;
 
 class BrowserStackSetup {
     private static final Logger LOGGER = LogManager.getLogger(BrowserStackSetup.class.getName());
@@ -106,38 +107,20 @@ class BrowserStackSetup {
     }
 
     static MutableCapabilities updateBrowserStackCapabilities(MutableCapabilities capabilities) {
-
-        String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
-        String platformName = Platform.web.name();
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
-
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
-        Map<String, Object> loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-
-        String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "")
-                                     .replace("\\", "");
-
-        capabilities.setCapability("browserName", loadedPlatformCapability.get("browserName"));
-
-        Map<String, Object> browserstackOptions = getBrowserStackOptionsForWeb(
-                loadedPlatformCapability);
-        browserstackOptions.put("projectName", Setup.getFromConfigs(Setup.APP_NAME));
-        browserstackOptions.put("buildName",
-                                Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir);
-
-        browserstackOptions.put("sessionName", getSessionName());
-        if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
-            LOGGER.info(String.format(
-                    "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using " + "identified: '%s'",
-                    BROWSERSTACK_LOCAL_IDENTIFIER));
-            startBrowserStackLocal(authenticationKey, BROWSERSTACK_LOCAL_IDENTIFIER);
-            browserstackOptions.put(ACCEPT_INSECURE_CERTS, "true");
-            browserstackOptions.put("local", "true");
-            browserstackOptions.put("localIdentifier", BROWSERSTACK_LOCAL_IDENTIFIER);
-        }
-        capabilities.setCapability(BSTACK_OPTIONS_CAPABILITY, browserstackOptions);
-
-        return capabilities;
+        Map<String, Object> loadedPlatformCapability = loadedCapabilityFile.get(Platform.web.name());
+        return BrowserStackWebCapabilitySetup.updateBrowserStackCapabilities(
+                capabilities,
+                loadedPlatformCapability,
+                Setup.getFromConfigs(Setup.APP_NAME),
+                Setup.getFromConfigs(Setup.LAUNCH_NAME),
+                Setup.getFromConfigs(Setup.LOG_DIR),
+                getSessionName(),
+                Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING),
+                Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_PROXY),
+                Setup.getFromConfigs(Setup.PROXY_URL),
+                Setup.getFromConfigs(Setup.CLOUD_KEY));
     }
 
     private static String getSessionName() {
@@ -150,20 +133,6 @@ class BrowserStackSetup {
                     fallbackSessionName));
             return fallbackSessionName;
         }
-    }
-
-    private static Map<String, Object> getBrowserStackOptionsForWeb(
-            Map<String, Object> loadedPlatformCapability) {
-        Object browserstackOptionsRaw = loadedPlatformCapability.get(
-                BROWSERSTACK_OPTIONS_CAPABILITY);
-        if (browserstackOptionsRaw instanceof Map) {
-            return (Map<String, Object>) browserstackOptionsRaw;
-        }
-        Object bstackOptionsRaw = loadedPlatformCapability.get(BSTACK_OPTIONS_CAPABILITY);
-        if (bstackOptionsRaw instanceof Map) {
-            return (Map<String, Object>) bstackOptionsRaw;
-        }
-        return new HashMap<>();
     }
 
     private static void migrateLegacyBrowserStackOptions(Map<String, Object> loadedPlatformCapability,

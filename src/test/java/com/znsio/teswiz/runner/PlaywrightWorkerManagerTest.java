@@ -19,6 +19,8 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.web.WebEngine;
+import com.znsio.teswiz.web.provider.LocalWebExecutionProvider;
+import com.znsio.teswiz.web.provider.WebExecutionProvider;
 import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
@@ -35,7 +37,7 @@ class PlaywrightWorkerManagerTest {
         TestExecutionContext context = new TestExecutionContext("playwright-worker-manager");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                new StubPlaywrightBrowserConfigResolver(), new WebExecutionProviderResolver());
+                new StubPlaywrightBrowserConfigResolver(), new StubWebExecutionProviderResolver());
 
         PlaywrightWorkerClient firstClient = manager.getOrStart(context);
         PlaywrightWorkerClient secondClient = manager.getOrStart(context);
@@ -51,7 +53,7 @@ class PlaywrightWorkerManagerTest {
         context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, "/tmp/playwright-session-handle");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                new StubPlaywrightBrowserConfigResolver(), new WebExecutionProviderResolver());
+                new StubPlaywrightBrowserConfigResolver(), new StubWebExecutionProviderResolver());
 
         SessionHandle sessionHandle = manager.createSessionHandle("buyer", "chrome", Platform.web, context);
 
@@ -75,7 +77,7 @@ class PlaywrightWorkerManagerTest {
         TestExecutionContext context = new TestExecutionContext("playwright-shutdown");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                new StubPlaywrightBrowserConfigResolver(), new WebExecutionProviderResolver());
+                new StubPlaywrightBrowserConfigResolver(), new StubWebExecutionProviderResolver());
 
         manager.getOrStart(context);
         manager.shutdown(context);
@@ -149,6 +151,13 @@ class PlaywrightWorkerManagerTest {
         public PlaywrightBrowserConfig resolve(String browserName, TestExecutionContext context) {
             return new PlaywrightBrowserConfig(browserName, true, List.of("--disable-gpu"), null, null,
                     Map.of("ignoreHTTPSErrors", true), Map.of());
+        }
+    }
+
+    private static class StubWebExecutionProviderResolver extends WebExecutionProviderResolver {
+        @Override
+        public WebExecutionProvider resolve() {
+            return new LocalWebExecutionProvider();
         }
     }
 }

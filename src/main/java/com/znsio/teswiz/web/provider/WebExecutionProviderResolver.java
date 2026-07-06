@@ -2,7 +2,7 @@ package com.znsio.teswiz.web.provider;
 
 import com.znsio.teswiz.runner.Runner;
 
-public final class WebExecutionProviderResolver {
+public class WebExecutionProviderResolver {
     public WebExecutionProvider resolve() {
         return resolve(Runner.getCloudName());
     }

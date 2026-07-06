@@ -16,6 +16,7 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
+import com.znsio.teswiz.web.provider.selenium.LambdaTestWebCapabilitySetup;
 
 class LambdaTestSetup {
     private static final Logger LOGGER = LogManager.getLogger(LambdaTestSetup.class.getName());
@@ -62,70 +63,19 @@ class LambdaTestSetup {
     }
 
     static MutableCapabilities updateLambdaTestCapabilities(MutableCapabilities capabilities) {
-        String platformName = Platform.web.name();
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
-        String authenticationUser = Setup.getFromConfigs(Setup.CLOUD_USERNAME);
-        String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
-
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
-        Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        String subsetOfLogDir = Setup.getFromConfigs(Setup.LOG_DIR).replace("/", "").replace("\\", "");
-        String buildName = Setup.getFromConfigs(Setup.LAUNCH_NAME) + "-" + subsetOfLogDir;
-        String sessionName = Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestName();
-
-        // Keep only W3C-valid top-level keys.
-        setCapabilityIfPresent(capabilities, "browserName", loadedPlatformCapability, "browserName",
-                "browser");
-        Object browserVersion = getValueFrom(loadedPlatformCapability, "browserVersion", "version",
-                "browser_version");
-        if (browserVersion != null) {
-            capabilities.setCapability("browserVersion", browserVersion);
-        }
-
-        Object platformValue = getValueFrom(loadedPlatformCapability, "platformName", "platform");
-        if (platformValue == null) {
-            Object os = loadedPlatformCapability.get("os");
-            Object osVersion = loadedPlatformCapability.get("os_version");
-            if (os != null && osVersion != null) {
-                platformValue = os + " " + osVersion;
-            }
-        }
-        if (platformValue != null) {
-            capabilities.setCapability("platformName", platformValue);
-        }
-
-        // Put LambdaTest-specific keys under LT:Options to satisfy W3C capability validation.
-        Map<String, Object> ltOptions = new HashMap<>(getOrCreateWebLtOptions(loadedPlatformCapability));
-        ltOptions.put("username", authenticationUser);
-        ltOptions.put("accessKey", authenticationKey);
-        ltOptions.put("project", Setup.getFromConfigs(Setup.APP_NAME));
-        ltOptions.put("build",
-                getValueFrom(loadedPlatformCapability, "build", "buildName") != null
-                        ? getValueFrom(loadedPlatformCapability, "build", "buildName")
-                        : buildName);
-        ltOptions.put("name",
-                getValueFrom(loadedPlatformCapability, "name", "sessionName") != null
-                        ? getValueFrom(loadedPlatformCapability, "name", "sessionName")
-                        : sessionName);
-        ltOptions.put("w3c", true);
-
-        setOptionIfPresent(ltOptions, "resolution", loadedPlatformCapability, "resolution");
-        setOptionIfPresent(ltOptions, "network", loadedPlatformCapability, "network");
-        setOptionIfPresent(ltOptions, "appProfiling", loadedPlatformCapability, "appProfiling");
-        setOptionIfPresent(ltOptions, "console", loadedPlatformCapability, "console");
-        setOptionIfPresent(ltOptions, "visual", loadedPlatformCapability, "visual");
-        setOptionIfPresent(ltOptions, "tunnel", loadedPlatformCapability, "tunnel");
-        if (browserVersion != null) {
-            ltOptions.putIfAbsent("browserVersion", browserVersion);
-        }
-        if (platformValue != null) {
-            ltOptions.putIfAbsent("platformName", platformValue);
-        }
-        if (Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
-            ltOptions.put("tunnel", true);
-        }
-        capabilities.setCapability(LT_OPTIONS, ltOptions);
-        return capabilities;
+        Map loadedPlatformCapability = loadedCapabilityFile.get(Platform.web.name());
+        return LambdaTestWebCapabilitySetup.updateLambdaTestCapabilities(
+                capabilities,
+                loadedPlatformCapability,
+                Setup.getFromConfigs(Setup.CLOUD_USERNAME),
+                Setup.getFromConfigs(Setup.CLOUD_KEY),
+                Setup.getFromConfigs(Setup.APP_NAME),
+                Setup.getFromConfigs(Setup.LAUNCH_NAME),
+                Setup.getFromConfigs(Setup.LOG_DIR),
+                Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestName(),
+                Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING));
     }
 
     private static void normalizeMobileCapabilitiesForLambdaTest(Map loadedPlatformCapability) {
@@ -153,24 +103,6 @@ class LambdaTestSetup {
         Map<String, Object> ltOptions = new HashMap<>();
         loadedPlatformCapability.put(LT_OPTIONS_APPIUM, ltOptions);
         return ltOptions;
-    }
-
-    private static Map<String, Object> getOrCreateWebLtOptions(Map loadedPlatformCapability) {
-        Object existing = loadedPlatformCapability.get(LT_OPTIONS);
-        if (existing instanceof Map) {
-            return (Map<String, Object>) existing;
-        }
-
-        existing = loadedPlatformCapability.get("ltOptions");
-        if (existing instanceof Map) {
-            return (Map<String, Object>) existing;
-        }
-
-        existing = loadedPlatformCapability.get(LT_OPTIONS_APPIUM);
-        if (existing instanceof Map) {
-            return (Map<String, Object>) existing;
-        }
-        return new HashMap<>();
     }
 
     private static void addAppOrBrowserNameToLambdaTestCapabilities(String apiUrl,
@@ -239,35 +171,6 @@ class LambdaTestSetup {
         }
         throw new InvalidTestDataException(String.format("Unable to upload app '%s' to LambdaTest. Response: %s",
                 appPath, uploadResponse.getStdOut()));
-    }
-
-    private static void setCapabilityIfPresent(MutableCapabilities capabilities,
-            String capabilityName,
-            Map loadedPlatformCapability,
-            String... sourceKeys) {
-        Object value = getValueFrom(loadedPlatformCapability, sourceKeys);
-        if (value != null) {
-            capabilities.setCapability(capabilityName, value);
-        }
-    }
-
-    private static Object getValueFrom(Map loadedPlatformCapability, String... sourceKeys) {
-        for (String sourceKey : sourceKeys) {
-            if (loadedPlatformCapability.containsKey(sourceKey)) {
-                return loadedPlatformCapability.get(sourceKey);
-            }
-        }
-        return null;
-    }
-
-    private static void setOptionIfPresent(Map<String, Object> options,
-            String optionName,
-            Map loadedPlatformCapability,
-            String... sourceKeys) {
-        Object value = getValueFrom(loadedPlatformCapability, sourceKeys);
-        if (value != null) {
-            options.put(optionName, value);
-        }
     }
 
     private static ArrayList getExistingCloudDevices(Map<String, Map> loadedCapabilityFile) {

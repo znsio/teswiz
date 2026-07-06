@@ -86,6 +86,8 @@ The dual-engine web support added for Playwright TS is intentionally organized b
   * shared web engine concepts such as `WebEngine`
 * `com.znsio.teswiz.web.provider`
   * provider-aware web session adapters for local and cloud execution metadata
+* `com.znsio.teswiz.web.provider.selenium`
+  * Selenium-specific cloud capability builders extracted from `runner` with compatibility delegates preserved
 * `com.znsio.teswiz.web.playwright`
   * Playwright TS worker bridge, driver, and session internals
 * `com.znsio.teswiz.reporting`
