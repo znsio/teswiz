@@ -14,19 +14,23 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.web.WebEngine;
+import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
 
 public final class PlaywrightWorkerManager {
     private final PlaywrightWorkerClientFactory clientFactory;
     private final PlaywrightBrowserConfigResolver browserConfigResolver;
+    private final WebExecutionProviderResolver providerResolver;
 
     public PlaywrightWorkerManager() {
-        this(PlaywrightWorkerClient::new, new PlaywrightBrowserConfigResolver());
+        this(PlaywrightWorkerClient::new, new PlaywrightBrowserConfigResolver(), new WebExecutionProviderResolver());
     }
 
     public PlaywrightWorkerManager(PlaywrightWorkerClientFactory clientFactory,
-            PlaywrightBrowserConfigResolver browserConfigResolver) {
+            PlaywrightBrowserConfigResolver browserConfigResolver,
+            WebExecutionProviderResolver providerResolver) {
         this.clientFactory = clientFactory;
         this.browserConfigResolver = browserConfigResolver;
+        this.providerResolver = providerResolver;
     }
 
     public PlaywrightWorkerClient getOrStart(TestExecutionContext context) {
@@ -60,6 +64,7 @@ public final class PlaywrightWorkerManager {
         String artifactPath = context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
         Map<String, String> metadata = new LinkedHashMap<>();
         metadata.put("browserName", workerSession.browserName());
+        metadata.put("provider", providerResolver.resolve().name());
         metadata.put("contextId", workerSession.contextId());
         metadata.put("pageId", workerSession.pageId());
         metadata.put("workerSessionId", workerSession.sessionId());

@@ -19,6 +19,7 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.web.WebEngine;
+import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerSession;
@@ -34,7 +35,7 @@ class PlaywrightWorkerManagerTest {
         TestExecutionContext context = new TestExecutionContext("playwright-worker-manager");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                new StubPlaywrightBrowserConfigResolver());
+                new StubPlaywrightBrowserConfigResolver(), new WebExecutionProviderResolver());
 
         PlaywrightWorkerClient firstClient = manager.getOrStart(context);
         PlaywrightWorkerClient secondClient = manager.getOrStart(context);
@@ -50,7 +51,7 @@ class PlaywrightWorkerManagerTest {
         context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, "/tmp/playwright-session-handle");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                new StubPlaywrightBrowserConfigResolver());
+                new StubPlaywrightBrowserConfigResolver(), new WebExecutionProviderResolver());
 
         SessionHandle sessionHandle = manager.createSessionHandle("buyer", "chrome", Platform.web, context);
 
@@ -60,6 +61,7 @@ class PlaywrightWorkerManagerTest {
         assertThat(sessionHandle.sessionId()).isEqualTo("playwright-session-1");
         assertThat(sessionHandle.artifactPath()).isEqualTo("/tmp/playwright-session-handle");
         assertThat(sessionHandle.metadata()).containsEntry("browserName", "chrome");
+        assertThat(sessionHandle.metadata()).containsEntry("provider", "local");
         assertThat(sessionHandle.metadata()).containsEntry("contextId", "context-1");
         assertThat(sessionHandle.metadata()).containsEntry("pageId", "page-1");
         assertThat(sessionHandle.metadata()).containsEntry("workerSessionId", "playwright-session-1");
@@ -73,7 +75,7 @@ class PlaywrightWorkerManagerTest {
         TestExecutionContext context = new TestExecutionContext("playwright-shutdown");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                new StubPlaywrightBrowserConfigResolver());
+                new StubPlaywrightBrowserConfigResolver(), new WebExecutionProviderResolver());
 
         manager.getOrStart(context);
         manager.shutdown(context);

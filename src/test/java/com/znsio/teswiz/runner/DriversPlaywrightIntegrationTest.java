@@ -49,6 +49,7 @@ class DriversPlaywrightIntegrationTest {
         SessionHandle sessionHandle = Drivers.getSessionHandleForCurrentUser(Thread.currentThread().getId());
         assertThat(sessionHandle.engine()).isEqualTo(WebEngine.PLAYWRIGHT_TS.getConfigValue());
         assertThat(sessionHandle.metadata()).containsEntry("browserName", "chrome");
+        assertThat(sessionHandle.metadata()).containsEntry("provider", "local");
         assertThat(sessionHandle.metadata()).containsKey("contextId");
         assertThat(sessionHandle.metadata()).containsKey("pageId");
         assertThat(sessionHandle.metadata()).containsKey("workerSessionId");

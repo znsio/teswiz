@@ -39,6 +39,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
   - `com.znsio.teswiz.session`
   - `com.znsio.teswiz.config.browser`
   - `com.znsio.teswiz.web`
+  - `com.znsio.teswiz.web.provider`
   - `com.znsio.teswiz.web.playwright`
   - `com.znsio.teswiz.visual`
 - When adding new Playwright, browser-config, session, or visual-helper code, do not place it in `runner` by default.

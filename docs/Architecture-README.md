@@ -53,6 +53,19 @@ Current examples:
 
 * `WebEngine`
 
+### `com.znsio.teswiz.web.provider`
+
+Owns provider-aware web execution behavior such as session naming, status updates, and provider identity for local and cloud runs.
+
+Current examples:
+
+* `WebExecutionProvider`
+* `WebExecutionProviderResolver`
+* `LocalWebExecutionProvider`
+* `BrowserStackWebExecutionProvider`
+* `LambdaTestWebExecutionProvider`
+* `HeadSpinWebExecutionProvider`
+
 ### `com.znsio.teswiz.web.playwright`
 
 Owns the Playwright TS worker bridge and Selenium-compatible driver facade used internally by teswiz.
@@ -91,7 +104,8 @@ When adding new code for the dual-engine architecture:
 
 * do not dump new engine-specific support classes into `runner` by default
 * keep `runner` focused on stable orchestration-facing APIs
-* prefer engine-specific code under `web.playwright` or future engine/provider-specific internal packages
+* prefer engine-specific code under `web.playwright`
+* prefer provider-specific web execution code under `web.provider`
 * prefer reporting adaptation code under `reporting`
 * prefer browser-config evolution code under `config.browser`
 * prefer visual-engine adaptation code under `visual`
