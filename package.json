@@ -55,5 +55,8 @@
     "appium-device-farm"
   ],
   "author": "Anand Bagmar",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "playwright": "^1.61.1"
+  }
 }

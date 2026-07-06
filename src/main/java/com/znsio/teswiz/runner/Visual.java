@@ -465,6 +465,16 @@ public class Visual {
         }
         LOGGER.debug(format("instantiateWebEyes: isVisualTestingEnabled: %s",
                 isVisualTestingEnabled));
+        if (innerDriver instanceof PlaywrightWebDriver) {
+            if (isVisualTestingEnabled) {
+                throw new VisualTestSetupException(
+                        "Visual validation for WEB_ENGINE=playwright-ts is not implemented yet. Use Selenium for visual web runs in the current phase.");
+            }
+            configureEyesRunnerForWeb(false);
+            Eyes disabledEyes = new Eyes(seleniumEyesRunner);
+            disabledEyes.setIsDisabled(true);
+            return disabledEyes;
+        }
         boolean isUFG = getValueFromConfig(APPLITOOLS.USE_UFG, false);
         FigmaApplitoolsConfig figmaApplitoolsConfig = getFigmaApplitoolsConfig(context);
 

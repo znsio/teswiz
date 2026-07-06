@@ -77,6 +77,101 @@ public class PlaywrightWorkerClient implements AutoCloseable {
                 sessionPayload.getString("pageId"));
     }
 
+    public synchronized void navigateTo(String sessionId, String url) {
+        sendCommand("navigateTo", new JSONObject().put("sessionId", sessionId).put("url", url));
+    }
+
+    public synchronized String getCurrentUrl(String sessionId) {
+        return sendCommand("getCurrentUrl", new JSONObject().put("sessionId", sessionId))
+                .payload().getString("url");
+    }
+
+    public synchronized String getTitle(String sessionId) {
+        return sendCommand("getTitle", new JSONObject().put("sessionId", sessionId))
+                .payload().getString("title");
+    }
+
+    public synchronized String getPageSource(String sessionId) {
+        return sendCommand("getPageSource", new JSONObject().put("sessionId", sessionId))
+                .payload().getString("content");
+    }
+
+    public synchronized String captureScreenshot(String sessionId) {
+        return sendCommand("screenshot", new JSONObject().put("sessionId", sessionId))
+                .payload().getString("base64");
+    }
+
+    public synchronized int countElements(String sessionId, PlaywrightLocatorReference locatorReference) {
+        return sendCommand("countElements", new JSONObject().put("sessionId", sessionId)
+                .put("locator", locatorReference.toJson())).payload().getInt("count");
+    }
+
+    public synchronized void click(String sessionId, PlaywrightLocatorReference locatorReference) {
+        sendElementCommand(sessionId, locatorReference, "click", null);
+    }
+
+    public synchronized void type(String sessionId, PlaywrightLocatorReference locatorReference, String value) {
+        sendElementCommand(sessionId, locatorReference, "type", value);
+    }
+
+    public synchronized void clear(String sessionId, PlaywrightLocatorReference locatorReference) {
+        sendElementCommand(sessionId, locatorReference, "clear", null);
+    }
+
+    public synchronized String getText(String sessionId, PlaywrightLocatorReference locatorReference) {
+        return sendElementCommand(sessionId, locatorReference, "getText", null).payload().optString("value");
+    }
+
+    public synchronized String getTagName(String sessionId, PlaywrightLocatorReference locatorReference) {
+        return sendElementCommand(sessionId, locatorReference, "getTagName", null).payload().optString("value");
+    }
+
+    public synchronized String getAttribute(String sessionId, PlaywrightLocatorReference locatorReference,
+            String attributeName) {
+        return sendElementCommand(sessionId, locatorReference, "getAttribute", attributeName)
+                .payload().optString("value", null);
+    }
+
+    public synchronized boolean isVisible(String sessionId, PlaywrightLocatorReference locatorReference) {
+        return sendElementCommand(sessionId, locatorReference, "isVisible", null).payload().getBoolean("value");
+    }
+
+    public synchronized boolean isEnabled(String sessionId, PlaywrightLocatorReference locatorReference) {
+        return sendElementCommand(sessionId, locatorReference, "isEnabled", null).payload().getBoolean("value");
+    }
+
+    public synchronized boolean isSelected(String sessionId, PlaywrightLocatorReference locatorReference) {
+        return sendElementCommand(sessionId, locatorReference, "isSelected", null).payload().getBoolean("value");
+    }
+
+    public synchronized String getCssValue(String sessionId, PlaywrightLocatorReference locatorReference,
+            String propertyName) {
+        return sendElementCommand(sessionId, locatorReference, "getCssValue", propertyName)
+                .payload().optString("value", "");
+    }
+
+    public synchronized Object executeScript(String sessionId, String script) {
+        JSONObject payload = sendCommand("executeScript", new JSONObject().put("sessionId", sessionId)
+                .put("script", script)).payload();
+        return payload.has("value") ? payload.get("value") : null;
+    }
+
+    public synchronized void closeSession(String sessionId) {
+        sendCommand("closeSession", new JSONObject().put("sessionId", sessionId));
+    }
+
+    public synchronized void goBack(String sessionId) {
+        sendCommand("goBack", new JSONObject().put("sessionId", sessionId));
+    }
+
+    public synchronized void goForward(String sessionId) {
+        sendCommand("goForward", new JSONObject().put("sessionId", sessionId));
+    }
+
+    public synchronized void refresh(String sessionId) {
+        sendCommand("refresh", new JSONObject().put("sessionId", sessionId));
+    }
+
     public synchronized PlaywrightWorkerResponse shutdown() {
         if (!isRunning()) {
             return new PlaywrightWorkerResponse("shutdown-skipped", "shutdown", true,
@@ -122,6 +217,18 @@ public class PlaywrightWorkerClient implements AutoCloseable {
             throw new CommandLineExecutorException(
                     String.format("Unable to communicate with Playwright worker for action '%s'", action), e);
         }
+    }
+
+    private PlaywrightWorkerResponse sendElementCommand(String sessionId, PlaywrightLocatorReference locatorReference,
+            String action, String value) {
+        JSONObject payload = new JSONObject()
+                .put("sessionId", sessionId)
+                .put("locator", locatorReference.toJson())
+                .put("elementAction", action);
+        if (null != value) {
+            payload.put("value", value);
+        }
+        return sendCommand("elementAction", payload);
     }
 
     @Override

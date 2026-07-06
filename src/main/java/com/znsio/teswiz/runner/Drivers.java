@@ -301,7 +301,11 @@ public class Drivers {
         LOGGER.info(String.format("attachLogsAndCloseDriver: %s - %s - %s", userPersona, driver.getType(), driverName));
         switch (driver.getType()) {
             case Driver.WEB_DRIVER:
-                BrowserDriverManager.closeWebDriver(userPersona, driver);
+                if (driver.getInnerDriver() instanceof PlaywrightWebDriver) {
+                    PlaywrightDriverManager.closeWebDriver(userPersona, driver);
+                } else {
+                    BrowserDriverManager.closeWebDriver(userPersona, driver);
+                }
                 break;
             case Driver.APPIUM_DRIVER:
                 AppiumDriverManager.closeAppiumDriver(userPersona, driver);
@@ -383,6 +387,11 @@ public class Drivers {
 
     private static SessionHandle buildSessionHandle(String userPersona, String browserName, Platform forPlatform,
             TestExecutionContext context) {
+        SessionHandle engineSessionHandle = (SessionHandle) context.getTestState(TEST_CONTEXT.ENGINE_SESSION_HANDLE);
+        if (null != engineSessionHandle) {
+            context.addTestState(TEST_CONTEXT.ENGINE_SESSION_HANDLE, null);
+            return engineSessionHandle;
+        }
         String artifactPath = context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
         String engine = forPlatform.equals(Platform.web) || forPlatform.equals(Platform.electron)
                 ? Runner.getWebEngine().getConfigValue()
