@@ -42,6 +42,8 @@ class DriversBasicTest {
         assertThat(Drivers.isDriverAssignedForUser("me")).isTrue();
         assertThat(Drivers.getAvailableUserPersonas()).contains("me");
         assertThat(Drivers.getDriverForUser("me").getType()).isEqualTo(Driver.PDF_DRIVER);
+        assertThat(Drivers.getSessionHandleForCurrentUser(Thread.currentThread().getId()).engine())
+                .isEqualTo(Driver.PDF_DRIVER);
     }
 
     @Test

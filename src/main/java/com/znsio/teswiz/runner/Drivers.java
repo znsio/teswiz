@@ -40,7 +40,9 @@ public class Drivers {
             throw new InvalidTestDataException(message);
         }
         Driver currentDriver = userPersonaDetails.getDriverAssignedForUser(userPersona);
+        SessionHandle currentSessionHandle = userPersonaDetails.getSessionHandleAssignedForUser(userPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
+        context.addTestState(TEST_CONTEXT.CURRENT_SESSION_HANDLE, currentSessionHandle);
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, forPlatform);
         return currentDriver;
@@ -73,8 +75,11 @@ public class Drivers {
         }
 
         Driver currentDriver = createDriverForPlatform(userPersona, browserName, forPlatform, context);
+        SessionHandle sessionHandle = buildSessionHandle(userPersona, browserName, forPlatform, context);
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
+        context.addTestState(TEST_CONTEXT.CURRENT_SESSION_HANDLE, sessionHandle);
         userPersonaDetails.addDriver(userPersona, currentDriver);
+        userPersonaDetails.addSessionHandle(userPersona, sessionHandle);
         LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n", userPersona, forPlatform.name()));
         updateTestNameInCloud(currentDriver.getInnerDriver(), context.getTestName(), userPersona);
         return currentDriver;
@@ -116,7 +121,7 @@ public class Drivers {
                 currentDriver = AppiumDriverManager.createWindowsDriverForUser(userPersona, forPlatform, context);
                 break;
             case web:
-                currentDriver = BrowserDriverManager.createWebDriverForUser(userPersona, browserName, forPlatform, context);
+                currentDriver = WebSessionFactory.createWebDriverForUser(userPersona, browserName, forPlatform, context);
                 break;
             case electron:
                 currentDriver = BrowserDriverManager.createElectronDriverForUser(userPersona, browserName, forPlatform, context);
@@ -159,6 +164,19 @@ public class Drivers {
         }
 
         return userPersonaDetails.getDriverAssignedForUser(userPersona);
+    }
+
+    public static SessionHandle getSessionHandleForCurrentUser(long threadId) {
+        TestExecutionContext context = getTestExecutionContext(threadId);
+        String userPersona = context.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
+
+        if (!userPersonaDetails.isSessionHandleAssignedForUser(userPersona)) {
+            throw new InvalidTestDataException(String.format("No SessionHandle found for user persona: '%s'",
+                    userPersona));
+        }
+
+        return userPersonaDetails.getSessionHandleAssignedForUser(userPersona);
     }
 
     public static String getNameOfDeviceUsedByUser(String userPersona) {
@@ -209,6 +227,7 @@ public class Drivers {
             attachLogsAndCloseDriver(userPersona, driver);
         });
         userPersonaDetails.clearAllDrivers();
+        userPersonaDetails.clearAllSessionHandles();
         userPersonaDetails.clearAllAppNames();
         userPersonaDetails.clearAllCapabilities();
         userPersonaDetails.clearAllPlatforms();
@@ -310,8 +329,10 @@ public class Drivers {
 
         Driver currentDriver = userPersonaDetails.getDriverAssignedForUser(userPersona);
         Platform currentPlatform = userPersonaDetails.getPlatformAssignedForUser(userPersona);
+        SessionHandle currentSessionHandle = userPersonaDetails.getSessionHandleAssignedForUser(userPersona);
 
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
+        context.addTestState(TEST_CONTEXT.CURRENT_SESSION_HANDLE, currentSessionHandle);
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, newUserPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, currentPlatform);
 
@@ -353,6 +374,19 @@ public class Drivers {
         userPersonaDetails.addAppName(userPersona, pdfFileName);
         userPersonaDetails.addPlatform(userPersona, forPlatform);
         userPersonaDetails.addDriver(userPersona, currentDriver);
+        SessionHandle sessionHandle = SessionHandle.create(userPersona, forPlatform, Driver.PDF_DRIVER,
+                context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY), Map.of("pdfFileName", pdfFileName));
+        context.addTestState(TEST_CONTEXT.CURRENT_SESSION_HANDLE, sessionHandle);
+        userPersonaDetails.addSessionHandle(userPersona, sessionHandle);
         LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n", userPersona, forPlatform.name()));
+    }
+
+    private static SessionHandle buildSessionHandle(String userPersona, String browserName, Platform forPlatform,
+            TestExecutionContext context) {
+        String artifactPath = context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+        String engine = forPlatform.equals(Platform.web) || forPlatform.equals(Platform.electron)
+                ? Runner.getWebEngine().getConfigValue()
+                : Driver.APPIUM_DRIVER;
+        return SessionHandle.create(userPersona, forPlatform, engine, artifactPath, Map.of("browserName", browserName));
     }
 }

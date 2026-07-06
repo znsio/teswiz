@@ -269,6 +269,10 @@ public class Runner {
         return Setup.getFromConfigs(Setup.BROWSER);
     }
 
+    public static WebEngine getWebEngine() {
+        return WebEngine.from(Setup.getFromConfigs(Setup.WEB_ENGINE));
+    }
+
     public static String getProxyURL() {
         String proxyURL = Setup.getFromConfigs(Setup.PROXY_URL);
         LOGGER.info(String.format("Using proxyURL: %s", proxyURL));

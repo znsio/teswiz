@@ -3,6 +3,7 @@ package com.znsio.teswiz.entities;
 public class TEST_CONTEXT {
     public static final String APPIUM_DRIVER = "appiumDriver";
     public static final String CURRENT_DRIVER = "currentDriver";
+    public static final String CURRENT_SESSION_HANDLE = "currentSessionHandle";
     public static final String CURRENT_PLATFORM = "currentPlatform";
     public static final String CURRENT_USER_PERSONA = "currentUserPersona";
     public static final String DEVICE_INFO = "deviceInfo";

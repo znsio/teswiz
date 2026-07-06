@@ -15,6 +15,7 @@ public class UserPersonaDetails {
     private final ConcurrentHashMap<String, Capabilities> capabilities = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> apps = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Driver> drivers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, SessionHandle> sessionHandles = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Platform> platforms = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> deviceLogFileNameForUserPersonaAndPlatform = new ConcurrentHashMap<>();
 
@@ -23,6 +24,7 @@ public class UserPersonaDetails {
     void assignNewPersonaForUser(String userPersona, String newUserPersona) {
         replaceCapabilitiesFor(userPersona, newUserPersona);
         replaceDriverFor(userPersona, newUserPersona);
+        replaceSessionHandleFor(userPersona, newUserPersona);
         replaceAppNameFor(userPersona, newUserPersona);
         replacePlatformFor(userPersona, newUserPersona);
         replaceLogFileNameFor(userPersona, newUserPersona);
@@ -30,16 +32,28 @@ public class UserPersonaDetails {
 
     private void replaceLogFileNameFor(String userPersona, String newUserPersona) {
         Platform currentPlatform = platforms.get(keyForCurrentThread(newUserPersona));
+        if (null == currentPlatform) {
+            return;
+        }
+        String browserName = null;
         String currentKey = getKeyNameForDeviceLogs(userPersona, currentPlatform.name());
         if (currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.electron)) {
-            currentKey = getKeyNameForBrowserLogs(userPersona, currentPlatform.name(), Drivers.getBrowserNameForUser(newUserPersona));
+            Capabilities browserCapabilities = capabilities.get(keyForCurrentThread(newUserPersona));
+            if (null == browserCapabilities || null == browserCapabilities.getCapability("browserName")) {
+                return;
+            }
+            browserName = String.valueOf(browserCapabilities.getCapability("browserName"));
+            currentKey = getKeyNameForBrowserLogs(userPersona, currentPlatform.name(), browserName);
         }
 
         String existingLogFileNameforUser = deviceLogFileNameForUserPersonaAndPlatform.get(currentKey);
+        if (null == existingLogFileNameforUser) {
+            return;
+        }
 
         String newKey = getKeyNameForDeviceLogs(newUserPersona, currentPlatform.name());
         if (currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.electron)) {
-            newKey = getKeyNameForBrowserLogs(newUserPersona, currentPlatform.name(), Drivers.getBrowserNameForUser(newUserPersona));
+            newKey = getKeyNameForBrowserLogs(newUserPersona, currentPlatform.name(), browserName);
         }
         LOGGER.debug("userPersona: " + userPersona + ", newUserPersona: " + newUserPersona);
         LOGGER.debug("currentPlatform: " + currentPlatform.name());
@@ -58,25 +72,44 @@ public class UserPersonaDetails {
     private void replaceAppNameFor(String userPersona, String newUserPersona) {
         String existingAppNameForUser = apps.get(keyForCurrentThread(userPersona));
         apps.remove(keyForCurrentThread(userPersona));
-        apps.put(keyForCurrentThread(newUserPersona), existingAppNameForUser);
+        if (null != existingAppNameForUser) {
+            apps.put(keyForCurrentThread(newUserPersona), existingAppNameForUser);
+        }
     }
 
     private void replaceDriverFor(String userPersona, String newUserPersona) {
         Driver existingDriverForUser = drivers.get(keyForCurrentThread(userPersona));
         drivers.remove(keyForCurrentThread(userPersona));
-        drivers.put(keyForCurrentThread(newUserPersona), existingDriverForUser);
+        if (null != existingDriverForUser) {
+            drivers.put(keyForCurrentThread(newUserPersona), existingDriverForUser);
+        }
+    }
+
+    private void replaceSessionHandleFor(String userPersona, String newUserPersona) {
+        SessionHandle existingSessionHandleForUser = sessionHandles.get(keyForCurrentThread(userPersona));
+        sessionHandles.remove(keyForCurrentThread(userPersona));
+        if (null != existingSessionHandleForUser) {
+            sessionHandles.put(keyForCurrentThread(newUserPersona), new SessionHandle(newUserPersona,
+                    existingSessionHandleForUser.platform(), existingSessionHandleForUser.engine(),
+                    existingSessionHandleForUser.sessionId(), existingSessionHandleForUser.artifactPath(),
+                    existingSessionHandleForUser.metadata()));
+        }
     }
 
     private void replacePlatformFor(String userPersona, String newUserName) {
         Platform existingPlatformForUser = platforms.get(keyForCurrentThread(userPersona));
         platforms.remove(keyForCurrentThread(userPersona));
-        platforms.put(keyForCurrentThread(newUserName), existingPlatformForUser);
+        if (null != existingPlatformForUser) {
+            platforms.put(keyForCurrentThread(newUserName), existingPlatformForUser);
+        }
     }
 
     private void replaceCapabilitiesFor(String userPersona, String newUserPersona) {
         Capabilities existingCapabilitiesForUser = capabilities.get(keyForCurrentThread(userPersona));
         capabilities.remove(keyForCurrentThread(userPersona));
-        capabilities.put(keyForCurrentThread(newUserPersona), existingCapabilitiesForUser);
+        if (null != existingCapabilitiesForUser) {
+            capabilities.put(keyForCurrentThread(newUserPersona), existingCapabilitiesForUser);
+        }
     }
 
     void addAppName(String userPersona, String appName) {
@@ -113,12 +146,24 @@ public class UserPersonaDetails {
         drivers.put(keyForCurrentThread(userPersona), driver);
     }
 
+    void addSessionHandle(String userPersona, SessionHandle sessionHandle) {
+        sessionHandles.put(keyForCurrentThread(userPersona), sessionHandle);
+    }
+
     Driver getDriverAssignedForUser(String userPersona) {
         return drivers.get(keyForCurrentThread(userPersona));
     }
 
     boolean isDriverAssignedForUser(String userPersona) {
         return drivers.containsKey(keyForCurrentThread(userPersona));
+    }
+
+    SessionHandle getSessionHandleAssignedForUser(String userPersona) {
+        return sessionHandles.get(keyForCurrentThread(userPersona));
+    }
+
+    boolean isSessionHandleAssignedForUser(String userPersona) {
+        return sessionHandles.containsKey(keyForCurrentThread(userPersona));
     }
 
     void clearAllDrivers() {
@@ -132,8 +177,22 @@ public class UserPersonaDetails {
         LOGGER.debug(Thread.currentThread().getId() + " - clearAllDrivers - after: " + drivers.keySet());
     }
 
+    void clearAllSessionHandles() {
+        LOGGER.debug(Thread.currentThread().getId() + " - clearAllSessionHandles - before: " + sessionHandles.keySet());
+        for (Map.Entry<String, SessionHandle> item : sessionHandles.entrySet()) {
+            if (item.getKey() != null && item.getKey().startsWith(keyPrefix)) {
+                sessionHandles.remove(item.getKey());
+            }
+        }
+        LOGGER.debug(Thread.currentThread().getId() + " - clearAllSessionHandles - after: " + sessionHandles.keySet());
+    }
+
     Set<String> getAllUserPersonasForAssignedDrivers() {
         return drivers.keySet();
+    }
+
+    Set<String> getAllUserPersonasForAssignedSessionHandles() {
+        return sessionHandles.keySet();
     }
 
     void addPlatform(String userPersona, Platform platform) {
@@ -210,5 +269,9 @@ public class UserPersonaDetails {
 
     Map<String, Driver> getAllAssignedUserPersonasAndDrivers() {
         return drivers;
+    }
+
+    Map<String, SessionHandle> getAllAssignedUserPersonasAndSessionHandles() {
+        return sessionHandles;
     }
 }

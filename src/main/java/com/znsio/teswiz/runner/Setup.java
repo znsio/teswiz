@@ -46,6 +46,7 @@ class Setup {
     static final String IS_VISUAL = "IS_VISUAL";
     static final String FAIL_TEST_ON_VISUAL_DIFFERENCE = "FAIL_TEST_ON_VISUAL_DIFFERENCE";
     static final String BROWSER = "BROWSER";
+    static final String WEB_ENGINE = "WEB_ENGINE";
     static final String CONFIG_FILE = "CONFIG_FILE";
     static final String LAUNCH_NAME = "LAUNCH_NAME";
     static final String APP_PACKAGE_NAME = "APP_PACKAGE_NAME";
@@ -81,6 +82,7 @@ class Setup {
     private static final String RP_DEFAULT_DESCRIPTION = "End-2-End scenarios";
     private static Map<String, Map> loadedCapabilityFile;
     private static final String CHROME = "chrome";
+    private static final String DEFAULT_WEB_ENGINE = WebEngine.SELENIUM.getConfigValue();
     private static final String TEMP_DIRECTORY = "temp";
     private static final int DEFAULT_PARALLEL = 1;
     private static final ArrayList<String> CUKE_ARGS = new ArrayList<>();
@@ -291,6 +293,10 @@ class Setup {
                 configs.get(TAG_FOR_REPORTPORTAL), configs.get(TARGET_ENVIRONMENT), OsUtils.getUserName(),
                 configsBoolean.get(IS_VISUAL), configs.get(BUILD_INITIATION_REASON));
 
+        if (currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.electron)) {
+            rpAttributes += String.format("WebEngine:%s; ", configs.get(WEB_ENGINE));
+        }
+
         if (!configs.get(APP_VERSION).equals(NOT_SET)) {
             rpAttributes += String.format("AppVersion: %s; ", configs.get(APP_VERSION));
         }
@@ -345,6 +351,7 @@ class Setup {
         configs.put(BRANCH_NAME, getOverriddenStringValue(BRANCH_NAME, getStringValueFromPropertiesIfAvailable(BRANCH_NAME, NOT_SET)));
         configs.put(BRANCH_NAME, getOverriddenStringValue(configs.get(BRANCH_NAME), getBranchNameUsingGitCommand()));
         configs.put(BROWSER, getOverriddenStringValue(BROWSER, getStringValueFromPropertiesIfAvailable(BROWSER, CHROME)));
+        configs.put(WEB_ENGINE, getOverriddenStringValue(WEB_ENGINE, getStringValueFromPropertiesIfAvailable(WEB_ENGINE, DEFAULT_WEB_ENGINE)));
         configs.put(BUILD_ID, getOverriddenStringValue(BUILD_ID, getStringValueFromPropertiesIfAvailable(BUILD_ID, NOT_SET)));
         configs.put(BUILD_ID, getOverriddenStringValue(configs.get(BUILD_ID), NOT_SET));
         configs.put(BUILD_INITIATION_REASON, getOverriddenStringValue(BUILD_INITIATION_REASON, getStringValueFromPropertiesIfAvailable(BUILD_INITIATION_REASON, NOT_SET)));
