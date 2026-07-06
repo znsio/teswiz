@@ -4,6 +4,7 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.reporting.ScenarioArtifactReporter;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.session.UserPersonaDetails;
 import com.znsio.teswiz.web.playwright.PlaywrightDriverManager;
@@ -230,6 +231,7 @@ public class Drivers {
             validateVisualTestResults(userPersona, driver);
             attachLogsAndCloseDriver(userPersona, driver);
         });
+        ScenarioArtifactReporter.publish(context, userPersonaDetails);
         userPersonaDetails.clearAllDrivers();
         userPersonaDetails.clearAllSessionHandles();
         userPersonaDetails.clearAllAppNames();

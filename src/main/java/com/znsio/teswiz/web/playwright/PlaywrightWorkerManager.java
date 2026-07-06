@@ -2,6 +2,7 @@ package com.znsio.teswiz.web.playwright;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.nio.file.Path;
 
 import org.json.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -45,14 +46,17 @@ public final class PlaywrightWorkerManager {
     }
 
     public PlaywrightWorkerSession createSession(String userPersona, String browserName, TestExecutionContext context) {
-        return getOrStart(context).createSession(userPersona, browserName, toJson(browserConfigResolver.resolve(browserName, context)));
+        return getOrStart(context).createSession(userPersona, browserName,
+                toJson(browserConfigResolver.resolve(browserName, context)),
+                Path.of(context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY)));
     }
 
     public ManagedPlaywrightSession createManagedSession(String userPersona, String browserName, Platform forPlatform,
             TestExecutionContext context) {
         PlaywrightWorkerClient workerClient = getOrStart(context);
         PlaywrightWorkerSession workerSession = workerClient.createSession(userPersona, browserName,
-                toJson(browserConfigResolver.resolve(browserName, context)));
+                toJson(browserConfigResolver.resolve(browserName, context)),
+                Path.of(context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY)));
         String artifactPath = context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
         Map<String, String> metadata = new LinkedHashMap<>();
         metadata.put("browserName", workerSession.browserName());

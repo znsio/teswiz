@@ -69,6 +69,14 @@ Current examples:
 * `PlaywrightLocatorReference`
 * `PlaywrightDriverManager`
 
+### `com.znsio.teswiz.reporting`
+
+Owns reporting-side adapters that turn engine/session state into uniform teswiz artifacts.
+
+Current examples:
+
+* `ScenarioArtifactReporter`
+
 ### `com.znsio.teswiz.visual`
 
 Owns engine-specific visual helper implementations that support `runner.Visual`.
@@ -84,6 +92,7 @@ When adding new code for the dual-engine architecture:
 * do not dump new engine-specific support classes into `runner` by default
 * keep `runner` focused on stable orchestration-facing APIs
 * prefer engine-specific code under `web.playwright` or future engine/provider-specific internal packages
+* prefer reporting adaptation code under `reporting`
 * prefer browser-config evolution code under `config.browser`
 * prefer visual-engine adaptation code under `visual`
 

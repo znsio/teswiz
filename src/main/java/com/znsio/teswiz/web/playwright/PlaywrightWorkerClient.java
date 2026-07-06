@@ -67,12 +67,32 @@ public class PlaywrightWorkerClient implements AutoCloseable {
         return createSession(userPersona, browserName, new JSONObject());
     }
 
+    public synchronized PlaywrightWorkerSession createSession(String userPersona, String browserName, Path artifactPath) {
+        return createSession(userPersona, browserName, new JSONObject(), artifactPath);
+    }
+
     public synchronized PlaywrightWorkerSession createSession(String userPersona, String browserName,
             JSONObject browserConfig) {
         JSONObject payload = new JSONObject()
                 .put("userPersona", userPersona)
                 .put("browserName", browserName)
                 .put("browserConfig", browserConfig);
+        return createSession(payload);
+    }
+
+    public synchronized PlaywrightWorkerSession createSession(String userPersona, String browserName,
+            JSONObject browserConfig, Path artifactPath) {
+        JSONObject payload = new JSONObject()
+                .put("userPersona", userPersona)
+                .put("browserName", browserName)
+                .put("browserConfig", browserConfig);
+        if (null != artifactPath) {
+            payload.put("artifactPath", artifactPath.toAbsolutePath().toString());
+        }
+        return createSession(payload);
+    }
+
+    private PlaywrightWorkerSession createSession(JSONObject payload) {
         PlaywrightWorkerResponse response = sendCommand("createSession", payload);
         JSONObject sessionPayload = response.payload();
         return new PlaywrightWorkerSession(

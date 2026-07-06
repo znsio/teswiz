@@ -117,6 +117,13 @@ class PlaywrightWorkerManagerTest {
         }
 
         @Override
+        public synchronized PlaywrightWorkerSession createSession(String userPersona, String browserName,
+                JSONObject browserConfig, Path artifactPath) {
+            lastBrowserConfig = browserConfig;
+            return createSession(userPersona, browserName);
+        }
+
+        @Override
         public synchronized void close() {
             closeCount.incrementAndGet();
             running = false;

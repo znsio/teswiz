@@ -1,5 +1,7 @@
 import readline from "node:readline";
 import { randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { chromium, firefox, webkit } from "playwright";
 
 const sessions = new Map();
@@ -63,6 +65,24 @@ async function getBrowserWithConfig(browserName, browserConfig = {}) {
   const browser = await browserType.launch(launchConfig);
   browsers.set(browserKey, browser);
   return browser;
+}
+
+async function finalizeSessionArtifacts(session) {
+  if (!session) {
+    return;
+  }
+  if (session.consoleLogPath) {
+    await fs.writeFile(session.consoleLogPath, `${session.consoleMessages.join("\n")}\n`, "utf8");
+  }
+  if (session.tracePath) {
+    await session.context.tracing.stop({ path: session.tracePath }).catch(() => {});
+  }
+}
+
+async function closeSessionResources(session) {
+  await finalizeSessionArtifacts(session);
+  await session.page.close().catch(() => {});
+  await session.context.close().catch(() => {});
 }
 
 function getSession(sessionId) {
@@ -141,16 +161,44 @@ rl.on("line", async (line) => {
         break;
       case "createSession": {
         const browser = await getBrowserWithConfig(payload.browserName, payload.browserConfig || {});
-        const context = await browser.newContext(payload.browserConfig?.contextOptions || {});
+        const sessionId = randomUUID();
+        const artifactPath = payload.artifactPath || null;
+        if (artifactPath) {
+          await fs.mkdir(artifactPath, { recursive: true });
+        }
+        const tracePath = artifactPath ? path.join(artifactPath, `${payload.userPersona}-${sessionId}-trace.zip`) : null;
+        const harPath = artifactPath ? path.join(artifactPath, `${payload.userPersona}-${sessionId}-network.har`) : null;
+        const consoleLogPath = artifactPath
+          ? path.join(artifactPath, `${payload.userPersona}-${sessionId}-console.log`)
+          : null;
+        const contextOptions = { ...(payload.browserConfig?.contextOptions || {}) };
+        if (harPath) {
+          contextOptions.recordHar = { path: harPath };
+        }
+        const context = await browser.newContext(contextOptions);
+        if (tracePath) {
+          await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
+        }
         const page = await context.newPage();
+        const consoleMessages = [];
+        page.on("console", (message) => {
+          consoleMessages.push(`[${message.type()}] ${message.text()}`);
+        });
+        page.on("pageerror", (error) => {
+          consoleMessages.push(`[pageerror] ${error.message || String(error)}`);
+        });
         const session = {
-          sessionId: randomUUID(),
+          sessionId,
           userPersona: payload.userPersona,
           browserName: payload.browserName,
           contextId: `context-${randomUUID()}`,
           pageId: `page-${randomUUID()}`,
           context,
           page,
+          tracePath,
+          harPath,
+          consoleLogPath,
+          consoleMessages,
         };
         sessions.set(session.sessionId, session);
         process.stdout.write(`${okResponse(requestId, action, {
@@ -280,16 +328,14 @@ rl.on("line", async (line) => {
       }
       case "closeSession": {
         const session = getSession(payload.sessionId);
-        await session.page.close();
-        await session.context.close();
+        await closeSessionResources(session);
         sessions.delete(payload.sessionId);
         process.stdout.write(`${okResponse(requestId, action, { status: "closed" })}\n`);
         break;
       }
       case "shutdown":
         for (const session of sessions.values()) {
-          await session.page.close().catch(() => {});
-          await session.context.close().catch(() => {});
+          await closeSessionResources(session);
         }
         sessions.clear();
         for (const browser of browsers.values()) {
