@@ -23,6 +23,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Use `apply_patch` for manual source edits.
 - Do not revert unrelated worktree changes.
 - Favor focused Gradle verification over broad test runs when touching a narrow area.
+- Whenever code or documentation changes are made, always include a concise suggested commit message in the final response.
 
 ## Visual testing rules
 
@@ -96,3 +97,4 @@ Use this skill for changes inside the `znsio/teswiz` repo.
   - step-definition ownership
   - preferred verification commands
   - config/caps layout
+  - final-response requirements such as commit-message suggestions
