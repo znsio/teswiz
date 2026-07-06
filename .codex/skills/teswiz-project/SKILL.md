@@ -16,6 +16,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Execution configs: `configs/<app>/...`
 - Capability files: `caps/<app>/...`
 - Visual-testing docs: `docs/RunningVisualTests-README.md`
+- Architecture notes: `docs/Architecture-README.md`
 
 ## Working conventions
 
@@ -24,6 +25,27 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Do not revert unrelated worktree changes.
 - Favor focused Gradle verification over broad test runs when touching a narrow area.
 - Whenever code or documentation changes are made, always include a concise suggested commit message in the final response.
+
+## Package boundaries
+
+- Treat `com.znsio.teswiz.runner` as the stable framework-facing orchestration package.
+- Keep these classes in `runner` unless there is an explicit breaking-change decision:
+  - `Driver`
+  - `Drivers`
+  - `Runner`
+  - `Setup`
+  - `Visual`
+- Prefer internal dual-engine support classes in:
+  - `com.znsio.teswiz.session`
+  - `com.znsio.teswiz.config.browser`
+  - `com.znsio.teswiz.web`
+  - `com.znsio.teswiz.web.playwright`
+  - `com.znsio.teswiz.visual`
+- When adding new Playwright, browser-config, session, or visual-helper code, do not place it in `runner` by default.
+- If a change affects these boundaries, update:
+  - `README.md`
+  - `docs/Architecture-README.md`
+  - this skill file
 
 ## Visual testing rules
 
@@ -75,6 +97,10 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - If behavior changes for visual testing, update both:
   - `README.md`
   - `docs/RunningVisualTests-README.md`
+- If architecture boundaries or stable-vs-internal package intent changes, update:
+  - `README.md`
+  - `docs/Architecture-README.md`
+  - `.codex/skills/teswiz-project/SKILL.md`
 - Keep docs aligned with the current supported flow; remove stale references rather than documenting both old and new patterns.
 
 ## Release checklist
@@ -94,6 +120,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 
 - Update this skill whenever repo conventions change for:
   - Applitools naming
+  - package-boundary rules
   - step-definition ownership
   - preferred verification commands
   - config/caps layout

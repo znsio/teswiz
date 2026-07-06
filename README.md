@@ -64,6 +64,38 @@ teswiz also supports:
 * Verifying application with Figma designs using the explicit step
   `I have my Figma design with app name "...", test name "..." and baseline name "..." available in Applitools`
 
+## Architecture Notes
+
+teswiz keeps a small stable Java orchestration surface in `com.znsio.teswiz.runner`:
+
+* `Driver`
+* `Drivers`
+* `Runner`
+* `Setup`
+* `Visual`
+
+These remain the main framework entry points for orchestration, scenario lifecycle, and framework-facing behavior.
+
+The dual-engine web support added for Playwright TS is intentionally organized behind internal support packages:
+
+* `com.znsio.teswiz.session`
+  * persona session metadata and registries
+* `com.znsio.teswiz.config.browser`
+  * browser config loading, Playwright config resolution, and migration reporting
+* `com.znsio.teswiz.web`
+  * shared web engine concepts such as `WebEngine`
+* `com.znsio.teswiz.web.playwright`
+  * Playwright TS worker bridge, driver, and session internals
+* `com.znsio.teswiz.visual`
+  * Playwright-specific visual support helpers
+
+For client projects, the intent is:
+
+* keep depending on the stable `runner` entry points unless explicitly documented otherwise
+* treat the packages above as internal implementation packages that may evolve as dual-engine support grows
+
+See [`docs/Architecture-README.md`](docs/Architecture-README.md) for a short maintainer-oriented package map.
+
 Reports will be uploaded to reportportal.io, that you would need to setup separately, and provide the server details in
 src/test/resources/reportportal.properties file or provide the path to the file using this environment
 variable: `REPORT_PORTAL_FILE`
