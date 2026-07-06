@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.session;
 
 import java.util.Collections;
 import java.util.Map;
@@ -18,7 +18,7 @@ public record SessionHandle(
         metadata = null == metadata ? Collections.emptyMap() : Collections.unmodifiableMap(metadata);
     }
 
-    static SessionHandle create(String userPersona, Platform platform, String engine, String artifactPath,
+    public static SessionHandle create(String userPersona, Platform platform, String engine, String artifactPath,
             Map<String, String> metadata) {
         return new SessionHandle(userPersona, platform, engine, UUID.randomUUID().toString(), artifactPath, metadata);
     }

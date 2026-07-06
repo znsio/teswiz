@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.web.playwright;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,7 +29,7 @@ public class PlaywrightWorkerClient implements AutoCloseable {
         this(Paths.get("playwright", "worker.mjs").toAbsolutePath());
     }
 
-    PlaywrightWorkerClient(Path workerScriptPath) {
+    public PlaywrightWorkerClient(Path workerScriptPath) {
         this.workerScriptPath = workerScriptPath;
     }
 

@@ -1,6 +1,7 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.session;
 
 import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.runner.Driver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ public class UserPersonaDetails {
 
     private final String keyPrefix = Thread.currentThread().getId() + "-";
 
-    void assignNewPersonaForUser(String userPersona, String newUserPersona) {
+    public void assignNewPersonaForUser(String userPersona, String newUserPersona) {
         replaceCapabilitiesFor(userPersona, newUserPersona);
         replaceDriverFor(userPersona, newUserPersona);
         replaceSessionHandleFor(userPersona, newUserPersona);
@@ -112,7 +113,7 @@ public class UserPersonaDetails {
         }
     }
 
-    void addAppName(String userPersona, String appName) {
+    public void addAppName(String userPersona, String appName) {
         apps.put(keyForCurrentThread(userPersona), appName);
     }
 
@@ -123,11 +124,11 @@ public class UserPersonaDetails {
         return key;
     }
 
-    String getAppName(String userPersona) {
+    public String getAppName(String userPersona) {
         return apps.get(keyForCurrentThread(userPersona));
     }
 
-    void clearAllAppNames() {
+    public void clearAllAppNames() {
         clearMap(" - clearAllAppNames - before: ", apps, " - clearAllAppNames - after: ");
     }
 
@@ -142,31 +143,31 @@ public class UserPersonaDetails {
         LOGGER.debug(Thread.currentThread().getId() + afterClearMessagePrefix + map.keySet());
     }
 
-    void addDriver(String userPersona, Driver driver) {
+    public void addDriver(String userPersona, Driver driver) {
         drivers.put(keyForCurrentThread(userPersona), driver);
     }
 
-    void addSessionHandle(String userPersona, SessionHandle sessionHandle) {
+    public void addSessionHandle(String userPersona, SessionHandle sessionHandle) {
         sessionHandles.put(keyForCurrentThread(userPersona), sessionHandle);
     }
 
-    Driver getDriverAssignedForUser(String userPersona) {
+    public Driver getDriverAssignedForUser(String userPersona) {
         return drivers.get(keyForCurrentThread(userPersona));
     }
 
-    boolean isDriverAssignedForUser(String userPersona) {
+    public boolean isDriverAssignedForUser(String userPersona) {
         return drivers.containsKey(keyForCurrentThread(userPersona));
     }
 
-    SessionHandle getSessionHandleAssignedForUser(String userPersona) {
+    public SessionHandle getSessionHandleAssignedForUser(String userPersona) {
         return sessionHandles.get(keyForCurrentThread(userPersona));
     }
 
-    boolean isSessionHandleAssignedForUser(String userPersona) {
+    public boolean isSessionHandleAssignedForUser(String userPersona) {
         return sessionHandles.containsKey(keyForCurrentThread(userPersona));
     }
 
-    void clearAllDrivers() {
+    public void clearAllDrivers() {
         LOGGER.debug(Thread.currentThread().getId() + " - clearAllDrivers - before: " + drivers.keySet());
 
         for (Map.Entry<String, Driver> item : drivers.entrySet()) {
@@ -177,7 +178,7 @@ public class UserPersonaDetails {
         LOGGER.debug(Thread.currentThread().getId() + " - clearAllDrivers - after: " + drivers.keySet());
     }
 
-    void clearAllSessionHandles() {
+    public void clearAllSessionHandles() {
         LOGGER.debug(Thread.currentThread().getId() + " - clearAllSessionHandles - before: " + sessionHandles.keySet());
         for (Map.Entry<String, SessionHandle> item : sessionHandles.entrySet()) {
             if (item.getKey() != null && item.getKey().startsWith(keyPrefix)) {
@@ -187,27 +188,27 @@ public class UserPersonaDetails {
         LOGGER.debug(Thread.currentThread().getId() + " - clearAllSessionHandles - after: " + sessionHandles.keySet());
     }
 
-    Set<String> getAllUserPersonasForAssignedDrivers() {
+    public Set<String> getAllUserPersonasForAssignedDrivers() {
         return drivers.keySet();
     }
 
-    Set<String> getAllUserPersonasForAssignedSessionHandles() {
+    public Set<String> getAllUserPersonasForAssignedSessionHandles() {
         return sessionHandles.keySet();
     }
 
-    void addPlatform(String userPersona, Platform platform) {
+    public void addPlatform(String userPersona, Platform platform) {
         platforms.put(keyForCurrentThread(userPersona), platform);
     }
 
-    Set<String> getAllUserPersonasForAssignedPlatforms() {
+    public Set<String> getAllUserPersonasForAssignedPlatforms() {
         return platforms.keySet();
     }
 
-    Platform getPlatformAssignedForUser(String userPersona) {
+    public Platform getPlatformAssignedForUser(String userPersona) {
         return platforms.get(keyForCurrentThread(userPersona));
     }
 
-    void clearAllPlatforms() {
+    public void clearAllPlatforms() {
         LOGGER.debug(Thread.currentThread().getId() + " - clearAllPlatforms - before: " + platforms.keySet());
 
         for (Map.Entry<String, Platform> item : platforms.entrySet()) {
@@ -218,11 +219,11 @@ public class UserPersonaDetails {
         LOGGER.debug(Thread.currentThread().getId() + " - clearAllPlatforms - after: " + platforms.keySet());
     }
 
-    Capabilities getCapabilitiesAssignedForUser(String userPersona) {
+    public Capabilities getCapabilitiesAssignedForUser(String userPersona) {
         return capabilities.get(keyForCurrentThread(userPersona));
     }
 
-    void clearAllCapabilities() {
+    public void clearAllCapabilities() {
         LOGGER.debug(Thread.currentThread().getId() + " - clearAllCapabilities - before: " + capabilities.keySet());
 
         for (Map.Entry<String, Capabilities> item : capabilities.entrySet()) {
@@ -233,23 +234,23 @@ public class UserPersonaDetails {
         LOGGER.debug(Thread.currentThread().getId() + " - clearAllCapabilities - after: " + capabilities.keySet());
     }
 
-    void addCapabilities(String userPersona, Capabilities capabilities) {
+    public void addCapabilities(String userPersona, Capabilities capabilities) {
         this.capabilities.put(keyForCurrentThread(userPersona), capabilities);
     }
 
-    void clearLogFileNames() {
+    public void clearLogFileNames() {
         clearMap(" - clearLogFileNames - before: ", deviceLogFileNameForUserPersonaAndPlatform, " - clearLogFileNames - after: ");
     }
 
-    String getDeviceLogFileNameFor(String userPersona, String platform) {
+    public String getDeviceLogFileNameFor(String userPersona, String platform) {
         return deviceLogFileNameForUserPersonaAndPlatform.get(getKeyNameForDeviceLogs(userPersona, platform));
     }
 
-    String getBrowserLogFileNameFor(String userPersona, String platform, String browserType) {
+    public String getBrowserLogFileNameFor(String userPersona, String platform, String browserType) {
         return deviceLogFileNameForUserPersonaAndPlatform.get(getKeyNameForBrowserLogs(userPersona, platform, browserType));
     }
 
-    void addDeviceLogFileNameFor(String userPersona, String platform, String deviceLogFileName) {
+    public void addDeviceLogFileNameFor(String userPersona, String platform, String deviceLogFileName) {
         deviceLogFileNameForUserPersonaAndPlatform.put(getKeyNameForDeviceLogs(userPersona, platform), deviceLogFileName);
     }
 
@@ -258,7 +259,7 @@ public class UserPersonaDetails {
         return keyForCurrentThread(userPersona) + "-" + platform;
     }
 
-    void addBrowserLogFileNameFor(String userPersona, String forplatform, String browserType, String logFileName) {
+    public void addBrowserLogFileNameFor(String userPersona, String forplatform, String browserType, String logFileName) {
         deviceLogFileNameForUserPersonaAndPlatform.put(getKeyNameForBrowserLogs(userPersona, forplatform, browserType), logFileName);
     }
 
@@ -267,11 +268,11 @@ public class UserPersonaDetails {
         return keyForCurrentThread(userPersona) + "-" + forplatform + "-" + browserType;
     }
 
-    Map<String, Driver> getAllAssignedUserPersonasAndDrivers() {
+    public Map<String, Driver> getAllAssignedUserPersonasAndDrivers() {
         return drivers;
     }
 
-    Map<String, SessionHandle> getAllAssignedUserPersonasAndSessionHandles() {
+    public Map<String, SessionHandle> getAllAssignedUserPersonasAndSessionHandles() {
         return sessionHandles;
     }
 }

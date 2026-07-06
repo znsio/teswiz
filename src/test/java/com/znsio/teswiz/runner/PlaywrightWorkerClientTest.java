@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
+import com.znsio.teswiz.web.playwright.PlaywrightWorkerResponse;
+import com.znsio.teswiz.web.playwright.PlaywrightWorkerSession;
+
 class PlaywrightWorkerClientTest {
     private PlaywrightWorkerClient workerClient;
 

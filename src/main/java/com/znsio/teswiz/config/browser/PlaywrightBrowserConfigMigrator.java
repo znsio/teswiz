@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.config.browser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-final class PlaywrightBrowserConfigMigrator {
-    MigrationResult migrate(JSONObject originalConfig) {
+public final class PlaywrightBrowserConfigMigrator {
+    public MigrationResult migrate(JSONObject originalConfig) {
         JSONObject migratedConfig = new JSONObject(originalConfig.toString());
         List<String> warnings = new ArrayList<>();
         boolean changed = false;
@@ -97,6 +97,6 @@ final class PlaywrightBrowserConfigMigrator {
         }
     }
 
-    record MigrationResult(JSONObject migratedConfig, List<String> warnings) {
+    public record MigrationResult(JSONObject migratedConfig, List<String> warnings) {
     }
 }

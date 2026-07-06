@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.visual;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -18,19 +18,19 @@ import com.applitools.eyes.selenium.fluent.SimpleRegionBySelector;
 import com.applitools.eyes.selenium.fluent.SimpleRegionByTargetPathLocator;
 import com.znsio.teswiz.exceptions.VisualTestSetupException;
 
-final class PlaywrightVisualCheckSettingsMapper {
+public final class PlaywrightVisualCheckSettingsMapper {
     @FunctionalInterface
-    interface RegionBoundsProvider {
+    public interface RegionBoundsProvider {
         Region resolve(By by);
     }
 
     private final RegionBoundsProvider regionBoundsProvider;
 
-    PlaywrightVisualCheckSettingsMapper(RegionBoundsProvider regionBoundsProvider) {
+    public PlaywrightVisualCheckSettingsMapper(RegionBoundsProvider regionBoundsProvider) {
         this.regionBoundsProvider = regionBoundsProvider;
     }
 
-    ImagesCheckSettings toImageCheckSettings(SeleniumCheckSettings seleniumCheckSettings, BufferedImage screenshot) {
+    public ImagesCheckSettings toImageCheckSettings(SeleniumCheckSettings seleniumCheckSettings, BufferedImage screenshot) {
         if (null != seleniumCheckSettings.getTargetRegion()) {
             throw unsupported("Target.region(Region)");
         }

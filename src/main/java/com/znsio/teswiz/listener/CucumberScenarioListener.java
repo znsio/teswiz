@@ -5,7 +5,7 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.AppiumServerManager;
 import com.znsio.teswiz.runner.FileLocations;
-import com.znsio.teswiz.runner.PlaywrightBrowserConfigMigrationReporter;
+import com.znsio.teswiz.config.browser.PlaywrightBrowserConfigMigrationReporter;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.tools.FileUtils;
 import com.znsio.teswiz.tools.OsUtils;

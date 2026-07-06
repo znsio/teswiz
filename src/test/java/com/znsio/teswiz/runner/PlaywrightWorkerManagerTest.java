@@ -13,8 +13,15 @@ import org.junit.jupiter.api.Test;
 
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.config.browser.PlaywrightBrowserConfig;
+import com.znsio.teswiz.config.browser.PlaywrightBrowserConfigResolver;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
+import com.znsio.teswiz.session.SessionHandle;
+import com.znsio.teswiz.web.WebEngine;
+import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
+import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
+import com.znsio.teswiz.web.playwright.PlaywrightWorkerSession;
 
 class PlaywrightWorkerManagerTest {
     @AfterEach
@@ -130,7 +137,7 @@ class PlaywrightWorkerManagerTest {
 
     private static class StubPlaywrightBrowserConfigResolver extends PlaywrightBrowserConfigResolver {
         @Override
-        PlaywrightBrowserConfig resolve(String browserName, TestExecutionContext context) {
+        public PlaywrightBrowserConfig resolve(String browserName, TestExecutionContext context) {
             return new PlaywrightBrowserConfig(browserName, true, List.of("--disable-gpu"), null, null,
                     Map.of("ignoreHTTPSErrors", true), Map.of());
         }

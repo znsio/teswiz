@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.web.playwright;
 
 public record PlaywrightWorkerSession(
         String sessionId,

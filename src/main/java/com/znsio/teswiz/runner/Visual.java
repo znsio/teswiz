@@ -82,6 +82,8 @@ import com.znsio.teswiz.tools.OsUtils;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import com.znsio.teswiz.tools.Wait;
+import com.znsio.teswiz.visual.PlaywrightVisualCheckSettingsMapper;
+import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import javax.imageio.ImageIO;
 
 public class Visual {

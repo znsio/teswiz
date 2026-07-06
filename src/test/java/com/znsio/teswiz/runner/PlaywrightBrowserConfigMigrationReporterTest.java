@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.config.browser.PlaywrightBrowserConfigMigrator;
+import com.znsio.teswiz.config.browser.PlaywrightBrowserConfigMigrationReporter;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 
 class PlaywrightBrowserConfigMigrationReporterTest {

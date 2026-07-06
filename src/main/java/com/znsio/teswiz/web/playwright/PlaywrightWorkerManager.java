@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.web.playwright;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -6,9 +6,13 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import com.znsio.teswiz.config.browser.PlaywrightBrowserConfig;
+import com.znsio.teswiz.config.browser.PlaywrightBrowserConfigResolver;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
+import com.znsio.teswiz.session.SessionHandle;
+import com.znsio.teswiz.web.WebEngine;
 
 public final class PlaywrightWorkerManager {
     private final PlaywrightWorkerClientFactory clientFactory;
@@ -18,13 +22,13 @@ public final class PlaywrightWorkerManager {
         this(PlaywrightWorkerClient::new, new PlaywrightBrowserConfigResolver());
     }
 
-    PlaywrightWorkerManager(PlaywrightWorkerClientFactory clientFactory,
+    public PlaywrightWorkerManager(PlaywrightWorkerClientFactory clientFactory,
             PlaywrightBrowserConfigResolver browserConfigResolver) {
         this.clientFactory = clientFactory;
         this.browserConfigResolver = browserConfigResolver;
     }
 
-    PlaywrightWorkerClient getOrStart(TestExecutionContext context) {
+    public PlaywrightWorkerClient getOrStart(TestExecutionContext context) {
         PlaywrightWorkerClient existingClient = (PlaywrightWorkerClient) context
                 .getTestState(TEST_CONTEXT.PLAYWRIGHT_WORKER_CLIENT);
         if (null != existingClient) {
@@ -40,11 +44,11 @@ public final class PlaywrightWorkerManager {
         return workerClient;
     }
 
-    PlaywrightWorkerSession createSession(String userPersona, String browserName, TestExecutionContext context) {
+    public PlaywrightWorkerSession createSession(String userPersona, String browserName, TestExecutionContext context) {
         return getOrStart(context).createSession(userPersona, browserName, toJson(browserConfigResolver.resolve(browserName, context)));
     }
 
-    ManagedPlaywrightSession createManagedSession(String userPersona, String browserName, Platform forPlatform,
+    public ManagedPlaywrightSession createManagedSession(String userPersona, String browserName, Platform forPlatform,
             TestExecutionContext context) {
         PlaywrightWorkerClient workerClient = getOrStart(context);
         PlaywrightWorkerSession workerSession = workerClient.createSession(userPersona, browserName,
@@ -60,7 +64,7 @@ public final class PlaywrightWorkerManager {
         return new ManagedPlaywrightSession(workerClient, workerSession, sessionHandle);
     }
 
-    SessionHandle createSessionHandle(String userPersona, String browserName, Platform forPlatform,
+    public SessionHandle createSessionHandle(String userPersona, String browserName, Platform forPlatform,
             TestExecutionContext context) {
         return createManagedSession(userPersona, browserName, forPlatform, context).sessionHandle();
     }
@@ -76,7 +80,7 @@ public final class PlaywrightWorkerManager {
         context.addTestState(TEST_CONTEXT.PLAYWRIGHT_WORKER_CLIENT, null);
     }
 
-    interface PlaywrightWorkerClientFactory {
+    public interface PlaywrightWorkerClientFactory {
         PlaywrightWorkerClient create();
     }
 
@@ -91,13 +95,13 @@ public final class PlaywrightWorkerManager {
                 .put("launchOptions", browserConfig.launchOptions());
     }
 
-    record ManagedPlaywrightSession(PlaywrightWorkerClient workerClient, PlaywrightWorkerSession workerSession,
+    public record ManagedPlaywrightSession(PlaywrightWorkerClient workerClient, PlaywrightWorkerSession workerSession,
             SessionHandle sessionHandle) {
-        PlaywrightWebDriver createWebDriver() {
+        public PlaywrightWebDriver createWebDriver() {
             return new PlaywrightWebDriver(workerClient, workerSession);
         }
 
-        DesiredCapabilities createCapabilities() {
+        public DesiredCapabilities createCapabilities() {
             DesiredCapabilities capabilities = new DesiredCapabilities();
             capabilities.setCapability("browserName", sessionHandle.metadata().get("browserName"));
             capabilities.setCapability("engine", WebEngine.PLAYWRIGHT_TS.getConfigValue());

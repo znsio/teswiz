@@ -11,6 +11,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rectangle;
 
+import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
+import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
+import com.znsio.teswiz.web.playwright.PlaywrightWorkerSession;
+
 class PlaywrightWebDriverTest {
     private PlaywrightWorkerClient workerClient;
 

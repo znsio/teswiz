@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.config.browser;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
+import com.znsio.teswiz.runner.FileLocations;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 
 public final class PlaywrightBrowserConfigMigrationReporter {

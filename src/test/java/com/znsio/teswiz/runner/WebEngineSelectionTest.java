@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import com.znsio.teswiz.web.WebEngine;
+
 class WebEngineSelectionTest {
     private static final String CONFIG_FILE = "./configs/theapp/theapp_local_web_config.properties";
 

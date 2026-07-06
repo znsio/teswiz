@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.web.playwright;
 
 import java.io.File;
 import java.util.Collections;
@@ -15,11 +15,11 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
 
-final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor, TakesScreenshot {
+public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor, TakesScreenshot {
     private final PlaywrightWorkerClient workerClient;
     private final PlaywrightWorkerSession session;
 
-    PlaywrightWebDriver(PlaywrightWorkerClient workerClient, PlaywrightWorkerSession session) {
+    public PlaywrightWebDriver(PlaywrightWorkerClient workerClient, PlaywrightWorkerSession session) {
         this.workerClient = workerClient;
         this.session = session;
     }

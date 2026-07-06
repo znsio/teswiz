@@ -1,6 +1,4 @@
-package com.znsio.teswiz.runner;
-
-import static com.znsio.teswiz.runner.Setup.HEADLESS;
+package com.znsio.teswiz.config.browser;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,9 +11,10 @@ import org.json.JSONObject;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.runner.Runner;
 
-class PlaywrightBrowserConfigResolver {
-    PlaywrightBrowserConfig resolve(String browserName, TestExecutionContext context) {
+public class PlaywrightBrowserConfigResolver {
+    public PlaywrightBrowserConfig resolve(String browserName, TestExecutionContext context) {
         JSONObject browserConfig = BrowserConfigLoader.load(context);
         maybeRegisterMigrationArtifact(context, browserConfig);
         String browserKey = browserName.toLowerCase();
@@ -35,9 +34,9 @@ class PlaywrightBrowserConfigResolver {
 
         JSONObject legacyHeadlessOptions = browserConfigForBrowserType.optJSONObject("headlessOptions");
         boolean headless = (null != legacyHeadlessOptions && legacyHeadlessOptions.optBoolean("headless", false))
-                || Setup.getBooleanValueFromConfigs(HEADLESS);
+                || Runner.isRunningInHeadlessMode();
         if (null != playwrightLaunchOptions && playwrightLaunchOptions.has("headless")) {
-            headless = playwrightLaunchOptions.getBoolean("headless") || Setup.getBooleanValueFromConfigs(HEADLESS);
+            headless = playwrightLaunchOptions.getBoolean("headless") || Runner.isRunningInHeadlessMode();
         }
 
         List<String> launchArgs = new ArrayList<>();

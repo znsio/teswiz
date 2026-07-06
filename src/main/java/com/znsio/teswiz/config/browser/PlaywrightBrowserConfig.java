@@ -1,9 +1,9 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.config.browser;
 
 import java.util.List;
 import java.util.Map;
 
-record PlaywrightBrowserConfig(
+public record PlaywrightBrowserConfig(
         String browserName,
         boolean headless,
         List<String> launchArgs,

@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.config.browser.PlaywrightBrowserConfig;
+import com.znsio.teswiz.config.browser.PlaywrightBrowserConfigResolver;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 
 class PlaywrightBrowserConfigResolverTest {

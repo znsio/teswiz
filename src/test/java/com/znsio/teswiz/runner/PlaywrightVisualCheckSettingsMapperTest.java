@@ -14,6 +14,7 @@ import com.applitools.eyes.images.ImagesCheckSettings;
 import com.applitools.eyes.selenium.fluent.SeleniumCheckSettings;
 import com.applitools.eyes.selenium.fluent.Target;
 import com.znsio.teswiz.exceptions.VisualTestSetupException;
+import com.znsio.teswiz.visual.PlaywrightVisualCheckSettingsMapper;
 
 class PlaywrightVisualCheckSettingsMapperTest {
 

@@ -7,6 +7,9 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.session.SessionHandle;
+import com.znsio.teswiz.session.UserPersonaDetails;
+import com.znsio.teswiz.web.WebEngine;
 
 class UserPersonaDetailsSessionHandleTest {
     @Test
