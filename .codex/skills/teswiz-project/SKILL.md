@@ -38,6 +38,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Prefer internal dual-engine support classes in:
   - `com.znsio.teswiz.session`
   - `com.znsio.teswiz.config.browser`
+  - `com.znsio.teswiz.mobile.provider`
   - `com.znsio.teswiz.web`
   - `com.znsio.teswiz.web.provider`
   - `com.znsio.teswiz.web.provider.selenium`

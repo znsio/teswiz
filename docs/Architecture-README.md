@@ -45,6 +45,20 @@ Current examples:
 * `PlaywrightBrowserConfigMigrator`
 * `PlaywrightBrowserConfigMigrationReporter`
 
+### `com.znsio.teswiz.mobile.provider`
+
+Owns provider-aware mobile execution behavior extracted from Appium orchestration, starting with cloud report-link publication.
+
+Current examples:
+
+* `MobileExecutionProvider`
+* `MobileExecutionProviderResolver`
+* `LocalMobileExecutionProvider`
+* `BrowserStackMobileExecutionProvider`
+* `LambdaTestMobileExecutionProvider`
+* `HeadSpinMobileExecutionProvider`
+* `PCloudyMobileExecutionProvider`
+
 ### `com.znsio.teswiz.web`
 
 Owns shared web-engine concepts.
@@ -116,6 +130,7 @@ When adding new code for the dual-engine architecture:
 * prefer engine-specific code under `web.playwright`
 * prefer provider-specific web execution code under `web.provider`
 * prefer Selenium web cloud capability setup under `web.provider.selenium`
+* prefer provider-specific Appium/mobile cloud behavior under `mobile.provider`
 * prefer reporting adaptation code under `reporting`
 * prefer browser-config evolution code under `config.browser`
 * prefer visual-engine adaptation code under `visual`

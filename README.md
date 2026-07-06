@@ -82,6 +82,8 @@ The dual-engine web support added for Playwright TS is intentionally organized b
   * persona session metadata and registries
 * `com.znsio.teswiz.config.browser`
   * browser config loading, Playwright config resolution, and migration reporting
+* `com.znsio.teswiz.mobile.provider`
+  * mobile cloud provider adapters for report-link and future provider-specific Appium behavior
 * `com.znsio.teswiz.web`
   * shared web engine concepts such as `WebEngine`
 * `com.znsio.teswiz.web.provider`
