@@ -187,6 +187,7 @@ class Setup {
     static void loadAndUpdateConfigParameters(String configFilePath) {
         configs.put(CONFIG_FILE, configFilePath);
         buildMapOfRequiredProperties();
+        setBrowserConfigFilePath();
         SensitiveDataMasker.setShowSensitiveData(getBooleanValueFromConfigs(SHOW_SENSITIVE_DATA));
     }
 

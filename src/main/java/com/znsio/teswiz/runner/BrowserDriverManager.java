@@ -49,7 +49,6 @@ import static com.znsio.teswiz.runner.Setup.CAPS;
 import static com.znsio.teswiz.runner.Setup.HEADLESS;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
-import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.OsUtils;
 import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 import com.znsio.teswiz.tools.ReportPortalLogger;
@@ -61,7 +60,6 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 class BrowserDriverManager {
     private static final Logger LOGGER = LogManager.getLogger(BrowserDriverManager.class.getName());
     private static final int MAX_NUMBER_OF_WEB_DRIVERS = Runner.getMaxNumberOfWebDrivers();
-    private static final String BROWSER_CONFIG_SCHEMA_FILE = "BrowserConfigSchema.json";
     private static final String ACCEPT_INSECURE_CERTS = "acceptInsecureCerts";
     private static final String VERBOSE_LOGGING = "verboseLogging";
     private static final String MAXIMIZE = "maximize";
@@ -122,19 +120,9 @@ class BrowserDriverManager {
 
     @org.jetbrains.annotations.NotNull
     private static JSONObject getBrowserConfig(TestExecutionContext context) {
-        String browserConfigFile = Runner.getBrowserConfigFile();
-        String updatedBrowserConfigFileForThisTest = context
-                .getTestStateAsString(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST);
-        if (null != updatedBrowserConfigFileForThisTest) {
-            browserConfigFile = updatedBrowserConfigFileForThisTest;
-            LOGGER.debug("Using UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST (instead of default BROWSER_CONFIG_FILE): "
-                    + browserConfigFile);
-        }
-        LOGGER.info("Using BROWSER_CONFIG_FILE: " + browserConfigFile);
-        JSONObject browserConfig = Runner.getBrowserConfigFileContents(browserConfigFile);
-        return JsonSchemaValidator.validateJsonFileAgainstSchema(browserConfigFile,
-                browserConfig.toString(),
-                BROWSER_CONFIG_SCHEMA_FILE);
+        JSONObject browserConfig = BrowserConfigLoader.load(context);
+        LOGGER.info("Using BROWSER_CONFIG_FILE: " + Runner.getBrowserConfigFile());
+        return browserConfig;
     }
 
     private static String getBaseUrl(String userPersona) {

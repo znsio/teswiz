@@ -21,9 +21,21 @@ function normalizeBrowserName(browserName) {
 }
 
 async function getBrowser(browserName) {
+  return getBrowserWithConfig(browserName, {});
+}
+
+async function getBrowserWithConfig(browserName, browserConfig = {}) {
   const normalizedBrowserName = normalizeBrowserName(browserName);
-  if (browsers.has(normalizedBrowserName)) {
-    return browsers.get(normalizedBrowserName);
+  const browserKey = JSON.stringify({
+    browserName: normalizedBrowserName,
+    channel: browserConfig.channel || null,
+    executablePath: browserConfig.executablePath || null,
+    headless: browserConfig.headless ?? true,
+    proxy: browserConfig.launchOptions?.proxy || null,
+    launchArgs: browserConfig.launchArgs || [],
+  });
+  if (browsers.has(browserKey)) {
+    return browsers.get(browserKey);
   }
 
   const browserType =
@@ -32,8 +44,24 @@ async function getBrowser(browserName) {
       : normalizedBrowserName === "webkit"
         ? webkit
         : chromium;
-  const browser = await browserType.launch({ headless: true });
-  browsers.set(normalizedBrowserName, browser);
+  const launchConfig = {
+    headless: browserConfig.headless ?? true,
+  };
+  if (browserConfig.channel) {
+    launchConfig.channel = browserConfig.channel;
+  }
+  if (browserConfig.executablePath) {
+    launchConfig.executablePath = browserConfig.executablePath;
+  }
+  if (browserConfig.launchArgs?.length) {
+    launchConfig.args = browserConfig.launchArgs;
+  }
+  if (browserConfig.launchOptions?.proxy) {
+    launchConfig.proxy = browserConfig.launchOptions.proxy;
+  }
+
+  const browser = await browserType.launch(launchConfig);
+  browsers.set(browserKey, browser);
   return browser;
 }
 
@@ -112,8 +140,8 @@ rl.on("line", async (line) => {
         process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
         break;
       case "createSession": {
-        const browser = await getBrowser(payload.browserName);
-        const context = await browser.newContext();
+        const browser = await getBrowserWithConfig(payload.browserName, payload.browserConfig || {});
+        const context = await browser.newContext(payload.browserConfig?.contextOptions || {});
         const page = await context.newPage();
         const session = {
           sessionId: randomUUID(),

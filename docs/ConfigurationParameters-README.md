@@ -53,7 +53,55 @@ These can be overridden by providing the same either as environment variables or
     SET_HARD_GATE=true -> Enables Hard Gate for test execution. See [Hard Gate](HardGate.md) for more information 
     TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE
     TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
-    BROWSER_CONFIG_FILE=./src/test/resources/com/znsio/teswiz/features/configs/browser_config.json -> json containing browser configurations
+    BROWSER_CONFIG_FILE=./src/test/resources/com/znsio/teswiz/features/configs/browser_config.json -> json containing browser configurations for Selenium and Playwright TS web execution
+
+For `WEB_ENGINE=playwright-ts`, teswiz reuses `BROWSER_CONFIG_FILE` with backward compatibility:
+
+    * Existing Selenium-style `browser_config.json` files continue to work without changes
+    * Playwright currently reuses compatible legacy fields such as:
+        - `headlessOptions.headless`
+        - `headlessOptions.include`
+        - `arguments`
+        - `acceptInsecureCerts`
+        - proxy-related settings such as `noProxy`
+    * Selenium-specific fields that do not map safely to Playwright are ignored unless explicitly provided in a Playwright override block
+    * The legacy `binary` field is not reused automatically for Playwright because it is often used today for Electron-specific setups
+
+An optional Playwright-specific override block can be added under a browser entry while keeping the current JSON valid:
+
+```json
+{
+  "chrome": {
+    "arguments": [
+      "use-fake-device-for-media-stream"
+    ],
+    "headlessOptions": {
+      "headless": false,
+      "include": [
+        "disable-gpu"
+      ]
+    },
+    "acceptInsecureCerts": true,
+    "playwright": {
+      "launchOptions": {
+        "headless": true,
+        "args": [
+          "lang=en-US"
+        ],
+        "channel": "chrome",
+        "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+      },
+      "contextOptions": {
+        "ignoreHTTPSErrors": false,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      }
+    }
+  }
+}
+```
 
 # Overriding the BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE for Web execution
 The BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE once set, cannot be changed for the test execution.

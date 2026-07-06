@@ -3,8 +3,11 @@ package com.znsio.teswiz.runner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +26,8 @@ class PlaywrightWorkerManagerTest {
     void shouldReuseSameWorkerClientForContextAndStartItOnlyOnce() {
         TestExecutionContext context = new TestExecutionContext("playwright-worker-manager");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
-        PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient);
+        PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
+                new StubPlaywrightBrowserConfigResolver());
 
         PlaywrightWorkerClient firstClient = manager.getOrStart(context);
         PlaywrightWorkerClient secondClient = manager.getOrStart(context);
@@ -38,7 +42,8 @@ class PlaywrightWorkerManagerTest {
         TestExecutionContext context = new TestExecutionContext("playwright-session-handle");
         context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, "/tmp/playwright-session-handle");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
-        PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient);
+        PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
+                new StubPlaywrightBrowserConfigResolver());
 
         SessionHandle sessionHandle = manager.createSessionHandle("buyer", "chrome", Platform.web, context);
 
@@ -51,13 +56,17 @@ class PlaywrightWorkerManagerTest {
         assertThat(sessionHandle.metadata()).containsEntry("contextId", "context-1");
         assertThat(sessionHandle.metadata()).containsEntry("pageId", "page-1");
         assertThat(sessionHandle.metadata()).containsEntry("workerSessionId", "playwright-session-1");
+        assertThat(workerClient.lastBrowserConfig()).isNotNull();
+        assertThat(workerClient.lastBrowserConfig().getBoolean("headless")).isTrue();
+        assertThat(workerClient.lastBrowserConfig().getJSONArray("launchArgs").toList()).contains("--disable-gpu");
     }
 
     @Test
     void shouldCloseWorkerAndClearItFromContextOnShutdown() {
         TestExecutionContext context = new TestExecutionContext("playwright-shutdown");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
-        PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient);
+        PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
+                new StubPlaywrightBrowserConfigResolver());
 
         manager.getOrStart(context);
         manager.shutdown(context);
@@ -70,6 +79,7 @@ class PlaywrightWorkerManagerTest {
         private final AtomicInteger startCount = new AtomicInteger();
         private final AtomicInteger closeCount = new AtomicInteger();
         private boolean running;
+        private JSONObject lastBrowserConfig;
 
         FakePlaywrightWorkerClient() {
             super(Path.of("ignored-worker.mjs"));
@@ -93,6 +103,13 @@ class PlaywrightWorkerManagerTest {
         }
 
         @Override
+        public synchronized PlaywrightWorkerSession createSession(String userPersona, String browserName,
+                JSONObject browserConfig) {
+            lastBrowserConfig = browserConfig;
+            return createSession(userPersona, browserName);
+        }
+
+        @Override
         public synchronized void close() {
             closeCount.incrementAndGet();
             running = false;
@@ -104,6 +121,18 @@ class PlaywrightWorkerManagerTest {
 
         int closeCount() {
             return closeCount.get();
+        }
+
+        JSONObject lastBrowserConfig() {
+            return lastBrowserConfig;
+        }
+    }
+
+    private static class StubPlaywrightBrowserConfigResolver extends PlaywrightBrowserConfigResolver {
+        @Override
+        PlaywrightBrowserConfig resolve(String browserName, TestExecutionContext context) {
+            return new PlaywrightBrowserConfig(browserName, true, List.of("--disable-gpu"), null, null,
+                    Map.of("ignoreHTTPSErrors", true), Map.of());
         }
     }
 }
