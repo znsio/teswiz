@@ -14,6 +14,7 @@ import static java.lang.String.valueOf;
 
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
@@ -36,6 +37,8 @@ import org.assertj.core.api.SoftAssertions;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -46,6 +49,7 @@ import com.applitools.eyes.FileLogger;
 import com.applitools.eyes.MatchLevel;
 import com.applitools.eyes.ProxySettings;
 import com.applitools.eyes.RectangleSize;
+import com.applitools.eyes.Region;
 import com.applitools.eyes.TestResultContainer;
 import com.applitools.eyes.TestResults;
 import com.applitools.eyes.TestResultsStatus;
@@ -78,6 +82,7 @@ import com.znsio.teswiz.tools.OsUtils;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import com.znsio.teswiz.tools.Wait;
+import javax.imageio.ImageIO;
 
 public class Visual {
     private static final Logger LOGGER = LogManager.getLogger(Visual.class.getName());
@@ -100,6 +105,8 @@ public class Visual {
     private final boolean isVerboseLoggingEnabled;
     private final WebDriver innerDriver;
     private final String userPersona;
+    private final com.applitools.eyes.images.Eyes eyesOnPlaywrightWeb;
+    private final PlaywrightVisualCheckSettingsMapper playwrightVisualCheckSettingsMapper;
     private String applitoolsLogFileNameForWeb = NOT_SET;
     private EyesRunner seleniumEyesRunner;
 
@@ -147,6 +154,14 @@ public class Visual {
         this.userPersona = userPersona;
         appName = appName.equalsIgnoreCase(DEFAULT) ? (String) this.applitoolsConfig.get(
                 APPLITOOLS.APP_NAME) : appName;
+        playwrightVisualCheckSettingsMapper = innerDriver instanceof PlaywrightWebDriver
+                ? new PlaywrightVisualCheckSettingsMapper(by -> {
+                    org.openqa.selenium.Rectangle rectangle = innerDriver.findElement(by).getRect();
+                    return new Region(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+                })
+                : null;
+        eyesOnPlaywrightWeb = instantiatePlaywrightWebEyes(driverType, platform, innerDriver, appName, testName,
+                isVisualTestingEnabled);
         eyesOnApp = instantiateAppiumEyes(driverType, platform, innerDriver, appName, testName,
                 isVisualTestingEnabled);
         eyesOnWeb = instantiateWebEyes(driverType, platform, innerDriver, appName, testName,
@@ -174,6 +189,8 @@ public class Visual {
         this.innerDriver = null;
         this.isVerboseLoggingEnabled = getValueFromConfig(APPLITOOLS.SHOW_LOGS, true);
         this.userPersona = userPersona;
+        this.eyesOnPlaywrightWeb = null;
+        this.playwrightVisualCheckSettingsMapper = null;
         this.context.addTestState(TEST_CONTEXT.PDF_FILE_NAME, pdfFileName);
     }
 
@@ -466,10 +483,6 @@ public class Visual {
         LOGGER.debug(format("instantiateWebEyes: isVisualTestingEnabled: %s",
                 isVisualTestingEnabled));
         if (innerDriver instanceof PlaywrightWebDriver) {
-            if (isVisualTestingEnabled) {
-                throw new VisualTestSetupException(
-                        "Visual validation for WEB_ENGINE=playwright-ts is not implemented yet. Use Selenium for visual web runs in the current phase.");
-            }
             configureEyesRunnerForWeb(false);
             Eyes disabledEyes = new Eyes(seleniumEyesRunner);
             disabledEyes.setIsDisabled(true);
@@ -521,6 +534,58 @@ public class Visual {
         return webEyes;
     }
 
+    private com.applitools.eyes.images.Eyes instantiatePlaywrightWebEyes(String driverType,
+            Platform platform,
+            WebDriver innerDriver,
+            String appName,
+            String testName,
+            boolean isVisualTestingEnabled) {
+        if (!(innerDriver instanceof PlaywrightWebDriver) || !driverType.equals(Driver.WEB_DRIVER)) {
+            return null;
+        }
+        FigmaApplitoolsConfig figmaApplitoolsConfig = getFigmaApplitoolsConfig(context);
+        if (null != figmaApplitoolsConfig) {
+            appName = figmaApplitoolsConfig.getAppName();
+            testName = figmaApplitoolsConfig.getTestName();
+        } else {
+            appName = appName + "-" + platform;
+        }
+
+        com.applitools.eyes.images.Eyes eyesImages = new com.applitools.eyes.images.Eyes();
+        com.applitools.eyes.config.Configuration configuration = new com.applitools.eyes.config.Configuration();
+        configuration.setServerUrl(getValueFromConfig(APPLITOOLS.SERVER_URL, DEFAULT_APPLITOOLS_SERVER_URL));
+        configuration.setApiKey(getApplitoolsAPIKey(isVisualTestingEnabled));
+        configuration.setBatch((BatchInfo) getValueFromConfig(APPLITOOLS.BATCH_INFO));
+        configuration.setBranchName(valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
+        configuration.setEnvironmentName(targetEnvironment);
+        configuration.setMatchLevel((MatchLevel) getValueFromConfig(APPLITOOLS.DEFAULT_MATCH_LEVEL, MatchLevel.STRICT));
+        configuration.setSaveNewTests(getValueFromConfig(APPLITOOLS.SAVE_NEW_TESTS_AS_BASELINE, true));
+        configuration.setHostOS(OsUtils.getOsName());
+        configuration.setHostApp(appName);
+        setBaselineEnvName(configuration, null != figmaApplitoolsConfig
+                ? figmaApplitoolsConfig.getBaselineEnvName()
+                : null);
+        eyesImages.setConfiguration(configuration);
+        eyesImages.setIsDisabled(!isVisualTestingEnabled);
+        addCustomPropertiesInPlaywrightWebTestExecution(platform, eyesImages);
+
+        applitoolsLogFileNameForWeb = getApplitoolsLogFileNameFor("web");
+        eyesImages.setLogHandler(new FileLogger(applitoolsLogFileNameForWeb, true, isVerboseLoggingEnabled));
+
+        try {
+            setProxyForPdfExecution(eyesImages);
+            eyesImages.open(appName, testName);
+        } catch (IllegalArgumentException | EyesException e) {
+            String message = format(
+                    "Exception in instantiating Applitools for Playwright Web: '%s', Closing Web-driver instance",
+                    e.getMessage());
+            LOGGER.error(message);
+            innerDriver.quit();
+            throw new VisualTestSetupException(message, e);
+        }
+        return eyesImages;
+    }
+
     private void configureEyesRunnerForWeb(boolean isUFG) {
         int ufgConcurrency = getValueFromConfig(APPLITOOLS.CONCURRENCY, DEFAULT_UFG_CONCURRENCY);
         seleniumEyesRunner = isUFG ? new VisualGridRunner(ufgConcurrency) : new ClassicRunner();
@@ -560,6 +625,13 @@ public class Visual {
     }
 
     private void setBaselineEnvName(Configuration configuration, String baselineEnvName) {
+        if (null != baselineEnvName && !baselineEnvName.isBlank()) {
+            LOGGER.info(format("Set Applitools baseline env name for web: '%s'", baselineEnvName));
+            configuration.setBaselineEnvName(baselineEnvName);
+        }
+    }
+
+    private void setBaselineEnvName(com.applitools.eyes.config.Configuration configuration, String baselineEnvName) {
         if (null != baselineEnvName && !baselineEnvName.isBlank()) {
             LOGGER.info(format("Set Applitools baseline env name for web: '%s'", baselineEnvName));
             configuration.setBaselineEnvName(baselineEnvName);
@@ -607,6 +679,19 @@ public class Visual {
         webEyes.addProperty(Setup.TARGET_ENVIRONMENT,
                 valueOf(getValueFromConfig(Setup.TARGET_ENVIRONMENT)));
         webEyes.addProperty("OsUtils.getUsername()", OsUtils.getUserName());
+    }
+
+    private void addCustomPropertiesInPlaywrightWebTestExecution(Platform platform,
+            com.applitools.eyes.images.Eyes eyesImages) {
+        eyesImages.addProperty("USER_PERSONA", userPersona);
+        eyesImages.addProperty("HOST_NAME", getHostName());
+        eyesImages.addProperty(Setup.BRANCH_NAME,
+                valueOf(getValueFromConfig(Setup.BRANCH_NAME)));
+        eyesImages.addProperty(Setup.PLATFORM, platform.name());
+        eyesImages.addProperty(Setup.RUN_IN_CI, valueOf(getValueFromConfig(Setup.RUN_IN_CI)));
+        eyesImages.addProperty(Setup.TARGET_ENVIRONMENT,
+                valueOf(getValueFromConfig(Setup.TARGET_ENVIRONMENT)));
+        eyesImages.addProperty("OsUtils.getUsername()", OsUtils.getUserName());
     }
 
     @NotNull
@@ -792,7 +877,11 @@ public class Visual {
                 eyesOnApp.getIsDisabled()));
 
         LocalDateTime webStart = LocalDateTime.now();
-        eyesOnWeb.checkWindow(formattedTagName);
+        if (null != eyesOnPlaywrightWeb) {
+            eyesOnPlaywrightWeb.check(formattedTagName, com.applitools.eyes.images.Target.image(getPlaywrightScreenshot()));
+        } else {
+            eyesOnWeb.checkWindow(formattedTagName);
+        }
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
         if (isEnableBenchmarkPerValidation) {
@@ -828,7 +917,12 @@ public class Visual {
                 format("check: eyesOnApp.getIsDisabled(): %s", eyesOnApp.getIsDisabled()));
 
         LocalDateTime webStart = LocalDateTime.now();
-        eyesOnWeb.check(formattedTagName, checkSettings);
+        if (null != eyesOnPlaywrightWeb) {
+            eyesOnPlaywrightWeb.check(formattedTagName,
+                    playwrightVisualCheckSettingsMapper.toImageCheckSettings(checkSettings, getPlaywrightScreenshot()));
+        } else {
+            eyesOnWeb.check(formattedTagName, checkSettings);
+        }
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
         if (isEnableBenchmarkPerValidation) {
@@ -890,7 +984,12 @@ public class Visual {
                 eyesOnApp.getIsDisabled()));
 
         LocalDateTime webStart = LocalDateTime.now();
-        eyesOnWeb.check(getFormattedTagName(fromScreen, tag), Target.window().matchLevel(level));
+        if (null != eyesOnPlaywrightWeb) {
+            eyesOnPlaywrightWeb.check(getFormattedTagName(fromScreen, tag),
+                    com.applitools.eyes.images.Target.image(getPlaywrightScreenshot()).matchLevel(level));
+        } else {
+            eyesOnWeb.check(getFormattedTagName(fromScreen, tag), Target.window().matchLevel(level));
+        }
         LocalDateTime webFinish = LocalDateTime.now();
         Duration webDuration = Duration.between(webStart, webFinish);
         if (isEnableBenchmarkPerValidation) {
@@ -938,6 +1037,16 @@ public class Visual {
     }
 
     private void getVisualResultsFromWeb(String userPersona) {
+        if (null != eyesOnPlaywrightWeb) {
+            if (Boolean.TRUE.equals(eyesOnPlaywrightWeb.getIsDisabled())) {
+                return;
+            }
+            LOGGER.info(format("getVisualResultsFromWeb: user: %s", userPersona));
+            TestResults testResults = eyesOnPlaywrightWeb.close(false);
+            checkEachTestVisualResults(userPersona, "web", null, testResults);
+            LOGGER.info(format("Applitools logs available here: %s", applitoolsLogFileNameForWeb));
+            return;
+        }
         if (Boolean.TRUE.equals(eyesOnWeb.getIsDisabled())) {
             return;
         }
@@ -1043,6 +1152,15 @@ public class Visual {
                 onPlatform, userPersona, context.getTestName(), json);
         LOGGER.info(message);
         ReportPortalLogger.logDebugMessage(message);
+    }
+
+    private BufferedImage getPlaywrightScreenshot() {
+        try {
+            byte[] screenshotBytes = ((TakesScreenshot) innerDriver).getScreenshotAs(OutputType.BYTES);
+            return ImageIO.read(new ByteArrayInputStream(screenshotBytes));
+        } catch (IOException e) {
+            throw new VisualTestSetupException("Unable to decode screenshot for Playwright visual validation", e);
+        }
     }
 
     public static void addMobileCapabilitiesToTestContextForVisualTesting(DesiredCapabilities desiredCapabilities) {

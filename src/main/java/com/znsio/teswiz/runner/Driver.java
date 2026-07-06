@@ -90,10 +90,6 @@ public class Driver {
         this.appName = appName;
         this.driverForPlatform = forPlatform;
         this.isRunningInHeadlessMode = isRunInHeadlessMode;
-        if (webDriver instanceof PlaywrightWebDriver && Runner.isVisualTestingEnabled()) {
-            throw new InvalidTestDataException(
-                    "Visual validation for WEB_ENGINE=playwright-ts is not implemented yet. Use Selenium for visual web runs in the current phase.");
-        }
         instantiateEyes(testName, webDriver);
     }
 

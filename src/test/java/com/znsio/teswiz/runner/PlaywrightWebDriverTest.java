@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Rectangle;
 
 class PlaywrightWebDriverTest {
     private PlaywrightWorkerClient workerClient;
@@ -52,6 +53,9 @@ class PlaywrightWebDriverTest {
         assertThat(driver.findElement(By.id("status")).getText()).isEqualTo("Saved Anand");
         assertThat(driver.findElements(By.cssSelector(".item"))).hasSize(2);
         assertThat(driver.findElement(By.id("status")).isDisplayed()).isTrue();
+        Rectangle nameBounds = driver.findElement(By.id("name")).getRect();
+        assertThat(nameBounds.getWidth()).isPositive();
+        assertThat(nameBounds.getHeight()).isPositive();
     }
 
     private Path writeTestPage() throws Exception {

@@ -60,6 +60,7 @@ Visual AI testing as part of functional automation.
 
 teswiz also supports:
 * Applitools Native Mobile Layout through `useNML`
+* Applitools visual validation for web on both Selenium and Playwright TS
 * Verifying application with Figma designs using the explicit step
   `I have my Figma design with app name "...", test name "..." and baseline name "..." available in Applitools`
 

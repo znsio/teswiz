@@ -156,6 +156,17 @@ public class PlaywrightWorkerClient implements AutoCloseable {
                 .payload().optString("value", "");
     }
 
+    public synchronized org.openqa.selenium.Rectangle getElementRect(String sessionId,
+            PlaywrightLocatorReference locatorReference) {
+        JSONObject payload = sendElementCommand(sessionId, locatorReference, "getBoundingBox", null)
+                .payload().getJSONObject("value");
+        return new org.openqa.selenium.Rectangle(
+                payload.getInt("x"),
+                payload.getInt("y"),
+                payload.getInt("width"),
+                payload.getInt("height"));
+    }
+
     public synchronized Object executeScript(String sessionId, String script) {
         JSONObject payload = sendCommand("executeScript", new JSONObject().put("sessionId", sessionId)
                 .put("script", script)).payload();

@@ -108,17 +108,19 @@ final class PlaywrightWebElement implements WebElement {
 
     @Override
     public Point getLocation() {
-        return new Point(0, 0);
+        Rectangle rectangle = getRect();
+        return new Point(rectangle.getX(), rectangle.getY());
     }
 
     @Override
     public Dimension getSize() {
-        return new Dimension(0, 0);
+        Rectangle rectangle = getRect();
+        return new Dimension(rectangle.getWidth(), rectangle.getHeight());
     }
 
     @Override
     public Rectangle getRect() {
-        return new Rectangle(getLocation(), getSize());
+        return workerClient.getElementRect(session.sessionId(), locatorReference);
     }
 
     @Override

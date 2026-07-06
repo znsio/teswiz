@@ -96,6 +96,18 @@ Example:
     visually.check(SCREEN_NAME, "entered login details",
                        Target.window().fully().layout(userNameElement, passwordElement));
 
+## Web engine notes
+
+* `WEB_ENGINE=selenium`
+  * uses the Selenium Applitools SDK path
+  * supports Ultrafast Grid (`useUFG`) as documented above
+* `WEB_ENGINE=playwright-ts`
+  * uses a Playwright-specific screenshot-based Applitools Images adapter
+  * preserves teswiz scenario naming, Figma naming, batch identity, baseline environment selection, logs, and visual result handling
+  * supports `checkWindow(...)`, `checkWindow(..., MatchLevel)`, and selector-based `Target.window().layout/strict/content/ignore(...)`
+  * does not yet support Selenium-specific constructs such as frame-based visual checks, `Target.region(...)`, floating regions, dynamic regions, or accessibility regions
+  * does not reuse Selenium Ultrafast Grid rendering semantics; Playwright visual checks currently validate the captured Playwright screenshot directly
+
 # Using explicit Figma / Applitools naming
 
 If you want to compare against an existing Figma-published Applitools baseline, use the explicit step below:

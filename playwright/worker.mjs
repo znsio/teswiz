@@ -236,6 +236,18 @@ rl.on("line", async (line) => {
           case "getCssValue":
             value = await locator.evaluate((node, propertyName) => window.getComputedStyle(node).getPropertyValue(propertyName), payload.value);
             break;
+          case "getBoundingBox": {
+            const box = await locator.boundingBox();
+            value = box
+              ? {
+                  x: Math.round(box.x),
+                  y: Math.round(box.y),
+                  width: Math.round(box.width),
+                  height: Math.round(box.height),
+                }
+              : { x: 0, y: 0, width: 0, height: 0 };
+            break;
+          }
           default:
             throw new Error(`Unsupported element action: ${payload.elementAction}`);
         }
