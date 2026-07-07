@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.WindowType;
 
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
@@ -85,6 +86,33 @@ class PlaywrightWebDriverTest {
                 "data-engine",
                 "playwright-ts");
         assertThat(driver.findElement(By.id("status")).getAttribute("data-engine")).isEqualTo("playwright-ts");
+    }
+
+    @Test
+    void shouldOpenAndSwitchBetweenTabs() throws Exception {
+        Path htmlFile = writeTestPage();
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+        PlaywrightWorkerSession session = workerClient.createSession("guest", "chromium");
+        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+
+        driver.get(htmlFile.toUri().toString());
+        String originalHandle = driver.getWindowHandle();
+
+        driver.switchTo().newWindow(WindowType.TAB);
+        String newHandle = driver.getWindowHandle();
+        assertThat(newHandle).isNotEqualTo(originalHandle);
+        assertThat(driver.getWindowHandles()).contains(originalHandle, newHandle);
+
+        driver.get("data:text/html,<title>Second Tab</title><div id='tab'>tab-2</div>");
+        assertThat(driver.getTitle()).isEqualTo("Second Tab");
+
+        driver.switchTo().window(originalHandle);
+        assertThat(driver.getWindowHandle()).isEqualTo(originalHandle);
+        assertThat(driver.getTitle()).isEqualTo("Playwright Bridge");
+
+        driver.switchTo().window(newHandle);
+        assertThat(driver.findElement(By.id("tab")).getText()).isEqualTo("tab-2");
     }
 
     private Path writeTestPage() throws Exception {

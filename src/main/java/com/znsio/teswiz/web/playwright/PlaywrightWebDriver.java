@@ -16,6 +16,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WindowType;
 
 public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor, TakesScreenshot {
     private final PlaywrightWorkerClient workerClient;
@@ -74,17 +75,65 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
     @Override
     public Set<String> getWindowHandles() {
-        return Collections.singleton(session.pageId());
+        return workerClient.getWindowHandles(session.sessionId());
     }
 
     @Override
     public String getWindowHandle() {
-        return session.pageId();
+        return workerClient.getWindowHandle(session.sessionId());
     }
 
     @Override
     public TargetLocator switchTo() {
-        throw new UnsupportedOperationException("switchTo is not implemented for Playwright TS yet");
+        return new TargetLocator() {
+            @Override
+            public WebDriver frame(int index) {
+                throw new UnsupportedOperationException("switchTo().frame(int) is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public WebDriver frame(String nameOrId) {
+                throw new UnsupportedOperationException("switchTo().frame(String) is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public WebDriver frame(WebElement frameElement) {
+                throw new UnsupportedOperationException("switchTo().frame(WebElement) is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public WebDriver parentFrame() {
+                throw new UnsupportedOperationException("switchTo().parentFrame() is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public WebDriver window(String nameOrHandle) {
+                workerClient.switchToWindow(session.sessionId(), nameOrHandle);
+                return PlaywrightWebDriver.this;
+            }
+
+            @Override
+            public WebDriver defaultContent() {
+                return PlaywrightWebDriver.this;
+            }
+
+            @Override
+            public WebElement activeElement() {
+                throw new UnsupportedOperationException("switchTo().activeElement() is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public org.openqa.selenium.Alert alert() {
+                throw new UnsupportedOperationException("switchTo().alert() is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public WebDriver newWindow(WindowType typeHint) {
+                WindowType resolvedType = null == typeHint ? WindowType.TAB : typeHint;
+                workerClient.openNewWindow(session.sessionId(), resolvedType.name());
+                return PlaywrightWebDriver.this;
+            }
+        };
     }
 
     @Override

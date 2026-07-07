@@ -5,7 +5,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -121,6 +123,33 @@ public class PlaywrightWorkerClient implements AutoCloseable {
     public synchronized String getPageSource(String sessionId) {
         return sendCommand("getPageSource", new JSONObject().put("sessionId", sessionId))
                 .payload().getString("content");
+    }
+
+    public synchronized Set<String> getWindowHandles(String sessionId) {
+        org.json.JSONArray handles = sendCommand("getWindowHandles", new JSONObject().put("sessionId", sessionId))
+                .payload().getJSONArray("handles");
+        Set<String> values = new LinkedHashSet<>();
+        for (int index = 0; index < handles.length(); index++) {
+            values.add(handles.getString(index));
+        }
+        return values;
+    }
+
+    public synchronized String getWindowHandle(String sessionId) {
+        return sendCommand("getWindowHandle", new JSONObject().put("sessionId", sessionId))
+                .payload().getString("handle");
+    }
+
+    public synchronized String switchToWindow(String sessionId, String handle) {
+        return sendCommand("switchToWindow", new JSONObject().put("sessionId", sessionId).put("handle", handle))
+                .payload().getString("handle");
+    }
+
+    public synchronized String openNewWindow(String sessionId, String windowType) {
+        return sendCommand("openNewWindow", new JSONObject()
+                .put("sessionId", sessionId)
+                .put("windowType", windowType))
+                .payload().getString("handle");
     }
 
     public synchronized String captureScreenshot(String sessionId) {

@@ -81,7 +81,9 @@ async function finalizeSessionArtifacts(session) {
 
 async function closeSessionResources(session) {
   await finalizeSessionArtifacts(session);
-  await session.page.close().catch(() => {});
+  for (const page of session.pages.values()) {
+    await page.close().catch(() => {});
+  }
   await session.context.close().catch(() => {});
 }
 
@@ -91,6 +93,46 @@ function getSession(sessionId) {
     throw new Error(`Unknown session: ${sessionId}`);
   }
   return session;
+}
+
+function getCurrentPage(session) {
+  const page = session.pages.get(session.currentPageId);
+  if (!page) {
+    throw new Error(`Unknown active page for session: ${session.sessionId}`);
+  }
+  return page;
+}
+
+function registerPage(session, page, pageId = `page-${randomUUID()}`) {
+  for (const [existingHandle, existingPage] of session.pages.entries()) {
+    if (existingPage === page) {
+      session.currentPageId = existingHandle;
+      return existingHandle;
+    }
+  }
+  session.pages.set(pageId, page);
+  session.currentPageId = pageId;
+  return pageId;
+}
+
+function attachPageObservers(session, page) {
+  page.on("console", (message) => {
+    session.consoleMessages.push(`[${message.type()}] ${message.text()}`);
+  });
+  page.on("pageerror", (error) => {
+    session.consoleMessages.push(`[pageerror] ${error.message || String(error)}`);
+  });
+  page.on("close", () => {
+    for (const [pageId, trackedPage] of session.pages.entries()) {
+      if (trackedPage === page) {
+        session.pages.delete(pageId);
+        if (session.currentPageId === pageId && session.pages.size > 0) {
+          session.currentPageId = session.pages.keys().next().value;
+        }
+        break;
+      }
+    }
+  });
 }
 
 function buildLocatorRaw(root, locatorReference) {
@@ -198,71 +240,97 @@ rl.on("line", async (line) => {
         }
         const page = await context.newPage();
         const consoleMessages = [];
-        page.on("console", (message) => {
-          consoleMessages.push(`[${message.type()}] ${message.text()}`);
-        });
-        page.on("pageerror", (error) => {
-          consoleMessages.push(`[pageerror] ${error.message || String(error)}`);
-        });
         const session = {
           sessionId,
           userPersona: payload.userPersona,
           browserName: payload.browserName,
           contextId: `context-${randomUUID()}`,
-          pageId: `page-${randomUUID()}`,
           context,
-          page,
+          pages: new Map(),
+          currentPageId: null,
           tracePath,
           harPath,
           consoleLogPath,
           consoleMessages,
         };
+        attachPageObservers(session, page);
+        const pageId = registerPage(session, page);
+        context.on("page", (newPage) => {
+          attachPageObservers(session, newPage);
+          registerPage(session, newPage);
+        });
         sessions.set(session.sessionId, session);
         process.stdout.write(`${okResponse(requestId, action, {
           sessionId: session.sessionId,
           userPersona: session.userPersona,
           browserName: session.browserName,
           contextId: session.contextId,
-          pageId: session.pageId,
+          pageId,
         })}\n`);
         break;
       }
       case "navigateTo": {
         const session = getSession(payload.sessionId);
-        await session.page.goto(payload.url, { waitUntil: "load" });
+        await getCurrentPage(session).goto(payload.url, { waitUntil: "load" });
         process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
         break;
       }
       case "getCurrentUrl": {
         const session = getSession(payload.sessionId);
-        process.stdout.write(`${okResponse(requestId, action, { url: session.page.url() })}\n`);
+        process.stdout.write(`${okResponse(requestId, action, { url: getCurrentPage(session).url() })}\n`);
         break;
       }
       case "getTitle": {
         const session = getSession(payload.sessionId);
-        process.stdout.write(`${okResponse(requestId, action, { title: await session.page.title() })}\n`);
+        process.stdout.write(`${okResponse(requestId, action, { title: await getCurrentPage(session).title() })}\n`);
         break;
       }
       case "getPageSource": {
         const session = getSession(payload.sessionId);
-        process.stdout.write(`${okResponse(requestId, action, { content: await session.page.content() })}\n`);
+        process.stdout.write(`${okResponse(requestId, action, { content: await getCurrentPage(session).content() })}\n`);
+        break;
+      }
+      case "getWindowHandles": {
+        const session = getSession(payload.sessionId);
+        process.stdout.write(`${okResponse(requestId, action, { handles: [...session.pages.keys()] })}\n`);
+        break;
+      }
+      case "getWindowHandle": {
+        const session = getSession(payload.sessionId);
+        process.stdout.write(`${okResponse(requestId, action, { handle: session.currentPageId })}\n`);
+        break;
+      }
+      case "switchToWindow": {
+        const session = getSession(payload.sessionId);
+        if (!session.pages.has(payload.handle)) {
+          throw new Error(`Unknown window handle: ${payload.handle}`);
+        }
+        session.currentPageId = payload.handle;
+        process.stdout.write(`${okResponse(requestId, action, { handle: session.currentPageId })}\n`);
+        break;
+      }
+      case "openNewWindow": {
+        const session = getSession(payload.sessionId);
+        const page = await session.context.newPage();
+        const handle = registerPage(session, page);
+        process.stdout.write(`${okResponse(requestId, action, { handle })}\n`);
         break;
       }
       case "screenshot": {
         const session = getSession(payload.sessionId);
-        const screenshot = await session.page.screenshot({ type: "png" });
+        const screenshot = await getCurrentPage(session).screenshot({ type: "png" });
         process.stdout.write(`${okResponse(requestId, action, { base64: screenshot.toString("base64") })}\n`);
         break;
       }
       case "countElements": {
         const session = getSession(payload.sessionId);
-        const locator = buildLocatorRaw(session.page, payload.locator);
+        const locator = buildLocatorRaw(getCurrentPage(session), payload.locator);
         process.stdout.write(`${okResponse(requestId, action, { count: await locator.count() })}\n`);
         break;
       }
       case "elementAction": {
         const session = getSession(payload.sessionId);
-        const locator = buildLocator(session.page, payload.locator);
+        const locator = buildLocator(getCurrentPage(session), payload.locator);
         let value;
         switch (payload.elementAction) {
           case "click":
@@ -321,8 +389,9 @@ rl.on("line", async (line) => {
       }
       case "executeScript": {
         const session = getSession(payload.sessionId);
-        const scriptArgs = await Promise.all((payload.args || []).map((arg) => resolveScriptArg(session.page, arg)));
-        const value = await session.page.evaluate(
+        const page = getCurrentPage(session);
+        const scriptArgs = await Promise.all((payload.args || []).map((arg) => resolveScriptArg(page, arg)));
+        const value = await page.evaluate(
           ([script, args]) => {
             const executor = new Function("args", `return (function() { ${script} }).apply(null, args);`);
             return executor(args);
@@ -334,19 +403,19 @@ rl.on("line", async (line) => {
       }
       case "goBack": {
         const session = getSession(payload.sessionId);
-        await session.page.goBack();
+        await getCurrentPage(session).goBack();
         process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
         break;
       }
       case "goForward": {
         const session = getSession(payload.sessionId);
-        await session.page.goForward();
+        await getCurrentPage(session).goForward();
         process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
         break;
       }
       case "refresh": {
         const session = getSession(payload.sessionId);
-        await session.page.reload({ waitUntil: "load" });
+        await getCurrentPage(session).reload({ waitUntil: "load" });
         process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
         break;
       }
