@@ -200,8 +200,23 @@ public class PlaywrightWorkerClient implements AutoCloseable {
                 .put("height", size.getHeight()));
     }
 
+    public synchronized void setWindowPosition(String sessionId, org.openqa.selenium.Point position) {
+        sendCommand("setWindowPosition", new JSONObject()
+                .put("sessionId", sessionId)
+                .put("x", position.getX())
+                .put("y", position.getY()));
+    }
+
     public synchronized void maximizeWindow(String sessionId) {
         sendCommand("maximizeWindow", new JSONObject().put("sessionId", sessionId));
+    }
+
+    public synchronized void minimizeWindow(String sessionId) {
+        sendCommand("minimizeWindow", new JSONObject().put("sessionId", sessionId));
+    }
+
+    public synchronized void fullscreenWindow(String sessionId) {
+        sendCommand("fullscreenWindow", new JSONObject().put("sessionId", sessionId));
     }
 
     public synchronized void setNavigationTimeout(String sessionId, Duration timeout) {

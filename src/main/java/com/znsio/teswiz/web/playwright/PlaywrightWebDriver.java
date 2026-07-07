@@ -330,7 +330,7 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
                     @Override
                     public void setPosition(Point targetPosition) {
-                        throw new UnsupportedOperationException("manage().window().setPosition() is not implemented for Playwright TS yet");
+                        workerClient.setWindowPosition(session.sessionId(), targetPosition);
                     }
 
                     @Override
@@ -350,12 +350,12 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
                     @Override
                     public void minimize() {
-                        throw new UnsupportedOperationException("manage().window().minimize() is not implemented for Playwright TS yet");
+                        workerClient.minimizeWindow(session.sessionId());
                     }
 
                     @Override
                     public void fullscreen() {
-                        throw new UnsupportedOperationException("manage().window().fullscreen() is not implemented for Playwright TS yet");
+                        workerClient.fullscreenWindow(session.sessionId());
                     }
                 };
             }

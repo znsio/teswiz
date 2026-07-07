@@ -188,13 +188,24 @@ class PlaywrightWebDriverTest {
         assertThat(resized.getWidth()).isEqualTo(900);
         assertThat(resized.getHeight()).isEqualTo(700);
 
+        driver.manage().window().setPosition(new Point(120, 80));
         Point position = driver.manage().window().getPosition();
-        assertThat(position).isEqualTo(new Point(0, 0));
+        assertThat(position).isEqualTo(new Point(120, 80));
+
+        driver.manage().window().minimize();
+        Dimension minimized = driver.manage().window().getSize();
+        assertThat(minimized.getWidth()).isLessThan(resized.getWidth());
+        assertThat(minimized.getHeight()).isLessThan(resized.getHeight());
+
+        driver.manage().window().fullscreen();
+        Dimension fullscreen = driver.manage().window().getSize();
+        assertThat(fullscreen.getWidth()).isGreaterThanOrEqualTo(minimized.getWidth());
+        assertThat(fullscreen.getHeight()).isGreaterThanOrEqualTo(minimized.getHeight());
 
         driver.manage().window().maximize();
         Dimension maximized = driver.manage().window().getSize();
-        assertThat(maximized.getWidth()).isGreaterThanOrEqualTo(resized.getWidth());
-        assertThat(maximized.getHeight()).isGreaterThanOrEqualTo(resized.getHeight());
+        assertThat(maximized.getWidth()).isGreaterThanOrEqualTo(fullscreen.getWidth());
+        assertThat(maximized.getHeight()).isGreaterThanOrEqualTo(fullscreen.getHeight());
     }
 
     @Test

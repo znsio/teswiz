@@ -153,6 +153,13 @@ async function getViewportSize(page) {
   }));
 }
 
+async function getScreenSize(page) {
+  return page.evaluate(() => ({
+    width: window.screen?.availWidth || window.innerWidth || document.documentElement.clientWidth || 1920,
+    height: window.screen?.availHeight || window.innerHeight || document.documentElement.clientHeight || 1080,
+  }));
+}
+
 async function countLocatorMatches(locator, timeoutMs = 0) {
   if (!timeoutMs || timeoutMs <= 0) {
     return locator.count();
@@ -329,6 +336,8 @@ rl.on("line", async (line) => {
           currentPageId: null,
           currentFrame: null,
           pendingDialog: null,
+          windowPosition: { x: 0, y: 0 },
+          lastWindowSize: null,
           navigationTimeoutMs: 30000,
           tracePath,
           harPath,
@@ -469,26 +478,49 @@ rl.on("line", async (line) => {
       case "getWindowSize": {
         const session = getSession(payload.sessionId);
         const size = await getViewportSize(getCurrentPage(session));
+        session.lastWindowSize = size;
         process.stdout.write(`${okResponse(requestId, action, size)}\n`);
         break;
       }
       case "getWindowPosition": {
-        process.stdout.write(`${okResponse(requestId, action, { x: 0, y: 0 })}\n`);
+        const session = getSession(payload.sessionId);
+        process.stdout.write(`${okResponse(requestId, action, session.windowPosition)}\n`);
         break;
       }
       case "setWindowSize": {
         const session = getSession(payload.sessionId);
         await getCurrentPage(session).setViewportSize({ width: payload.width, height: payload.height });
+        session.lastWindowSize = { width: payload.width, height: payload.height };
         process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
+        break;
+      }
+      case "setWindowPosition": {
+        const session = getSession(payload.sessionId);
+        session.windowPosition = { x: payload.x, y: payload.y };
+        process.stdout.write(`${okResponse(requestId, action, session.windowPosition)}\n`);
         break;
       }
       case "maximizeWindow": {
         const session = getSession(payload.sessionId);
-        const size = await getCurrentPage(session).evaluate(() => ({
-          width: window.screen?.availWidth || window.innerWidth || document.documentElement.clientWidth || 1920,
-          height: window.screen?.availHeight || window.innerHeight || document.documentElement.clientHeight || 1080,
-        }));
+        const size = await getScreenSize(getCurrentPage(session));
         await getCurrentPage(session).setViewportSize(size);
+        session.lastWindowSize = size;
+        process.stdout.write(`${okResponse(requestId, action, size)}\n`);
+        break;
+      }
+      case "minimizeWindow": {
+        const session = getSession(payload.sessionId);
+        session.lastWindowSize = session.lastWindowSize || (await getViewportSize(getCurrentPage(session)));
+        const minimizedSize = { width: 240, height: 160 };
+        await getCurrentPage(session).setViewportSize(minimizedSize);
+        process.stdout.write(`${okResponse(requestId, action, minimizedSize)}\n`);
+        break;
+      }
+      case "fullscreenWindow": {
+        const session = getSession(payload.sessionId);
+        const size = await getScreenSize(getCurrentPage(session));
+        await getCurrentPage(session).setViewportSize(size);
+        session.lastWindowSize = size;
         process.stdout.write(`${okResponse(requestId, action, size)}\n`);
         break;
       }
