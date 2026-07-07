@@ -114,6 +114,34 @@ function getPendingDialog(session) {
   return session.pendingDialog;
 }
 
+function normalizeCookie(cookie) {
+  const normalizedCookie = {
+    name: cookie.name,
+    value: cookie.value,
+  };
+  if (cookie.url) {
+    normalizedCookie.url = cookie.url;
+  } else {
+    normalizedCookie.path = cookie.path || "/";
+    if (cookie.domain) {
+      normalizedCookie.domain = cookie.domain;
+    }
+  }
+  if (cookie.expires) {
+    normalizedCookie.expires = cookie.expires;
+  }
+  if (cookie.secure !== undefined) {
+    normalizedCookie.secure = cookie.secure;
+  }
+  if (cookie.httpOnly !== undefined) {
+    normalizedCookie.httpOnly = cookie.httpOnly;
+  }
+  if (cookie.sameSite) {
+    normalizedCookie.sameSite = cookie.sameSite;
+  }
+  return normalizedCookie;
+}
+
 async function getViewportSize(page) {
   const viewport = page.viewportSize();
   if (viewport) {
@@ -430,6 +458,34 @@ rl.on("line", async (line) => {
         }));
         await getCurrentPage(session).setViewportSize(size);
         process.stdout.write(`${okResponse(requestId, action, size)}\n`);
+        break;
+      }
+      case "addCookie": {
+        const session = getSession(payload.sessionId);
+        await session.context.addCookies([normalizeCookie(payload.cookie)]);
+        process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
+        break;
+      }
+      case "getCookies": {
+        const session = getSession(payload.sessionId);
+        const cookies = await session.context.cookies();
+        process.stdout.write(`${okResponse(requestId, action, { cookies })}\n`);
+        break;
+      }
+      case "deleteCookieNamed": {
+        const session = getSession(payload.sessionId);
+        const remainingCookies = (await session.context.cookies()).filter((cookie) => cookie.name !== payload.name);
+        await session.context.clearCookies();
+        if (remainingCookies.length > 0) {
+          await session.context.addCookies(remainingCookies.map(normalizeCookie));
+        }
+        process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
+        break;
+      }
+      case "deleteAllCookies": {
+        const session = getSession(payload.sessionId);
+        await session.context.clearCookies();
+        process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
         break;
       }
       case "getAlert": {

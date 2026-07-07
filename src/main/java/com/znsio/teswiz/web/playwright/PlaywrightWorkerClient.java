@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneOffset;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -201,6 +202,33 @@ public class PlaywrightWorkerClient implements AutoCloseable {
         sendCommand("maximizeWindow", new JSONObject().put("sessionId", sessionId));
     }
 
+    public synchronized void addCookie(String sessionId, org.openqa.selenium.Cookie cookie, String currentUrl) {
+        JSONObject payload = new JSONObject()
+                .put("sessionId", sessionId)
+                .put("cookie", toJson(cookie, currentUrl));
+        sendCommand("addCookie", payload);
+    }
+
+    public synchronized void deleteCookieNamed(String sessionId, String name) {
+        sendCommand("deleteCookieNamed", new JSONObject()
+                .put("sessionId", sessionId)
+                .put("name", name));
+    }
+
+    public synchronized void deleteAllCookies(String sessionId) {
+        sendCommand("deleteAllCookies", new JSONObject().put("sessionId", sessionId));
+    }
+
+    public synchronized List<JSONObject> getCookies(String sessionId) {
+        JSONArray cookies = sendCommand("getCookies", new JSONObject().put("sessionId", sessionId))
+                .payload().getJSONArray("cookies");
+        java.util.ArrayList<JSONObject> values = new java.util.ArrayList<>();
+        for (int index = 0; index < cookies.length(); index++) {
+            values.add(cookies.getJSONObject(index));
+        }
+        return values;
+    }
+
     public synchronized JSONObject getAlert(String sessionId) {
         return sendCommand("getAlert", new JSONObject().put("sessionId", sessionId)).payload();
     }
@@ -354,6 +382,29 @@ public class PlaywrightWorkerClient implements AutoCloseable {
             throw new CommandLineExecutorException(
                     String.format("Unable to communicate with Playwright worker for action '%s'", action), e);
         }
+    }
+
+    private JSONObject toJson(org.openqa.selenium.Cookie cookie, String currentUrl) {
+        JSONObject json = new JSONObject()
+                .put("name", cookie.getName())
+                .put("value", cookie.getValue())
+                .put("secure", cookie.isSecure())
+                .put("httpOnly", cookie.isHttpOnly());
+        if (null != currentUrl && !currentUrl.isBlank()) {
+            json.put("url", currentUrl);
+        } else {
+            json.put("path", null == cookie.getPath() ? "/" : cookie.getPath());
+            if (null != cookie.getDomain() && !cookie.getDomain().isBlank()) {
+                json.put("domain", cookie.getDomain());
+            }
+        }
+        if (null != cookie.getExpiry()) {
+            json.put("expires", cookie.getExpiry().toInstant().atOffset(ZoneOffset.UTC).toEpochSecond());
+        }
+        if (null != cookie.getSameSite() && !cookie.getSameSite().isBlank()) {
+            json.put("sameSite", cookie.getSameSite());
+        }
+        return json;
     }
 
     private PlaywrightWorkerResponse sendElementCommand(String sessionId, PlaywrightLocatorReference locatorReference,

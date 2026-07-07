@@ -3,13 +3,18 @@ package com.znsio.teswiz.runner;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Date;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.OutputType;
@@ -233,6 +238,50 @@ class PlaywrightWebDriverTest {
         assertThat(driver.findElement(By.id("name")).getAttribute("value")).isEqualTo("Focused");
     }
 
+    @Test
+    void shouldManageCookies() throws Exception {
+        try (LocalHttpServer server = new LocalHttpServer()) {
+            workerClient = new PlaywrightWorkerClient();
+            workerClient.start();
+            PlaywrightWorkerSession session = workerClient.createSession("cookie-user", "chromium");
+            PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+
+            driver.get(server.url("/cookies"));
+
+            Cookie sessionCookie = new Cookie.Builder("sessionId", "abc123")
+                    .path("/")
+                    .domain("127.0.0.1")
+                    .expiresOn(new Date(System.currentTimeMillis() + 60_000))
+                    .isHttpOnly(true)
+                    .build();
+            driver.manage().addCookie(sessionCookie);
+
+            Cookie preferenceCookie = new Cookie.Builder("theme", "dark")
+                    .path("/")
+                    .domain("127.0.0.1")
+                    .build();
+            driver.manage().addCookie(preferenceCookie);
+
+            assertThat(driver.manage().getCookieNamed("sessionId")).isNotNull();
+            assertThat(driver.manage().getCookieNamed("sessionId").getValue()).isEqualTo("abc123");
+            assertThat(driver.manage().getCookies())
+                    .extracting(Cookie::getName)
+                    .contains("sessionId", "theme");
+
+            driver.manage().deleteCookieNamed("sessionId");
+            assertThat(driver.manage().getCookieNamed("sessionId")).isNull();
+
+            driver.manage().deleteCookie(preferenceCookie);
+            assertThat(driver.manage().getCookieNamed("theme")).isNull();
+
+            driver.manage().addCookie(new Cookie("region", "apac"));
+            assertThat(driver.manage().getCookieNamed("region")).isNotNull();
+
+            driver.manage().deleteAllCookies();
+            assertThat(driver.manage().getCookies()).isEmpty();
+        }
+    }
+
     private Path writeTestPage() throws Exception {
         String html = """
                 <!doctype html>
@@ -296,5 +345,38 @@ class PlaywrightWebDriverTest {
         Path file = Files.createTempFile("playwright-alert-bridge-", ".html");
         Files.writeString(file, html);
         return file;
+    }
+
+    private static final class LocalHttpServer implements AutoCloseable {
+        private final HttpServer server;
+
+        private LocalHttpServer() throws IOException {
+            server = HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
+            server.createContext("/cookies", this::handleCookies);
+            server.start();
+        }
+
+        private void handleCookies(HttpExchange exchange) throws IOException {
+            byte[] body = """
+                    <!doctype html>
+                    <html>
+                    <head><meta charset="UTF-8" /><title>Cookie Bridge</title></head>
+                    <body><div id="cookie-page">Cookie Bridge</div></body>
+                    </html>
+                    """.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().add("Content-Type", "text/html; charset=utf-8");
+            exchange.sendResponseHeaders(200, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        }
+
+        private String url(String path) {
+            return "http://127.0.0.1:" + server.getAddress().getPort() + path;
+        }
+
+        @Override
+        public void close() {
+            server.stop(0);
+        }
     }
 }

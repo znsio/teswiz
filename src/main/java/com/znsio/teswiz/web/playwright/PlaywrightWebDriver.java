@@ -1,9 +1,12 @@
 package com.znsio.teswiz.web.playwright;
 
 import java.io.File;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.stream.IntStream;
 
 import org.json.JSONArray;
@@ -224,32 +227,43 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
         return new Options() {
             @Override
             public void addCookie(org.openqa.selenium.Cookie cookie) {
-                throw new UnsupportedOperationException("manage().addCookie() is not implemented for Playwright TS yet");
+                workerClient.addCookie(session.sessionId(), cookie, getCurrentUrl());
             }
 
             @Override
             public void deleteCookieNamed(String name) {
-                throw new UnsupportedOperationException("manage().deleteCookieNamed() is not implemented for Playwright TS yet");
+                workerClient.deleteCookieNamed(session.sessionId(), name);
             }
 
             @Override
             public void deleteCookie(org.openqa.selenium.Cookie cookie) {
-                throw new UnsupportedOperationException("manage().deleteCookie() is not implemented for Playwright TS yet");
+                if (null == cookie) {
+                    return;
+                }
+                deleteCookieNamed(cookie.getName());
             }
 
             @Override
             public void deleteAllCookies() {
-                throw new UnsupportedOperationException("manage().deleteAllCookies() is not implemented for Playwright TS yet");
+                workerClient.deleteAllCookies(session.sessionId());
             }
 
             @Override
             public Set<org.openqa.selenium.Cookie> getCookies() {
-                throw new UnsupportedOperationException("manage().getCookies() is not implemented for Playwright TS yet");
+                List<JSONObject> cookies = workerClient.getCookies(session.sessionId());
+                Set<org.openqa.selenium.Cookie> seleniumCookies = new LinkedHashSet<>();
+                for (JSONObject cookie : cookies) {
+                    seleniumCookies.add(toSeleniumCookie(cookie));
+                }
+                return seleniumCookies;
             }
 
             @Override
             public org.openqa.selenium.Cookie getCookieNamed(String name) {
-                throw new UnsupportedOperationException("manage().getCookieNamed() is not implemented for Playwright TS yet");
+                return manage().getCookies().stream()
+                        .filter(cookie -> cookie.getName().equals(name))
+                        .findFirst()
+                        .orElse(null);
             }
 
             @Override
@@ -351,5 +365,29 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
         }
         throw new JavascriptException("Unsupported Playwright TS executeScript argument type: "
                 + arg.getClass().getName());
+    }
+
+    private org.openqa.selenium.Cookie toSeleniumCookie(JSONObject cookie) {
+        org.openqa.selenium.Cookie.Builder builder = new org.openqa.selenium.Cookie.Builder(
+                cookie.getString("name"),
+                cookie.optString("value", ""))
+                .path(cookie.optString("path", "/"));
+        if (cookie.has("domain") && !cookie.isNull("domain")) {
+            builder.domain(cookie.getString("domain"));
+        }
+        if (cookie.optBoolean("secure", false)) {
+            builder.isSecure(true);
+        }
+        if (cookie.optBoolean("httpOnly", false)) {
+            builder.isHttpOnly(true);
+        }
+        if (cookie.has("sameSite") && !cookie.isNull("sameSite")) {
+            builder.sameSite(cookie.getString("sameSite"));
+        }
+        long expiryEpochSeconds = cookie.optLong("expires", -1L);
+        if (expiryEpochSeconds > 0L) {
+            builder.expiresOn(Date.from(Instant.ofEpochSecond(expiryEpochSeconds)));
+        }
+        return builder.build();
     }
 }
