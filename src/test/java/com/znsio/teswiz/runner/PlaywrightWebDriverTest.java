@@ -83,23 +83,7 @@ class PlaywrightWebDriverTest {
         PlaywrightWorkerSession session = workerClient.createSession("guest", "chromium");
         PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
 
-        driver.get(htmlFile.toUri().toString());
-        String originalHandle = driver.getWindowHandle();
-
-        driver.switchTo().newWindow(WindowType.TAB);
-        String newHandle = driver.getWindowHandle();
-        assertThat(newHandle).isNotEqualTo(originalHandle);
-        assertThat(driver.getWindowHandles()).contains(originalHandle, newHandle);
-
-        driver.get("data:text/html,<title>Second Tab</title><div id='tab'>tab-2</div>");
-        assertThat(driver.getTitle()).isEqualTo("Second Tab");
-
-        driver.switchTo().window(originalHandle);
-        assertThat(driver.getWindowHandle()).isEqualTo(originalHandle);
-        assertThat(driver.getTitle()).isEqualTo("Playwright Bridge");
-
-        driver.switchTo().window(newHandle);
-        assertThat(driver.findElement(By.id("tab")).getText()).isEqualTo("tab-2");
+        SharedWebDriverContract.assertTabHandling(driver, htmlFile);
     }
 
     @Test
@@ -110,17 +94,7 @@ class PlaywrightWebDriverTest {
         PlaywrightWorkerSession session = workerClient.createSession("frame-user", "chromium");
         PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
 
-        driver.get(htmlFile.toUri().toString());
-        assertThat(driver.findElement(By.id("outside")).getText()).isEqualTo("Outside Frame");
-
-        driver.switchTo().frame("details-frame");
-        assertThat(driver.findElement(By.id("inside")).getText()).isEqualTo("Inside Frame");
-        driver.executeScript("arguments[0].setAttribute(arguments[1], arguments[2])",
-                driver.findElement(By.id("inside")), "data-scope", "frame");
-        assertThat(driver.findElement(By.id("inside")).getAttribute("data-scope")).isEqualTo("frame");
-
-        driver.switchTo().defaultContent();
-        assertThat(driver.findElement(By.id("outside")).getText()).isEqualTo("Outside Frame");
+        SharedWebDriverContract.assertFrameHandling(driver, htmlFile);
     }
 
     @Test
@@ -208,23 +182,7 @@ class PlaywrightWebDriverTest {
         PlaywrightWorkerSession session = workerClient.createSession("alert-user", "chromium");
         PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
 
-        driver.get(htmlFile.toUri().toString());
-        driver.findElement(By.id("alertButton")).click();
-        new WebDriverWait(driver, Duration.ofSeconds(2)).until(ExpectedConditions.alertIsPresent());
-        org.openqa.selenium.Alert alert = driver.switchTo().alert();
-        assertThat(alert.getText()).isEqualTo("Plain alert");
-        alert.accept();
-        assertThat(driver.findElement(By.id("result")).getText()).isEqualTo("alert-done");
-
-        driver.findElement(By.id("promptButton")).click();
-        new WebDriverWait(driver, Duration.ofSeconds(2)).until(ExpectedConditions.alertIsPresent());
-        org.openqa.selenium.Alert prompt = driver.switchTo().alert();
-        assertThat(prompt.getText()).isEqualTo("Enter your name");
-        prompt.sendKeys("Teswiz");
-        assertThat(driver.findElement(By.id("result")).getText()).isEqualTo("prompt:Teswiz");
-
-        assertThatThrownBy(() -> driver.switchTo().alert().getText())
-                .isInstanceOf(NoAlertPresentException.class);
+        SharedWebDriverContract.assertAlertHandling(driver, htmlFile);
     }
 
     @Test
@@ -235,14 +193,7 @@ class PlaywrightWebDriverTest {
         PlaywrightWorkerSession session = workerClient.createSession("focus-user", "chromium");
         PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
 
-        driver.get(htmlFile.toUri().toString());
-        driver.findElement(By.id("name")).click();
-
-        org.openqa.selenium.WebElement activeElement = driver.switchTo().activeElement();
-        assertThat(activeElement.getAttribute("id")).isEqualTo("name");
-
-        activeElement.sendKeys("Focused");
-        assertThat(driver.findElement(By.id("name")).getAttribute("value")).isEqualTo("Focused");
+        SharedWebDriverContract.assertActiveElementHandling(driver, htmlFile);
     }
 
     @Test
