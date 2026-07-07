@@ -103,6 +103,10 @@ function getCurrentPage(session) {
   return page;
 }
 
+function getCurrentRoot(session) {
+  return session.currentFrame || getCurrentPage(session);
+}
+
 function registerPage(session, page, pageId = `page-${randomUUID()}`) {
   for (const [existingHandle, existingPage] of session.pages.entries()) {
     if (existingPage === page) {
@@ -248,6 +252,7 @@ rl.on("line", async (line) => {
           context,
           pages: new Map(),
           currentPageId: null,
+          currentFrame: null,
           tracePath,
           harPath,
           consoleLogPath,
@@ -306,6 +311,7 @@ rl.on("line", async (line) => {
           throw new Error(`Unknown window handle: ${payload.handle}`);
         }
         session.currentPageId = payload.handle;
+        session.currentFrame = null;
         process.stdout.write(`${okResponse(requestId, action, { handle: session.currentPageId })}\n`);
         break;
       }
@@ -313,7 +319,52 @@ rl.on("line", async (line) => {
         const session = getSession(payload.sessionId);
         const page = await session.context.newPage();
         const handle = registerPage(session, page);
+        session.currentFrame = null;
         process.stdout.write(`${okResponse(requestId, action, { handle })}\n`);
+        break;
+      }
+      case "switchToFrame": {
+        const session = getSession(payload.sessionId);
+        const root = getCurrentRoot(session);
+        const frameElement = await root
+          .locator(`iframe#${payload.nameOrId}, iframe[name="${payload.nameOrId}"], frame#${payload.nameOrId}, frame[name="${payload.nameOrId}"]`)
+          .first()
+          .elementHandle();
+        const frame = frameElement ? await frameElement.contentFrame() : null;
+        if (!frame) {
+          throw new Error(`Unable to switch to frame: ${payload.nameOrId}`);
+        }
+        session.currentFrame = frame;
+        process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
+        break;
+      }
+      case "switchToFrameByIndex": {
+        const session = getSession(payload.sessionId);
+        const root = getCurrentRoot(session);
+        const frameElement = await root.locator("iframe, frame").nth(payload.index).elementHandle();
+        const frame = frameElement ? await frameElement.contentFrame() : null;
+        if (!frame) {
+          throw new Error(`Unable to switch to frame at index: ${payload.index}`);
+        }
+        session.currentFrame = frame;
+        process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
+        break;
+      }
+      case "switchToDefaultContent": {
+        const session = getSession(payload.sessionId);
+        session.currentFrame = null;
+        process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
+        break;
+      }
+      case "switchToParentFrame": {
+        const session = getSession(payload.sessionId);
+        if (!session.currentFrame) {
+          process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
+          break;
+        }
+        const parentFrame = session.currentFrame.parentFrame();
+        session.currentFrame = parentFrame && parentFrame !== getCurrentPage(session).mainFrame() ? parentFrame : null;
+        process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
         break;
       }
       case "screenshot": {
@@ -324,13 +375,13 @@ rl.on("line", async (line) => {
       }
       case "countElements": {
         const session = getSession(payload.sessionId);
-        const locator = buildLocatorRaw(getCurrentPage(session), payload.locator);
+        const locator = buildLocatorRaw(getCurrentRoot(session), payload.locator);
         process.stdout.write(`${okResponse(requestId, action, { count: await locator.count() })}\n`);
         break;
       }
       case "elementAction": {
         const session = getSession(payload.sessionId);
-        const locator = buildLocator(getCurrentPage(session), payload.locator);
+        const locator = buildLocator(getCurrentRoot(session), payload.locator);
         let value;
         switch (payload.elementAction) {
           case "click":
@@ -389,9 +440,9 @@ rl.on("line", async (line) => {
       }
       case "executeScript": {
         const session = getSession(payload.sessionId);
-        const page = getCurrentPage(session);
-        const scriptArgs = await Promise.all((payload.args || []).map((arg) => resolveScriptArg(page, arg)));
-        const value = await page.evaluate(
+        const root = getCurrentRoot(session);
+        const scriptArgs = await Promise.all((payload.args || []).map((arg) => resolveScriptArg(root, arg)));
+        const value = await root.evaluate(
           ([script, args]) => {
             const executor = new Function("args", `return (function() { ${script} }).apply(null, args);`);
             return executor(args);

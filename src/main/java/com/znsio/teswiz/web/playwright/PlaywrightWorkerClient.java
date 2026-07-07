@@ -152,6 +152,26 @@ public class PlaywrightWorkerClient implements AutoCloseable {
                 .payload().getString("handle");
     }
 
+    public synchronized void switchToFrame(String sessionId, String nameOrId) {
+        sendCommand("switchToFrame", new JSONObject()
+                .put("sessionId", sessionId)
+                .put("nameOrId", nameOrId));
+    }
+
+    public synchronized void switchToFrame(String sessionId, int index) {
+        sendCommand("switchToFrameByIndex", new JSONObject()
+                .put("sessionId", sessionId)
+                .put("index", index));
+    }
+
+    public synchronized void switchToDefaultContent(String sessionId) {
+        sendCommand("switchToDefaultContent", new JSONObject().put("sessionId", sessionId));
+    }
+
+    public synchronized void switchToParentFrame(String sessionId) {
+        sendCommand("switchToParentFrame", new JSONObject().put("sessionId", sessionId));
+    }
+
     public synchronized String captureScreenshot(String sessionId) {
         return sendCommand("screenshot", new JSONObject().put("sessionId", sessionId))
                 .payload().getString("base64");

@@ -88,12 +88,14 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
         return new TargetLocator() {
             @Override
             public WebDriver frame(int index) {
-                throw new UnsupportedOperationException("switchTo().frame(int) is not implemented for Playwright TS yet");
+                workerClient.switchToFrame(session.sessionId(), index);
+                return PlaywrightWebDriver.this;
             }
 
             @Override
             public WebDriver frame(String nameOrId) {
-                throw new UnsupportedOperationException("switchTo().frame(String) is not implemented for Playwright TS yet");
+                workerClient.switchToFrame(session.sessionId(), nameOrId);
+                return PlaywrightWebDriver.this;
             }
 
             @Override
@@ -103,7 +105,8 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
             @Override
             public WebDriver parentFrame() {
-                throw new UnsupportedOperationException("switchTo().parentFrame() is not implemented for Playwright TS yet");
+                workerClient.switchToParentFrame(session.sessionId());
+                return PlaywrightWebDriver.this;
             }
 
             @Override
@@ -114,6 +117,7 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
             @Override
             public WebDriver defaultContent() {
+                workerClient.switchToDefaultContent(session.sessionId());
                 return PlaywrightWebDriver.this;
             }
 

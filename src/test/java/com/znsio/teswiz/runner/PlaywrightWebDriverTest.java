@@ -115,6 +115,27 @@ class PlaywrightWebDriverTest {
         assertThat(driver.findElement(By.id("tab")).getText()).isEqualTo("tab-2");
     }
 
+    @Test
+    void shouldSwitchIntoFrameAndBackToDefaultContent() throws Exception {
+        Path htmlFile = writeFrameTestPage();
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+        PlaywrightWorkerSession session = workerClient.createSession("frame-user", "chromium");
+        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+
+        driver.get(htmlFile.toUri().toString());
+        assertThat(driver.findElement(By.id("outside")).getText()).isEqualTo("Outside Frame");
+
+        driver.switchTo().frame("details-frame");
+        assertThat(driver.findElement(By.id("inside")).getText()).isEqualTo("Inside Frame");
+        driver.executeScript("arguments[0].setAttribute(arguments[1], arguments[2])",
+                driver.findElement(By.id("inside")), "data-scope", "frame");
+        assertThat(driver.findElement(By.id("inside")).getAttribute("data-scope")).isEqualTo("frame");
+
+        driver.switchTo().defaultContent();
+        assertThat(driver.findElement(By.id("outside")).getText()).isEqualTo("Outside Frame");
+    }
+
     private Path writeTestPage() throws Exception {
         String html = """
                 <!doctype html>
@@ -136,6 +157,26 @@ class PlaywrightWebDriverTest {
                 </html>
                 """;
         Path file = Files.createTempFile("playwright-bridge-", ".html");
+        Files.writeString(file, html);
+        return file;
+    }
+
+    private Path writeFrameTestPage() throws Exception {
+        String html = """
+                <!doctype html>
+                <html>
+                <head>
+                  <meta charset="UTF-8" />
+                  <title>Playwright Frame Bridge</title>
+                </head>
+                <body>
+                  <div id="outside">Outside Frame</div>
+                  <iframe id="details-frame" name="details-frame"
+                    srcdoc="<html><body><div id='inside'>Inside Frame</div></body></html>"></iframe>
+                </body>
+                </html>
+                """;
+        Path file = Files.createTempFile("playwright-frame-bridge-", ".html");
         Files.writeString(file, html);
         return file;
     }
