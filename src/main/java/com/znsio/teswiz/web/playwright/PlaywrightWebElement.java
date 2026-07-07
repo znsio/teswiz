@@ -104,7 +104,7 @@ final class PlaywrightWebElement implements WebElement {
 
     @Override
     public SearchContext getShadowRoot() {
-        throw new UnsupportedOperationException("Shadow DOM is not implemented for Playwright TS yet");
+        return new PlaywrightShadowRootSearchContext(workerClient, session, locatorReference, implicitWaitTimeout);
     }
 
     @Override

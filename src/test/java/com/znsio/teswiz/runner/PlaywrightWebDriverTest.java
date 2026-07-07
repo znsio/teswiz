@@ -170,6 +170,27 @@ class PlaywrightWebDriverTest {
     }
 
     @Test
+    void shouldAccessOpenShadowDomThroughShadowRootSearchContext() throws Exception {
+        Path htmlFile = writeShadowDomTestPage();
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+        PlaywrightWorkerSession session = workerClient.createSession("shadow-user", "chromium");
+        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+
+        driver.get(htmlFile.toUri().toString());
+
+        org.openqa.selenium.WebElement host = driver.findElement(By.id("shadow-host"));
+        org.openqa.selenium.SearchContext shadowRoot = host.getShadowRoot();
+        org.openqa.selenium.WebElement nestedButton = shadowRoot.findElement(By.cssSelector("[data-testid='shadow-button']"));
+        org.openqa.selenium.WebElement nestedText = shadowRoot.findElement(By.id("shadow-text"));
+
+        assertThat(nestedText.getText()).isEqualTo("Inside Shadow Root");
+        nestedButton.click();
+        assertThat(shadowRoot.findElement(By.id("shadow-status")).getText()).isEqualTo("clicked");
+        assertThat(shadowRoot.findElements(By.cssSelector(".shadow-item"))).hasSize(2);
+    }
+
+    @Test
     void shouldSupportWindowSizingApis() throws Exception {
         Path htmlFile = writeTestPage();
         workerClient = new PlaywrightWorkerClient();
@@ -408,6 +429,35 @@ class PlaywrightWebDriverTest {
                 </html>
                 """;
         Path file = Files.createTempFile("playwright-alert-bridge-", ".html");
+        Files.writeString(file, html);
+        return file;
+    }
+
+    private Path writeShadowDomTestPage() throws Exception {
+        String html = """
+                <!doctype html>
+                <html>
+                <head>
+                  <meta charset="UTF-8" />
+                  <title>Playwright Shadow Bridge</title>
+                </head>
+                <body>
+                  <div id="shadow-host"></div>
+                  <script>
+                    const host = document.getElementById('shadow-host');
+                    const root = host.attachShadow({ mode: 'open' });
+                    root.innerHTML = `
+                      <div id="shadow-text">Inside Shadow Root</div>
+                      <button data-testid="shadow-button" onclick="this.getRootNode().getElementById('shadow-status').textContent = 'clicked'">Press</button>
+                      <div id="shadow-status">idle</div>
+                      <span class="shadow-item">one</span>
+                      <span class="shadow-item">two</span>
+                    `;
+                  </script>
+                </body>
+                </html>
+                """;
+        Path file = Files.createTempFile("playwright-shadow-bridge-", ".html");
         Files.writeString(file, html);
         return file;
     }
