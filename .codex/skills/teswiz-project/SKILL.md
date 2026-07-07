@@ -46,6 +46,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
   - `com.znsio.teswiz.visual`
 - When adding new Playwright, browser-config, session, or visual-helper code, do not place it in `runner` by default.
 - Mobile cloud capability shaping helpers belong in `com.znsio.teswiz.mobile.provider`; keep `runner` setup classes as compatibility delegates unless a breaking change is intentional.
+- Mobile cloud upload/parsing helpers should also prefer `com.znsio.teswiz.mobile.provider` when they can be extracted as pure provider logic.
 - If a change affects these boundaries, update:
   - `README.md`
   - `docs/Architecture-README.md`

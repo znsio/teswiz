@@ -117,6 +117,7 @@ On the mobile side, extraction has started the same way:
 
 * cloud report-link publication is provider-based
 * LambdaTest mobile capability shaping is now owned by the internal mobile provider package
+* LambdaTest mobile app upload command/response handling is now owned by the internal mobile provider package
 * BrowserStack mobile capability shaping is now owned by the internal mobile provider package
 * HeadSpin mobile capability shaping is now owned by the internal mobile provider package
 * pCloudy mobile capability shaping is now owned by the internal mobile provider package

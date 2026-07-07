@@ -10,9 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.MutableCapabilities;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.mobile.provider.LambdaTestMobileAppUpload;
 import com.znsio.teswiz.mobile.provider.LambdaTestMobileCapabilitySetup;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
@@ -103,26 +102,18 @@ class LambdaTestSetup {
             String authenticationKey,
             String appPath,
             String apiUrl) {
-        String uploadUrl = apiUrl.endsWith("/") ? apiUrl + "app/upload/realDevice" : apiUrl + "/app/upload/realDevice";
-        String[] curlCommand = new String[] {
-                "curl --insecure " + Setup.getCurlProxyCommand() + " -u \"" + authenticationUser + ":"
-                        + authenticationKey + "\"",
-                "-X POST \"" + uploadUrl + "\"",
-                "-F \"appFile=@" + appPath + "\""
-        };
+        String[] curlCommand = LambdaTestMobileAppUpload.buildUploadCurlCommand(
+                authenticationUser,
+                authenticationKey,
+                appPath,
+                apiUrl,
+                Setup.getCurlProxyCommand());
         CommandLineResponse uploadResponse = CommandLineExecutor.execCommand(curlCommand);
-        try {
-            JsonObject uploadResult = JsonFile.convertToMap(uploadResponse.getStdOut()).getAsJsonObject();
-            if (uploadResult.has("app_url")) {
-                String uploadedAppUrl = uploadResult.get("app_url").getAsString();
-                Setup.addToConfigs(Setup.APP_PATH, uploadedAppUrl);
-                return uploadedAppUrl;
-            }
-        } catch (IllegalStateException | NullPointerException | JsonSyntaxException e) {
-            throw new InvalidTestDataException("Unable to parse LambdaTest app upload response", e);
-        }
-        throw new InvalidTestDataException(String.format("Unable to upload app '%s' to LambdaTest. Response: %s",
-                appPath, uploadResponse.getStdOut()));
+        String uploadedAppUrl = LambdaTestMobileAppUpload.parseUploadedAppUrl(
+                appPath,
+                uploadResponse.getStdOut());
+        Setup.addToConfigs(Setup.APP_PATH, uploadedAppUrl);
+        return uploadedAppUrl;
     }
 
     private static ArrayList getExistingCloudDevices(Map<String, Map> loadedCapabilityFile) {

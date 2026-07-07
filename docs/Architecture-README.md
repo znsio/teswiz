@@ -58,6 +58,7 @@ Current examples:
 * `LambdaTestMobileExecutionProvider`
 * `HeadSpinMobileExecutionProvider`
 * `PCloudyMobileExecutionProvider`
+* `LambdaTestMobileAppUpload`
 * `BrowserStackMobileCapabilitySetup`
 * `HeadSpinMobileCapabilitySetup`
 * `LambdaTestMobileCapabilitySetup`
