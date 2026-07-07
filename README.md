@@ -118,6 +118,7 @@ On the mobile side, extraction has started the same way:
 * cloud report-link publication is provider-based
 * LambdaTest mobile capability shaping is now owned by the internal mobile provider package
 * BrowserStack mobile capability shaping is now owned by the internal mobile provider package
+* HeadSpin mobile capability shaping is now owned by the internal mobile provider package
 * `AppiumDriverManager` and runner setup classes still remain the stable orchestration-facing delegates
 
 Reports will be uploaded to reportportal.io, that you would need to setup separately, and provide the server details in

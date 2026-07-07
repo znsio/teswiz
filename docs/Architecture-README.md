@@ -59,6 +59,7 @@ Current examples:
 * `HeadSpinMobileExecutionProvider`
 * `PCloudyMobileExecutionProvider`
 * `BrowserStackMobileCapabilitySetup`
+* `HeadSpinMobileCapabilitySetup`
 * `LambdaTestMobileCapabilitySetup`
 
 ### `com.znsio.teswiz.web`
