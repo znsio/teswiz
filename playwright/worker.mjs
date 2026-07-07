@@ -107,6 +107,17 @@ function getCurrentRoot(session) {
   return session.currentFrame || getCurrentPage(session);
 }
 
+async function getViewportSize(page) {
+  const viewport = page.viewportSize();
+  if (viewport) {
+    return viewport;
+  }
+  return page.evaluate(() => ({
+    width: window.innerWidth || document.documentElement.clientWidth || 0,
+    height: window.innerHeight || document.documentElement.clientHeight || 0,
+  }));
+}
+
 function registerPage(session, page, pageId = `page-${randomUUID()}`) {
   for (const [existingHandle, existingPage] of session.pages.entries()) {
     if (existingPage === page) {
@@ -365,6 +376,32 @@ rl.on("line", async (line) => {
         const parentFrame = session.currentFrame.parentFrame();
         session.currentFrame = parentFrame && parentFrame !== getCurrentPage(session).mainFrame() ? parentFrame : null;
         process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
+        break;
+      }
+      case "getWindowSize": {
+        const session = getSession(payload.sessionId);
+        const size = await getViewportSize(getCurrentPage(session));
+        process.stdout.write(`${okResponse(requestId, action, size)}\n`);
+        break;
+      }
+      case "getWindowPosition": {
+        process.stdout.write(`${okResponse(requestId, action, { x: 0, y: 0 })}\n`);
+        break;
+      }
+      case "setWindowSize": {
+        const session = getSession(payload.sessionId);
+        await getCurrentPage(session).setViewportSize({ width: payload.width, height: payload.height });
+        process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
+        break;
+      }
+      case "maximizeWindow": {
+        const session = getSession(payload.sessionId);
+        const size = await getCurrentPage(session).evaluate(() => ({
+          width: window.screen?.availWidth || window.innerWidth || document.documentElement.clientWidth || 1920,
+          height: window.screen?.availHeight || window.innerHeight || document.documentElement.clientHeight || 1080,
+        }));
+        await getCurrentPage(session).setViewportSize(size);
+        process.stdout.write(`${okResponse(requestId, action, size)}\n`);
         break;
       }
       case "screenshot": {

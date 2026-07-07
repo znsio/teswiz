@@ -9,14 +9,17 @@ import java.util.stream.IntStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WindowType;
+import org.openqa.selenium.logging.Logs;
 
 public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor, TakesScreenshot {
     private final PlaywrightWorkerClient workerClient;
@@ -172,7 +175,87 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
     @Override
     public Options manage() {
-        throw new UnsupportedOperationException("manage is not implemented for Playwright TS yet");
+        return new Options() {
+            @Override
+            public void addCookie(org.openqa.selenium.Cookie cookie) {
+                throw new UnsupportedOperationException("manage().addCookie() is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public void deleteCookieNamed(String name) {
+                throw new UnsupportedOperationException("manage().deleteCookieNamed() is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public void deleteCookie(org.openqa.selenium.Cookie cookie) {
+                throw new UnsupportedOperationException("manage().deleteCookie() is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public void deleteAllCookies() {
+                throw new UnsupportedOperationException("manage().deleteAllCookies() is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public Set<org.openqa.selenium.Cookie> getCookies() {
+                throw new UnsupportedOperationException("manage().getCookies() is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public org.openqa.selenium.Cookie getCookieNamed(String name) {
+                throw new UnsupportedOperationException("manage().getCookieNamed() is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public Timeouts timeouts() {
+                throw new UnsupportedOperationException("manage().timeouts() is not implemented for Playwright TS yet");
+            }
+
+            @Override
+            public Window window() {
+                return new Window() {
+                    @Override
+                    public void setSize(Dimension targetSize) {
+                        workerClient.setWindowSize(session.sessionId(), targetSize);
+                    }
+
+                    @Override
+                    public void setPosition(Point targetPosition) {
+                        throw new UnsupportedOperationException("manage().window().setPosition() is not implemented for Playwright TS yet");
+                    }
+
+                    @Override
+                    public Dimension getSize() {
+                        return workerClient.getWindowSize(session.sessionId());
+                    }
+
+                    @Override
+                    public Point getPosition() {
+                        return workerClient.getWindowPosition(session.sessionId());
+                    }
+
+                    @Override
+                    public void maximize() {
+                        workerClient.maximizeWindow(session.sessionId());
+                    }
+
+                    @Override
+                    public void minimize() {
+                        throw new UnsupportedOperationException("manage().window().minimize() is not implemented for Playwright TS yet");
+                    }
+
+                    @Override
+                    public void fullscreen() {
+                        throw new UnsupportedOperationException("manage().window().fullscreen() is not implemented for Playwright TS yet");
+                    }
+                };
+            }
+
+            @Override
+            public Logs logs() {
+                throw new UnsupportedOperationException("manage().logs() is not implemented for Playwright TS yet");
+            }
+        };
     }
 
     @Override

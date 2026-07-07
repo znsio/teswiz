@@ -172,6 +172,29 @@ public class PlaywrightWorkerClient implements AutoCloseable {
         sendCommand("switchToParentFrame", new JSONObject().put("sessionId", sessionId));
     }
 
+    public synchronized org.openqa.selenium.Dimension getWindowSize(String sessionId) {
+        JSONObject payload = sendCommand("getWindowSize", new JSONObject().put("sessionId", sessionId))
+                .payload();
+        return new org.openqa.selenium.Dimension(payload.getInt("width"), payload.getInt("height"));
+    }
+
+    public synchronized org.openqa.selenium.Point getWindowPosition(String sessionId) {
+        JSONObject payload = sendCommand("getWindowPosition", new JSONObject().put("sessionId", sessionId))
+                .payload();
+        return new org.openqa.selenium.Point(payload.getInt("x"), payload.getInt("y"));
+    }
+
+    public synchronized void setWindowSize(String sessionId, org.openqa.selenium.Dimension size) {
+        sendCommand("setWindowSize", new JSONObject()
+                .put("sessionId", sessionId)
+                .put("width", size.getWidth())
+                .put("height", size.getHeight()));
+    }
+
+    public synchronized void maximizeWindow(String sessionId) {
+        sendCommand("maximizeWindow", new JSONObject().put("sessionId", sessionId));
+    }
+
     public synchronized String captureScreenshot(String sessionId) {
         return sendCommand("screenshot", new JSONObject().put("sessionId", sessionId))
                 .payload().getString("base64");

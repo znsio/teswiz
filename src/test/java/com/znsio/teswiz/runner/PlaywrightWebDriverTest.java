@@ -8,7 +8,9 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.WindowType;
 
@@ -134,6 +136,34 @@ class PlaywrightWebDriverTest {
 
         driver.switchTo().defaultContent();
         assertThat(driver.findElement(By.id("outside")).getText()).isEqualTo("Outside Frame");
+    }
+
+    @Test
+    void shouldSupportWindowSizingApis() throws Exception {
+        Path htmlFile = writeTestPage();
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+        PlaywrightWorkerSession session = workerClient.createSession("window-user", "chromium");
+        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+
+        driver.get(htmlFile.toUri().toString());
+
+        Dimension initialSize = driver.manage().window().getSize();
+        assertThat(initialSize.getWidth()).isPositive();
+        assertThat(initialSize.getHeight()).isPositive();
+
+        driver.manage().window().setSize(new Dimension(900, 700));
+        Dimension resized = driver.manage().window().getSize();
+        assertThat(resized.getWidth()).isEqualTo(900);
+        assertThat(resized.getHeight()).isEqualTo(700);
+
+        Point position = driver.manage().window().getPosition();
+        assertThat(position).isEqualTo(new Point(0, 0));
+
+        driver.manage().window().maximize();
+        Dimension maximized = driver.manage().window().getSize();
+        assertThat(maximized.getWidth()).isGreaterThanOrEqualTo(resized.getWidth());
+        assertThat(maximized.getHeight()).isGreaterThanOrEqualTo(resized.getHeight());
     }
 
     private Path writeTestPage() throws Exception {
