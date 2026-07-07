@@ -107,6 +107,13 @@ function getCurrentRoot(session) {
   return session.currentFrame || getCurrentPage(session);
 }
 
+function getPendingDialog(session) {
+  if (!session.pendingDialog) {
+    throw new Error("No alert present");
+  }
+  return session.pendingDialog;
+}
+
 async function getViewportSize(page) {
   const viewport = page.viewportSize();
   if (viewport) {
@@ -264,11 +271,20 @@ rl.on("line", async (line) => {
           pages: new Map(),
           currentPageId: null,
           currentFrame: null,
+          pendingDialog: null,
           tracePath,
           harPath,
           consoleLogPath,
           consoleMessages,
         };
+        context.on("dialog", (dialog) => {
+          session.pendingDialog = {
+            dialog,
+            type: dialog.type(),
+            message: dialog.message(),
+            defaultValue: dialog.defaultValue(),
+          };
+        });
         attachPageObservers(session, page);
         const pageId = registerPage(session, page);
         context.on("page", (newPage) => {
@@ -404,6 +420,32 @@ rl.on("line", async (line) => {
         process.stdout.write(`${okResponse(requestId, action, size)}\n`);
         break;
       }
+      case "getAlert": {
+        const session = getSession(payload.sessionId);
+        const pendingDialog = getPendingDialog(session);
+        process.stdout.write(`${okResponse(requestId, action, {
+          type: pendingDialog.type,
+          message: pendingDialog.message,
+          defaultValue: pendingDialog.defaultValue,
+        })}\n`);
+        break;
+      }
+      case "acceptAlert": {
+        const session = getSession(payload.sessionId);
+        const pendingDialog = getPendingDialog(session);
+        await pendingDialog.dialog.accept(payload.text);
+        session.pendingDialog = null;
+        process.stdout.write(`${okResponse(requestId, action, { status: "accepted" })}\n`);
+        break;
+      }
+      case "dismissAlert": {
+        const session = getSession(payload.sessionId);
+        const pendingDialog = getPendingDialog(session);
+        await pendingDialog.dialog.dismiss();
+        session.pendingDialog = null;
+        process.stdout.write(`${okResponse(requestId, action, { status: "dismissed" })}\n`);
+        break;
+      }
       case "screenshot": {
         const session = getSession(payload.sessionId);
         const screenshot = await getCurrentPage(session).screenshot({ type: "png" });
@@ -422,7 +464,7 @@ rl.on("line", async (line) => {
         let value;
         switch (payload.elementAction) {
           case "click":
-            await locator.click();
+            await locator.click({ noWaitAfter: true });
             value = true;
             break;
           case "type":

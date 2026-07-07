@@ -11,8 +11,10 @@ import org.json.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptException;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.JavascriptExecutor;
@@ -20,6 +22,8 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WindowType;
 import org.openqa.selenium.logging.Logs;
+
+import com.znsio.teswiz.exceptions.InvalidTestDataException;
 
 public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor, TakesScreenshot {
     private final PlaywrightWorkerClient workerClient;
@@ -131,7 +135,42 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
             @Override
             public org.openqa.selenium.Alert alert() {
-                throw new UnsupportedOperationException("switchTo().alert() is not implemented for Playwright TS yet");
+                return new org.openqa.selenium.Alert() {
+                    @Override
+                    public void dismiss() {
+                        ensureAlertPresent();
+                        workerClient.dismissAlert(session.sessionId());
+                    }
+
+                    @Override
+                    public void accept() {
+                        ensureAlertPresent();
+                        workerClient.acceptAlert(session.sessionId(), null);
+                    }
+
+                    @Override
+                    public String getText() {
+                        return ensureAlertPresent().getString("message");
+                    }
+
+                    @Override
+                    public void sendKeys(String keysToSend) {
+                        JSONObject alert = ensureAlertPresent();
+                        String alertType = alert.optString("type", "alert");
+                        if (!"prompt".equalsIgnoreCase(alertType)) {
+                            throw new UnhandledAlertException("Only prompt dialogs accept text input");
+                        }
+                        workerClient.acceptAlert(session.sessionId(), keysToSend);
+                    }
+
+                    private JSONObject ensureAlertPresent() {
+                        try {
+                            return workerClient.getAlert(session.sessionId());
+                        } catch (InvalidTestDataException | WebDriverException exception) {
+                            throw new NoAlertPresentException(exception.getMessage(), exception);
+                        }
+                    }
+                };
             }
 
             @Override

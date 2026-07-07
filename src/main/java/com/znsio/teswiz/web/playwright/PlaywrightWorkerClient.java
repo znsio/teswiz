@@ -195,6 +195,22 @@ public class PlaywrightWorkerClient implements AutoCloseable {
         sendCommand("maximizeWindow", new JSONObject().put("sessionId", sessionId));
     }
 
+    public synchronized JSONObject getAlert(String sessionId) {
+        return sendCommand("getAlert", new JSONObject().put("sessionId", sessionId)).payload();
+    }
+
+    public synchronized void acceptAlert(String sessionId, String text) {
+        JSONObject payload = new JSONObject().put("sessionId", sessionId);
+        if (null != text) {
+            payload.put("text", text);
+        }
+        sendCommand("acceptAlert", payload);
+    }
+
+    public synchronized void dismissAlert(String sessionId) {
+        sendCommand("dismissAlert", new JSONObject().put("sessionId", sessionId));
+    }
+
     public synchronized String captureScreenshot(String sessionId) {
         return sendCommand("screenshot", new JSONObject().put("sessionId", sessionId))
                 .payload().getString("base64");

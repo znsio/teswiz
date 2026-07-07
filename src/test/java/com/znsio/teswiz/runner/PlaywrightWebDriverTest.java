@@ -1,18 +1,23 @@
 package com.znsio.teswiz.runner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.WindowType;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
@@ -166,6 +171,33 @@ class PlaywrightWebDriverTest {
         assertThat(maximized.getHeight()).isGreaterThanOrEqualTo(resized.getHeight());
     }
 
+    @Test
+    void shouldHandleAlertsAndPrompts() throws Exception {
+        Path htmlFile = writeAlertTestPage();
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+        PlaywrightWorkerSession session = workerClient.createSession("alert-user", "chromium");
+        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+
+        driver.get(htmlFile.toUri().toString());
+        driver.findElement(By.id("alertButton")).click();
+        new WebDriverWait(driver, Duration.ofSeconds(2)).until(ExpectedConditions.alertIsPresent());
+        org.openqa.selenium.Alert alert = driver.switchTo().alert();
+        assertThat(alert.getText()).isEqualTo("Plain alert");
+        alert.accept();
+        assertThat(driver.findElement(By.id("result")).getText()).isEqualTo("alert-done");
+
+        driver.findElement(By.id("promptButton")).click();
+        new WebDriverWait(driver, Duration.ofSeconds(2)).until(ExpectedConditions.alertIsPresent());
+        org.openqa.selenium.Alert prompt = driver.switchTo().alert();
+        assertThat(prompt.getText()).isEqualTo("Enter your name");
+        prompt.sendKeys("Teswiz");
+        assertThat(driver.findElement(By.id("result")).getText()).isEqualTo("prompt:Teswiz");
+
+        assertThatThrownBy(() -> driver.switchTo().alert().getText())
+                .isInstanceOf(NoAlertPresentException.class);
+    }
+
     private Path writeTestPage() throws Exception {
         String html = """
                 <!doctype html>
@@ -207,6 +239,26 @@ class PlaywrightWebDriverTest {
                 </html>
                 """;
         Path file = Files.createTempFile("playwright-frame-bridge-", ".html");
+        Files.writeString(file, html);
+        return file;
+    }
+
+    private Path writeAlertTestPage() throws Exception {
+        String html = """
+                <!doctype html>
+                <html>
+                <head>
+                  <meta charset="UTF-8" />
+                  <title>Playwright Alert Bridge</title>
+                </head>
+                <body>
+                  <button id="alertButton" onclick="setTimeout(() => { alert('Plain alert'); document.getElementById('result').innerText='alert-done'; }, 0);">Alert</button>
+                  <button id="promptButton" onclick="setTimeout(() => { const value = prompt('Enter your name', 'Guest'); document.getElementById('result').innerText='prompt:' + value; }, 0);">Prompt</button>
+                  <div id="result">idle</div>
+                </body>
+                </html>
+                """;
+        Path file = Files.createTempFile("playwright-alert-bridge-", ".html");
         Files.writeString(file, html);
         return file;
     }
