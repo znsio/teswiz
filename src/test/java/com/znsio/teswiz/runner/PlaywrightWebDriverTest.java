@@ -50,12 +50,7 @@ class PlaywrightWebDriverTest {
         PlaywrightWorkerSession session = workerClient.createSession("buyer", "chromium");
         PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
 
-        driver.get(htmlFile.toUri().toString());
-
-        assertThat(driver.getCurrentUrl()).contains(htmlFile.getFileName().toString());
-        assertThat(driver.getPageSource()).contains("Playwright Bridge");
-        byte[] screenshot = driver.getScreenshotAs(OutputType.BYTES);
-        assertThat(screenshot).isNotEmpty();
+        SharedWebDriverContract.assertNavigationPageSourceAndScreenshot(driver, htmlFile);
     }
 
     @Test
@@ -66,17 +61,7 @@ class PlaywrightWebDriverTest {
         PlaywrightWorkerSession session = workerClient.createSession("seller", "chromium");
         PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
 
-        driver.get(htmlFile.toUri().toString());
-        driver.findElement(By.id("name")).sendKeys("Anand");
-        driver.findElement(By.id("save")).click();
-
-        assertThat(driver.findElement(By.id("name")).getAttribute("value")).isEqualTo("Anand");
-        assertThat(driver.findElement(By.id("status")).getText()).isEqualTo("Saved Anand");
-        assertThat(driver.findElements(By.cssSelector(".item"))).hasSize(2);
-        assertThat(driver.findElement(By.id("status")).isDisplayed()).isTrue();
-        Rectangle nameBounds = driver.findElement(By.id("name")).getRect();
-        assertThat(nameBounds.getWidth()).isPositive();
-        assertThat(nameBounds.getHeight()).isPositive();
+        SharedWebDriverContract.assertCoreInteractions(driver, htmlFile);
     }
 
     @Test
@@ -87,21 +72,7 @@ class PlaywrightWebDriverTest {
         PlaywrightWorkerSession session = workerClient.createSession("host", "chromium");
         PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
 
-        driver.get(htmlFile.toUri().toString());
-        driver.findElement(By.id("name")).sendKeys("Teswiz");
-        driver.executeScript("arguments[0].click()", driver.findElement(By.id("save")));
-
-        String statusText = (String) driver.executeScript(
-                "return arguments[0].innerText",
-                driver.findElement(By.id("status")));
-        assertThat(statusText).isEqualTo("Saved Teswiz");
-
-        driver.executeScript(
-                "arguments[0].setAttribute(arguments[1], arguments[2])",
-                driver.findElement(By.id("status")),
-                "data-engine",
-                "playwright-ts");
-        assertThat(driver.findElement(By.id("status")).getAttribute("data-engine")).isEqualTo("playwright-ts");
+        SharedWebDriverContract.assertJavascriptExecution(driver, htmlFile);
     }
 
     @Test
