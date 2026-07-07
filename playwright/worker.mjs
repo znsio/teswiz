@@ -377,6 +377,18 @@ rl.on("line", async (line) => {
         process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
         break;
       }
+      case "switchToFrameElement": {
+        const session = getSession(payload.sessionId);
+        const root = getCurrentRoot(session);
+        const frameElement = await buildLocator(root, payload.locator).elementHandle();
+        const frame = frameElement ? await frameElement.contentFrame() : null;
+        if (!frame) {
+          throw new Error("Unable to switch to the provided frame element");
+        }
+        session.currentFrame = frame;
+        process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
+        break;
+      }
       case "switchToDefaultContent": {
         const session = getSession(payload.sessionId);
         session.currentFrame = null;

@@ -107,7 +107,12 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
             @Override
             public WebDriver frame(WebElement frameElement) {
-                throw new UnsupportedOperationException("switchTo().frame(WebElement) is not implemented for Playwright TS yet");
+                if (!(frameElement instanceof PlaywrightWebElement playwrightElement)) {
+                    throw new UnsupportedOperationException(
+                            "switchTo().frame(WebElement) is only supported for Playwright-backed WebElement instances");
+                }
+                workerClient.switchToFrame(session.sessionId(), playwrightElement.locatorReference());
+                return PlaywrightWebDriver.this;
             }
 
             @Override

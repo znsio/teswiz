@@ -144,6 +144,23 @@ class PlaywrightWebDriverTest {
     }
 
     @Test
+    void shouldSwitchIntoFrameUsingWebElement() throws Exception {
+        Path htmlFile = writeFrameTestPage();
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+        PlaywrightWorkerSession session = workerClient.createSession("frame-element-user", "chromium");
+        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+
+        driver.get(htmlFile.toUri().toString());
+        org.openqa.selenium.WebElement frameElement = driver.findElement(By.id("details-frame"));
+        driver.switchTo().frame(frameElement);
+
+        assertThat(driver.findElement(By.id("inside")).getText()).isEqualTo("Inside Frame");
+        driver.switchTo().defaultContent();
+        assertThat(driver.findElement(By.id("outside")).getText()).isEqualTo("Outside Frame");
+    }
+
+    @Test
     void shouldSupportWindowSizingApis() throws Exception {
         Path htmlFile = writeTestPage();
         workerClient = new PlaywrightWorkerClient();
