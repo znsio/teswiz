@@ -64,4 +64,63 @@ class ScenarioArtifactReporterTest {
         assertThat(publishedArtifacts)
                 .contains(metadataFile, traceFile, harFile, consoleFile);
     }
+
+    @Test
+    void shouldWriteAggregatedScenarioMetadataForMixedSessions() throws Exception {
+        TestExecutionContext context = new TestExecutionContext("mixed-reporting-parity");
+        Path scenarioDir = Files.createTempDirectory("mixed-scenario-artifacts");
+        context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioDir.toString());
+        context.addTestState(TEST_CONTEXT.NORMALISED_SCENARIO_NAME, "mixed-reporting-parity");
+        context.addTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT, 2);
+
+        UserPersonaDetails userPersonaDetails = new UserPersonaDetails();
+        userPersonaDetails.addSessionHandle("buyer", new SessionHandle(
+                "buyer",
+                Platform.web,
+                "playwright-ts",
+                "playwright-session-1",
+                scenarioDir.toString(),
+                Map.of(
+                        "browserName", "chrome",
+                        "provider", "browserstack",
+                        "contextId", "context-1")));
+        userPersonaDetails.addSessionHandle("approver", new SessionHandle(
+                "approver",
+                Platform.android,
+                "appium",
+                "appium-session-1",
+                scenarioDir.toString(),
+                Map.of(
+                        "provider", "browserstack",
+                        "deviceName", "Pixel 8")));
+        userPersonaDetails.addSessionHandle("auditor", new SessionHandle(
+                "auditor",
+                Platform.web,
+                "selenium",
+                "selenium-session-1",
+                scenarioDir.toString(),
+                Map.of(
+                        "browserName", "firefox",
+                        "provider", "local")));
+
+        Path metadataFile = ScenarioArtifactReporter.writeScenarioMetadata(context, userPersonaDetails);
+        String metadata = Files.readString(metadataFile);
+
+        assertThat(metadata)
+                .contains("\"scenarioName\": \"mixed-reporting-parity\"")
+                .contains("\"personas\": [")
+                .contains("\"buyer\"")
+                .contains("\"approver\"")
+                .contains("\"auditor\"")
+                .contains("\"platforms\": [")
+                .contains("\"web\"")
+                .contains("\"android\"")
+                .contains("\"engines\": [")
+                .contains("\"playwright-ts\"")
+                .contains("\"appium\"")
+                .contains("\"selenium\"")
+                .contains("\"providers\": [")
+                .contains("\"browserstack\"")
+                .contains("\"local\"");
+    }
 }

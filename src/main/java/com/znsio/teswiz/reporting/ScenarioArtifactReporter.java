@@ -7,8 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,8 +73,19 @@ public final class ScenarioArtifactReporter {
 
     private static JSONObject buildScenarioMetadata(TestExecutionContext context, UserPersonaDetails userPersonaDetails) {
         JSONArray sessions = new JSONArray();
+        Set<String> personas = new LinkedHashSet<>();
+        Set<String> platforms = new LinkedHashSet<>();
+        Set<String> engines = new LinkedHashSet<>();
+        Set<String> providers = new LinkedHashSet<>();
         for (Map.Entry<String, SessionHandle> entry : userPersonaDetails.getAllAssignedUserPersonasAndSessionHandles().entrySet()) {
             SessionHandle sessionHandle = entry.getValue();
+            personas.add(sessionHandle.userPersona());
+            platforms.add(sessionHandle.platform().name());
+            engines.add(sessionHandle.engine());
+            String provider = sessionHandle.metadata().get("provider");
+            if (null != provider && !provider.isBlank()) {
+                providers.add(provider);
+            }
             sessions.put(new JSONObject()
                     .put("userPersona", sessionHandle.userPersona())
                     .put("platform", sessionHandle.platform().name())
@@ -88,6 +101,10 @@ public final class ScenarioArtifactReporter {
                 .put("scenarioRunCount", context.getTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT))
                 .put("provider", getProvider())
                 .put("webEngine", getWebEngine())
+                .put("personas", new JSONArray(personas))
+                .put("platforms", new JSONArray(platforms))
+                .put("engines", new JSONArray(engines))
+                .put("providers", new JSONArray(providers.isEmpty() ? List.of(getProvider()) : providers))
                 .put("sessions", sessions);
     }
 
