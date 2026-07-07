@@ -132,4 +132,8 @@ final class PlaywrightWebElement implements WebElement {
     public <X> X getScreenshotAs(OutputType<X> target) {
         return target.convertFromBase64Png(workerClient.captureScreenshot(session.sessionId()));
     }
+
+    PlaywrightLocatorReference locatorReference() {
+        return locatorReference;
+    }
 }

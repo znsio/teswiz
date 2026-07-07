@@ -62,6 +62,31 @@ class PlaywrightWebDriverTest {
         assertThat(nameBounds.getHeight()).isPositive();
     }
 
+    @Test
+    void shouldExecuteJavascriptWithElementAndLiteralArguments() throws Exception {
+        Path htmlFile = writeTestPage();
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+        PlaywrightWorkerSession session = workerClient.createSession("host", "chromium");
+        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+
+        driver.get(htmlFile.toUri().toString());
+        driver.findElement(By.id("name")).sendKeys("Teswiz");
+        driver.executeScript("arguments[0].click()", driver.findElement(By.id("save")));
+
+        String statusText = (String) driver.executeScript(
+                "return arguments[0].innerText",
+                driver.findElement(By.id("status")));
+        assertThat(statusText).isEqualTo("Saved Teswiz");
+
+        driver.executeScript(
+                "arguments[0].setAttribute(arguments[1], arguments[2])",
+                driver.findElement(By.id("status")),
+                "data-engine",
+                "playwright-ts");
+        assertThat(driver.findElement(By.id("status")).getAttribute("data-engine")).isEqualTo("playwright-ts");
+    }
+
     private Path writeTestPage() throws Exception {
         String html = """
                 <!doctype html>

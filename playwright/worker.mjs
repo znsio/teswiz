@@ -102,6 +102,23 @@ function buildLocator(root, locatorReference) {
   return buildLocatorRaw(root, locatorReference).nth(locatorReference.index || 0);
 }
 
+async function resolveScriptArg(root, arg) {
+  if (arg === null || arg === undefined) {
+    return null;
+  }
+  if (typeof arg !== "object" || Array.isArray(arg)) {
+    return arg;
+  }
+  if (arg.type === "element") {
+    const handle = await buildLocator(root, arg.locator).elementHandle();
+    if (!handle) {
+      throw new Error("Unable to resolve element argument for executeScript");
+    }
+    return handle;
+  }
+  return arg;
+}
+
 function createLocator(root, locatorReference) {
   const { strategy, value } = locatorReference;
   switch (strategy) {
@@ -304,7 +321,14 @@ rl.on("line", async (line) => {
       }
       case "executeScript": {
         const session = getSession(payload.sessionId);
-        const value = await session.page.evaluate(payload.script);
+        const scriptArgs = await Promise.all((payload.args || []).map((arg) => resolveScriptArg(session.page, arg)));
+        const value = await session.page.evaluate(
+          ([script, args]) => {
+            const executor = new Function("args", `return (function() { ${script} }).apply(null, args);`);
+            return executor(args);
+          },
+          [payload.script, scriptArgs],
+        );
         process.stdout.write(`${okResponse(requestId, action, { value })}\n`);
         break;
       }

@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.znsio.teswiz.exceptions.CommandLineExecutorException;
@@ -188,8 +189,13 @@ public class PlaywrightWorkerClient implements AutoCloseable {
     }
 
     public synchronized Object executeScript(String sessionId, String script) {
+        return executeScript(sessionId, script, new JSONArray());
+    }
+
+    public synchronized Object executeScript(String sessionId, String script, JSONArray args) {
         JSONObject payload = sendCommand("executeScript", new JSONObject().put("sessionId", sessionId)
-                .put("script", script)).payload();
+                .put("script", script)
+                .put("args", args)).payload();
         return payload.has("value") ? payload.get("value") : null;
     }
 

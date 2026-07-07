@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -122,10 +124,7 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
     @Override
     public Object executeScript(String script, Object... args) {
-        if (args.length > 0) {
-            throw new UnsupportedOperationException("Playwright TS executeScript with arguments is not implemented yet");
-        }
-        return workerClient.executeScript(session.sessionId(), script);
+        return workerClient.executeScript(session.sessionId(), script, serializeScriptArguments(args));
     }
 
     @Override
@@ -146,5 +145,29 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
             return target.convertFromBase64Png(screenshotBase64);
         }
         throw new WebDriverException("Unsupported screenshot output type: " + target);
+    }
+
+    private JSONArray serializeScriptArguments(Object... args) {
+        JSONArray serializedArgs = new JSONArray();
+        for (Object arg : args) {
+            serializedArgs.put(serializeScriptArgument(arg));
+        }
+        return serializedArgs;
+    }
+
+    private Object serializeScriptArgument(Object arg) {
+        if (null == arg) {
+            return JSONObject.NULL;
+        }
+        if (arg instanceof PlaywrightWebElement element) {
+            return new JSONObject()
+                    .put("type", "element")
+                    .put("locator", element.locatorReference().toJson());
+        }
+        if (arg instanceof String || arg instanceof Number || arg instanceof Boolean) {
+            return arg;
+        }
+        throw new JavascriptException("Unsupported Playwright TS executeScript argument type: "
+                + arg.getClass().getName());
     }
 }
