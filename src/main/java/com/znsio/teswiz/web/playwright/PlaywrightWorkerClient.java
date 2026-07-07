@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.ZoneOffset;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -202,6 +203,12 @@ public class PlaywrightWorkerClient implements AutoCloseable {
         sendCommand("maximizeWindow", new JSONObject().put("sessionId", sessionId));
     }
 
+    public synchronized void setNavigationTimeout(String sessionId, Duration timeout) {
+        sendCommand("setNavigationTimeout", new JSONObject()
+                .put("sessionId", sessionId)
+                .put("timeoutMs", timeout.toMillis()));
+    }
+
     public synchronized void addCookie(String sessionId, org.openqa.selenium.Cookie cookie, String currentUrl) {
         JSONObject payload = new JSONObject()
                 .put("sessionId", sessionId)
@@ -251,8 +258,13 @@ public class PlaywrightWorkerClient implements AutoCloseable {
     }
 
     public synchronized int countElements(String sessionId, PlaywrightLocatorReference locatorReference) {
+        return countElements(sessionId, locatorReference, Duration.ZERO);
+    }
+
+    public synchronized int countElements(String sessionId, PlaywrightLocatorReference locatorReference, Duration timeout) {
         return sendCommand("countElements", new JSONObject().put("sessionId", sessionId)
-                .put("locator", locatorReference.toJson())).payload().getInt("count");
+                .put("locator", locatorReference.toJson())
+                .put("timeoutMs", Math.max(0L, timeout.toMillis()))).payload().getInt("count");
     }
 
     public synchronized void click(String sessionId, PlaywrightLocatorReference locatorReference) {

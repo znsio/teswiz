@@ -1,11 +1,13 @@
 package com.znsio.teswiz.web.playwright;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.Rectangle;
@@ -16,12 +18,19 @@ final class PlaywrightWebElement implements WebElement {
     private final PlaywrightWorkerClient workerClient;
     private final PlaywrightWorkerSession session;
     private final PlaywrightLocatorReference locatorReference;
+    private final Duration implicitWaitTimeout;
 
     PlaywrightWebElement(PlaywrightWorkerClient workerClient, PlaywrightWorkerSession session,
             PlaywrightLocatorReference locatorReference) {
+        this(workerClient, session, locatorReference, Duration.ZERO);
+    }
+
+    PlaywrightWebElement(PlaywrightWorkerClient workerClient, PlaywrightWorkerSession session,
+            PlaywrightLocatorReference locatorReference, Duration implicitWaitTimeout) {
         this.workerClient = workerClient;
         this.session = session;
         this.locatorReference = locatorReference;
+        this.implicitWaitTimeout = implicitWaitTimeout;
     }
 
     @Override
@@ -74,16 +83,23 @@ final class PlaywrightWebElement implements WebElement {
 
     @Override
     public List<WebElement> findElements(By by) {
-        int count = workerClient.countElements(session.sessionId(), locatorReference.child(by, 0));
+        PlaywrightLocatorReference childLocator = locatorReference.child(by, 0);
+        int count = workerClient.countElements(session.sessionId(), childLocator, implicitWaitTimeout);
         return IntStream.range(0, count)
-                .mapToObj(index -> new PlaywrightWebElement(workerClient, session, locatorReference.child(by, index)))
+                .mapToObj(index -> new PlaywrightWebElement(workerClient, session,
+                        locatorReference.child(by, index), implicitWaitTimeout))
                 .map(WebElement.class::cast)
                 .toList();
     }
 
     @Override
     public WebElement findElement(By by) {
-        return new PlaywrightWebElement(workerClient, session, locatorReference.child(by, 0));
+        PlaywrightLocatorReference childLocator = locatorReference.child(by, 0);
+        int count = workerClient.countElements(session.sessionId(), childLocator, implicitWaitTimeout);
+        if (count <= 0) {
+            throw new NoSuchElementException("Unable to locate element: " + by);
+        }
+        return new PlaywrightWebElement(workerClient, session, childLocator, implicitWaitTimeout);
     }
 
     @Override

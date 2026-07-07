@@ -15,6 +15,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.OutputType;
@@ -282,6 +283,37 @@ class PlaywrightWebDriverTest {
         }
     }
 
+    @Test
+    void shouldHonorImplicitWaitAndExposeConfiguredTimeouts() throws Exception {
+        Path htmlFile = writeDelayedElementPage();
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+        PlaywrightWorkerSession session = workerClient.createSession("timeout-user", "chromium");
+        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+
+        driver.get(htmlFile.toUri().toString());
+        driver.manage().timeouts()
+                .implicitlyWait(Duration.ofMillis(900))
+                .pageLoadTimeout(Duration.ofSeconds(12))
+                .scriptTimeout(Duration.ofSeconds(7));
+
+        long start = System.nanoTime();
+        assertThat(driver.findElement(By.id("delayed")).getText()).isEqualTo("Ready Later");
+        Duration successfulWait = Duration.ofNanos(System.nanoTime() - start);
+
+        assertThat(successfulWait.toMillis()).isGreaterThanOrEqualTo(250L);
+        assertThat(driver.manage().timeouts().getImplicitWaitTimeout()).isEqualTo(Duration.ofMillis(900));
+        assertThat(driver.manage().timeouts().getPageLoadTimeout()).isEqualTo(Duration.ofSeconds(12));
+        assertThat(driver.manage().timeouts().getScriptTimeout()).isEqualTo(Duration.ofSeconds(7));
+
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(150));
+        long missingStart = System.nanoTime();
+        assertThatThrownBy(() -> driver.findElement(By.id("never-there")))
+                .isInstanceOf(NoSuchElementException.class);
+        Duration failedWait = Duration.ofNanos(System.nanoTime() - missingStart);
+        assertThat(failedWait.toMillis()).isGreaterThanOrEqualTo(100L);
+    }
+
     private Path writeTestPage() throws Exception {
         String html = """
                 <!doctype html>
@@ -343,6 +375,32 @@ class PlaywrightWebDriverTest {
                 </html>
                 """;
         Path file = Files.createTempFile("playwright-alert-bridge-", ".html");
+        Files.writeString(file, html);
+        return file;
+    }
+
+    private Path writeDelayedElementPage() throws Exception {
+        String html = """
+                <!doctype html>
+                <html>
+                <head>
+                  <meta charset="UTF-8" />
+                  <title>Playwright Timeout Bridge</title>
+                  <script>
+                    window.setTimeout(() => {
+                      const element = document.createElement('div');
+                      element.id = 'delayed';
+                      element.innerText = 'Ready Later';
+                      document.body.appendChild(element);
+                    }, 300);
+                  </script>
+                </head>
+                <body>
+                  <h1 id="title">Timeout Bridge</h1>
+                </body>
+                </html>
+                """;
+        Path file = Files.createTempFile("playwright-timeout-bridge-", ".html");
         Files.writeString(file, html);
         return file;
     }

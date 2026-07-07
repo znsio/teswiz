@@ -1,12 +1,13 @@
 package com.znsio.teswiz.web.playwright;
 
 import java.io.File;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.LinkedHashSet;
 import java.util.stream.IntStream;
 
 import org.json.JSONArray;
@@ -15,6 +16,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.UnhandledAlertException;
@@ -31,6 +33,9 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor, TakesScreenshot {
     private final PlaywrightWorkerClient workerClient;
     private final PlaywrightWorkerSession session;
+    private Duration implicitWaitTimeout = Duration.ZERO;
+    private Duration pageLoadTimeout = Duration.ofSeconds(30);
+    private Duration scriptTimeout = Duration.ofSeconds(30);
 
     public PlaywrightWebDriver(PlaywrightWorkerClient workerClient, PlaywrightWorkerSession session) {
         this.workerClient = workerClient;
@@ -55,17 +60,23 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
     @Override
     public List<WebElement> findElements(By by) {
         PlaywrightLocatorReference locatorReference = PlaywrightLocatorReference.root(by);
-        int count = workerClient.countElements(session.sessionId(), locatorReference);
+        int count = workerClient.countElements(session.sessionId(), locatorReference, implicitWaitTimeout);
         return IntStream.range(0, count)
                 .mapToObj(index -> new PlaywrightWebElement(workerClient, session,
-                        new PlaywrightLocatorReference(locatorReference.locator(), index, locatorReference.parent())))
+                        new PlaywrightLocatorReference(locatorReference.locator(), index, locatorReference.parent()),
+                        implicitWaitTimeout))
                 .map(WebElement.class::cast)
                 .toList();
     }
 
     @Override
     public WebElement findElement(By by) {
-        return new PlaywrightWebElement(workerClient, session, PlaywrightLocatorReference.root(by));
+        PlaywrightLocatorReference locatorReference = PlaywrightLocatorReference.root(by);
+        int count = workerClient.countElements(session.sessionId(), locatorReference, implicitWaitTimeout);
+        if (count <= 0) {
+            throw new NoSuchElementException("Unable to locate element: " + by);
+        }
+        return new PlaywrightWebElement(workerClient, session, locatorReference, implicitWaitTimeout);
     }
 
     @Override
@@ -268,7 +279,41 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
             @Override
             public Timeouts timeouts() {
-                throw new UnsupportedOperationException("manage().timeouts() is not implemented for Playwright TS yet");
+                return new Timeouts() {
+                    @Override
+                    public Timeouts implicitlyWait(Duration duration) {
+                        implicitWaitTimeout = normalizeTimeout(duration);
+                        return this;
+                    }
+
+                    @Override
+                    public Duration getImplicitWaitTimeout() {
+                        return implicitWaitTimeout;
+                    }
+
+                    @Override
+                    public Timeouts pageLoadTimeout(Duration duration) {
+                        pageLoadTimeout = normalizeTimeout(duration);
+                        workerClient.setNavigationTimeout(session.sessionId(), pageLoadTimeout);
+                        return this;
+                    }
+
+                    @Override
+                    public Duration getPageLoadTimeout() {
+                        return pageLoadTimeout;
+                    }
+
+                    @Override
+                    public Timeouts scriptTimeout(Duration duration) {
+                        scriptTimeout = normalizeTimeout(duration);
+                        return this;
+                    }
+
+                    @Override
+                    public Duration getScriptTimeout() {
+                        return scriptTimeout;
+                    }
+                };
             }
 
             @Override
@@ -389,5 +434,16 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
             builder.expiresOn(Date.from(Instant.ofEpochSecond(expiryEpochSeconds)));
         }
         return builder.build();
+    }
+
+    Duration implicitWaitTimeout() {
+        return implicitWaitTimeout;
+    }
+
+    private Duration normalizeTimeout(Duration duration) {
+        if (null == duration || duration.isNegative()) {
+            throw new IllegalArgumentException("Timeout duration must be zero or greater");
+        }
+        return duration;
     }
 }

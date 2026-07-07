@@ -153,6 +153,22 @@ async function getViewportSize(page) {
   }));
 }
 
+async function countLocatorMatches(locator, timeoutMs = 0) {
+  if (!timeoutMs || timeoutMs <= 0) {
+    return locator.count();
+  }
+
+  const startedAt = Date.now();
+  while (Date.now() - startedAt <= timeoutMs) {
+    const count = await locator.count();
+    if (count > 0) {
+      return count;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  return locator.count();
+}
+
 function registerPage(session, page, pageId = `page-${randomUUID()}`) {
   for (const [existingHandle, existingPage] of session.pages.entries()) {
     if (existingPage === page) {
@@ -300,11 +316,13 @@ rl.on("line", async (line) => {
           currentPageId: null,
           currentFrame: null,
           pendingDialog: null,
+          navigationTimeoutMs: 30000,
           tracePath,
           harPath,
           consoleLogPath,
           consoleMessages,
         };
+        context.setDefaultNavigationTimeout(session.navigationTimeoutMs);
         context.on("dialog", (dialog) => {
           session.pendingDialog = {
             dialog,
@@ -460,6 +478,13 @@ rl.on("line", async (line) => {
         process.stdout.write(`${okResponse(requestId, action, size)}\n`);
         break;
       }
+      case "setNavigationTimeout": {
+        const session = getSession(payload.sessionId);
+        session.navigationTimeoutMs = payload.timeoutMs;
+        session.context.setDefaultNavigationTimeout(payload.timeoutMs);
+        process.stdout.write(`${okResponse(requestId, action, { timeoutMs: payload.timeoutMs })}\n`);
+        break;
+      }
       case "addCookie": {
         const session = getSession(payload.sessionId);
         await session.context.addCookies([normalizeCookie(payload.cookie)]);
@@ -523,7 +548,9 @@ rl.on("line", async (line) => {
       case "countElements": {
         const session = getSession(payload.sessionId);
         const locator = buildLocatorRaw(getCurrentRoot(session), payload.locator);
-        process.stdout.write(`${okResponse(requestId, action, { count: await locator.count() })}\n`);
+        process.stdout.write(
+          `${okResponse(requestId, action, { count: await countLocatorMatches(locator, payload.timeoutMs || 0) })}\n`,
+        );
         break;
       }
       case "elementAction": {
