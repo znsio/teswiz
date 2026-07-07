@@ -130,12 +130,12 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
             @Override
             public WebElement activeElement() {
-                throw new UnsupportedOperationException("switchTo().activeElement() is not implemented for Playwright TS yet");
+                return PlaywrightWebDriver.this.findElement(By.cssSelector(":focus"));
             }
 
             @Override
             public org.openqa.selenium.Alert alert() {
-                return new org.openqa.selenium.Alert() {
+                org.openqa.selenium.Alert alert = new org.openqa.selenium.Alert() {
                     @Override
                     public void dismiss() {
                         ensureAlertPresent();
@@ -171,6 +171,8 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
                         }
                     }
                 };
+                alert.getText();
+                return alert;
             }
 
             @Override

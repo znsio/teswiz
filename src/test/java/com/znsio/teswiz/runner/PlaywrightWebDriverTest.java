@@ -198,6 +198,24 @@ class PlaywrightWebDriverTest {
                 .isInstanceOf(NoAlertPresentException.class);
     }
 
+    @Test
+    void shouldReturnFocusedElementAsActiveElement() throws Exception {
+        Path htmlFile = writeTestPage();
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+        PlaywrightWorkerSession session = workerClient.createSession("focus-user", "chromium");
+        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+
+        driver.get(htmlFile.toUri().toString());
+        driver.findElement(By.id("name")).click();
+
+        org.openqa.selenium.WebElement activeElement = driver.switchTo().activeElement();
+        assertThat(activeElement.getAttribute("id")).isEqualTo("name");
+
+        activeElement.sendKeys("Focused");
+        assertThat(driver.findElement(By.id("name")).getAttribute("value")).isEqualTo("Focused");
+    }
+
     private Path writeTestPage() throws Exception {
         String html = """
                 <!doctype html>
