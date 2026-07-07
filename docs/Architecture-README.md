@@ -61,6 +61,7 @@ Current examples:
 * `BrowserStackMobileCapabilitySetup`
 * `HeadSpinMobileCapabilitySetup`
 * `LambdaTestMobileCapabilitySetup`
+* `PCloudyMobileCapabilitySetup`
 
 ### `com.znsio.teswiz.web`
 
