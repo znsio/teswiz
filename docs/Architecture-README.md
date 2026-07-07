@@ -58,6 +58,7 @@ Current examples:
 * `LambdaTestMobileExecutionProvider`
 * `HeadSpinMobileExecutionProvider`
 * `PCloudyMobileExecutionProvider`
+* `LambdaTestMobileCapabilitySetup`
 
 ### `com.znsio.teswiz.web`
 

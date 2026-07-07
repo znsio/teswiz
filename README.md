@@ -113,6 +113,12 @@ For Playwright TS runs, teswiz now also publishes engine-native web artifacts in
 
 Web cloud/session handling is also now routed through provider adapters so BrowserStack, LambdaTest, HeadSpin, and local execution can be represented consistently in session metadata without changing user-facing scenario style.
 
+On the mobile side, extraction has started the same way:
+
+* cloud report-link publication is provider-based
+* LambdaTest mobile capability shaping is now owned by the internal mobile provider package
+* `AppiumDriverManager` and runner setup classes still remain the stable orchestration-facing delegates
+
 Reports will be uploaded to reportportal.io, that you would need to setup separately, and provide the server details in
 src/test/resources/reportportal.properties file or provide the path to the file using this environment
 variable: `REPORT_PORTAL_FILE`
