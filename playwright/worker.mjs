@@ -183,10 +183,22 @@ function registerPage(session, page, pageId = `page-${randomUUID()}`) {
 
 function attachPageObservers(session, page) {
   page.on("console", (message) => {
+    const entry = {
+      level: message.type(),
+      message: message.text(),
+      timestamp: Date.now(),
+    };
+    session.consoleEntries.push(entry);
     session.consoleMessages.push(`[${message.type()}] ${message.text()}`);
   });
   page.on("pageerror", (error) => {
-    session.consoleMessages.push(`[pageerror] ${error.message || String(error)}`);
+    const message = error.message || String(error);
+    session.consoleEntries.push({
+      level: "error",
+      message,
+      timestamp: Date.now(),
+    });
+    session.consoleMessages.push(`[pageerror] ${message}`);
   });
   page.on("close", () => {
     for (const [pageId, trackedPage] of session.pages.entries()) {
@@ -306,6 +318,7 @@ rl.on("line", async (line) => {
         }
         const page = await context.newPage();
         const consoleMessages = [];
+        const consoleEntries = [];
         const session = {
           sessionId,
           userPersona: payload.userPersona,
@@ -321,6 +334,7 @@ rl.on("line", async (line) => {
           harPath,
           consoleLogPath,
           consoleMessages,
+          consoleEntries,
         };
         context.setDefaultNavigationTimeout(session.navigationTimeoutMs);
         context.on("dialog", (dialog) => {
@@ -543,6 +557,11 @@ rl.on("line", async (line) => {
         const session = getSession(payload.sessionId);
         const screenshot = await getCurrentPage(session).screenshot({ type: "png" });
         process.stdout.write(`${okResponse(requestId, action, { base64: screenshot.toString("base64") })}\n`);
+        break;
+      }
+      case "getConsoleLogs": {
+        const session = getSession(payload.sessionId);
+        process.stdout.write(`${okResponse(requestId, action, { entries: session.consoleEntries })}\n`);
         break;
       }
       case "countElements": {

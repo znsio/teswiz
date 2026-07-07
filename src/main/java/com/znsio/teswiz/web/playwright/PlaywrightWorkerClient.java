@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.time.ZoneOffset;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -255,6 +256,16 @@ public class PlaywrightWorkerClient implements AutoCloseable {
     public synchronized String captureScreenshot(String sessionId) {
         return sendCommand("screenshot", new JSONObject().put("sessionId", sessionId))
                 .payload().getString("base64");
+    }
+
+    public synchronized List<JSONObject> getConsoleLogs(String sessionId) {
+        JSONArray logs = sendCommand("getConsoleLogs", new JSONObject().put("sessionId", sessionId))
+                .payload().getJSONArray("entries");
+        List<JSONObject> values = new ArrayList<>();
+        for (int index = 0; index < logs.length(); index++) {
+            values.add(logs.getJSONObject(index));
+        }
+        return values;
     }
 
     public synchronized int countElements(String sessionId, PlaywrightLocatorReference locatorReference) {

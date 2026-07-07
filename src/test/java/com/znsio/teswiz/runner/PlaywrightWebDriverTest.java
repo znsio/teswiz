@@ -22,6 +22,9 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.WindowType;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -314,6 +317,25 @@ class PlaywrightWebDriverTest {
         assertThat(failedWait.toMillis()).isGreaterThanOrEqualTo(100L);
     }
 
+    @Test
+    void shouldExposeBrowserLogsThroughManageLogs() throws Exception {
+        Path htmlFile = writeConsoleLogPage();
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+        PlaywrightWorkerSession session = workerClient.createSession("logs-user", "chromium");
+        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+
+        driver.get(htmlFile.toUri().toString());
+
+        LogEntries browserLogs = driver.manage().logs().get(LogType.BROWSER);
+        assertThat(driver.manage().logs().getAvailableLogTypes())
+                .contains(LogType.BROWSER, LogType.PERFORMANCE);
+        assertThat(browserLogs.getAll())
+                .extracting(LogEntry::getMessage)
+                .anyMatch(message -> message.contains("playwright-browser-log"));
+        assertThat(driver.manage().logs().get(LogType.PERFORMANCE).getAll()).isEmpty();
+    }
+
     private Path writeTestPage() throws Exception {
         String html = """
                 <!doctype html>
@@ -401,6 +423,28 @@ class PlaywrightWebDriverTest {
                 </html>
                 """;
         Path file = Files.createTempFile("playwright-timeout-bridge-", ".html");
+        Files.writeString(file, html);
+        return file;
+    }
+
+    private Path writeConsoleLogPage() throws Exception {
+        String html = """
+                <!doctype html>
+                <html>
+                <head>
+                  <meta charset="UTF-8" />
+                  <title>Playwright Log Bridge</title>
+                  <script>
+                    console.log('playwright-browser-log');
+                    console.warn('playwright-browser-warning');
+                  </script>
+                </head>
+                <body>
+                  <h1 id="title">Log Bridge</h1>
+                </body>
+                </html>
+                """;
+        Path file = Files.createTempFile("playwright-log-bridge-", ".html");
         Files.writeString(file, html);
         return file;
     }

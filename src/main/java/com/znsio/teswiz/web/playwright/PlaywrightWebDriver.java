@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,6 +27,9 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WindowType;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.Logs;
 
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
@@ -358,7 +362,27 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
 
             @Override
             public Logs logs() {
-                throw new UnsupportedOperationException("manage().logs() is not implemented for Playwright TS yet");
+                return new Logs() {
+                    private final Set<String> availableLogTypes = Set.of(LogType.BROWSER, LogType.PERFORMANCE);
+
+                    @Override
+                    public LogEntries get(String logType) {
+                        if (LogType.BROWSER.equalsIgnoreCase(logType)) {
+                            return new LogEntries(workerClient.getConsoleLogs(session.sessionId()).stream()
+                                    .map(PlaywrightWebDriver.this::toSeleniumLogEntry)
+                                    .collect(Collectors.toList()));
+                        }
+                        if (LogType.PERFORMANCE.equalsIgnoreCase(logType)) {
+                            return new LogEntries(List.of());
+                        }
+                        return new LogEntries(List.of());
+                    }
+
+                    @Override
+                    public Set<String> getAvailableLogTypes() {
+                        return availableLogTypes;
+                    }
+                };
             }
         };
     }
@@ -434,6 +458,17 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
             builder.expiresOn(Date.from(Instant.ofEpochSecond(expiryEpochSeconds)));
         }
         return builder.build();
+    }
+
+    private LogEntry toSeleniumLogEntry(JSONObject entry) {
+        java.util.logging.Level level = switch (entry.optString("level", "info").toLowerCase()) {
+            case "error" -> java.util.logging.Level.SEVERE;
+            case "warning", "warn" -> java.util.logging.Level.WARNING;
+            case "debug", "trace" -> java.util.logging.Level.FINE;
+            default -> java.util.logging.Level.INFO;
+        };
+        return new LogEntry(level, entry.optLong("timestamp", System.currentTimeMillis()),
+                entry.optString("message", ""));
     }
 
     Duration implicitWaitTimeout() {
