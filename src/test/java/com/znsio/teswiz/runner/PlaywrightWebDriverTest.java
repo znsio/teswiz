@@ -122,17 +122,7 @@ class PlaywrightWebDriverTest {
         PlaywrightWorkerSession session = workerClient.createSession("shadow-user", "chromium");
         PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
 
-        driver.get(htmlFile.toUri().toString());
-
-        org.openqa.selenium.WebElement host = driver.findElement(By.id("shadow-host"));
-        org.openqa.selenium.SearchContext shadowRoot = host.getShadowRoot();
-        org.openqa.selenium.WebElement nestedButton = shadowRoot.findElement(By.cssSelector("[data-testid='shadow-button']"));
-        org.openqa.selenium.WebElement nestedText = shadowRoot.findElement(By.id("shadow-text"));
-
-        assertThat(nestedText.getText()).isEqualTo("Inside Shadow Root");
-        nestedButton.click();
-        assertThat(shadowRoot.findElement(By.id("shadow-status")).getText()).isEqualTo("clicked");
-        assertThat(shadowRoot.findElements(By.cssSelector(".shadow-item"))).hasSize(2);
+        SharedWebDriverContract.assertOpenShadowDomHandling(driver, htmlFile);
     }
 
     @Test
@@ -143,35 +133,7 @@ class PlaywrightWebDriverTest {
         PlaywrightWorkerSession session = workerClient.createSession("window-user", "chromium");
         PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
 
-        driver.get(htmlFile.toUri().toString());
-
-        Dimension initialSize = driver.manage().window().getSize();
-        assertThat(initialSize.getWidth()).isPositive();
-        assertThat(initialSize.getHeight()).isPositive();
-
-        driver.manage().window().setSize(new Dimension(900, 700));
-        Dimension resized = driver.manage().window().getSize();
-        assertThat(resized.getWidth()).isEqualTo(900);
-        assertThat(resized.getHeight()).isEqualTo(700);
-
-        driver.manage().window().setPosition(new Point(120, 80));
-        Point position = driver.manage().window().getPosition();
-        assertThat(position).isEqualTo(new Point(120, 80));
-
-        driver.manage().window().minimize();
-        Dimension minimized = driver.manage().window().getSize();
-        assertThat(minimized.getWidth()).isLessThan(resized.getWidth());
-        assertThat(minimized.getHeight()).isLessThan(resized.getHeight());
-
-        driver.manage().window().fullscreen();
-        Dimension fullscreen = driver.manage().window().getSize();
-        assertThat(fullscreen.getWidth()).isGreaterThanOrEqualTo(minimized.getWidth());
-        assertThat(fullscreen.getHeight()).isGreaterThanOrEqualTo(minimized.getHeight());
-
-        driver.manage().window().maximize();
-        Dimension maximized = driver.manage().window().getSize();
-        assertThat(maximized.getWidth()).isGreaterThanOrEqualTo(fullscreen.getWidth());
-        assertThat(maximized.getHeight()).isGreaterThanOrEqualTo(fullscreen.getHeight());
+        SharedWebDriverContract.assertWindowHandling(driver, htmlFile);
     }
 
     @Test
@@ -248,27 +210,7 @@ class PlaywrightWebDriverTest {
         PlaywrightWorkerSession session = workerClient.createSession("timeout-user", "chromium");
         PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
 
-        driver.get(htmlFile.toUri().toString());
-        driver.manage().timeouts()
-                .implicitlyWait(Duration.ofMillis(900))
-                .pageLoadTimeout(Duration.ofSeconds(12))
-                .scriptTimeout(Duration.ofSeconds(7));
-
-        long start = System.nanoTime();
-        assertThat(driver.findElement(By.id("delayed")).getText()).isEqualTo("Ready Later");
-        Duration successfulWait = Duration.ofNanos(System.nanoTime() - start);
-
-        assertThat(successfulWait.toMillis()).isGreaterThanOrEqualTo(250L);
-        assertThat(driver.manage().timeouts().getImplicitWaitTimeout()).isEqualTo(Duration.ofMillis(900));
-        assertThat(driver.manage().timeouts().getPageLoadTimeout()).isEqualTo(Duration.ofSeconds(12));
-        assertThat(driver.manage().timeouts().getScriptTimeout()).isEqualTo(Duration.ofSeconds(7));
-
-        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(150));
-        long missingStart = System.nanoTime();
-        assertThatThrownBy(() -> driver.findElement(By.id("never-there")))
-                .isInstanceOf(NoSuchElementException.class);
-        Duration failedWait = Duration.ofNanos(System.nanoTime() - missingStart);
-        assertThat(failedWait.toMillis()).isGreaterThanOrEqualTo(100L);
+        SharedWebDriverContract.assertImplicitWaitAndTimeoutHandling(driver, htmlFile);
     }
 
     @Test
@@ -279,15 +221,7 @@ class PlaywrightWebDriverTest {
         PlaywrightWorkerSession session = workerClient.createSession("logs-user", "chromium");
         PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
 
-        driver.get(htmlFile.toUri().toString());
-
-        LogEntries browserLogs = driver.manage().logs().get(LogType.BROWSER);
-        assertThat(driver.manage().logs().getAvailableLogTypes())
-                .contains(LogType.BROWSER, LogType.PERFORMANCE);
-        assertThat(browserLogs.getAll())
-                .extracting(LogEntry::getMessage)
-                .anyMatch(message -> message.contains("playwright-browser-log"));
-        assertThat(driver.manage().logs().get(LogType.PERFORMANCE).getAll()).isEmpty();
+        SharedWebDriverContract.assertBrowserLogs(driver, htmlFile);
     }
 
     private Path writeTestPage() throws Exception {
