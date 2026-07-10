@@ -31,12 +31,6 @@ public final class PlaywrightVisualCheckSettingsMapper {
     }
 
     public ImagesCheckSettings toImageCheckSettings(SeleniumCheckSettings seleniumCheckSettings, BufferedImage screenshot) {
-        if (null != seleniumCheckSettings.getTargetRegion()) {
-            throw unsupported("Target.region(Region)");
-        }
-        if (null != seleniumCheckSettings.getTargetPathLocator()) {
-            throw unsupported("Target.region(By/WebElement)");
-        }
         if (!seleniumCheckSettings.getFrameChain().isEmpty()) {
             throw unsupported("frame-based visual checks");
         }
@@ -50,7 +44,9 @@ public final class PlaywrightVisualCheckSettingsMapper {
             throw unsupported("dynamic regions");
         }
 
-        ImagesCheckSettings imageCheckSettings = (ImagesCheckSettings) com.applitools.eyes.images.Target.image(screenshot);
+        Region cropRegion = resolveCropRegion(seleniumCheckSettings);
+        BufferedImage targetImage = cropImage(screenshot, cropRegion);
+        ImagesCheckSettings imageCheckSettings = (ImagesCheckSettings) com.applitools.eyes.images.Target.image(targetImage);
         if (null != seleniumCheckSettings.getMatchLevel()) {
             imageCheckSettings = (ImagesCheckSettings) imageCheckSettings.matchLevel(seleniumCheckSettings.getMatchLevel());
         }
@@ -63,10 +59,14 @@ public final class PlaywrightVisualCheckSettingsMapper {
         if (null != seleniumCheckSettings.getTimeout()) {
             imageCheckSettings = (ImagesCheckSettings) imageCheckSettings.timeout(seleniumCheckSettings.getTimeout());
         }
-        imageCheckSettings = applyRegions(imageCheckSettings, seleniumCheckSettings.getIgnoreRegions(), RegionKind.IGNORE);
-        imageCheckSettings = applyRegions(imageCheckSettings, seleniumCheckSettings.getLayoutRegions(), RegionKind.LAYOUT);
-        imageCheckSettings = applyRegions(imageCheckSettings, seleniumCheckSettings.getStrictRegions(), RegionKind.STRICT);
-        imageCheckSettings = applyRegions(imageCheckSettings, seleniumCheckSettings.getContentRegions(), RegionKind.CONTENT);
+        imageCheckSettings = applyRegions(imageCheckSettings, seleniumCheckSettings.getIgnoreRegions(), RegionKind.IGNORE,
+                cropRegion);
+        imageCheckSettings = applyRegions(imageCheckSettings, seleniumCheckSettings.getLayoutRegions(), RegionKind.LAYOUT,
+                cropRegion);
+        imageCheckSettings = applyRegions(imageCheckSettings, seleniumCheckSettings.getStrictRegions(), RegionKind.STRICT,
+                cropRegion);
+        imageCheckSettings = applyRegions(imageCheckSettings, seleniumCheckSettings.getContentRegions(), RegionKind.CONTENT,
+                cropRegion);
         if (Boolean.TRUE.equals(seleniumCheckSettings.getStitchContent())) {
             imageCheckSettings = (ImagesCheckSettings) imageCheckSettings.fully(true);
         }
@@ -75,10 +75,11 @@ public final class PlaywrightVisualCheckSettingsMapper {
 
     private ImagesCheckSettings applyRegions(ImagesCheckSettings imageCheckSettings,
             GetRegion[] getRegions,
-            RegionKind regionKind) {
+            RegionKind regionKind,
+            Region cropRegion) {
         List<Region> resolvedRegions = new ArrayList<>();
         for (GetRegion getRegion : getRegions) {
-            resolvedRegions.add(resolveRegion(getRegion));
+            resolvedRegions.add(rebaseRegion(resolveRegion(getRegion), cropRegion));
         }
         if (resolvedRegions.isEmpty()) {
             return imageCheckSettings;
@@ -90,6 +91,16 @@ public final class PlaywrightVisualCheckSettingsMapper {
             case STRICT -> (ImagesCheckSettings) imageCheckSettings.strict(regionArray);
             case CONTENT -> (ImagesCheckSettings) imageCheckSettings.content(regionArray);
         };
+    }
+
+    private Region resolveCropRegion(SeleniumCheckSettings seleniumCheckSettings) {
+        if (null != seleniumCheckSettings.getTargetRegion()) {
+            return seleniumCheckSettings.getTargetRegion();
+        }
+        if (null != seleniumCheckSettings.getTargetPathLocator()) {
+            return resolveTargetPathLocator(seleniumCheckSettings.getTargetPathLocator());
+        }
+        return null;
     }
 
     private Region resolveRegion(GetRegion getRegion) {
@@ -113,6 +124,34 @@ public final class PlaywrightVisualCheckSettingsMapper {
             throw unsupported("target path locators without element selectors");
         }
         return regionBoundsProvider.resolve(toBy(elementSelector));
+    }
+
+    private BufferedImage cropImage(BufferedImage screenshot, Region cropRegion) {
+        if (null == cropRegion) {
+            return screenshot;
+        }
+        int x = clamp(cropRegion.getLeft(), 0, screenshot.getWidth());
+        int y = clamp(cropRegion.getTop(), 0, screenshot.getHeight());
+        int maxWidth = screenshot.getWidth() - x;
+        int maxHeight = screenshot.getHeight() - y;
+        int width = clamp(cropRegion.getWidth(), 0, maxWidth);
+        int height = clamp(cropRegion.getHeight(), 0, maxHeight);
+        if (width <= 0 || height <= 0) {
+            throw new VisualTestSetupException("Visual validation for WEB_ENGINE=playwright-ts resolved an empty target region.");
+        }
+        return screenshot.getSubimage(x, y, width, height);
+    }
+
+    private Region rebaseRegion(Region region, Region cropRegion) {
+        if (null == cropRegion) {
+            return region;
+        }
+        return new Region(region.getLeft() - cropRegion.getLeft(), region.getTop() - cropRegion.getTop(),
+                region.getWidth(), region.getHeight());
+    }
+
+    private int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(value, max));
     }
 
     private By toBy(ElementSelector elementSelector) {
