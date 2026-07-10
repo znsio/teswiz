@@ -103,6 +103,114 @@ class PlaywrightBrowserConfigResolverTest {
     }
 
     @Test
+    void shouldPreserveArbitraryPlaywrightContextAndLaunchOptionsWhileApplyingLegacyFallbacks() throws Exception {
+        Setup.load(CONFIG_FILE);
+        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+        TestExecutionContext context = new TestExecutionContext("playwright-browser-config-merged-options");
+        Path customConfig = Files.createTempFile("playwright-browser-config-merged-", ".json");
+        Files.writeString(customConfig, """
+                {
+                  "chrome": {
+                    "excludeSwitches": ["enable-automation"],
+                    "preferences": {
+                      "credentials_enable_service": false,
+                      "profile.password_manager_enabled": false,
+                      "profile.default_content_setting_values.notifications": 1,
+                      "profile.default_content_setting_values.media_stream_mic": 1,
+                      "profile.default_content_setting_values.media_stream_camera": 1
+                    },
+                    "excludedSchemes": { "jhb": true },
+                    "arguments": ["use-fake-device-for-media-stream", "--lang=en-US"],
+                    "maximize": true,
+                    "acceptInsecureCerts": true,
+                    "verboseLogging": false,
+                    "headlessOptions": { "headless": true, "include": ["disable-gpu", "--lang=en-US"] },
+                    "noProxy": "localhost,127.0.0.1",
+                    "binary": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                    "playwright": {
+                      "launchOptions": {
+                        "proxy": { "server": "http://playwright-proxy:9090", "bypass": "internal.example.com" }
+                      },
+                      "contextOptions": {
+                        "locale": "en-GB",
+                        "timezoneId": "Asia/Kolkata"
+                      }
+                    }
+                  },
+                  "firefox": {
+                    "firefoxProfile": { "dom.push.enabled": false },
+                    "excludeSwitches": [],
+                    "preferences": { "dom.webnotifications.enabled": false },
+                    "arguments": ["--disable-notifications"],
+                    "maximize": true,
+                    "acceptInsecureCerts": true,
+                    "verboseLogging": false,
+                    "headlessOptions": { "headless": false }
+                  }
+                }
+                """);
+        context.addTestState(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST, customConfig.toString());
+
+        PlaywrightBrowserConfig config = new PlaywrightBrowserConfigResolver().resolve("chrome", context);
+
+        assertThat(config.launchArgs()).containsExactly("--use-fake-device-for-media-stream", "--lang=en-US",
+                "--disable-gpu");
+        assertThat(config.executablePath())
+                .isEqualTo("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
+        assertThat(config.contextOptions()).containsEntry("ignoreHTTPSErrors", true)
+                .containsEntry("locale", "en-GB")
+                .containsEntry("timezoneId", "Asia/Kolkata");
+        assertThat((java.util.Map<String, Object>) config.launchOptions().get("proxy"))
+                .containsEntry("server", "http://playwright-proxy:9090")
+                .containsEntry("bypass", "internal.example.com");
+    }
+
+    @Test
+    void shouldNotReuseLegacyBinaryWhenLegacyConfigLooksElectronSpecific() throws Exception {
+        Setup.load(CONFIG_FILE);
+        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+        TestExecutionContext context = new TestExecutionContext("playwright-browser-config-electron-binary");
+        Path customConfig = Files.createTempFile("playwright-browser-config-electron-", ".json");
+        Files.writeString(customConfig, """
+                {
+                  "chrome": {
+                    "excludeSwitches": ["enable-automation"],
+                    "preferences": {
+                      "credentials_enable_service": false,
+                      "profile.password_manager_enabled": false,
+                      "profile.default_content_setting_values.notifications": 1,
+                      "profile.default_content_setting_values.media_stream_mic": 1,
+                      "profile.default_content_setting_values.media_stream_camera": 1
+                    },
+                    "excludedSchemes": { "jhb": true },
+                    "arguments": ["use-fake-device-for-media-stream"],
+                    "maximize": true,
+                    "acceptInsecureCerts": true,
+                    "verboseLogging": false,
+                    "headlessOptions": { "headless": false, "include": ["disable-gpu"] },
+                    "binary": "/Applications/JioMeet-Lite.app/Contents/MacOS/JioMeet-Lite",
+                    "electronAppLoadingPage": true
+                  },
+                  "firefox": {
+                    "firefoxProfile": { "dom.push.enabled": false },
+                    "excludeSwitches": [],
+                    "preferences": { "dom.webnotifications.enabled": false },
+                    "arguments": ["--disable-notifications"],
+                    "maximize": true,
+                    "acceptInsecureCerts": true,
+                    "verboseLogging": false,
+                    "headlessOptions": { "headless": false }
+                  }
+                }
+                """);
+        context.addTestState(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST, customConfig.toString());
+
+        PlaywrightBrowserConfig config = new PlaywrightBrowserConfigResolver().resolve("chrome", context);
+
+        assertThat(config.executablePath()).isNull();
+    }
+
+    @Test
     void shouldAllowHeadlessFlagToOverrideBrowserConfigForPlaywright() {
         System.setProperty("HEADLESS", "true");
         Setup.load(CONFIG_FILE);

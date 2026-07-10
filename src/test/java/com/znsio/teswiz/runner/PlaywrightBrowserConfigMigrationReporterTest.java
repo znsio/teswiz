@@ -63,7 +63,9 @@ class PlaywrightBrowserConfigMigrationReporterTest {
                     "maximize": true,
                     "acceptInsecureCerts": true,
                     "verboseLogging": false,
-                    "headlessOptions": { "headless": false }
+                    "headlessOptions": { "headless": false },
+                    "binary": "/Applications/Firefox.app/Contents/MacOS/firefox",
+                    "noProxy": "localhost,127.0.0.1"
                   }
                 }
                 """);
@@ -80,10 +82,14 @@ class PlaywrightBrowserConfigMigrationReporterTest {
         assertThat(generatedConfig.getJSONObject("firefox").has("playwright")).isTrue();
         assertThat(generatedConfig.getJSONObject("chrome").getJSONObject("playwright")
                 .getJSONObject("contextOptions").getBoolean("ignoreHTTPSErrors")).isTrue();
+        assertThat(generatedConfig.getJSONObject("firefox").getJSONObject("playwright")
+                .getJSONObject("launchOptions").getString("executablePath"))
+                .isEqualTo("/Applications/Firefox.app/Contents/MacOS/firefox");
         assertThat(PlaywrightBrowserConfigMigrationReporter.buildSummaryMessage())
                 .contains(generatedFile.toString())
                 .contains(sourceConfig.toString())
-                .contains("binary");
+                .contains("executablePath")
+                .contains("noProxy remains supported");
     }
 
     @Test

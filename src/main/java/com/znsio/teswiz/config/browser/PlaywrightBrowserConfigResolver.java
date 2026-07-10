@@ -1,9 +1,11 @@
 package com.znsio.teswiz.config.browser;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,7 +41,7 @@ public class PlaywrightBrowserConfigResolver {
             headless = playwrightLaunchOptions.getBoolean("headless") || Runner.isRunningInHeadlessMode();
         }
 
-        List<String> launchArgs = new ArrayList<>();
+        Set<String> launchArgs = new LinkedHashSet<>();
         addNormalizedArguments(browserConfigForBrowserType.optJSONArray("arguments"), launchArgs);
         if (headless && null != legacyHeadlessOptions) {
             addNormalizedArguments(legacyHeadlessOptions.optJSONArray("include"), launchArgs);
@@ -49,17 +51,25 @@ public class PlaywrightBrowserConfigResolver {
         }
 
         Map<String, Object> contextOptions = new LinkedHashMap<>();
+        if (null != playwrightContextOptions) {
+            contextOptions.putAll(playwrightContextOptions.toMap());
+        }
         boolean ignoreHttpErrors = browserConfigForBrowserType.optBoolean("acceptInsecureCerts", false);
         if (null != playwrightContextOptions && playwrightContextOptions.has("ignoreHTTPSErrors")) {
             ignoreHttpErrors = playwrightContextOptions.getBoolean("ignoreHTTPSErrors");
         }
         contextOptions.put("ignoreHTTPSErrors", ignoreHttpErrors);
-        if (null != playwrightContextOptions && playwrightContextOptions.has("viewport")) {
-            contextOptions.put("viewport", playwrightContextOptions.getJSONObject("viewport").toMap());
-        }
 
         String proxyUrl = Runner.getProxyURL();
         Map<String, Object> launchOptions = new LinkedHashMap<>();
+        if (null != playwrightLaunchOptions) {
+            Map<String, Object> configuredLaunchOptions = playwrightLaunchOptions.toMap();
+            configuredLaunchOptions.remove("headless");
+            configuredLaunchOptions.remove("args");
+            configuredLaunchOptions.remove("channel");
+            configuredLaunchOptions.remove("executablePath");
+            launchOptions.putAll(configuredLaunchOptions);
+        }
         if (null != proxyUrl && !proxyUrl.isBlank()) {
             Map<String, Object> proxy = new LinkedHashMap<>();
             proxy.put("server", proxyUrl);
@@ -70,13 +80,12 @@ public class PlaywrightBrowserConfigResolver {
         }
 
         String channel = null;
-        String executablePath = null;
+        String executablePath = resolveExecutablePath(browserConfigForBrowserType, playwrightLaunchOptions);
         if (null != playwrightLaunchOptions) {
             channel = playwrightLaunchOptions.optString("channel", null);
-            executablePath = playwrightLaunchOptions.optString("executablePath", null);
         }
 
-        return new PlaywrightBrowserConfig(browserName, headless, launchArgs, channel, executablePath,
+        return new PlaywrightBrowserConfig(browserName, headless, new ArrayList<>(launchArgs), channel, executablePath,
                 contextOptions, launchOptions);
     }
 
@@ -89,12 +98,29 @@ public class PlaywrightBrowserConfigResolver {
                 new PlaywrightBrowserConfigMigrator());
     }
 
-    private void addNormalizedArguments(JSONArray arguments, List<String> launchArgs) {
+    private void addNormalizedArguments(JSONArray arguments, Set<String> launchArgs) {
         if (null == arguments) {
             return;
         }
 
         arguments.forEach(argument -> launchArgs.add(normalizeArgument(argument.toString())));
+    }
+
+    private String resolveExecutablePath(JSONObject browserConfigForBrowserType, JSONObject playwrightLaunchOptions) {
+        if (null != playwrightLaunchOptions) {
+            String configuredExecutablePath = playwrightLaunchOptions.optString("executablePath", null);
+            if (null != configuredExecutablePath && !configuredExecutablePath.isBlank()) {
+                return configuredExecutablePath;
+            }
+        }
+        String legacyBinary = browserConfigForBrowserType.optString("binary", "");
+        if (legacyBinary.isBlank()) {
+            return null;
+        }
+        if (browserConfigForBrowserType.optBoolean("electronAppLoadingPage", false)) {
+            return null;
+        }
+        return legacyBinary;
     }
 
     private String normalizeArgument(String argument) {

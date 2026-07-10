@@ -55,6 +55,10 @@ public final class PlaywrightBrowserConfigMigrator {
         if (!args.isEmpty()) {
             launchOptions.put("args", args);
         }
+        String legacyBinary = browserConfigForBrowserType.optString("binary", "");
+        if (!legacyBinary.isBlank() && !browserConfigForBrowserType.optBoolean("electronAppLoadingPage", false)) {
+            launchOptions.put("executablePath", legacyBinary);
+        }
 
         contextOptions.put("ignoreHTTPSErrors", browserConfigForBrowserType.optBoolean("acceptInsecureCerts", false));
 
@@ -79,8 +83,20 @@ public final class PlaywrightBrowserConfigMigrator {
 
     private void collectWarnings(String browserKey, JSONObject browserConfigForBrowserType, List<String> warnings) {
         if (browserConfigForBrowserType.has("binary")) {
+            String binary = browserConfigForBrowserType.optString("binary", "");
+            if (!binary.isBlank() && browserConfigForBrowserType.optBoolean("electronAppLoadingPage", false)) {
+                warnings.add(String.format(
+                        "%s.binary was not migrated automatically because electronAppLoadingPage=true makes the legacy binary likely Electron-specific.",
+                        browserKey));
+            } else if (!binary.isBlank()) {
+                warnings.add(String.format(
+                        "%s.binary was copied to playwright.launchOptions.executablePath. Review it before replacing the old config.",
+                        browserKey));
+            }
+        }
+        if (browserConfigForBrowserType.has("noProxy")) {
             warnings.add(String.format(
-                    "%s.binary was not migrated automatically because the legacy binary field may be Electron-specific.",
+                    "%s.noProxy remains supported as a legacy field and is still used when a proxy is configured via Runner/Setup.",
                     browserKey));
         }
         if (browserConfigForBrowserType.has("excludeSwitches")) {
