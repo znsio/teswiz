@@ -26,14 +26,13 @@ class DriversPlaywrightIntegrationTest {
     @AfterEach
     void cleanUp() {
         System.clearProperty("WEB_ENGINE");
+        System.clearProperty("HEADLESS");
         SessionContext.remove(Thread.currentThread().getId());
     }
 
     @Test
     void shouldCreatePlaywrightBackedDriverAndSessionHandle() throws Exception {
-        System.setProperty("WEB_ENGINE", "playwright-ts");
-        Setup.load(CONFIG_FILE);
-        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+        enablePlaywrightHeadless();
 
         TestExecutionContext context = createPlaywrightContext("playwright-driver-integration");
 
@@ -51,9 +50,7 @@ class DriversPlaywrightIntegrationTest {
 
     @Test
     void shouldKeepPlaywrightPersonasIsolatedWithinSameScenario() throws Exception {
-        System.setProperty("WEB_ENGINE", "playwright-ts");
-        Setup.load(CONFIG_FILE);
-        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+        enablePlaywrightHeadless();
 
         TestExecutionContext context = createPlaywrightContext("playwright-multi-user-integration");
         Path sharedHtml = writeSharedPersonaPage();
@@ -92,9 +89,7 @@ class DriversPlaywrightIntegrationTest {
 
     @Test
     void shouldReassignPersonaWithoutLosingUnderlyingPlaywrightSession() throws Exception {
-        System.setProperty("WEB_ENGINE", "playwright-ts");
-        Setup.load(CONFIG_FILE);
-        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+        enablePlaywrightHeadless();
 
         TestExecutionContext context = createPlaywrightContext("playwright-persona-reassign");
         Drivers.createDriverFor("buyer", Platform.web, context);
@@ -111,6 +106,13 @@ class DriversPlaywrightIntegrationTest {
         assertThat(reassignedSessionHandle.metadata()).isEqualTo(originalSessionHandle.metadata());
         assertThat(reassignedSessionHandle.userPersona()).isEqualTo("approver");
         assertThat(Drivers.getAvailableUserPersonas()).contains("approver").doesNotContain("buyer");
+    }
+
+    private void enablePlaywrightHeadless() {
+        System.setProperty("WEB_ENGINE", "playwright-ts");
+        System.setProperty("HEADLESS", "true");
+        Setup.load(CONFIG_FILE);
+        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
     }
 
     private TestExecutionContext createPlaywrightContext(String testName) throws Exception {
