@@ -1,36 +1,29 @@
 package com.znsio.teswiz.runner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-
-import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
-import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
-import com.znsio.teswiz.web.playwright.PlaywrightWorkerSession;
+import org.openqa.selenium.WebDriver;
 
 class PlaywrightWebDriverTest {
-    private PlaywrightWorkerClient workerClient;
+    private SharedWebDriverFixture fixture;
 
     @AfterEach
     void tearDown() {
-        if (null != workerClient) {
-            workerClient.close();
+        if (null != fixture) {
+            fixture.close();
         }
     }
 
     @Test
     void shouldNavigateCapturePageSourceAndTakeScreenshot() throws Exception {
         Path htmlFile = writeTestPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("buyer", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("buyer");
 
         SharedWebDriverContract.assertNavigationPageSourceAndScreenshot(driver, htmlFile);
     }
@@ -38,10 +31,7 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldFindElementsAndPerformCoreInteractions() throws Exception {
         Path htmlFile = writeTestPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("seller", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("seller");
 
         SharedWebDriverContract.assertCoreInteractions(driver, htmlFile);
     }
@@ -49,10 +39,7 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldExecuteJavascriptWithElementAndLiteralArguments() throws Exception {
         Path htmlFile = writeTestPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("host", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("host");
 
         SharedWebDriverContract.assertJavascriptExecution(driver, htmlFile);
     }
@@ -60,10 +47,7 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldOpenAndSwitchBetweenTabs() throws Exception {
         Path htmlFile = writeTestPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("guest", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("guest");
 
         SharedWebDriverContract.assertTabHandling(driver, htmlFile);
     }
@@ -71,10 +55,7 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldSwitchIntoFrameAndBackToDefaultContent() throws Exception {
         Path htmlFile = writeFrameTestPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("frame-user", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("frame-user");
 
         SharedWebDriverContract.assertFrameHandling(driver, htmlFile);
     }
@@ -82,10 +63,7 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldSwitchIntoFrameUsingWebElement() throws Exception {
         Path htmlFile = writeFrameTestPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("frame-element-user", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("frame-element-user");
 
         driver.get(htmlFile.toUri().toString());
         org.openqa.selenium.WebElement frameElement = driver.findElement(By.id("details-frame"));
@@ -99,10 +77,7 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldAccessOpenShadowDomThroughShadowRootSearchContext() throws Exception {
         Path htmlFile = writeShadowDomTestPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("shadow-user", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("shadow-user");
 
         SharedWebDriverContract.assertOpenShadowDomHandling(driver, htmlFile);
     }
@@ -110,10 +85,7 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldSupportWindowSizingApis() throws Exception {
         Path htmlFile = writeTestPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("window-user", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("window-user");
 
         SharedWebDriverContract.assertWindowHandling(driver, htmlFile);
     }
@@ -121,10 +93,7 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldHandleAlertsAndPrompts() throws Exception {
         Path htmlFile = writeAlertTestPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("alert-user", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("alert-user");
 
         SharedWebDriverContract.assertAlertHandling(driver, htmlFile);
     }
@@ -132,10 +101,7 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldReturnFocusedElementAsActiveElement() throws Exception {
         Path htmlFile = writeTestPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("focus-user", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("focus-user");
 
         SharedWebDriverContract.assertActiveElementHandling(driver, htmlFile);
     }
@@ -143,10 +109,7 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldManageCookies() throws Exception {
         try (SharedWebDriverContract.LocalCookieServer server = new SharedWebDriverContract.LocalCookieServer()) {
-            workerClient = new PlaywrightWorkerClient();
-            workerClient.start();
-            PlaywrightWorkerSession session = workerClient.createSession("cookie-user", "chromium");
-            PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+            WebDriver driver = createDriver("cookie-user");
 
             SharedWebDriverContract.assertCookieHandling(driver, server.url());
         }
@@ -155,10 +118,7 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldHonorImplicitWaitAndExposeConfiguredTimeouts() throws Exception {
         Path htmlFile = writeDelayedElementPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("timeout-user", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("timeout-user");
 
         SharedWebDriverContract.assertImplicitWaitAndTimeoutHandling(driver, htmlFile);
     }
@@ -166,12 +126,14 @@ class PlaywrightWebDriverTest {
     @Test
     void shouldExposeBrowserLogsThroughManageLogs() throws Exception {
         Path htmlFile = writeConsoleLogPage();
-        workerClient = new PlaywrightWorkerClient();
-        workerClient.start();
-        PlaywrightWorkerSession session = workerClient.createSession("logs-user", "chromium");
-        PlaywrightWebDriver driver = new PlaywrightWebDriver(workerClient, session);
+        WebDriver driver = createDriver("logs-user");
 
         SharedWebDriverContract.assertBrowserLogs(driver, htmlFile);
+    }
+
+    private WebDriver createDriver(String userPersona) {
+        fixture = new PlaywrightWebDriverFixture();
+        return fixture.createDriver(userPersona);
     }
 
     private Path writeTestPage() throws Exception {
