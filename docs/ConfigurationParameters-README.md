@@ -22,6 +22,8 @@ These can be overridden by providing the same either as environment variables or
                    IF this is not specified, then teswiz will try to get the BRANCH_NAME using this command: `git rev-parse --abbrev-ref HEAD`
     BROWSER=chrome -> Which browser to use for Web execution? Supported: chrome || firefox
                       Browsers should to be installed. Corresponding WebDriver for the browser will be downloaded automatically
+    WEB_ENGINE=selenium -> Which web engine should be used for Platform.web? Supported: selenium | playwright-ts
+                           Default is selenium. All checked-in sample config.properties files now declare this explicitly.
     BUILD_ID=BUILDID -> The key name of the environment variable that has the corresponding build id of the test execution
     CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> Uninstall app from local Android devices before starting test execution
     CLOUD_KEY=<auth / api key> for pCloudy / Headspin
@@ -104,6 +106,8 @@ An optional Playwright-specific override block can be added under a browser entr
 ```
 
 When `WEB_ENGINE=playwright-ts` is used with a legacy browser config that does not yet have Playwright blocks, teswiz also generates a Playwright-ready recommended config in the current reports directory and prints a visible end-of-execution message with the generated file path and replacement guidance. The source config is not modified automatically.
+
+`WEB_ENGINE` is also added to the generated Cucumber HTML report metadata so report readers can see whether a web scenario ran on Selenium or Playwright TS.
 
 # Overriding the BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE for Web execution
 The BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE once set, cannot be changed for the test execution.

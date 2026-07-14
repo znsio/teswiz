@@ -11,6 +11,7 @@ Follow these steps:
 1. For `web` automation
    * Add `<>_BASE_URL` in environments.json - example: `THEAPP_BASE_URL=https://the-internet.herokuapp.com`
    * Update `BASE_URL` with the above in config.properties - example: `BASE_URL=THEAPP_BASE_URL`
+   * Set `WEB_ENGINE=selenium` in config.properties by default, and override to `playwright-ts` when you want to run the same flow on Playwright
 1. For `electron` automation
    * Add `binary` path in browser_config.json - example: `"binary": "C:\\path\\to\\chrome.exe"`
    * Add `browserVersion` in browser_config.json - example: `"browserVersion": "latest"`

@@ -98,6 +98,14 @@ Example:
 
 ## Web engine notes
 
+The checked-in sample config files default to:
+
+* `WEB_ENGINE=selenium`
+
+Override it at runtime when you want to validate the same web flow on Playwright TS:
+
+* `WEB_ENGINE=playwright-ts`
+
 * `WEB_ENGINE=selenium`
   * uses the Selenium Applitools SDK path
   * supports Ultrafast Grid (`useUFG`) as documented above
@@ -153,3 +161,5 @@ To enable Visual test automation using Applitools Visual AI, follow the steps be
   * the config file, or
   * from the command line - ex: `CONFIG=./configs/jiomeet_local_config.properties IS_VISUAL=true ./gradlew run`, or
   * as an environment variable
+
+For web runs, the report metadata in the generated Cucumber HTML report now includes `WEB_ENGINE`, so visual report consumers can tell whether the baseline/check ran through Selenium or Playwright TS.

@@ -63,6 +63,9 @@ teswiz also supports:
 * Applitools visual validation for web on both Selenium and Playwright TS
 * Verifying application with Figma designs using the explicit step
   `I have my Figma design with app name "...", test name "..." and baseline name "..." available in Applitools`
+* Explicit web-engine selection through `WEB_ENGINE`:
+  * supported values are `selenium` and `playwright-ts`
+  * checked-in sample configs explicitly set `WEB_ENGINE=selenium` so the default sample behavior is obvious, stable, and easy to override when you want to run the same web flow on Playwright TS
 
 ## Architecture Notes
 
@@ -126,6 +129,8 @@ On the mobile side, extraction has started the same way:
 Reports will be uploaded to reportportal.io, that you would need to setup separately, and provide the server details in
 src/test/resources/reportportal.properties file or provide the path to the file using this environment
 variable: `REPORT_PORTAL_FILE`
+
+The generated Cucumber HTML report now includes `WEB_ENGINE` in its execution metadata so Selenium and Playwright runs are clearly distinguishable.
 
 Test can run on local browsers / devices, or against any cloud provider, such as TestMu AI (formerly LambdaTest), HeadSpin, BrowserStack, SauceLabs, pCloudy.
 

@@ -1,5 +1,8 @@
 # Running the sample tests
 
+All checked-in sample `config.properties` files now include `WEB_ENGINE=selenium`.
+If you want to run the same web scenario on Playwright TS, override it from the command line with `WEB_ENGINE=playwright-ts`.
+
 ## Playwright TS Phase 1 local feedback path
 
 Use the existing TheApp feature for the first local Playwright feedback loop:
@@ -42,6 +45,7 @@ Notes:
 * `HEADLESS=true` is recommended for local Playwright framework verification.
 * The mixed-platform scenario still requires the Android/Appium local prerequisites to be available.
 * These are the recommended first scenarios before enabling visual validation or cloud execution.
+* If you omit `WEB_ENGINE`, the checked-in sample configs use Selenium.
 
 ### Android tests
   Example:

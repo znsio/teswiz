@@ -52,6 +52,7 @@
    Refer to an existing config and capabilities file and update the value of platform.\
    ````
    PLATFORM=android/web
+   WEB_ENGINE=selenium
    ````
    Update the properties of the particular web that you want to open in the\
     ````

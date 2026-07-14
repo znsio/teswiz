@@ -60,6 +60,11 @@ teswiz supports running against TestMu AI using the sample configs and capabilit
 
     PLATFORM=web ./gradlew run
 
+All checked-in sample config files default `WEB_ENGINE=selenium`.
+To run the same web scenario on Playwright TS instead, override it on the command line:
+
+    PLATFORM=web WEB_ENGINE=playwright-ts ./gradlew run
+
 ### Run electron app tests
 
     PLATFORM=electron ./gradlew run
