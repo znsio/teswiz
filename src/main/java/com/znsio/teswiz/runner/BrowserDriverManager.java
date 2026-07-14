@@ -84,7 +84,7 @@ class BrowserDriverManager {
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
         LOGGER.debug("Active thread count: " + Thread.activeCount());
 
-        String baseUrl = getBaseUrl(userPersona);
+        String baseUrl = getBaseUrlFor(userPersona);
         String appName = Drivers.getAppNamefor(userPersona);
 
         checkConnectivityToBaseUrl(baseUrl);
@@ -127,7 +127,7 @@ class BrowserDriverManager {
         return browserConfig;
     }
 
-    private static String getBaseUrl(String userPersona) {
+    static String getBaseUrlFor(String userPersona) {
         String providedBaseUrlKey = Runner.getBaseURLForWeb();
 
         String appName = Drivers.getAppNamefor(userPersona);
@@ -619,7 +619,7 @@ class BrowserDriverManager {
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
         LOGGER.debug("Active thread count: " + Thread.activeCount());
 
-        String baseUrl = getBaseUrl(userPersona);
+        String baseUrl = getBaseUrlFor(userPersona);
         String appName = Drivers.getAppNamefor(userPersona);
 
         checkConnectivityToBaseUrl(baseUrl);

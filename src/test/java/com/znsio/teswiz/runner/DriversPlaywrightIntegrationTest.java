@@ -113,6 +113,7 @@ class DriversPlaywrightIntegrationTest {
         System.setProperty("HEADLESS", "true");
         Setup.load(CONFIG_FILE);
         Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+        Setup.getExecutionArguments();
     }
 
     private TestExecutionContext createPlaywrightContext(String testName) throws Exception {

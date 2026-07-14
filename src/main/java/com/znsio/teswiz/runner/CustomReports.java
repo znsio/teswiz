@@ -62,19 +62,28 @@ class CustomReports {
     }
 
     @NotNull
-    private static List<String> processTestResultJsonFiles(String reportsDir) {
+    static List<String> processTestResultJsonFiles(String reportsDir) {
         Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsDir), new String[]{"json"},
                                                          true);
-        LOGGER.info(String.format("\tFound '%s' result files for processing", jsonFiles.size()));
-        if (jsonFiles.isEmpty()) {
+        List<File> cucumberJsonFiles = jsonFiles.stream()
+                .filter(CustomReports::isCucumberResultJsonFile)
+                .sorted(Comparator.comparing(File::getAbsolutePath))
+                .toList();
+        LOGGER.info(String.format("\tFound '%s' Cucumber result files for processing", cucumberJsonFiles.size()));
+        if (cucumberJsonFiles.isEmpty()) {
             LOGGER.info("Reports not generated");
         }
-        List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
-        jsonFiles.forEach(file -> {
+        List<String> jsonPaths = new ArrayList<>(cucumberJsonFiles.size());
+        cucumberJsonFiles.forEach(file -> {
             LOGGER.info(String.format("\tProcessing result file: %s", file.getAbsolutePath()));
             jsonPaths.add(file.getAbsolutePath());
         });
         return jsonPaths;
+    }
+
+    private static boolean isCucumberResultJsonFile(File file) {
+        String fileName = file.getName();
+        return fileName.startsWith("cucumber-") && fileName.endsWith(".json");
     }
 
     private static Configuration addTestExecutionMetaDataToReportConfig(Configuration config) {

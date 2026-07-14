@@ -7,7 +7,7 @@ Use the existing TheApp feature for the first local Playwright feedback loop:
 ### 1. Single-user web
 
 ```bash
-WEB_ENGINE=playwright-ts HEADLESS=true CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@theapp2 and @invalidLogin1 and @playwright-phase1" ./gradlew run
+WEB_ENGINE=playwright-ts CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@theapp2 and @invalidLogin1 and @playwright-phase1" ./gradlew run
 ```
 
 Scenario:
@@ -18,7 +18,7 @@ Scenario:
 ### 2. Multi-user web
 
 ```bash
-WEB_ENGINE=playwright-ts HEADLESS=true CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@multiuser-web and @theapp7 and @playwright-phase1" ./gradlew run
+WEB_ENGINE=playwright-ts CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@multiuser-web and @theapp7 and @playwright-phase1" ./gradlew run
 ```
 
 Scenario:
@@ -29,7 +29,7 @@ Scenario:
 ### 3. Mixed platform (Appium Android + Playwright web)
 
 ```bash
-WEB_ENGINE=playwright-ts HEADLESS=true CONFIG=./configs/theapp/theapp_local_android_config.properties TAG="@multiuser-android-web and @theapp5 and @playwright-phase1" ./gradlew run
+WEB_ENGINE=playwright-ts CONFIG=./configs/theapp/theapp_local_android_config.properties TAG="@multiuser-android-web and @theapp5 and @playwright-phase1" ./gradlew run
 ```
 
 Scenario:
