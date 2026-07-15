@@ -9,9 +9,12 @@
     "go-ios": "1.2.0"
   },
   "overrides": {
+    "@appium/support": ">=7.0.6",
+    "@babel/core": "7.29.6",
     "@xmldom/xmldom": "0.9.10",
     "@mapbox/node-pre-gyp": "2.0.3",
     "axios": "1.18.1",
+    "diff": ">=5.2.2",
     "fast-uri": "3.1.2",
     "form-data": "4.0.6",
     "http-proxy-middleware": "3.0.7",
@@ -27,7 +30,10 @@
     "picomatch": "4.0.4",
     "qs": "6.15.3",
     "request": {
-      "form-data": "2.5.6"
+      "form-data": "2.5.6",
+      "har-validator": {
+        "ajv": "6.14.0"
+      }
     },
     "serialize-javascript": "7.0.6",
     "shell-quote": "1.8.4",
