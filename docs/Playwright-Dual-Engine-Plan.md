@@ -13,7 +13,9 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 
 ## Milestone 1: Normalize package boundaries and reduce public surface area
 
-- [ ] Move Selenium web runtime fully out of `runner`
+- [ ] Move browser orchestration fully out of `runner`
+- [ ] Keep `BrowserDriverManager` in `com.znsio.teswiz.web.browser` as the browser-engine orchestrator
+- [ ] Keep `SeleniumDriverManager` in `com.znsio.teswiz.web.selenium` as the Selenium runtime implementation
 - [ ] Keep engine/provider namespaces consistent for web and mobile
 - [ ] Replace broad public exposure with small facades or result objects where needed
 - [ ] Introduce a small public engine session/result API so `runner` can keep owning `Driver` construction while engine packages remain internal

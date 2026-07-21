@@ -170,13 +170,21 @@ Current examples:
 * `BrowserStackWebCapabilitySetup`
 * `LambdaTestWebCapabilitySetup`
 
+### `com.znsio.teswiz.web.browser`
+
+Owns browser-engine orchestration that chooses Selenium or Playwright web execution.
+
+Current examples:
+
+* `BrowserDriverManager`
+
 ### `com.znsio.teswiz.web.selenium`
 
 Owns Selenium web engine runtime internals used by teswiz.
 
 Current examples:
 
-* `BrowserDriverManager`
+* `SeleniumDriverManager`
 
 ### `com.znsio.teswiz.web.playwright`
 
@@ -216,6 +224,7 @@ When adding new code for the dual-engine architecture:
 
 * do not dump new engine-specific support classes into `runner` by default
 * keep `runner` focused on stable orchestration-facing APIs
+* prefer browser-engine orchestration code under `web.browser`
 * prefer Selenium web engine code under `web.selenium`
 * prefer engine-specific code under `web.playwright`
 * prefer provider-specific web execution code under `web.provider`

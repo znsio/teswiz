@@ -90,6 +90,8 @@ The dual-engine web support is intentionally organized behind internal support p
   * mobile cloud provider adapters for report-link and future provider-specific Appium behavior
 * `com.znsio.teswiz.web`
   * shared web engine concepts such as `WebEngine`
+* `com.znsio.teswiz.web.browser`
+  * browser-engine orchestration that routes between Selenium and Playwright web engines
 * `com.znsio.teswiz.web.provider`
   * provider-aware web session adapters for local and cloud execution metadata
 * `com.znsio.teswiz.web.provider.selenium`

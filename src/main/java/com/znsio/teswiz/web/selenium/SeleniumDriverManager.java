@@ -65,8 +65,8 @@ import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-public class BrowserDriverManager {
-    private static final Logger LOGGER = LogManager.getLogger(BrowserDriverManager.class.getName());
+public class SeleniumDriverManager {
+    private static final Logger LOGGER = LogManager.getLogger(SeleniumDriverManager.class.getName());
     private static final int MAX_NUMBER_OF_WEB_DRIVERS = Runner.getMaxNumberOfWebDrivers();
     private static final String ACCEPT_INSECURE_CERTS = "acceptInsecureCerts";
     private static final String VERBOSE_LOGGING = "verboseLogging";
@@ -77,8 +77,8 @@ public class BrowserDriverManager {
     private static boolean shouldBrowserBeMaximized = false;
     private static boolean isRunInHeadlessMode = false;
 
-    private BrowserDriverManager() {
-        LOGGER.debug("BrowserDriverManager - private constructor");
+    private SeleniumDriverManager() {
+        LOGGER.debug("SeleniumDriverManager - private constructor");
     }
 
     @NotNull
@@ -536,7 +536,7 @@ public class BrowserDriverManager {
         }
     }
 
-    static void closeWebDriver(String userPersona,
+    public static void closeWebDriver(String userPersona,
             @NotNull Driver driver) {
         String browserNameForUser = Drivers.getBrowserNameForUser(userPersona);
         String logFileName = getBrowserLogFileNameFor(userPersona, Platform.web.name(), browserNameForUser);

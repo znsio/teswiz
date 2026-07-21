@@ -7,12 +7,10 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.reporting.ScenarioArtifactReporter;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.session.UserPersonaDetails;
+import com.znsio.teswiz.web.browser.BrowserDriverManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
-import com.znsio.teswiz.web.playwright.PlaywrightWebDriverCloser;
 import com.znsio.teswiz.web.provider.WebExecutionProvider;
 import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
-import com.znsio.teswiz.web.selenium.BrowserDriverManager;
-import com.znsio.teswiz.web.selenium.SeleniumWebDriverCloser;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.Status;
 import kong.unirest.json.JSONObject;
@@ -120,7 +118,7 @@ public class Drivers {
                 currentDriver = AppiumDriverManager.createWindowsDriverForUser(userPersona, forPlatform, context);
                 break;
             case web:
-                currentDriver = WebSessionFactory.createWebDriverForUser(userPersona, browserName, forPlatform, context);
+                currentDriver = BrowserDriverManager.createWebDriverForUser(userPersona, browserName, forPlatform, context);
                 break;
             case electron:
                 currentDriver = BrowserDriverManager.createElectronDriverForUser(userPersona, browserName, forPlatform, context);
@@ -274,11 +272,7 @@ public class Drivers {
         LOGGER.info(String.format("attachLogsAndCloseDriver: %s - %s - %s", userPersona, driver.getType(), driverName));
         switch (driver.getType()) {
             case Driver.WEB_DRIVER:
-                if (driver.getInnerDriver() instanceof PlaywrightWebDriver) {
-                    PlaywrightWebDriverCloser.closeWebDriver(userPersona, driver);
-                } else {
-                    SeleniumWebDriverCloser.closeWebDriver(userPersona, driver);
-                }
+                BrowserDriverManager.closeWebDriver(userPersona, driver);
                 break;
             case Driver.APPIUM_DRIVER:
                 AppiumDriverManager.closeAppiumDriver(userPersona, driver);
