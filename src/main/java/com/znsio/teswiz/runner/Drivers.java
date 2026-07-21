@@ -7,11 +7,12 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.reporting.ScenarioArtifactReporter;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.session.UserPersonaDetails;
-import com.znsio.teswiz.web.playwright.PlaywrightDriverManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
+import com.znsio.teswiz.web.playwright.PlaywrightWebDriverCloser;
 import com.znsio.teswiz.web.provider.WebExecutionProvider;
 import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
 import com.znsio.teswiz.web.selenium.BrowserDriverManager;
+import com.znsio.teswiz.web.selenium.SeleniumWebDriverCloser;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.Status;
 import kong.unirest.json.JSONObject;
@@ -274,9 +275,9 @@ public class Drivers {
         switch (driver.getType()) {
             case Driver.WEB_DRIVER:
                 if (driver.getInnerDriver() instanceof PlaywrightWebDriver) {
-                    PlaywrightDriverManager.closeWebDriver(userPersona, driver);
+                    PlaywrightWebDriverCloser.closeWebDriver(userPersona, driver);
                 } else {
-                    BrowserDriverManager.closeWebDriver(userPersona, driver);
+                    SeleniumWebDriverCloser.closeWebDriver(userPersona, driver);
                 }
                 break;
             case Driver.APPIUM_DRIVER:

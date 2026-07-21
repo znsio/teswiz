@@ -11,7 +11,7 @@ public final class PlaywrightDriverManager {
     private PlaywrightDriverManager() {
     }
 
-    public static void closeWebDriver(String userPersona, @NotNull Driver driver) {
+    static void closeWebDriver(String userPersona, @NotNull Driver driver) {
         LOGGER.info("Closing Playwright web driver for user: '{}'", userPersona);
         if (null != driver.getInnerDriver()) {
             driver.getInnerDriver().quit();

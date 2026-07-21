@@ -536,7 +536,7 @@ public class BrowserDriverManager {
         }
     }
 
-    public static void closeWebDriver(String userPersona,
+    static void closeWebDriver(String userPersona,
             @NotNull Driver driver) {
         String browserNameForUser = Drivers.getBrowserNameForUser(userPersona);
         String logFileName = getBrowserLogFileNameFor(userPersona, Platform.web.name(), browserNameForUser);
