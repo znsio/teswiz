@@ -24,7 +24,7 @@ public final class BrowserDriverManager {
         return createWebDriverForUser(userPersona, browserName, forPlatform, context, PLAYWRIGHT_WORKER_MANAGER);
     }
 
-    public static Driver createWebDriverForUser(String userPersona, String browserName,
+    static Driver createWebDriverForUser(String userPersona, String browserName,
             Platform forPlatform, TestExecutionContext context, PlaywrightWorkerManager playwrightWorkerManager) {
         WebEngine webEngine = Runner.getWebEngine();
         String runningOn = Runner.isRunningInCI() ? "CI" : "local";
