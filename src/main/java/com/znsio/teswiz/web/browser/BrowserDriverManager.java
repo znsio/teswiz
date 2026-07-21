@@ -8,7 +8,6 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.web.WebEngine;
-import com.znsio.teswiz.web.playwright.PlaywrightDriverManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
 import com.znsio.teswiz.web.selenium.SeleniumDriverManager;
@@ -42,16 +41,28 @@ public final class BrowserDriverManager {
     }
 
     public static void closeWebDriver(String userPersona, Driver driver) {
-        if (driver.getInnerDriver() instanceof PlaywrightWebDriver) {
-            PlaywrightDriverManager.closeWebDriver(userPersona, driver);
-        } else {
-            SeleniumDriverManager.closeWebDriver(userPersona, driver);
+        switch (Runner.getWebEngine()) {
+            case SELENIUM:
+                SeleniumDriverManager.closeWebDriver(userPersona, driver);
+                break;
+            case PLAYWRIGHT_TS:
+                closePlaywrightWebDriver(driver);
+                break;
+            default:
+                throw new InvalidTestDataException(
+                        String.format("Unexpected web engine: '%s'", Runner.getWebEngine().getConfigValue()));
         }
     }
 
     public static Driver createElectronDriverForUser(String userPersona, String browserName,
             Platform forPlatform, TestExecutionContext context) {
         return SeleniumDriverManager.createElectronDriverForUser(userPersona, browserName, forPlatform, context);
+    }
+
+    private static void closePlaywrightWebDriver(Driver driver) {
+        if (null != driver.getInnerDriver()) {
+            driver.getInnerDriver().quit();
+        }
     }
 
     private static Driver createPlaywrightWebDriverForUser(String userPersona, String browserName,

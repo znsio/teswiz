@@ -200,7 +200,6 @@ Current examples:
 * `PlaywrightWebElement`
 * `PlaywrightLocator`
 * `PlaywrightLocatorReference`
-* `PlaywrightDriverManager`
 
 ### `com.znsio.teswiz.reporting`
 

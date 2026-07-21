@@ -61,6 +61,25 @@ class BrowserDriverManagerTest {
         assertThat(context.getTestStateAsString(TEST_CONTEXT.WEB_BROWSER_ON)).isEqualTo("local");
     }
 
+    @Test
+    void shouldClosePlaywrightSessionsThroughTheBrowserManager() throws Exception {
+        enablePlaywrightHeadless();
+        TestExecutionContext context = createContext("browser-manager-playwright-close");
+        UserPersonaDetails userPersonaDetails = (UserPersonaDetails) context
+                .getTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS);
+        userPersonaDetails.addAppName("buyer", Runner.DEFAULT);
+
+        FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
+        PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
+                new StubPlaywrightBrowserConfigResolver(), new StubWebExecutionProviderResolver());
+
+        Driver driver = BrowserDriverManager.createWebDriverForUser("buyer", "chrome", Platform.web, context, manager);
+
+        BrowserDriverManager.closeWebDriver("buyer", driver);
+
+        assertThat(workerClient.wasClosed()).isTrue();
+    }
+
     private void enablePlaywrightHeadless() {
         System.setProperty("WEB_ENGINE", "playwright-ts");
         System.setProperty("HEADLESS", "true");
@@ -85,6 +104,7 @@ class BrowserDriverManagerTest {
         private final AtomicInteger startCount = new AtomicInteger();
         private boolean running;
         private String lastNavigatedUrl;
+        private boolean closed;
 
         FakePlaywrightWorkerClient() {
             super(Path.of("ignored-worker.mjs"));
@@ -113,8 +133,17 @@ class BrowserDriverManagerTest {
             lastNavigatedUrl = url;
         }
 
+        @Override
+        public synchronized void closeSession(String sessionId) {
+            closed = true;
+        }
+
         String lastNavigatedUrl() {
             return lastNavigatedUrl;
+        }
+
+        boolean wasClosed() {
+            return closed;
         }
     }
 
