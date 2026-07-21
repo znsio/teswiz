@@ -90,7 +90,7 @@ public class BrowserDriverManager {
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
         LOGGER.debug("Active thread count: " + Thread.activeCount());
 
-        String baseUrl = getBaseUrlFor(userPersona);
+        String baseUrl = WebBaseUrlResolver.resolve(Drivers.getAppNamefor(userPersona));
         String appName = Drivers.getAppNamefor(userPersona);
 
         checkConnectivityToBaseUrl(baseUrl);
@@ -131,25 +131,6 @@ public class BrowserDriverManager {
         JSONObject browserConfig = BrowserConfigLoader.load(context);
         LOGGER.info("Using BROWSER_CONFIG_FILE: " + Runner.getBrowserConfigFile());
         return browserConfig;
-    }
-
-    public static String getBaseUrlFor(String userPersona) {
-        String providedBaseUrlKey = Runner.getBaseURLForWeb();
-
-        String appName = Drivers.getAppNamefor(userPersona);
-        if (!appName.equalsIgnoreCase(DEFAULT)) {
-            providedBaseUrlKey = appName.toUpperCase() + "_BASE_URL";
-        }
-        LOGGER.info(String.format("Using BASE_URL key: %s", providedBaseUrlKey));
-
-        if (null == providedBaseUrlKey) {
-            throw new InvalidTestDataException("baseUrl not provided");
-        }
-        String retrievedBaseUrl = String.valueOf(
-                Runner.getFromEnvironmentConfiguration(providedBaseUrlKey));
-        retrievedBaseUrl = getOverriddenStringValue(providedBaseUrlKey, retrievedBaseUrl);
-        LOGGER.info(String.format("baseUrl: %s", retrievedBaseUrl));
-        return retrievedBaseUrl;
     }
 
     private static void checkConnectivityToBaseUrl(String baseUrl) {
@@ -625,7 +606,7 @@ public class BrowserDriverManager {
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
         LOGGER.debug("Active thread count: " + Thread.activeCount());
 
-        String baseUrl = getBaseUrlFor(userPersona);
+        String baseUrl = WebBaseUrlResolver.resolve(Drivers.getAppNamefor(userPersona));
         String appName = Drivers.getAppNamefor(userPersona);
 
         checkConnectivityToBaseUrl(baseUrl);

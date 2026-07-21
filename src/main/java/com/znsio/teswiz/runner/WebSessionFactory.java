@@ -8,6 +8,7 @@ import com.znsio.teswiz.web.WebEngine;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
 import com.znsio.teswiz.web.selenium.BrowserDriverManager;
+import com.znsio.teswiz.web.selenium.WebBaseUrlResolver;
 
 final class WebSessionFactory {
     private static final PlaywrightWorkerManager PLAYWRIGHT_WORKER_MANAGER = new PlaywrightWorkerManager();
@@ -34,7 +35,7 @@ final class WebSessionFactory {
                 context.addTestState(TEST_CONTEXT.ENGINE_SESSION_HANDLE, managedSession.sessionHandle());
                 Drivers.addUserPersonaDriverCapabilities(userPersona, managedSession.createCapabilities());
                 PlaywrightWebDriver playwrightWebDriver = managedSession.createWebDriver();
-                playwrightWebDriver.get(BrowserDriverManager.getBaseUrlFor(userPersona));
+                playwrightWebDriver.get(WebBaseUrlResolver.resolve(Drivers.getAppNamefor(userPersona)));
                 return new Driver(context.getTestName() + "-" + userPersona, forPlatform, userPersona,
                         Drivers.getAppNamefor(userPersona), playwrightWebDriver, Runner.isRunningInHeadlessMode());
             default:
