@@ -31,7 +31,7 @@ import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import com.znsio.teswiz.web.provider.selenium.BrowserStackWebCapabilitySetup;
 
-class BrowserStackSetup {
+public class BrowserStackSetup {
     private static final Logger LOGGER = LogManager.getLogger(BrowserStackSetup.class.getName());
     private static final String DEVICE = "device";
     private static final String BSTACK_OPTIONS_CAPABILITY = "bstack:options";
@@ -42,7 +42,7 @@ class BrowserStackSetup {
         LOGGER.debug("BrowserStackSetup - private constructor");
     }
 
-    static void updateBrowserStackCapabilities(String deviceLabURL) {
+    public static void updateBrowserStackCapabilities(String deviceLabURL) {
         String authenticationUser = Setup.getFromConfigs(Setup.CLOUD_USERNAME);
         String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
         String platformName = Setup.getPlatform().name();
@@ -93,7 +93,7 @@ class BrowserStackSetup {
         }
     }
 
-    static MutableCapabilities updateBrowserStackCapabilities(MutableCapabilities capabilities) {
+    public static MutableCapabilities updateBrowserStackCapabilities(MutableCapabilities capabilities) {
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map<String, Object> loadedPlatformCapability = loadedCapabilityFile.get(Platform.web.name());

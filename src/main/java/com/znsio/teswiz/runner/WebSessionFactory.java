@@ -7,6 +7,7 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.web.WebEngine;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
+import com.znsio.teswiz.web.selenium.BrowserDriverManager;
 
 final class WebSessionFactory {
     private static final PlaywrightWorkerManager PLAYWRIGHT_WORKER_MANAGER = new PlaywrightWorkerManager();

@@ -11,6 +11,7 @@ import com.znsio.teswiz.web.playwright.PlaywrightDriverManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.provider.WebExecutionProvider;
 import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
+import com.znsio.teswiz.web.selenium.BrowserDriverManager;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.Status;
 import kong.unirest.json.JSONObject;
@@ -63,7 +64,7 @@ public class Drivers {
         return getUserPersonaDetails(context).isDriverAssignedForUser(userPersona);
     }
 
-    static UserPersonaDetails getUserPersonaDetails(TestExecutionContext context) {
+    public static UserPersonaDetails getUserPersonaDetails(TestExecutionContext context) {
         return (UserPersonaDetails) context.getTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS);
     }
 
@@ -129,7 +130,7 @@ public class Drivers {
         return currentDriver;
     }
 
-    static String getCapabilityFor(org.openqa.selenium.Capabilities capabilities, String name) {
+    public static String getCapabilityFor(org.openqa.selenium.Capabilities capabilities, String name) {
         Object capability = capabilities.getCapability(name);
         return null == capability ? "" : capability.toString();
     }
@@ -180,7 +181,7 @@ public class Drivers {
         return getDeviceOrBrowserNameFromCapabilitiesForUser(userPersona, DEVICE_NAME_OPTION);
     }
 
-    static String getBrowserNameForUser(String userPersona) {
+    public static String getBrowserNameForUser(String userPersona) {
         return getDeviceOrBrowserNameFromCapabilitiesForUser(userPersona, BROWSER_NAME);
     }
 
@@ -316,7 +317,7 @@ public class Drivers {
         LOGGER.info(String.format("assignNewPersonaToExistingDriver: Persona updated from '%s' to '%s'", userPersona, newUserPersona));
     }
 
-    static void addUserPersonaDriverCapabilities(String userPersona, Capabilities capabilities) {
+    public static void addUserPersonaDriverCapabilities(String userPersona, Capabilities capabilities) {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(getTestExecutionContext(Thread.currentThread().getId()));
         userPersonaDetails.addCapabilities(userPersona, capabilities);
     }
@@ -331,7 +332,7 @@ public class Drivers {
         return userPersonaDetails.getCapabilitiesAssignedForUser(userPersona);
     }
 
-    static String getAppNamefor(String userPersona) {
+    public static String getAppNamefor(String userPersona) {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(getTestExecutionContext(Thread.currentThread().getId()));
         return userPersonaDetails.getAppName(userPersona);
     }

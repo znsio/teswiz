@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.web.selenium;
 
 import java.awt.Toolkit;
 import java.io.File;
@@ -45,6 +45,12 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.runner.Driver;
+import com.znsio.teswiz.runner.Drivers;
+import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.runner.BrowserStackSetup;
+import com.znsio.teswiz.runner.LambdaTestSetup;
+import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.session.UserPersonaDetails;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
@@ -59,7 +65,7 @@ import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-class BrowserDriverManager {
+public class BrowserDriverManager {
     private static final Logger LOGGER = LogManager.getLogger(BrowserDriverManager.class.getName());
     private static final int MAX_NUMBER_OF_WEB_DRIVERS = Runner.getMaxNumberOfWebDrivers();
     private static final String ACCEPT_INSECURE_CERTS = "acceptInsecureCerts";
@@ -76,7 +82,7 @@ class BrowserDriverManager {
     }
 
     @NotNull
-    static Driver createWebDriverForUser(String userPersona, String browserName,
+    public static Driver createWebDriverForUser(String userPersona, String browserName,
             Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format(
                 "createWebDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: "
@@ -127,7 +133,7 @@ class BrowserDriverManager {
         return browserConfig;
     }
 
-    static String getBaseUrlFor(String userPersona) {
+    public static String getBaseUrlFor(String userPersona) {
         String providedBaseUrlKey = Runner.getBaseURLForWeb();
 
         String appName = Drivers.getAppNamefor(userPersona);
@@ -549,7 +555,7 @@ class BrowserDriverManager {
         }
     }
 
-    static void closeWebDriver(String userPersona,
+    public static void closeWebDriver(String userPersona,
             @NotNull Driver driver) {
         String browserNameForUser = Drivers.getBrowserNameForUser(userPersona);
         String logFileName = getBrowserLogFileNameFor(userPersona, Platform.web.name(), browserNameForUser);
@@ -611,7 +617,7 @@ class BrowserDriverManager {
     }
 
     @NotNull
-    static Driver createElectronDriverForUser(String userPersona, String browserName,
+    public static Driver createElectronDriverForUser(String userPersona, String browserName,
             Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format(
                 "createElectronDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: "

@@ -60,12 +60,13 @@ Visual AI testing as part of functional automation.
 
 teswiz also supports:
 * Applitools Native Mobile Layout through `useNML`
-* Applitools visual validation for web on both Selenium and Playwright TS
+* Applitools visual validation for web on Selenium Java and the Playwright web engines
 * Verifying application with Figma designs using the explicit step
   `I have my Figma design with app name "...", test name "..." and baseline name "..." available in Applitools`
 * Explicit web-engine selection through `WEB_ENGINE`:
-  * supported values are `selenium` and `playwright-ts`
-  * checked-in sample configs explicitly set `WEB_ENGINE=selenium` so the default sample behavior is obvious, stable, and easy to override when you want to run the same web flow on Playwright TS
+  * web engines are first-class and explicit
+  * Selenium Java continues to work as before
+  * Playwright web execution is selectable through the configured web engine and the matching screen implementation
 
 ## Architecture Notes
 
@@ -79,7 +80,7 @@ teswiz keeps a small stable Java orchestration surface in `com.znsio.teswiz.runn
 
 These remain the main framework entry points for orchestration, scenario lifecycle, and framework-facing behavior.
 
-The dual-engine web support added for Playwright TS is intentionally organized behind internal support packages:
+The dual-engine web support is intentionally organized behind internal support packages:
 
 * `com.znsio.teswiz.session`
   * persona session metadata and registries
@@ -92,7 +93,9 @@ The dual-engine web support added for Playwright TS is intentionally organized b
 * `com.znsio.teswiz.web.provider`
   * provider-aware web session adapters for local and cloud execution metadata
 * `com.znsio.teswiz.web.provider.selenium`
-  * Selenium-specific cloud capability builders extracted from `runner` with compatibility delegates preserved
+  * Selenium-specific cloud capability builders extracted from `runner` while keeping `runner` as the stable orchestration delegate
+* `com.znsio.teswiz.web.selenium`
+  * Selenium web engine runtime internals
 * `com.znsio.teswiz.web.playwright`
   * Playwright TS worker bridge, driver, and session internals
 * `com.znsio.teswiz.reporting`
@@ -105,9 +108,9 @@ For client projects, the intent is:
 * keep depending on the stable `runner` entry points unless explicitly documented otherwise
 * treat the packages above as internal implementation packages that may evolve as dual-engine support grows
 
-See [`docs/Architecture-README.md`](docs/Architecture-README.md) for a short maintainer-oriented package map.
+The architecture diagram and flow are documented in [`docs/Architecture-README.md`](docs/Architecture-README.md).
 
-For Playwright TS runs, teswiz now also publishes engine-native web artifacts into the scenario report flow:
+For Playwright web runs, teswiz now also publishes engine-native web artifacts into the scenario report flow:
 
 * session metadata as `scenario-session-metadata.json`
 * Playwright trace archives
@@ -130,7 +133,7 @@ Reports will be uploaded to reportportal.io, that you would need to setup separa
 src/test/resources/reportportal.properties file or provide the path to the file using this environment
 variable: `REPORT_PORTAL_FILE`
 
-The generated Cucumber HTML report now includes `WEB_ENGINE` in its execution metadata so Selenium and Playwright runs are clearly distinguishable.
+The generated Cucumber HTML report includes `WEB_ENGINE` in its execution metadata so the selected web engine is visible in the report.
 
 Test can run on local browsers / devices, or against any cloud provider, such as TestMu AI (formerly LambdaTest), HeadSpin, BrowserStack, SauceLabs, pCloudy.
 

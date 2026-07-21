@@ -18,7 +18,7 @@ import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import com.znsio.teswiz.web.provider.selenium.LambdaTestWebCapabilitySetup;
 
-class LambdaTestSetup {
+public class LambdaTestSetup {
     private static final Logger LOGGER = LogManager.getLogger(LambdaTestSetup.class.getName());
     private static final String LT_OPTIONS = "LT:Options";
     private static final String LT_OPTIONS_APPIUM = "lt:options";
@@ -30,7 +30,7 @@ class LambdaTestSetup {
         LOGGER.debug("LambdaTestSetup - private constructor");
     }
 
-    static void updateLambdaTestCapabilities(String apiUrl) {
+    public static void updateLambdaTestCapabilities(String apiUrl) {
         String authenticationUser = Setup.getFromConfigs(Setup.CLOUD_USERNAME);
         String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
         String platformName = Setup.getPlatform().name();
@@ -54,7 +54,7 @@ class LambdaTestSetup {
                 getExistingCloudDevices(loadedCapabilityFile));
     }
 
-    static MutableCapabilities updateLambdaTestCapabilities(MutableCapabilities capabilities) {
+    public static MutableCapabilities updateLambdaTestCapabilities(MutableCapabilities capabilities) {
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         Map loadedPlatformCapability = loadedCapabilityFile.get(Platform.web.name());

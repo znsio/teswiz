@@ -102,15 +102,19 @@ The checked-in sample config files default to:
 
 * `WEB_ENGINE=selenium`
 
-Override it at runtime when you want to validate the same web flow on Playwright TS:
+Override it at runtime when you want to validate the same web flow on a Playwright engine:
 
+* `WEB_ENGINE=playwright-java`
 * `WEB_ENGINE=playwright-ts`
 
 * `WEB_ENGINE=selenium`
   * uses the Selenium Applitools SDK path
   * supports Ultrafast Grid (`useUFG`) as documented above
+* `WEB_ENGINE=playwright-java`
+  * uses the Playwright Java visual path
+  * preserves teswiz scenario naming, Figma naming, batch identity, baseline environment selection, logs, and visual result handling
 * `WEB_ENGINE=playwright-ts`
-  * uses a Playwright-specific screenshot-based Applitools Images adapter
+  * uses the Playwright TS worker-backed visual path
   * preserves teswiz scenario naming, Figma naming, batch identity, baseline environment selection, logs, and visual result handling
   * supports `checkWindow(...)`, `checkWindow(..., MatchLevel)`, selector-based `Target.window().layout/strict/content/ignore(...)`, and simple `Target.region(...)` checks for non-frame web content
   * does not yet support Selenium-specific constructs such as frame-based visual checks, floating regions, dynamic regions, or accessibility regions
@@ -162,4 +166,4 @@ To enable Visual test automation using Applitools Visual AI, follow the steps be
   * from the command line - ex: `CONFIG=./configs/jiomeet_local_config.properties IS_VISUAL=true ./gradlew run`, or
   * as an environment variable
 
-For web runs, the report metadata in the generated Cucumber HTML report now includes `WEB_ENGINE`, so visual report consumers can tell whether the baseline/check ran through Selenium or Playwright TS.
+For web runs, the report metadata in the generated Cucumber HTML report includes `WEB_ENGINE`, so visual report consumers can tell which engine ran the baseline/check.

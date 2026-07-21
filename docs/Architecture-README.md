@@ -2,6 +2,82 @@
 
 This document describes the current package intent for teswiz after the dual-engine web refactor.
 
+## Web engine architecture
+
+teswiz treats the web execution engines as first-class variants behind one shared business-facing contract.
+The repository already ships the Selenium Java and Playwright TS execution paths; Playwright Java fits into the same contract/factory model described below.
+
+The current and target flow is:
+
+```mermaid
+flowchart LR
+    F[Feature file] --> S[Step definitions]
+    S --> BL[Java BL]
+    BL --> SC[Shared screen contract]
+    SC --> SF[Screen factory / resolver]
+
+    SF --> SE[Se-Java screen implementation]
+    SF --> PJ[Playwright-Java screen implementation]
+    SF --> PT[Playwright-TS screen implementation]
+    SF --> NA[Android / iOS screen implementation]
+
+    SE --> WD[Selenium WebDriver]
+    PJ --> PWJ[Playwright Java API]
+    PT --> AD[Java adapter -> TS worker IPC]
+    AD --> PWT[Playwright TS worker]
+    NA --> APP[Appium Java]
+
+    WD --> B[Browser]
+    PWJ --> B
+    PWT --> B
+    APP --> D[Device / Emulator / Cloud device]
+```
+
+Execution routing is persona-scoped, so multi-user scenarios can mix engines safely:
+
+```mermaid
+sequenceDiagram
+    participant Feature as Feature file
+    participant BL as Java BL
+    participant Factory as Screen factory
+    participant Se as Se-Java screen
+    participant PJ as Playwright-Java screen
+    participant PT as Playwright-TS screen
+    participant Worker as TS worker
+
+    Feature->>BL: Invoke scenario step
+    BL->>Factory: Resolve screen for persona + platform + engine
+    alt WEB_ENGINE=selenium
+        Factory-->>BL: Se-Java screen
+        BL->>Se: Screen action
+    else WEB_ENGINE=playwright-java
+        Factory-->>BL: Playwright-Java screen
+        BL->>PJ: Screen action
+    else WEB_ENGINE=playwright-ts
+        Factory-->>BL: Playwright-TS screen
+        BL->>PT: Screen action
+        PT->>Worker: IPC command
+        Worker-->>PT: Browser result
+    end
+```
+
+Assumptions used by this architecture:
+
+* the screen contract stays stable across supported platform and engine combinations
+* the BL layer never calls TypeScript directly
+* Playwright-TS remains a Java-owned orchestration path with a TS worker at the execution boundary
+* Selenium Java continues to work as it does today
+* multi-user and multi-platform routing remains persona/session-driven
+* engine-specific behavior belongs in engine-specific screen implementations, not in BL
+
+## Upgrade and migration impact
+
+* Existing Selenium Java tests continue to run unchanged
+* No migration script is required for Selenium-only suites
+* Playwright Java and Playwright TS adoption is opt-in
+* If a suite wants to use a Playwright engine, it must select the engine explicitly and use the corresponding screen implementation once introduced
+* If a suite stays on Selenium Java, no code or configuration migration is needed beyond keeping its current config in place
+
 ## Stable framework-facing package
 
 `com.znsio.teswiz.runner`
@@ -94,6 +170,14 @@ Current examples:
 * `BrowserStackWebCapabilitySetup`
 * `LambdaTestWebCapabilitySetup`
 
+### `com.znsio.teswiz.web.selenium`
+
+Owns Selenium web engine runtime internals used by teswiz.
+
+Current examples:
+
+* `BrowserDriverManager`
+
 ### `com.znsio.teswiz.web.playwright`
 
 Owns the Playwright TS worker bridge and Selenium-compatible driver facade used internally by teswiz.
@@ -132,6 +216,7 @@ When adding new code for the dual-engine architecture:
 
 * do not dump new engine-specific support classes into `runner` by default
 * keep `runner` focused on stable orchestration-facing APIs
+* prefer Selenium web engine code under `web.selenium`
 * prefer engine-specific code under `web.playwright`
 * prefer provider-specific web execution code under `web.provider`
 * prefer Selenium web cloud capability setup under `web.provider.selenium`
@@ -142,7 +227,7 @@ When adding new code for the dual-engine architecture:
 
 ## Consumer compatibility intent
 
-The goal is to keep teswiz non-breaking for normal users by preserving:
+The goal is to keep teswiz non-breaking for normal Selenium Java users by preserving:
 
 * feature-file style
 * config keys
