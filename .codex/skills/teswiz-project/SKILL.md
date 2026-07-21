@@ -25,6 +25,11 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Do not revert unrelated worktree changes.
 - Favor focused Gradle verification over broad test runs when touching a narrow area.
 - Whenever code or documentation changes are made, always include a concise suggested commit message in the final response.
+- Keep the repo instructions aligned across Codex, Claude, and Antigravity entry points:
+  - `.codex/skills/teswiz-project/SKILL.md`
+  - `CLAUDE.md`
+  - `ANTIGRAVITY.md`
+- If one of those instruction files changes, update the others in the same spirit so guidance stays consistent.
 
 ## Package boundaries
 

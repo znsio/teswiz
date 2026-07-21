@@ -1,8 +1,8 @@
-# teswiz Claude Instructions
+# teswiz Antigravity Instructions
 
 When working in this repository:
 
-- Keep the repo instructions aligned with the Codex and Antigravity entry points:
+- Keep the repo instructions aligned with the Codex and Claude entry points:
   - `.codex/skills/teswiz-project/SKILL.md`
   - `CLAUDE.md`
   - `ANTIGRAVITY.md`
