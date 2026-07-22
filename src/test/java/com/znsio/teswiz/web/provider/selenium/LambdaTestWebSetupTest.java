@@ -21,6 +21,12 @@ class LambdaTestWebSetupTest {
     @AfterEach
     void cleanUp() {
         SessionContext.remove(Thread.currentThread().getId());
+        System.clearProperty(Setup.CAPS);
+        System.clearProperty(Setup.CLOUD_USERNAME);
+        System.clearProperty(Setup.CLOUD_KEY);
+        System.clearProperty(Setup.APP_NAME);
+        System.clearProperty(Setup.LAUNCH_NAME);
+        System.clearProperty(Setup.LOG_DIR);
     }
 
     @Test

@@ -54,9 +54,13 @@ class BrowserDriverManagerTest {
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
                 new StubPlaywrightBrowserConfigResolver(), new StubWebExecutionProviderResolver());
 
-        Driver driver = BrowserDriverManager.createWebDriverForUser("buyer", "chrome", Platform.web, context, manager);
+        WebDriverSessionResult sessionResult = BrowserDriverManager.createWebSessionForUser(
+                "buyer", "chrome", Platform.web, context, manager);
 
-        assertThat(driver.getInnerDriver()).isInstanceOf(PlaywrightWebDriver.class);
+        assertThat(sessionResult.webDriver()).isInstanceOf(PlaywrightWebDriver.class);
+        assertThat(sessionResult.capabilities()).isNotNull();
+        assertThat(sessionResult.sessionHandle()).isNotNull();
+        assertThat(sessionResult.sessionHandle().engine()).isEqualTo("playwright-ts");
         assertThat(workerClient.lastNavigatedUrl()).isEqualTo(Runner.getFromEnvironmentConfiguration("BASE_URL"));
         assertThat(context.getTestStateAsString(TEST_CONTEXT.WEB_BROWSER_ON)).isEqualTo("local");
     }
@@ -73,7 +77,10 @@ class BrowserDriverManagerTest {
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
                 new StubPlaywrightBrowserConfigResolver(), new StubWebExecutionProviderResolver());
 
-        Driver driver = BrowserDriverManager.createWebDriverForUser("buyer", "chrome", Platform.web, context, manager);
+        WebDriverSessionResult sessionResult = BrowserDriverManager.createWebSessionForUser(
+                "buyer", "chrome", Platform.web, context, manager);
+        Driver driver = new Driver("browser-manager-playwright-close-buyer", Platform.web, "buyer",
+                Runner.DEFAULT, sessionResult.webDriver(), sessionResult.headless());
 
         BrowserDriverManager.closeWebDriver("buyer", driver);
 

@@ -60,6 +60,7 @@ import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
+import com.znsio.teswiz.web.browser.WebDriverSessionResult;
 import com.znsio.teswiz.web.provider.selenium.BrowserStackWebSetup;
 import com.znsio.teswiz.web.provider.selenium.LambdaTestWebSetup;
 
@@ -82,32 +83,28 @@ public class SeleniumDriverManager {
     }
 
     @NotNull
-    public static Driver createWebDriverForUser(String userPersona, String browserName,
+    public static WebDriverSessionResult createWebSessionForUser(String userPersona, String browserName,
             Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format(
-                "createWebDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: "
+                "createWebSessionForUser: begin: userPersona: '%s', browserName: '%s', Platform: "
                         + "'%s', Number of WebDrivers: '%d'%n",
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
         LOGGER.debug("Active thread count: " + Thread.activeCount());
 
         String baseUrl = WebBaseUrlResolver.resolve(Drivers.getAppNamefor(userPersona));
-        String appName = Drivers.getAppNamefor(userPersona);
 
         checkConnectivityToBaseUrl(baseUrl);
         checkNumberOfWebDriversInstantiated(userPersona, forPlatform);
-        String updatedTestName = context.getTestName() + "-" + userPersona;
         String runningOn = Runner.isRunningInCI() ? "CI" : "local";
         context.addTestState(TEST_CONTEXT.WEB_BROWSER_ON, runningOn);
         WebDriver newWebDriver = createNewWebDriver(userPersona, browserName, context);
         loadBaseUrl(baseUrl, newWebDriver);
-        Driver currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName, newWebDriver,
-                isRunInHeadlessMode);
         numberOfWebDriversUsed++;
 
         LOGGER.info(String.format(
-                "createWebDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', Number of WebDrivers: '%d'",
-                userPersona, forPlatform.name(), appName, numberOfWebDriversUsed));
-        return currentDriver;
+                "createWebSessionForUser: done: userPersona: '%s', Platform: '%s', Number of WebDrivers: '%d'",
+                userPersona, forPlatform.name(), numberOfWebDriversUsed));
+        return new WebDriverSessionResult(newWebDriver, isRunInHeadlessMode, null, null);
     }
 
     private static void loadBaseUrl(String baseUrl, WebDriver newWebDriver) {

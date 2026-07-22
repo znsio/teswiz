@@ -14,6 +14,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Browser orchestration lives in `com.znsio.teswiz.web.browser`
 - [x] Selenium web runtime helpers live in `com.znsio.teswiz.web.selenium`
 - [x] Selenium web cloud setup entry points live in `com.znsio.teswiz.web.provider.selenium`
+- [x] Web engine packages return a small session/result object and `runner` owns web `Driver` construction
 - [x] Browser shutdown routing follows the configured web engine
 - [x] Focused browser-routing and web-engine tests pass
 
@@ -24,9 +25,9 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Keep `SeleniumDriverManager` in `com.znsio.teswiz.web.selenium` as the Selenium runtime implementation
 - [x] Keep engine/provider namespaces consistent for web and mobile
 - [x] Align cloud capability helpers under provider namespaces
+- [x] Introduce a small public engine session/result API so `runner` can keep owning `Driver` construction while engine packages remain internal
 - [x] Re-run focused compile/test verification after each package move to keep the refactor mechanically safe
 - [ ] Replace broad public exposure with small facades or result objects where needed
-- [ ] Introduce a small public engine session/result API so `runner` can keep owning `Driver` construction while engine packages remain internal
 - [ ] Move remaining Selenium-web runtime helpers into `com.znsio.teswiz.web.selenium`
 - [ ] Keep web and mobile provider namespaces symmetrical
 - [ ] Keep the package surface small enough that engine internals stay easy to reason about

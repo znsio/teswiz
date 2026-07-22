@@ -208,6 +208,7 @@ Owns browser-engine orchestration that chooses Selenium or Playwright web execut
 Current examples:
 
 * `BrowserDriverManager`
+* `WebDriverSessionResult`
 
 ### `com.znsio.teswiz.web.selenium`
 

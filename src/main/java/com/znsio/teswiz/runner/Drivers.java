@@ -8,6 +8,7 @@ import com.znsio.teswiz.reporting.ScenarioArtifactReporter;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.session.UserPersonaDetails;
 import com.znsio.teswiz.web.browser.BrowserDriverManager;
+import com.znsio.teswiz.web.browser.WebDriverSessionResult;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.provider.WebExecutionProvider;
 import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
@@ -84,8 +85,9 @@ public class Drivers {
             throw new InvalidTestDataException(message);
         }
 
-        Driver currentDriver = createDriverForPlatform(userPersona, browserName, forPlatform, context);
-        SessionHandle sessionHandle = buildSessionHandle(userPersona, browserName, forPlatform, context, currentDriver);
+        DriverAssignment driverAssignment = createDriverForPlatform(userPersona, browserName, forPlatform, context);
+        Driver currentDriver = driverAssignment.driver();
+        SessionHandle sessionHandle = driverAssignment.sessionHandle();
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
         context.addTestState(TEST_CONTEXT.CURRENT_SESSION_HANDLE, sessionHandle);
         userPersonaDetails.addDriver(userPersona, currentDriver);
@@ -105,28 +107,31 @@ public class Drivers {
     }
 
     @NotNull
-    private static Driver createDriverForPlatform(String userPersona, String browserName, Platform forPlatform, TestExecutionContext context) {
+    private static DriverAssignment createDriverForPlatform(String userPersona, String browserName, Platform forPlatform,
+            TestExecutionContext context) {
         Driver currentDriver;
         switch (forPlatform) {
             case android:
                 currentDriver = AppiumDriverManager.createAndroidDriverForUser(userPersona, forPlatform, context);
-                break;
+                return new DriverAssignment(currentDriver,
+                        buildSessionHandle(userPersona, browserName, forPlatform, context, currentDriver));
             case iOS:
                 currentDriver = AppiumDriverManager.createIOSDriverForUser(userPersona, forPlatform, context);
-                break;
+                return new DriverAssignment(currentDriver,
+                        buildSessionHandle(userPersona, browserName, forPlatform, context, currentDriver));
             case windows:
                 currentDriver = AppiumDriverManager.createWindowsDriverForUser(userPersona, forPlatform, context);
-                break;
+                return new DriverAssignment(currentDriver,
+                        buildSessionHandle(userPersona, browserName, forPlatform, context, currentDriver));
             case web:
-                currentDriver = BrowserDriverManager.createWebDriverForUser(userPersona, browserName, forPlatform, context);
-                break;
+                return createWebDriverAssignment(userPersona, browserName, forPlatform, context);
             case electron:
                 currentDriver = BrowserDriverManager.createElectronDriverForUser(userPersona, browserName, forPlatform, context);
-                break;
+                return new DriverAssignment(currentDriver,
+                        buildSessionHandle(userPersona, browserName, forPlatform, context, currentDriver));
             default:
                 throw new InvalidTestDataException(String.format("Unexpected platform value: '%s' provided to assign Driver for user: '%s': ", forPlatform, userPersona));
         }
-        return currentDriver;
     }
 
     public static String getCapabilityFor(org.openqa.selenium.Capabilities capabilities, String name) {
@@ -371,6 +376,21 @@ public class Drivers {
         return SessionHandle.create(userPersona, forPlatform, engine, artifactPath, metadata);
     }
 
+    private static DriverAssignment createWebDriverAssignment(String userPersona, String browserName, Platform forPlatform,
+            TestExecutionContext context) {
+        WebDriverSessionResult sessionResult = BrowserDriverManager.createWebSessionForUser(
+                userPersona, browserName, forPlatform, context);
+        if (null != sessionResult.capabilities()) {
+            addUserPersonaDriverCapabilities(userPersona, sessionResult.capabilities());
+        }
+        Driver currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform, userPersona,
+                getAppNamefor(userPersona), sessionResult.webDriver(), sessionResult.headless());
+        SessionHandle sessionHandle = null != sessionResult.sessionHandle()
+                ? sessionResult.sessionHandle()
+                : buildSessionHandle(userPersona, browserName, forPlatform, context, currentDriver);
+        return new DriverAssignment(currentDriver, sessionHandle);
+    }
+
     private static Map<String, String> buildSessionMetadata(String browserName, Driver currentDriver) {
         WebExecutionProvider provider = WEB_EXECUTION_PROVIDER_RESOLVER.resolve();
         Map<String, String> metadata = new java.util.LinkedHashMap<>();
@@ -382,5 +402,8 @@ public class Drivers {
                     ((RemoteWebDriver) currentDriver.getInnerDriver()).getSessionId().toString());
         }
         return metadata;
+    }
+
+    private record DriverAssignment(Driver driver, SessionHandle sessionHandle) {
     }
 }
