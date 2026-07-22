@@ -15,7 +15,7 @@ import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.runner.Runner;
 
-public class PlaywrightBrowserConfigResolver {
+public final class PlaywrightBrowserConfigResolver {
     public PlaywrightBrowserConfig resolve(String browserName, TestExecutionContext context) {
         JSONObject browserConfig = BrowserConfigLoader.load(context);
         maybeRegisterMigrationArtifact(context, browserConfig);

@@ -14,14 +14,10 @@ import org.junit.jupiter.api.Test;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.config.browser.PlaywrightBrowserConfig;
-import com.znsio.teswiz.config.browser.PlaywrightBrowserConfigResolver;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.web.WebEngine;
-import com.znsio.teswiz.web.provider.LocalWebExecutionProvider;
-import com.znsio.teswiz.web.provider.WebExecutionProvider;
-import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerSession;
@@ -37,7 +33,7 @@ class PlaywrightWorkerManagerTest {
         TestExecutionContext context = new TestExecutionContext("playwright-worker-manager");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                new StubPlaywrightBrowserConfigResolver(), new StubWebExecutionProviderResolver());
+                (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
 
         PlaywrightWorkerClient firstClient = manager.getOrStart(context);
         PlaywrightWorkerClient secondClient = manager.getOrStart(context);
@@ -53,7 +49,7 @@ class PlaywrightWorkerManagerTest {
         context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, "/tmp/playwright-session-handle");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                new StubPlaywrightBrowserConfigResolver(), new StubWebExecutionProviderResolver());
+                (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
 
         SessionHandle sessionHandle = manager.createSessionHandle("buyer", "chrome", Platform.web, context);
 
@@ -77,7 +73,7 @@ class PlaywrightWorkerManagerTest {
         TestExecutionContext context = new TestExecutionContext("playwright-shutdown");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                new StubPlaywrightBrowserConfigResolver(), new StubWebExecutionProviderResolver());
+                (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
 
         manager.getOrStart(context);
         manager.shutdown(context);
@@ -146,18 +142,8 @@ class PlaywrightWorkerManagerTest {
         }
     }
 
-    private static class StubPlaywrightBrowserConfigResolver extends PlaywrightBrowserConfigResolver {
-        @Override
-        public PlaywrightBrowserConfig resolve(String browserName, TestExecutionContext context) {
-            return new PlaywrightBrowserConfig(browserName, true, List.of("--disable-gpu"), null, null,
-                    Map.of("ignoreHTTPSErrors", true), Map.of());
-        }
-    }
-
-    private static class StubWebExecutionProviderResolver extends WebExecutionProviderResolver {
-        @Override
-        public WebExecutionProvider resolve() {
-            return new LocalWebExecutionProvider();
-        }
+    private static PlaywrightBrowserConfig stubBrowserConfig(String browserName) {
+        return new PlaywrightBrowserConfig(browserName, true, List.of("--disable-gpu"), null, null,
+                Map.of("ignoreHTTPSErrors", true), Map.of());
     }
 }

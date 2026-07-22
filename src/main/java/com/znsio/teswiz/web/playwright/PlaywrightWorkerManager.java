@@ -3,6 +3,8 @@ package com.znsio.teswiz.web.playwright;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.nio.file.Path;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import org.json.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -18,19 +20,21 @@ import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
 
 public final class PlaywrightWorkerManager {
     private final PlaywrightWorkerClientFactory clientFactory;
-    private final PlaywrightBrowserConfigResolver browserConfigResolver;
-    private final WebExecutionProviderResolver providerResolver;
+    private final BiFunction<String, TestExecutionContext, PlaywrightBrowserConfig> browserConfigLookup;
+    private final Supplier<String> providerNameSupplier;
 
     public PlaywrightWorkerManager() {
-        this(PlaywrightWorkerClient::new, new PlaywrightBrowserConfigResolver(), new WebExecutionProviderResolver());
+        this(PlaywrightWorkerClient::new,
+                new PlaywrightBrowserConfigResolver()::resolve,
+                () -> new WebExecutionProviderResolver().resolve().name());
     }
 
     public PlaywrightWorkerManager(PlaywrightWorkerClientFactory clientFactory,
-            PlaywrightBrowserConfigResolver browserConfigResolver,
-            WebExecutionProviderResolver providerResolver) {
+            BiFunction<String, TestExecutionContext, PlaywrightBrowserConfig> browserConfigLookup,
+            Supplier<String> providerNameSupplier) {
         this.clientFactory = clientFactory;
-        this.browserConfigResolver = browserConfigResolver;
-        this.providerResolver = providerResolver;
+        this.browserConfigLookup = browserConfigLookup;
+        this.providerNameSupplier = providerNameSupplier;
     }
 
     public PlaywrightWorkerClient getOrStart(TestExecutionContext context) {
@@ -51,7 +55,7 @@ public final class PlaywrightWorkerManager {
 
     public PlaywrightWorkerSession createSession(String userPersona, String browserName, TestExecutionContext context) {
         return getOrStart(context).createSession(userPersona, browserName,
-                toJson(browserConfigResolver.resolve(browserName, context)),
+                toJson(browserConfigLookup.apply(browserName, context)),
                 Path.of(context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY)));
     }
 
@@ -59,12 +63,12 @@ public final class PlaywrightWorkerManager {
             TestExecutionContext context) {
         PlaywrightWorkerClient workerClient = getOrStart(context);
         PlaywrightWorkerSession workerSession = workerClient.createSession(userPersona, browserName,
-                toJson(browserConfigResolver.resolve(browserName, context)),
+                toJson(browserConfigLookup.apply(browserName, context)),
                 Path.of(context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY)));
         String artifactPath = context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
         Map<String, String> metadata = new LinkedHashMap<>();
         metadata.put("browserName", workerSession.browserName());
-        metadata.put("provider", providerResolver.resolve().name());
+        metadata.put("provider", providerNameSupplier.get());
         metadata.put("contextId", workerSession.contextId());
         metadata.put("pageId", workerSession.pageId());
         metadata.put("workerSessionId", workerSession.sessionId());

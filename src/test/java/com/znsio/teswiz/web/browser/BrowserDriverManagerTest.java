@@ -28,9 +28,6 @@ import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerSession;
-import com.znsio.teswiz.web.provider.LocalWebExecutionProvider;
-import com.znsio.teswiz.web.provider.WebExecutionProvider;
-import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
 
 class BrowserDriverManagerTest {
     private static final String CONFIG_FILE = "./configs/theapp/theapp_local_web_config.properties";
@@ -52,7 +49,7 @@ class BrowserDriverManagerTest {
 
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                new StubPlaywrightBrowserConfigResolver(), new StubWebExecutionProviderResolver());
+                (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
 
         WebDriverSessionResult sessionResult = BrowserDriverManager.createWebSessionForUser(
                 "buyer", "chrome", Platform.web, context, manager);
@@ -75,7 +72,7 @@ class BrowserDriverManagerTest {
 
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                new StubPlaywrightBrowserConfigResolver(), new StubWebExecutionProviderResolver());
+                (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
 
         WebDriverSessionResult sessionResult = BrowserDriverManager.createWebSessionForUser(
                 "buyer", "chrome", Platform.web, context, manager);
@@ -154,18 +151,8 @@ class BrowserDriverManagerTest {
         }
     }
 
-    private static class StubPlaywrightBrowserConfigResolver extends PlaywrightBrowserConfigResolver {
-        @Override
-        public PlaywrightBrowserConfig resolve(String browserName, TestExecutionContext context) {
-            return new PlaywrightBrowserConfig(browserName, true, List.of("--disable-gpu"), null, null,
-                    Map.of("ignoreHTTPSErrors", true), Map.of());
-        }
-    }
-
-    private static class StubWebExecutionProviderResolver extends WebExecutionProviderResolver {
-        @Override
-        public WebExecutionProvider resolve() {
-            return new LocalWebExecutionProvider();
-        }
+    private static PlaywrightBrowserConfig stubBrowserConfig(String browserName) {
+        return new PlaywrightBrowserConfig(browserName, true, List.of("--disable-gpu"), null, null,
+                Map.of("ignoreHTTPSErrors", true), Map.of());
     }
 }
