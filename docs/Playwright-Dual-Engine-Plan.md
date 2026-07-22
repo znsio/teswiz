@@ -53,9 +53,9 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 
 ## Milestone 3: Add explicit Gradle contract sanity check
 
-- [ ] Implement a user-invokable Gradle task to validate screen contracts and report non-compliant implementations
-- [ ] Ensure the sanity-check task fails with a readable list of missing or mismatched screen methods per platform and engine
-- [ ] Make the task explicit so users can run it only when they want contract validation
+- [x] Implement a user-invokable Gradle task to validate screen contracts and report non-compliant implementations
+- [x] Ensure the sanity-check task fails with a readable list of missing or mismatched screen methods per platform and engine
+- [x] Make the task explicit so users can run it only when they want contract validation
 - [ ] Include a report of unsupported or partially implemented screen combinations
 
 ## Milestone 4: Add missing-contract generation task

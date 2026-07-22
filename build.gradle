@@ -419,6 +419,15 @@ tasks.named('test', Test) {
     }
 }
 
+tasks.register('verifyScreenContracts', JavaExec) {
+    group = "verification"
+    description = "Validate discovered screen implementations against their shared contracts."
+    dependsOn compileTestJava
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = "com.znsio.teswiz.screen.ScreenContractSanityChecker"
+    args "src/test/java/com/znsio/teswiz/screen"
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += ['--release', '17']
 }

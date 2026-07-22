@@ -79,7 +79,7 @@ Explicit sanity-check and migration-support tasks are part of the architecture:
 
 ```mermaid
 flowchart TD
-    G[Gradle sanity-check task] --> C[Validate screen contract parity]
+    G["Gradle sanity-check task (verifyScreenContracts)"] --> C[Validate screen contract parity]
     C --> S1[Check Selenium screens]
     C --> S2[Check Playwright-Java screens]
     C --> S3[Check Playwright-TS screens]

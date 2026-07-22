@@ -112,6 +112,12 @@ For client projects, the intent is:
 
 The architecture diagram and flow are documented in [`docs/Architecture-README.md`](docs/Architecture-README.md).
 
+To explicitly validate discovered screen implementations against their shared contracts, run:
+
+`./gradlew verifyScreenContracts`
+
+This command is intentionally separate from normal test execution so teams can check screen compliance on demand while adding new Selenium, Playwright, or mobile screen implementations.
+
 For Playwright web runs, teswiz now also publishes engine-native web artifacts into the scenario report flow:
 
 * session metadata as `scenario-session-metadata.json`
