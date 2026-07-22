@@ -7,6 +7,8 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.android.theapp.LoginScreenAndroid;
 import com.znsio.teswiz.screen.ios.theapp.LoginScreenIOS;
+import com.znsio.teswiz.screen.web.WebScreenRouter;
+import com.znsio.teswiz.screen.web.playwright.theapp.LoginScreenPlaywrightTs;
 import com.znsio.teswiz.screen.web.theapp.LoginScreenWeb;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +28,9 @@ public abstract class LoginScreen {
             case android:
                 return new LoginScreenAndroid(driver, visually);
             case web:
-                return new LoginScreenWeb(driver, visually);
+                return WebScreenRouter.forEngine(Runner.getWebEngine(), SCREEN_NAME,
+                        () -> new LoginScreenWeb(driver, visually),
+                        () -> new LoginScreenPlaywrightTs(driver, visually));
             case iOS:
                 return new LoginScreenIOS(driver, visually);
         }

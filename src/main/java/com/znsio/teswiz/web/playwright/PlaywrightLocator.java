@@ -4,6 +4,9 @@ import org.openqa.selenium.By;
 
 record PlaywrightLocator(String strategy, String value) {
     static PlaywrightLocator from(By by) {
+        if (PlaywrightBy.isCustom(by)) {
+            return new PlaywrightLocator(PlaywrightBy.getStrategy(by), PlaywrightBy.getValue(by));
+        }
         String locator = by.toString();
         if (locator.startsWith("By.id: ")) {
             return new PlaywrightLocator("id", locator.substring("By.id: ".length()));

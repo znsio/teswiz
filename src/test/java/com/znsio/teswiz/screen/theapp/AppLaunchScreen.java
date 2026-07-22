@@ -7,6 +7,8 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.android.theapp.AppLaunchScreenAndroid;
 import com.znsio.teswiz.screen.ios.theapp.AppLaunchScreenIOS;
+import com.znsio.teswiz.screen.web.WebScreenRouter;
+import com.znsio.teswiz.screen.web.playwright.theapp.AppLaunchScreenPlaywrightTs;
 import com.znsio.teswiz.screen.web.theapp.AppLaunchScreenWeb;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +26,9 @@ public abstract class AppLaunchScreen {
 
         switch(platform) {
             case web:
-                return new AppLaunchScreenWeb(driver, visually);
+                return WebScreenRouter.forEngine(Runner.getWebEngine(), SCREEN_NAME,
+                        () -> new AppLaunchScreenWeb(driver, visually),
+                        () -> new AppLaunchScreenPlaywrightTs(driver, visually));
             case android:
                 return new AppLaunchScreenAndroid(driver, visually);
             case iOS:

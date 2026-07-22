@@ -265,6 +265,14 @@ function createLocator(root, locatorReference) {
       return root.getByText(value, { exact: true });
     case "partialLinkText":
       return root.getByText(value, { exact: false });
+    case "text":
+      return root.getByText(value, { exact: true });
+    case "role": {
+      const [role, accessibleName] = value.split("|", 2);
+      return root.getByRole(role, { name: accessibleName });
+    }
+    case "testId":
+      return root.getByTestId(value);
     default:
       throw new Error(`Unsupported locator strategy: ${strategy}`);
   }
