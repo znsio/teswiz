@@ -23,7 +23,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Browser shutdown routing follows the configured web engine
 - [x] Focused browser-routing and web-engine tests pass
 - [x] Screen contracts can resolve implementations through centralized `ScreenRegistry.getScreen(...)`
-- [x] PDF validation now lives behind a main-side framework facade instead of test-side screen overrides
+- [x] PDF validation now lives directly in the main-side visual framework instead of test-side screen overrides
 
 ## Milestone 1: Normalize package boundaries and reduce public surface area
 
