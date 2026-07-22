@@ -99,6 +99,33 @@ Assumptions used by this architecture:
 * multi-user and multi-platform routing remains persona/session-driven
 * engine-specific behavior belongs in engine-specific screen implementations, not in BL
 
+## Pattern matrix
+
+The dual-engine and multi-platform design intentionally uses a small set of patterns.
+The table below maps each pattern to the current teswiz implementation and the planned end-state as Playwright-Java and Playwright-TS become first-class web engines.
+
+| Pattern | Why teswiz uses it | Current teswiz examples | Planned / expanding examples |
+| --- | --- | --- | --- |
+| [Facade](https://refactoring.guru/design-patterns/facade) | Keep framework-facing entry points stable while hiding engine details | `Runner`, `Drivers`, `BrowserDriverManager`, `Visual` | Keep the same facade layer stable while web engines multiply |
+| [Strategy](https://refactoring.guru/design-patterns/strategy) | Select engine or provider at runtime by config and platform | `WEB_ENGINE`, `WebExecutionProviderResolver`, `MobileExecutionProviderResolver` | `selenium`, `playwright-java`, `playwright-ts` as peer web strategies |
+| [Adapter](https://refactoring.guru/design-patterns/adapter) | Normalize different runtimes behind the teswiz contract | `PlaywrightWebDriver`, `BrowserStackWebExecutionProvider`, `LambdaTestWebExecutionProvider` | `SeleniumWebEngineAdapter`, `PlaywrightJavaWebEngineAdapter`, `PlaywrightTsWebEngineAdapter`, Appium-side mobile adapters |
+| [Proxy / Remote Proxy](https://refactoring.guru/design-patterns/proxy) | Let Java call Playwright-TS while execution happens in a separate worker | `PlaywrightWorkerClient`, `PlaywrightWorkerManager`, TS worker IPC | Keep Playwright-TS as a Java-owned orchestration path with a remote execution boundary |
+| [Factory](https://refactoring.guru/design-patterns/factory-method) | Create engine-specific sessions and screen implementations without exposing creation logic to tests | `Drivers.createDriverFor(...)`, screen `get()` methods, `PlaywrightWorkerManager.createManagedSession(...)` | Config-driven screen factories and engine factories for Selenium, Playwright-Java, Playwright-TS, and Appium |
+| [Abstract Factory](https://refactoring.guru/design-patterns/abstract-factory) | Choose the correct family of screen implementations for a given platform and engine | Partially present today in screen `get()` methods and platform branching | Explicit engine-aware screen factories for shared screen contracts |
+| [Bridge](https://refactoring.guru/design-patterns/bridge) | Keep the business-facing screen contract stable while allowing different underlying engine implementations | Current screen abstractions plus platform-specific screen classes | Shared screen contract implemented by Selenium, Playwright-Java, Playwright-TS, Android, and iOS variants |
+| [Session Object](https://martinfowler.com/eaaCatalog/serverSessionState.html) | Route personas through explicit session metadata instead of raw driver ownership | `SessionHandle`, `UserPersonaDetails` | Expand session-aware routing uniformly across Selenium, Playwright-Java, Playwright-TS, Appium, and cloud providers |
+| [DTO / Result Object](https://martinfowler.com/eaaCatalog/dataTransferObject.html) | Return engine-created runtime state without letting engine packages own framework objects | `WebDriverSessionResult` | Similar result objects for engine session creation and artifact capture where needed |
+| [Ports and Adapters](https://alistair.cockburn.us/hexagonal-architecture) | Keep the Java core as the orchestration layer and push vendor/runtime specifics to the edges | `web.provider`, `mobile.provider`, Playwright worker bridge, browser/provider/session packages | Stronger engine-boundary contracts for Selenium, Playwright-Java, Playwright-TS, Appium, and cloud providers |
+| [Dependency Injection](https://martinfowler.com/articles/injection.html) via functions / suppliers | Make internal seams testable without turning concrete helpers into extension points | `PlaywrightWorkerManager` injected worker factory, browser-config lookup, provider-name supplier | Continue replacing subclass-based test seams with smaller injected contracts |
+| [Contract verification](https://martinfowler.com/bliki/ContractTest.html) | Prevent engine or platform implementations from drifting away from the shared screen/business contract | Focused shared web-driver contract tests today | Planned Gradle sanity-check task for engine/platform screen contract parity |
+
+Patterns teswiz is intentionally moving away from:
+
+* inheritance-heavy extension seams for internal helpers
+* hidden mutable context side effects for engine/session transfer
+* engine-specific behavior leaking into BL classes
+* giant all-purpose interfaces instead of smaller, composable engine contracts
+
 ## Upgrade and migration impact
 
 * Existing Selenium Java tests continue to run unchanged
