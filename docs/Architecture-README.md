@@ -2,63 +2,92 @@
 
 This document describes the current package intent for teswiz after the dual-engine web refactor.
 
-## Web engine architecture
+## Engine architecture
 
-teswiz treats the web execution engines as first-class variants behind one shared business-facing contract.
-The repository already ships the Selenium Java and Playwright TS execution paths; Playwright Java fits into the same contract/factory model described below.
+teswiz treats web and mobile execution as first-class variants behind one shared business-facing contract.
+The execution choice is persona-scoped and session-scoped, so multi-user scenarios can mix engines safely.
 
-The current and target flow is:
+The complete runtime picture is:
 
 ```mermaid
 flowchart LR
     F[Feature file] --> S[Step definitions]
     S --> BL[Java BL]
-    BL --> SC[Shared screen contract]
-    SC --> SF[Screen factory / resolver]
+    BL --> SC[Stable screen contract]
+    SC --> ROUTER[Runtime screen / engine router]
 
-    SF --> SE[Se-Java screen implementation]
-    SF --> PJ[Playwright-Java screen implementation]
-    SF --> PT[Playwright-TS screen implementation]
-    SF --> NA[Android / iOS screen implementation]
+    ROUTER --> SH[SessionHandle + persona routing]
+    SH --> REP[Reporting / logs / artifacts]
+    SH --> VIS[Visual validation]
+    SH --> CLOUD[Cloud provider adapters]
 
-    SE --> WD[Selenium WebDriver]
-    PJ --> PWJ[Playwright Java API]
-    PT --> AD[Java adapter -> TS worker IPC]
-    AD --> PWT[Playwright TS worker]
-    NA --> APP[Appium Java]
+    ROUTER --> WSEL[Web: SeleniumWebEngineAdapter]
+    ROUTER --> WPJ[Web: PlaywrightJavaWebEngineAdapter]
+    ROUTER --> WPTS[Web: PlaywrightTsWebEngineAdapter]
+    ROUTER --> MAPP[Mobile: AppiumJavaEngineAdapter]
+
+    WSEL --> WD[Selenium WebDriver]
+    WPJ --> PWJ[Playwright Java runtime]
+    WPTS --> IPC[Java adapter -> TS worker IPC]
+    IPC --> PWT[Playwright TS worker]
+    MAPP --> APP[Appium Java runtime]
 
     WD --> B[Browser]
     PWJ --> B
     PWT --> B
-    APP --> D[Device / Emulator / Cloud device]
+    APP --> D[Android / iOS device, emulator, or cloud device]
+
+    SH --> META[Engine name, provider, platform, persona, session id]
+    META --> REP
+    META --> VIS
+    META --> CLOUD
 ```
 
-Execution routing is persona-scoped, so multi-user scenarios can mix engines safely:
+Execution routing is still persona-scoped, and the same scenario can involve multiple engines or platforms:
 
 ```mermaid
 sequenceDiagram
     participant Feature as Feature file
     participant BL as Java BL
-    participant Factory as Screen factory
-    participant Se as Se-Java screen
+    participant Router as Screen / engine router
+    participant Se as Selenium screen
     participant PJ as Playwright-Java screen
     participant PT as Playwright-TS screen
+    participant App as Appium screen
     participant Worker as TS worker
 
     Feature->>BL: Invoke scenario step
-    BL->>Factory: Resolve screen for persona + platform + engine
-    alt WEB_ENGINE=selenium
-        Factory-->>BL: Se-Java screen
+    BL->>Router: Resolve persona + platform + engine
+    alt web + Selenium
+        Router-->>BL: Selenium screen
         BL->>Se: Screen action
-    else WEB_ENGINE=playwright-java
-        Factory-->>BL: Playwright-Java screen
+    else web + Playwright-Java
+        Router-->>BL: Playwright-Java screen
         BL->>PJ: Screen action
-    else WEB_ENGINE=playwright-ts
-        Factory-->>BL: Playwright-TS screen
+    else web + Playwright-TS
+        Router-->>BL: Playwright-TS screen
         BL->>PT: Screen action
         PT->>Worker: IPC command
         Worker-->>PT: Browser result
+    else mobile + Appium
+        Router-->>BL: Appium screen
+        BL->>App: Screen action
     end
+```
+
+Explicit sanity-check and migration-support tasks are part of the architecture:
+
+```mermaid
+flowchart TD
+    G[Gradle sanity-check task] --> C[Validate screen contract parity]
+    C --> S1[Check Selenium screens]
+    C --> S2[Check Playwright-Java screens]
+    C --> S3[Check Playwright-TS screens]
+    C --> S4[Check Android / iOS screens]
+    C --> R[Report missing or mismatched contracts]
+
+    M[Gradle migration task] --> B[Generate missing platform contracts]
+    B --> OUT[Write scaffold / report for unsupported combinations]
 ```
 
 Assumptions used by this architecture:
