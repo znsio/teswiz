@@ -100,6 +100,8 @@ The dual-engine web support is intentionally organized behind internal support p
   * Selenium web engine runtime internals
 * `com.znsio.teswiz.web.playwright`
   * Playwright TS worker bridge, driver, and session internals
+
+For `WEB_ENGINE=playwright-ts`, teswiz currently uses Java screen implementations that target the Playwright TS worker runtime. These are Java classes in the screen layer, not TypeScript-authored page objects.
 * `com.znsio.teswiz.reporting`
   * scenario metadata publishing and engine-specific artifact reporting helpers
 * `com.znsio.teswiz.visual`
