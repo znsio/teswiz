@@ -15,6 +15,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Selenium web runtime helpers live in `com.znsio.teswiz.web.selenium`
 - [x] Selenium web cloud setup entry points live in `com.znsio.teswiz.web.provider.selenium`
 - [x] Web engine packages return a small session/result object and `runner` owns web `Driver` construction
+- [x] Web session creation no longer depends on hidden `ENGINE_SESSION_HANDLE` context side effects
 - [x] Browser shutdown routing follows the configured web engine
 - [x] Focused browser-routing and web-engine tests pass
 

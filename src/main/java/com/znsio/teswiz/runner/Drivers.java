@@ -359,11 +359,6 @@ public class Drivers {
 
     private static SessionHandle buildSessionHandle(String userPersona, String browserName, Platform forPlatform,
             TestExecutionContext context, Driver currentDriver) {
-        SessionHandle engineSessionHandle = (SessionHandle) context.getTestState(TEST_CONTEXT.ENGINE_SESSION_HANDLE);
-        if (null != engineSessionHandle) {
-            context.addTestState(TEST_CONTEXT.ENGINE_SESSION_HANDLE, null);
-            return engineSessionHandle;
-        }
         String artifactPath = context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
         String engine = forPlatform.equals(Platform.web) || forPlatform.equals(Platform.electron)
                 ? Runner.getWebEngine().getConfigValue()
