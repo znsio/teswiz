@@ -40,17 +40,17 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [ ] Keep web and mobile provider namespaces symmetrical
 - [ ] Keep the package surface small enough that engine internals stay easy to reason about
 
-## Milestone 2: Add first-class Playwright-targeted screen implementations
+## Milestone 2: Add first-class Playwright-engine screen implementations
 
-- [ ] Create explicit screen implementations for the Playwright-Java and `playwright-ts` web engines for the shared business contract, starting with TheApp flows
-- [ ] Retire the current Selenium-screen-through-Playwright compatibility path once equivalent first-class Playwright screens are in place
-- [ ] Remove reliance on automatic Selenium-to-Playwright mapping where Playwright screens exist
+- [ ] Create explicit Java screen implementations for the Playwright-Java and `playwright-ts` web engines for the shared business contract, starting with TheApp flows
+- [ ] Retire the current Selenium-screen-through-Playwright compatibility path once equivalent first-class Java screen implementations for Playwright engines are in place
+- [ ] Remove reliance on automatic Selenium-to-Playwright mapping where Java screen implementations for Playwright engines exist
 - [x] Route screen creation via config-driven screen factories for TheApp web screens
 - [x] Add first explicit Java screen implementations for the `playwright-ts` web engine for the TheApp invalid-login flow
 - [x] Centralize contract-to-implementation resolution so screen `get()` methods stay one-line and non-breaking
 - [ ] Add screen contract compliance checks for supported platform/engine combinations
 - [ ] Add local single-user Selenium/Playwright parity tests for the shared screen contract
-- [ ] Keep Selenium screens working exactly as before while adding Playwright screen implementations
+- [ ] Keep Selenium screens working exactly as before while adding Java screen implementations for Playwright engines
 
 ## Milestone 3: Add explicit Gradle contract sanity check
 
@@ -98,7 +98,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 
 ## Notes
 
-- The goal is to keep Selenium Java stable while first-class Playwright-Java and Playwright-TS support grows.
+- The goal is to keep Selenium Java stable while first-class Playwright-Java and `playwright-ts` support grows.
 - Engine and provider namespaces should stay separate and easy to infer.
-- The compatibility adapter path is useful only as long as it helps bridge the transition to first-class Playwright-targeted screen implementations.
+- The compatibility adapter path is useful only as long as it helps bridge the transition to first-class Java screen implementations for Playwright engines.
 - This file should be updated whenever a milestone changes state so it remains the live implementation checklist.
