@@ -428,6 +428,15 @@ tasks.register('verifyScreenContracts', JavaExec) {
     args "src/test/java/com/znsio/teswiz/screen"
 }
 
+tasks.register('reportMissingScreenContracts', JavaExec) {
+    group = "verification"
+    description = "Report missing screen implementations for the currently supported target combinations."
+    dependsOn compileTestJava
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = "com.znsio.teswiz.screen.ScreenContractCoverageReporter"
+    args "src/test/java/com/znsio/teswiz/screen"
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += ['--release', '17']
 }

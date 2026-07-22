@@ -24,6 +24,9 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Use `apply_patch` for manual source edits.
 - Do not revert unrelated worktree changes.
 - Favor focused Gradle verification over broad test runs when touching a narrow area.
+- Prefer small, cohesive, meaningfully named classes and methods over large multi-purpose helpers.
+- Keep encapsulation tight: default to package-private or private unless a wider surface is genuinely required.
+- Avoid broad public APIs for internal refactors; prefer narrow facades, small result objects, or package-private collaborators.
 - Whenever code or documentation changes are made, always include a concise suggested commit message in the final response.
 - Keep the repo instructions aligned across Codex, Claude, and Antigravity entry points:
   - `.codex/skills/teswiz-project/SKILL.md`

@@ -9,3 +9,5 @@ When working in this repository:
 - When you change code or documentation, include a concise suggested commit message in the final response.
 - Prefer a short imperative commit message that reflects the main change clearly.
 - Keep changes focused and test-first when the task is a refactor or cleanup.
+- Prefer small, meaningfully named methods, variables, and classes.
+- Keep encapsulation tight; do not widen visibility unless there is a clear framework-facing need.

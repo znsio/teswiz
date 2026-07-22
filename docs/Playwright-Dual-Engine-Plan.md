@@ -56,13 +56,13 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Implement a user-invokable Gradle task to validate screen contracts and report non-compliant implementations
 - [x] Ensure the sanity-check task fails with a readable list of missing or mismatched screen methods per platform and engine
 - [x] Make the task explicit so users can run it only when they want contract validation
-- [ ] Include a report of unsupported or partially implemented screen combinations
+- [x] Include a report of unsupported or partially implemented screen combinations
 
 ## Milestone 4: Add missing-contract generation task
 
-- [ ] Implement a separate Gradle command to enumerate or scaffold missing contracts across supported platforms
+- [x] Implement a separate Gradle command to enumerate missing contracts across supported platforms
 - [ ] Keep contract-generation intentionally separate from normal builds so it remains an explicit maintenance command
-- [ ] Make the output suitable for either scaffolding or a human-readable gap report
+- [x] Make the output suitable for a human-readable gap report
 - [ ] Keep this command opt-in and non-blocking for normal test runs
 
 ## Milestone 5: Expand multi-user and multi-platform coverage

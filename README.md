@@ -118,6 +118,10 @@ To explicitly validate discovered screen implementations against their shared co
 
 This command is intentionally separate from normal test execution so teams can check screen compliance on demand while adding new Selenium, Playwright, or mobile screen implementations.
 
+To report missing screen implementations for the currently supported target combinations, run:
+
+`./gradlew reportMissingScreenContracts`
+
 For Playwright web runs, teswiz now also publishes engine-native web artifacts into the scenario report flow:
 
 * session metadata as `scenario-session-metadata.json`

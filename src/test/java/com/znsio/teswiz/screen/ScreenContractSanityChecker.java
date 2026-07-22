@@ -7,29 +7,18 @@ import org.apache.commons.lang3.NotImplementedException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class ScreenContractSanityChecker {
-    private static final String ROOT_PACKAGE = "com.znsio.teswiz.screen";
-    private static final Set<String> IMPLEMENTATION_ROOTS = Set.of(
-            "android",
-            "ios",
-            "web",
-            "windows",
-            "pdf");
-
-    private final Path sourceRoot;
+    private final ScreenClassCatalog classCatalog;
 
     public ScreenContractSanityChecker(Path sourceRoot) {
-        this.sourceRoot = sourceRoot;
+        this.classCatalog = new ScreenClassCatalog(sourceRoot);
     }
 
     public static void main(String[] args) throws IOException {
@@ -44,7 +33,7 @@ public final class ScreenContractSanityChecker {
     }
 
     ValidationReport validate() throws IOException {
-        List<ContractValidationResult> results = contractClassNames().stream()
+        List<ContractValidationResult> results = classCatalog.discoverContractClassNames().stream()
                 .map(this::validateContract)
                 .sorted(Comparator.comparing(ContractValidationResult::contractClassName))
                 .toList();
@@ -52,8 +41,8 @@ public final class ScreenContractSanityChecker {
     }
 
     ContractValidationResult validateContract(String contractClassName) {
-        Class<?> contractClass = loadClass(contractClassName);
-        List<String> implementationClassNames = implementationClassNamesFor(contractClassName);
+        Class<?> contractClass = ScreenContractReflection.loadClass(contractClassName);
+        List<String> implementationClassNames = classCatalog.discoverImplementationClassNames(contractClassName);
         List<String> violations = new ArrayList<>();
 
         if (implementationClassNames.isEmpty()) {
@@ -61,7 +50,7 @@ public final class ScreenContractSanityChecker {
         }
 
         for (String implementationClassName : implementationClassNames) {
-            Class<?> implementationClass = loadClass(implementationClassName);
+            Class<?> implementationClass = ScreenContractReflection.loadClass(implementationClassName);
             violations.addAll(validateImplementation(contractClass, implementationClass).stream()
                     .map(message -> implementationClassName + ": " + message)
                     .toList());
@@ -88,84 +77,19 @@ public final class ScreenContractSanityChecker {
             violations.add("missing public constructor (Driver, Visual)");
         }
 
-        for (Method contractMethod : publicAbstractMethods(contractClass)) {
+        for (Method contractMethod : ScreenContractReflection.publicAbstractMethods(contractClass)) {
             try {
                 Method implementationMethod = implementationClass.getMethod(contractMethod.getName(),
                         contractMethod.getParameterTypes());
                 if (Modifier.isAbstract(implementationMethod.getModifiers())) {
-                    violations.add("method remains abstract: " + methodSignature(contractMethod));
+                    violations.add("method remains abstract: " + ScreenContractReflection.methodSignature(contractMethod));
                 }
             } catch (NoSuchMethodException exception) {
-                violations.add("missing method: " + methodSignature(contractMethod));
+                violations.add("missing method: " + ScreenContractReflection.methodSignature(contractMethod));
             }
         }
 
         return violations;
-    }
-
-    private List<String> contractClassNames() throws IOException {
-        try (Stream<Path> paths = Files.walk(sourceRoot)) {
-            return paths.filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith("Screen.java"))
-                    .filter(path -> !isImplementationPath(path))
-                    .map(this::toClassName)
-                    .sorted()
-                    .toList();
-        }
-    }
-
-    private List<String> implementationClassNamesFor(String contractClassName) {
-        String simpleName = contractClassName.substring(contractClassName.lastIndexOf('.') + 1);
-        try (Stream<Path> paths = Files.walk(sourceRoot)) {
-            return paths.filter(Files::isRegularFile)
-                    .filter(path -> path.getFileName().toString().startsWith(simpleName))
-                    .filter(path -> path.toString().endsWith(".java"))
-                    .filter(this::isImplementationPath)
-                    .map(this::toClassName)
-                    .sorted()
-                    .collect(Collectors.toCollection(LinkedHashSet::new))
-                    .stream()
-                    .toList();
-        } catch (IOException exception) {
-            throw new IllegalStateException("Unable to scan screen implementations", exception);
-        }
-    }
-
-    private boolean isImplementationPath(Path path) {
-        Path relativePath = sourceRoot.relativize(path);
-        if (relativePath.getNameCount() == 0) {
-            return false;
-        }
-        return IMPLEMENTATION_ROOTS.contains(relativePath.getName(0).toString());
-    }
-
-    private String toClassName(Path path) {
-        Path relativePath = sourceRoot.relativize(path);
-        String suffix = relativePath.toString().replace('/', '.').replace('\\', '.');
-        suffix = suffix.substring(0, suffix.length() - ".java".length());
-        return ROOT_PACKAGE + "." + suffix;
-    }
-
-    private static List<Method> publicAbstractMethods(Class<?> contractClass) {
-        return Stream.of(contractClass.getDeclaredMethods())
-                .filter(method -> Modifier.isPublic(method.getModifiers()))
-                .filter(method -> Modifier.isAbstract(method.getModifiers()))
-                .sorted(Comparator.comparing(ScreenContractSanityChecker::methodSignature))
-                .toList();
-    }
-
-    private static Class<?> loadClass(String className) {
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException exception) {
-            throw new IllegalStateException("Unable to load class: " + className, exception);
-        }
-    }
-
-    private static String methodSignature(Method method) {
-        return method.getName() + "(" + Stream.of(method.getParameterTypes())
-                .map(Class::getSimpleName)
-                .collect(Collectors.joining(", ")) + ")";
     }
 
     record ContractValidationResult(String contractClassName, List<String> implementationClassNames,

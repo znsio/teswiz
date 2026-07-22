@@ -86,8 +86,8 @@ flowchart TD
     C --> S4[Check Android / iOS screens]
     C --> R[Report missing or mismatched contracts]
 
-    M[Gradle migration task] --> B[Generate missing platform contracts]
-    B --> OUT[Write scaffold / report for unsupported combinations]
+    M["Gradle coverage task (reportMissingScreenContracts)"] --> B[Enumerate missing platform contracts]
+    B --> OUT[Write human-readable report for unsupported combinations]
 ```
 
 Assumptions used by this architecture:
