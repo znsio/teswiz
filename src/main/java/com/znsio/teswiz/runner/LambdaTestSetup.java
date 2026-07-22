@@ -16,7 +16,7 @@ import com.znsio.teswiz.mobile.provider.LambdaTestMobileCapabilitySetup;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import com.znsio.teswiz.web.provider.selenium.LambdaTestWebCapabilitySetup;
+import com.znsio.teswiz.web.provider.selenium.LambdaTestWebSetup;
 
 public class LambdaTestSetup {
     private static final Logger LOGGER = LogManager.getLogger(LambdaTestSetup.class.getName());
@@ -55,19 +55,7 @@ public class LambdaTestSetup {
     }
 
     public static MutableCapabilities updateLambdaTestCapabilities(MutableCapabilities capabilities) {
-        String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
-        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
-        Map loadedPlatformCapability = loadedCapabilityFile.get(Platform.web.name());
-        return LambdaTestWebCapabilitySetup.updateLambdaTestCapabilities(
-                capabilities,
-                loadedPlatformCapability,
-                Setup.getFromConfigs(Setup.CLOUD_USERNAME),
-                Setup.getFromConfigs(Setup.CLOUD_KEY),
-                Setup.getFromConfigs(Setup.APP_NAME),
-                Setup.getFromConfigs(Setup.LAUNCH_NAME),
-                Setup.getFromConfigs(Setup.LOG_DIR),
-                Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestName(),
-                Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING));
+        return LambdaTestWebSetup.updateCapabilities(capabilities);
     }
 
     private static void addAppOrBrowserNameToLambdaTestCapabilities(String apiUrl,

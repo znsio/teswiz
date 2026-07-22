@@ -196,6 +196,8 @@ Owns Selenium-specific cloud capability setup extracted from `runner` so provide
 
 Current examples:
 
+* `BrowserStackWebSetup`
+* `LambdaTestWebSetup`
 * `BrowserStackWebCapabilitySetup`
 * `LambdaTestWebCapabilitySetup`
 

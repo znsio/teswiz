@@ -48,8 +48,6 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.runner.BrowserStackSetup;
-import com.znsio.teswiz.runner.LambdaTestSetup;
 import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.session.UserPersonaDetails;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
@@ -62,6 +60,8 @@ import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
+import com.znsio.teswiz.web.provider.selenium.BrowserStackWebSetup;
+import com.znsio.teswiz.web.provider.selenium.LambdaTestWebSetup;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
@@ -516,12 +516,12 @@ public class SeleniumDriverManager {
                 String authenticationUser = Runner.getCloudUser();
                 String authenticationKey = Runner.getCloudKey();
                 remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub-cloud.browserstack.com/wd/hub";
-                capabilities = BrowserStackSetup.updateBrowserStackCapabilities(capabilities);
+                capabilities = BrowserStackWebSetup.updateCapabilities(capabilities);
             } else if (cloudName.equalsIgnoreCase("lambdatest")) {
                 String authenticationUser = Runner.getCloudUser();
                 String authenticationKey = Runner.getCloudKey();
                 remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub.lambdatest.com/wd/hub";
-                capabilities = LambdaTestSetup.updateLambdaTestCapabilities(capabilities);
+                capabilities = LambdaTestWebSetup.updateCapabilities(capabilities);
             }
 
             LOGGER.info(String.format("Starting RemoteWebDriver using url: %s with capabilities: '%s'",
