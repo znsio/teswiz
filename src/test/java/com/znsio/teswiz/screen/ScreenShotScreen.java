@@ -17,21 +17,7 @@ public abstract class ScreenShotScreen {
     private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
 
     public static ScreenShotScreen get() {
-        Driver driver = Drivers.getDriverForCurrentUser(Thread.currentThread().getId());
-        Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
-        LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
-        Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
-
-        switch(platform) {
-            case android:
-                return new ScreenShotScreenAndroid(driver, visually);
-            case web:
-                return new ScreenShotScreenWeb(driver, visually);
-            case windows:
-                return new ScreenShotScreenWindows(driver, visually);
-        }
-        throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
+        return com.znsio.teswiz.screen.ScreenRegistry.getScreen(ScreenShotScreen.class);
     }
 
     public abstract ScreenShotScreen takeScreenshot();

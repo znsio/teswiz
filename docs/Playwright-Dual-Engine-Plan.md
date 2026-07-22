@@ -22,6 +22,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Playwright worker tests no longer rely on subclassing concrete resolver classes as extension points
 - [x] Browser shutdown routing follows the configured web engine
 - [x] Focused browser-routing and web-engine tests pass
+- [x] Screen contracts can resolve implementations through centralized `ScreenRegistry.getScreen(...)`
 
 ## Milestone 1: Normalize package boundaries and reduce public surface area
 
@@ -44,6 +45,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [ ] Remove reliance on automatic Selenium-to-Playwright mapping where Playwright screens exist
 - [x] Route screen creation via config-driven screen factories for TheApp web screens
 - [x] Add first explicit Playwright-TS web screen implementations for TheApp invalid-login flow
+- [x] Centralize contract-to-implementation resolution so screen `get()` methods stay one-line and non-breaking
 - [ ] Add screen contract compliance checks for supported platform/engine combinations
 - [ ] Add local single-user Selenium/Playwright parity tests for the shared screen contract
 - [ ] Keep Selenium screens working exactly as before while adding Playwright screen implementations

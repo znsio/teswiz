@@ -18,21 +18,7 @@ public abstract class PDFValidatorScreen {
     private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
 
     public static PDFValidatorScreen get() {
-        Driver driver = Drivers.getDriverForCurrentUser(Thread.currentThread().getId());
-        Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
-        LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
-        Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
-
-        switch (platform) {
-            case web:
-                return new PDFValidatorScreenWeb(driver, visually);
-            case android:
-                return new PDFValidatorScreenAndroid(driver, visually);
-            case pdf:
-                return new PDFValidatorScreenPDF(driver, visually);
-        }
-        throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
+        return com.znsio.teswiz.screen.ScreenRegistry.getScreen(PDFValidatorScreen.class);
     }
 
     public abstract TestResults validatePDF();

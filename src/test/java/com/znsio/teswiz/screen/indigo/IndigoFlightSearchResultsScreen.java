@@ -16,18 +16,6 @@ public abstract class IndigoFlightSearchResultsScreen {
     private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
 
     public static IndigoFlightSearchResultsScreen get() {
-        Driver driver = Drivers.getDriverForCurrentUser(Thread.currentThread().getId());
-        Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
-        LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
-        Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
-
-        switch(platform) {
-            case android:
-                return new IndigoFlightSearchResultsScreenAndroid(driver, visually);
-            case web:
-                return new IndigoFlightSearchResultsScreenWeb(driver, visually);
-        }
-        throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
+        return com.znsio.teswiz.screen.ScreenRegistry.getScreen(IndigoFlightSearchResultsScreen.class);
     }
 }

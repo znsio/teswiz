@@ -16,17 +16,7 @@ public abstract class JioCinemaScreen {
     private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
 
     public static JioCinemaScreen get() {
-        Driver driver = Drivers.getDriverForCurrentUser(Thread.currentThread().getId());
-        Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
-        LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
-        Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
-
-        switch (platform) {
-            case android:
-                return new JioCinemaScreenAndroid(driver, visually);
-        }
-        throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
+        return com.znsio.teswiz.screen.ScreenRegistry.getScreen(JioCinemaScreen.class);
     }
 
     public abstract JioCinemaScreen swipeRight();

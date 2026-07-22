@@ -17,17 +17,7 @@ public abstract class FileUploadScreen {
     private static final Logger LOGGER = LogManager.getLogger(SCREEN_NAME);
 
     public static FileUploadScreen get() {
-        Driver driver = Drivers.getDriverForCurrentUser(Thread.currentThread().getId());
-        Platform platform = Runner.fetchPlatform(Thread.currentThread().getId());
-        LOGGER.info(SCREEN_NAME + ": Driver type: " + driver.getType() + ": Platform: " + platform);
-        Visual visually = Drivers.getVisualDriverForCurrentUser(Thread.currentThread().getId());
-
-        switch(platform) {
-            case web:
-                return new FileUploadScreenWeb(driver, visually);
-        }
-        throw new NotImplementedException(
-                SCREEN_NAME + " is not implemented in " + Runner.getPlatform());
+        return com.znsio.teswiz.screen.ScreenRegistry.getScreen(FileUploadScreen.class);
     }
 
     public abstract FileUploadScreen navigateToFileUplaodPage();
