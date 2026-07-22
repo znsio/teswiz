@@ -10,24 +10,18 @@ import com.znsio.teswiz.web.WebEngine;
 
 public final class ScreenImplementationResolver {
     private static final String ROOT_PACKAGE = "com.znsio.teswiz.screen";
-    private static final Map<ScreenKey, String> OVERRIDES = Map.ofEntries(
-            Map.entry(new ScreenKey("com.znsio.teswiz.screen.pdfValidator.PDFValidatorScreen", Platform.android, null),
-                    "com.znsio.teswiz.screen.android.PDFValidator.PDFValidatorScreenAndroid"),
-            Map.entry(new ScreenKey("com.znsio.teswiz.screen.pdfValidator.PDFValidatorScreen", Platform.web,
-                    WebEngine.SELENIUM), "com.znsio.teswiz.screen.web.PDFValidator.PDFValidatorScreenWeb"),
-            Map.entry(new ScreenKey("com.znsio.teswiz.screen.pdfValidator.PDFValidatorScreen", Platform.pdf, null),
-                    "com.znsio.teswiz.screen.pdf.PDFValidatorScreenPDF"));
+    private static final Map<ScreenKey, Class<?>> OVERRIDES = Map.of();
 
     private ScreenImplementationResolver() {
     }
 
     public static <T> Class<? extends T> resolve(Class<T> screenContract, Platform platform, WebEngine webEngine) {
-        String override = OVERRIDES.get(new ScreenKey(screenContract.getName(), platform, webEngine));
+        Class<?> override = OVERRIDES.get(new ScreenKey(screenContract, platform, webEngine));
         if (null == override) {
-            override = OVERRIDES.get(new ScreenKey(screenContract.getName(), platform, null));
+            override = OVERRIDES.get(new ScreenKey(screenContract, platform, null));
         }
         if (null != override) {
-            return loadClass(screenContract, override);
+            return castOverride(screenContract, override);
         }
         return loadClass(screenContract, resolveByConvention(screenContract, platform, webEngine));
     }
@@ -80,6 +74,16 @@ public final class ScreenImplementationResolver {
     }
 
     @SuppressWarnings("unchecked")
+    private static <T> Class<? extends T> castOverride(Class<T> screenContract, Class<?> implementationClass) {
+        if (!screenContract.isAssignableFrom(implementationClass)) {
+            throw new NotImplementedException(String.format(
+                    "Invalid screen override. %s does not implement %s",
+                    implementationClass.getName(), screenContract.getName()));
+        }
+        return (Class<? extends T>) implementationClass;
+    }
+
+    @SuppressWarnings("unchecked")
     private static <T> Class<? extends T> loadClass(Class<T> screenContract, String className) {
         try {
             return (Class<? extends T>) Class.forName(className);
@@ -91,9 +95,9 @@ public final class ScreenImplementationResolver {
         }
     }
 
-    private record ScreenKey(String contractClassName, Platform platform, WebEngine webEngine) {
+    private record ScreenKey(Class<?> contractClass, Platform platform, WebEngine webEngine) {
         private ScreenKey {
-            Objects.requireNonNull(contractClassName, "contractClassName");
+            Objects.requireNonNull(contractClass, "contractClass");
             Objects.requireNonNull(platform, "platform");
         }
     }

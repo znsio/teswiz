@@ -98,6 +98,7 @@ Assumptions used by this architecture:
 * Selenium Java continues to work as it does today
 * multi-user and multi-platform routing remains persona/session-driven
 * engine-specific behavior belongs in engine-specific screen implementations, not in BL
+* framework capabilities that are not real UI screens, such as PDF validation, should live in `src/main` facades rather than test-side screen contracts
 
 ## Pattern matrix
 
