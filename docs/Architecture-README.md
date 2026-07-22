@@ -52,7 +52,7 @@ sequenceDiagram
     participant Router as Screen / engine router
     participant Se as Selenium screen
     participant PJ as Playwright-Java screen
-    participant PT as Playwright-TS screen
+    participant PT as "Java screen impl for playwright-ts"
     participant App as Appium screen
     participant Worker as TS worker
 
@@ -65,7 +65,7 @@ sequenceDiagram
         Router-->>BL: Playwright-Java screen
         BL->>PJ: Screen action
     else web + Playwright-TS
-        Router-->>BL: Playwright-TS screen
+        Router-->>BL: Java screen implementation for `playwright-ts`
         BL->>PT: Screen action
         PT->>Worker: IPC command
         Worker-->>PT: Browser result
@@ -82,7 +82,7 @@ flowchart TD
     G["Gradle sanity-check task (verifyScreenContracts)"] --> C[Validate screen contract parity]
     C --> S1[Check Selenium screens]
     C --> S2[Check Playwright-Java screens]
-    C --> S3[Check Playwright-TS screens]
+    C --> S3["Check Java screen implementations for playwright-ts"]
     C --> S4[Check Android / iOS screens]
     C --> R[Report missing or mismatched contracts]
 
