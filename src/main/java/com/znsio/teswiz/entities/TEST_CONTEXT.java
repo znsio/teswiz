@@ -3,6 +3,7 @@ package com.znsio.teswiz.entities;
 public class TEST_CONTEXT {
     public static final String APPIUM_DRIVER = "appiumDriver";
     public static final String CURRENT_DRIVER = "currentDriver";
+    public static final String CURRENT_SESSION_HANDLE = "currentSessionHandle";
     public static final String CURRENT_PLATFORM = "currentPlatform";
     public static final String CURRENT_USER_PERSONA = "currentUserPersona";
     public static final String DEVICE_INFO = "deviceInfo";
@@ -23,6 +24,7 @@ public class TEST_CONTEXT {
     public static final String TAGS_TO_EXCLUDE_FROM_CUCUMBER_REPORT =
             "tagsToExcludeFromCucumberReport";
     public static final String CURRENT_USER_PERSONA_DETAILS = "currentUserPersonaDetails";
+    public static final String PLAYWRIGHT_WORKER_CLIENT = "playwrightWorkerClient";
     public static final String UPDATED_BASE_URL_FOR_WEB = "updatedBaseUrlForWeb";
     public static final String UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST = "updatedBrowserConfigFileForThisTest";
     public static final String CLI_COMMAND_NUMBER = "cliCommandNumber";

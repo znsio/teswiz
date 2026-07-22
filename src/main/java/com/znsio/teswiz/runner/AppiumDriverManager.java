@@ -24,12 +24,15 @@ import com.epam.reportportal.service.ReportPortal;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.znsio.teswiz.mobile.provider.MobileExecutionProvider;
+import com.znsio.teswiz.mobile.provider.MobileExecutionProviderResolver;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.session.UserPersonaDetails;
 import static com.znsio.teswiz.runner.FileLocations.SERVER_CONFIG_JSON;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
@@ -56,6 +59,8 @@ public class AppiumDriverManager {
     private static final ThreadLocal<AppiumDriver> appiumDriver = new ThreadLocal<>();
     private static AppiumServerManager appiumServerManager = null;
     private static AppiumDriverManager appiumDriverManager = null;
+    private static final MobileExecutionProviderResolver MOBILE_EXECUTION_PROVIDER_RESOLVER =
+            new MobileExecutionProviderResolver();
 
     @NotNull
     static Driver createAndroidDriverForUser(String userPersona, Platform forPlatform, TestExecutionContext context) {
@@ -323,30 +328,26 @@ public class AppiumDriverManager {
     }
 
     private static void attachCloudExecutionReportLinkToReportPortal(AppiumDriver driver) {
-        if (isCloudExecution() && isRunningOnpCloudy()) {
-            String link = (String) driver.executeScript("pCloudy_getReportLink");
-            String message = "pCloudy Report link available here: " + link;
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
-        } else if (isCloudExecution() && isRunningOnHeadspin()) {
-            String sessionId = driver.getSessionId().toString();
-            String link = "https://ui-dev.headspin.io/sessions/" + sessionId + "/waterfall";
-            String message = "Headspin Report link available here: " + link;
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
-        } else if (isCloudExecution() && isRunningOnBrowserStack()) {
-            String sessionId = driver.getSessionId().toString();
-            String link = getReportLinkFromBrowserStack(sessionId);
-            String message = "BrowserStack Report link available here: " + link;
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
-        } else if (isCloudExecution() && isRunningOnLambdaTest()) {
-            String sessionId = driver.getSessionId().toString();
-            String link = "https://automation.lambdatest.com/logs/?sessionID=" + sessionId;
-            String message = "LambdaTest Report link available here: " + link;
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
+        if (!isCloudExecution()) {
+            return;
         }
+        String sessionId = driver.getSessionId().toString();
+        MobileExecutionProvider provider = MOBILE_EXECUTION_PROVIDER_RESOLVER.resolve(getCloudName());
+        provider.buildReportMessage(sessionId, () -> resolveProviderLink(driver, sessionId))
+                .ifPresent(message -> {
+                    LOGGER.info(message);
+                    ReportPortal.emitLog(message, "DEBUG", new Date());
+                });
+    }
+
+    private static java.util.Optional<String> resolveProviderLink(AppiumDriver driver, String sessionId) {
+        if (isRunningOnpCloudy()) {
+            return java.util.Optional.ofNullable((String) driver.executeScript("pCloudy_getReportLink"));
+        }
+        if (isRunningOnBrowserStack()) {
+            return java.util.Optional.ofNullable(getReportLinkFromBrowserStack(sessionId));
+        }
+        return java.util.Optional.empty();
     }
 
     static void closeAppiumDriver(String userPersona, Driver driver) {

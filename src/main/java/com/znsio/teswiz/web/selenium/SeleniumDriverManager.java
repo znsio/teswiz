@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.web.selenium;
 
 import java.awt.Toolkit;
 import java.io.File;
@@ -39,29 +39,36 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
+import com.znsio.teswiz.config.browser.BrowserConfigLoader;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.runner.Driver;
+import com.znsio.teswiz.runner.Drivers;
+import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.runner.Setup;
+import com.znsio.teswiz.session.UserPersonaDetails;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Setup.CAPS;
 import static com.znsio.teswiz.runner.Setup.HEADLESS;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
-import com.znsio.teswiz.tools.JsonSchemaValidator;
 import com.znsio.teswiz.tools.OsUtils;
 import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
+import com.znsio.teswiz.web.browser.WebDriverSessionResult;
+import com.znsio.teswiz.web.provider.selenium.BrowserStackWebSetup;
+import com.znsio.teswiz.web.provider.selenium.LambdaTestWebSetup;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-class BrowserDriverManager {
-    private static final Logger LOGGER = LogManager.getLogger(BrowserDriverManager.class.getName());
+public class SeleniumDriverManager {
+    private static final Logger LOGGER = LogManager.getLogger(SeleniumDriverManager.class.getName());
     private static final int MAX_NUMBER_OF_WEB_DRIVERS = Runner.getMaxNumberOfWebDrivers();
-    private static final String BROWSER_CONFIG_SCHEMA_FILE = "BrowserConfigSchema.json";
     private static final String ACCEPT_INSECURE_CERTS = "acceptInsecureCerts";
     private static final String VERBOSE_LOGGING = "verboseLogging";
     private static final String MAXIMIZE = "maximize";
@@ -71,37 +78,33 @@ class BrowserDriverManager {
     private static boolean shouldBrowserBeMaximized = false;
     private static boolean isRunInHeadlessMode = false;
 
-    private BrowserDriverManager() {
-        LOGGER.debug("BrowserDriverManager - private constructor");
+    private SeleniumDriverManager() {
+        LOGGER.debug("SeleniumDriverManager - private constructor");
     }
 
     @NotNull
-    static Driver createWebDriverForUser(String userPersona, String browserName,
+    public static WebDriverSessionResult createWebSessionForUser(String userPersona, String browserName,
             Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format(
-                "createWebDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: "
+                "createWebSessionForUser: begin: userPersona: '%s', browserName: '%s', Platform: "
                         + "'%s', Number of WebDrivers: '%d'%n",
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
         LOGGER.debug("Active thread count: " + Thread.activeCount());
 
-        String baseUrl = getBaseUrl(userPersona);
-        String appName = Drivers.getAppNamefor(userPersona);
+        String baseUrl = WebBaseUrlResolver.resolve(Drivers.getAppNamefor(userPersona));
 
         checkConnectivityToBaseUrl(baseUrl);
         checkNumberOfWebDriversInstantiated(userPersona, forPlatform);
-        String updatedTestName = context.getTestName() + "-" + userPersona;
         String runningOn = Runner.isRunningInCI() ? "CI" : "local";
         context.addTestState(TEST_CONTEXT.WEB_BROWSER_ON, runningOn);
         WebDriver newWebDriver = createNewWebDriver(userPersona, browserName, context);
         loadBaseUrl(baseUrl, newWebDriver);
-        Driver currentDriver = new Driver(updatedTestName, forPlatform, userPersona, appName, newWebDriver,
-                isRunInHeadlessMode);
         numberOfWebDriversUsed++;
 
         LOGGER.info(String.format(
-                "createWebDriverForUser: done: userPersona: '%s', Platform: '%s', appName: '%s', Number of WebDrivers: '%d'",
-                userPersona, forPlatform.name(), appName, numberOfWebDriversUsed));
-        return currentDriver;
+                "createWebSessionForUser: done: userPersona: '%s', Platform: '%s', Number of WebDrivers: '%d'",
+                userPersona, forPlatform.name(), numberOfWebDriversUsed));
+        return new WebDriverSessionResult(newWebDriver, isRunInHeadlessMode, null, null);
     }
 
     private static void loadBaseUrl(String baseUrl, WebDriver newWebDriver) {
@@ -122,38 +125,9 @@ class BrowserDriverManager {
 
     @org.jetbrains.annotations.NotNull
     private static JSONObject getBrowserConfig(TestExecutionContext context) {
-        String browserConfigFile = Runner.getBrowserConfigFile();
-        String updatedBrowserConfigFileForThisTest = context
-                .getTestStateAsString(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST);
-        if (null != updatedBrowserConfigFileForThisTest) {
-            browserConfigFile = updatedBrowserConfigFileForThisTest;
-            LOGGER.debug("Using UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST (instead of default BROWSER_CONFIG_FILE): "
-                    + browserConfigFile);
-        }
-        LOGGER.info("Using BROWSER_CONFIG_FILE: " + browserConfigFile);
-        JSONObject browserConfig = Runner.getBrowserConfigFileContents(browserConfigFile);
-        return JsonSchemaValidator.validateJsonFileAgainstSchema(browserConfigFile,
-                browserConfig.toString(),
-                BROWSER_CONFIG_SCHEMA_FILE);
-    }
-
-    private static String getBaseUrl(String userPersona) {
-        String providedBaseUrlKey = Runner.getBaseURLForWeb();
-
-        String appName = Drivers.getAppNamefor(userPersona);
-        if (!appName.equalsIgnoreCase(DEFAULT)) {
-            providedBaseUrlKey = appName.toUpperCase() + "_BASE_URL";
-        }
-        LOGGER.info(String.format("Using BASE_URL key: %s", providedBaseUrlKey));
-
-        if (null == providedBaseUrlKey) {
-            throw new InvalidTestDataException("baseUrl not provided");
-        }
-        String retrievedBaseUrl = String.valueOf(
-                Runner.getFromEnvironmentConfiguration(providedBaseUrlKey));
-        retrievedBaseUrl = getOverriddenStringValue(providedBaseUrlKey, retrievedBaseUrl);
-        LOGGER.info(String.format("baseUrl: %s", retrievedBaseUrl));
-        return retrievedBaseUrl;
+        JSONObject browserConfig = BrowserConfigLoader.load(context);
+        LOGGER.info("Using BROWSER_CONFIG_FILE: " + Runner.getBrowserConfigFile());
+        return browserConfig;
     }
 
     private static void checkConnectivityToBaseUrl(String baseUrl) {
@@ -539,12 +513,12 @@ class BrowserDriverManager {
                 String authenticationUser = Runner.getCloudUser();
                 String authenticationKey = Runner.getCloudKey();
                 remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub-cloud.browserstack.com/wd/hub";
-                capabilities = BrowserStackSetup.updateBrowserStackCapabilities(capabilities);
+                capabilities = BrowserStackWebSetup.updateCapabilities(capabilities);
             } else if (cloudName.equalsIgnoreCase("lambdatest")) {
                 String authenticationUser = Runner.getCloudUser();
                 String authenticationKey = Runner.getCloudKey();
                 remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub.lambdatest.com/wd/hub";
-                capabilities = LambdaTestSetup.updateLambdaTestCapabilities(capabilities);
+                capabilities = LambdaTestWebSetup.updateCapabilities(capabilities);
             }
 
             LOGGER.info(String.format("Starting RemoteWebDriver using url: %s with capabilities: '%s'",
@@ -559,7 +533,7 @@ class BrowserDriverManager {
         }
     }
 
-    static void closeWebDriver(String userPersona,
+    public static void closeWebDriver(String userPersona,
             @NotNull Driver driver) {
         String browserNameForUser = Drivers.getBrowserNameForUser(userPersona);
         String logFileName = getBrowserLogFileNameFor(userPersona, Platform.web.name(), browserNameForUser);
@@ -621,7 +595,7 @@ class BrowserDriverManager {
     }
 
     @NotNull
-    static Driver createElectronDriverForUser(String userPersona, String browserName,
+    public static Driver createElectronDriverForUser(String userPersona, String browserName,
             Platform forPlatform, TestExecutionContext context) {
         LOGGER.info(String.format(
                 "createElectronDriverForUser: begin: userPersona: '%s', browserName: '%s', Platform: "
@@ -629,7 +603,7 @@ class BrowserDriverManager {
                 userPersona, browserName, forPlatform.name(), numberOfWebDriversUsed));
         LOGGER.debug("Active thread count: " + Thread.activeCount());
 
-        String baseUrl = getBaseUrl(userPersona);
+        String baseUrl = WebBaseUrlResolver.resolve(Drivers.getAppNamefor(userPersona));
         String appName = Drivers.getAppNamefor(userPersona);
 
         checkConnectivityToBaseUrl(baseUrl);

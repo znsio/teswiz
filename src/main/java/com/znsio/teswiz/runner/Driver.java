@@ -72,7 +72,7 @@ public class Driver {
     private Visual visually;
     private static final int MAX_SCROLL_ATTEMPTS = 15;
 
-    Driver(String testName, Platform forPlatform, String userPersona, String appName, AppiumDriver appiumDriver) {
+    public Driver(String testName, Platform forPlatform, String userPersona, String appName, AppiumDriver appiumDriver) {
         this.driver = appiumDriver;
         this.type = APPIUM_DRIVER;
         this.userPersona = userPersona;
@@ -82,7 +82,7 @@ public class Driver {
         instantiateEyes(testName, appiumDriver);
     }
 
-    Driver(String testName, Platform forPlatform, String userPersona, String appName, WebDriver webDriver,
+    public Driver(String testName, Platform forPlatform, String userPersona, String appName, WebDriver webDriver,
             boolean isRunInHeadlessMode) {
         this.driver = webDriver;
         this.type = WEB_DRIVER;

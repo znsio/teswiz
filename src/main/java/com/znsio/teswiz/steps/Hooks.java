@@ -4,7 +4,8 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.runner.UserPersonaDetails;
+import com.znsio.teswiz.session.UserPersonaDetails;
+import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;
@@ -23,6 +24,7 @@ import java.util.Properties;
 
 public class Hooks {
     private static final Logger LOGGER = LogManager.getLogger(Hooks.class.getName());
+    private static final PlaywrightWorkerManager PLAYWRIGHT_WORKER_MANAGER = new PlaywrightWorkerManager();
     private static final List<String> excludeLoggingSystemProperties = Arrays.asList("java.class.path", "java.library.path");
     private static final List<String> excludeLoggingEnvVariables = Arrays.asList("KEY", "PASSWORD");
     private final TestExecutionContext testExecutionContext;
@@ -59,6 +61,7 @@ public class Hooks {
             LOGGER.info("Hooks: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
             testExecutionContext.addTestState(TEST_CONTEXT.HOOKS_INITIALIZED, null);
             Drivers.attachLogsAndCloseAllDrivers(scenario);
+            PLAYWRIGHT_WORKER_MANAGER.shutdown(testExecutionContext);
             closeTheAsyncCommandLineExecutor();
             SoftAssertions softly = Runner.getSoftAssertion(threadId);
             LOGGER.info("Hooks: Assert all soft assertions");

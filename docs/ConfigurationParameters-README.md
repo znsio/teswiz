@@ -22,6 +22,8 @@ These can be overridden by providing the same either as environment variables or
                    IF this is not specified, then teswiz will try to get the BRANCH_NAME using this command: `git rev-parse --abbrev-ref HEAD`
     BROWSER=chrome -> Which browser to use for Web execution? Supported: chrome || firefox
                       Browsers should to be installed. Corresponding WebDriver for the browser will be downloaded automatically
+    WEB_ENGINE=selenium -> Which web engine should be used for Platform.web? Supported: selenium | playwright-java | playwright-ts
+                           Default is selenium. All checked-in sample config.properties files now declare this explicitly.
     BUILD_ID=BUILDID -> The key name of the environment variable that has the corresponding build id of the test execution
     CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> Uninstall app from local Android devices before starting test execution
     CLOUD_KEY=<auth / api key> for pCloudy / Headspin
@@ -53,7 +55,59 @@ These can be overridden by providing the same either as environment variables or
     SET_HARD_GATE=true -> Enables Hard Gate for test execution. See [Hard Gate](HardGate.md) for more information 
     TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE
     TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
-    BROWSER_CONFIG_FILE=./src/test/resources/com/znsio/teswiz/features/configs/browser_config.json -> json containing browser configurations
+    BROWSER_CONFIG_FILE=./src/test/resources/com/znsio/teswiz/features/configs/browser_config.json -> json containing browser configurations for Selenium and Playwright TS web execution
+
+For Playwright web execution, teswiz reads the same `BROWSER_CONFIG_FILE` and applies engine-specific overrides where present:
+
+    * The same checked-in `browser_config.json` files are used as the input source
+    * Playwright currently reuses compatible legacy fields such as:
+        - `headlessOptions.headless`
+        - `headlessOptions.include`
+        - `arguments`
+        - `acceptInsecureCerts`
+        - proxy-related settings such as `noProxy`
+    * Selenium-specific fields that do not map safely to Playwright are ignored unless explicitly provided in a Playwright override block
+    * The legacy `binary` field is not reused automatically for Playwright because it is often used today for Electron-specific setups
+
+An optional Playwright-specific override block can be added under a browser entry while keeping the current JSON valid:
+
+```json
+{
+  "chrome": {
+    "arguments": [
+      "use-fake-device-for-media-stream"
+    ],
+    "headlessOptions": {
+      "headless": false,
+      "include": [
+        "disable-gpu"
+      ]
+    },
+    "acceptInsecureCerts": true,
+    "playwright": {
+      "launchOptions": {
+        "headless": true,
+        "args": [
+          "lang=en-US"
+        ],
+        "channel": "chrome",
+        "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+      },
+      "contextOptions": {
+        "ignoreHTTPSErrors": false,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      }
+    }
+  }
+}
+```
+
+When a Playwright engine is used with a browser config that does not yet have Playwright blocks, teswiz also generates a Playwright-ready recommended config in the current reports directory and prints a visible end-of-execution message with the generated file path and replacement guidance. The source config is not modified automatically.
+
+`WEB_ENGINE` is also added to the generated Cucumber HTML report metadata so report readers can see whether a web scenario ran on Selenium or Playwright TS.
 
 # Overriding the BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE for Web execution
 The BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE once set, cannot be changed for the test execution.

@@ -7,6 +7,7 @@ import com.znsio.teswiz.entities.APPLITOOLS;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.web.WebEngine;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.OsUtils;
@@ -32,48 +33,49 @@ import java.util.*;
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static com.znsio.teswiz.tools.OverriddenVariable.*;
 
-class Setup {
-    static final String RUN_IN_CI = "RUN_IN_CI";
-    static final String BUILD_INITIATION_REASON = "BUILD_INITIATION_REASON";
-    static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
-    static final String REPOSITORY_NAME = "REPOSITORY_NAME";
-    static final String BRANCH_NAME = "BRANCH_NAME";
-    static final String CAPS = "CAPS";
-    static final String CLOUD_KEY = "CLOUD_KEY";
-    static final String PLATFORM = "PLATFORM";
-    static final String APP_NAME = "APP_NAME";
-    static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
-    static final String IS_VISUAL = "IS_VISUAL";
-    static final String FAIL_TEST_ON_VISUAL_DIFFERENCE = "FAIL_TEST_ON_VISUAL_DIFFERENCE";
-    static final String BROWSER = "BROWSER";
-    static final String CONFIG_FILE = "CONFIG_FILE";
-    static final String LAUNCH_NAME = "LAUNCH_NAME";
-    static final String APP_PACKAGE_NAME = "APP_PACKAGE_NAME";
-    static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
-    static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
-    static final String CLOUD_USERNAME = "CLOUD_USERNAME";
-    static final String PROXY_URL = "PROXY_URL";
-    static final String REMOTE_WEBDRIVER_GRID_PORT = "REMOTE_WEBDRIVER_GRID_PORT";
-    static final String REMOTE_WEBDRIVER_GRID_HOST_NAME = "REMOTE_WEBDRIVER_GRID_HOST_NAME";
-    static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
-    static final String DEFAULT_BROWSER_CONFIG_FILE = "/default_browser_config.json";
-    static final String PLUGIN = "--plugin";
-    static final String APP_PATH = "APP_PATH";
-    static final String CLOUD_UPLOAD_APP = "CLOUD_UPLOAD_APP";
-    static final String EXECUTED_ON = "EXECUTED_ON";
-    static final String LOG_DIR = "LOG_DIR";
-    static final String PARALLEL = "PARALLEL";
-    static final String TAG = "TAG";
-    static final String TAG_FOR_REPORTPORTAL = "TAG_FOR_REPORTPORTAL";
-    static final String APP_VERSION = "APP_VERSION";
-    static final String REPORTS_DIR = "reports";
-    static final String CLOUD_USE_PROXY = "CLOUD_USE_PROXY";
-    static final String CLOUD_USE_LOCAL_TESTING = "CLOUD_USE_LOCAL_TESTING";
-    static final String HOST_NAME = "HOST_NAME";
-    static final String IS_FAILING_TEST_SUITE = "IS_FAILING_TEST_SUITE";
-    static final String SET_HARD_GATE = "SET_HARD_GATE";
-    static final String HEADLESS = "HEADLESS";
-    static final String SHOW_SENSITIVE_DATA = "SHOW_SENSITIVE_DATA";
+public class Setup {
+    public static final String RUN_IN_CI = "RUN_IN_CI";
+    public static final String BUILD_INITIATION_REASON = "BUILD_INITIATION_REASON";
+    public static final String TARGET_ENVIRONMENT = "TARGET_ENVIRONMENT";
+    public static final String REPOSITORY_NAME = "REPOSITORY_NAME";
+    public static final String BRANCH_NAME = "BRANCH_NAME";
+    public static final String CAPS = "CAPS";
+    public static final String CLOUD_KEY = "CLOUD_KEY";
+    public static final String PLATFORM = "PLATFORM";
+    public static final String APP_NAME = "APP_NAME";
+    public static final String BASE_URL_FOR_WEB = "BASE_URL_FOR_WEB";
+    public static final String IS_VISUAL = "IS_VISUAL";
+    public static final String FAIL_TEST_ON_VISUAL_DIFFERENCE = "FAIL_TEST_ON_VISUAL_DIFFERENCE";
+    public static final String BROWSER = "BROWSER";
+    public static final String WEB_ENGINE = "WEB_ENGINE";
+    public static final String CONFIG_FILE = "CONFIG_FILE";
+    public static final String LAUNCH_NAME = "LAUNCH_NAME";
+    public static final String APP_PACKAGE_NAME = "APP_PACKAGE_NAME";
+    public static final String MAX_NUMBER_OF_APPIUM_DRIVERS = "MAX_NUMBER_OF_APPIUM_DRIVERS";
+    public static final String MAX_NUMBER_OF_WEB_DRIVERS = "MAX_NUMBER_OF_WEB_DRIVERS";
+    public static final String CLOUD_USERNAME = "CLOUD_USERNAME";
+    public static final String PROXY_URL = "PROXY_URL";
+    public static final String REMOTE_WEBDRIVER_GRID_PORT = "REMOTE_WEBDRIVER_GRID_PORT";
+    public static final String REMOTE_WEBDRIVER_GRID_HOST_NAME = "REMOTE_WEBDRIVER_GRID_HOST_NAME";
+    public static final String BROWSER_CONFIG_FILE = "BROWSER_CONFIG_FILE";
+    public static final String DEFAULT_BROWSER_CONFIG_FILE = "/default_browser_config.json";
+    public static final String PLUGIN = "--plugin";
+    public static final String APP_PATH = "APP_PATH";
+    public static final String CLOUD_UPLOAD_APP = "CLOUD_UPLOAD_APP";
+    public static final String EXECUTED_ON = "EXECUTED_ON";
+    public static final String LOG_DIR = "LOG_DIR";
+    public static final String PARALLEL = "PARALLEL";
+    public static final String TAG = "TAG";
+    public static final String TAG_FOR_REPORTPORTAL = "TAG_FOR_REPORTPORTAL";
+    public static final String APP_VERSION = "APP_VERSION";
+    public static final String REPORTS_DIR = "reports";
+    public static final String CLOUD_USE_PROXY = "CLOUD_USE_PROXY";
+    public static final String CLOUD_USE_LOCAL_TESTING = "CLOUD_USE_LOCAL_TESTING";
+    public static final String HOST_NAME = "HOST_NAME";
+    public static final String IS_FAILING_TEST_SUITE = "IS_FAILING_TEST_SUITE";
+    public static final String SET_HARD_GATE = "SET_HARD_GATE";
+    public static final String HEADLESS = "HEADLESS";
+    public static final String SHOW_SENSITIVE_DATA = "SHOW_SENSITIVE_DATA";
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
@@ -81,6 +83,7 @@ class Setup {
     private static final String RP_DEFAULT_DESCRIPTION = "End-2-End scenarios";
     private static Map<String, Map> loadedCapabilityFile;
     private static final String CHROME = "chrome";
+    private static final String DEFAULT_WEB_ENGINE = WebEngine.SELENIUM.getConfigValue();
     private static final String TEMP_DIRECTORY = "temp";
     private static final int DEFAULT_PARALLEL = 1;
     private static final ArrayList<String> CUKE_ARGS = new ArrayList<>();
@@ -90,15 +93,15 @@ class Setup {
     private static final String ENVIRONMENT_CONFIG_FILE = "ENVIRONMENT_CONFIG_FILE";
     private static final String PROXY_KEY = "PROXY_KEY";
     private static final String TEST_DATA_FILE = "TEST_DATA_FILE";
-    static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
-    static final String APPLITOOLS_BATCH_NAME_SUFFIX = "APPLITOOLS_BATCH_NAME_SUFFIX";
+    public static final String APPLITOOLS_CONFIGURATION = "APPLITOOLS_CONFIGURATION";
+    public static final String APPLITOOLS_BATCH_NAME_SUFFIX = "APPLITOOLS_BATCH_NAME_SUFFIX";
     private static final String LAUNCH_NAME_SUFFIX = "LAUNCH_NAME_SUFFIX";
     private static final String REMOTE_WEBDRIVER_GRID_PORT_KEY = "REMOTE_WEBDRIVER_GRID_PORT_KEY";
     private static final Logger LOGGER = LogManager.getLogger(Setup.class.getName());
     private static final String DEFAULT_LOG_PROPERTIES_FILE = "/defaultLog4j.properties";
     private static final String DEFAULT_WEBDRIVER_GRID_PORT = "4444";
     private static final String DEFAULT_WEBDRIVER_GRID_HOST_NAME = "localhost";
-    static final String BUILD_ID = "BUILD_ID";
+    public static final String BUILD_ID = "BUILD_ID";
     private static Map<String, Map> environmentConfiguration;
     private static Map<String, Map> testDataForEnvironment;
     private static Map applitoolsConfiguration = new HashMap<>();
@@ -115,7 +118,7 @@ class Setup {
         LOGGER.debug("Setup - private constructor");
     }
 
-    static void load(String providedConfigFilePath) {
+    public static void load(String providedConfigFilePath) {
         configFilePath = providedConfigFilePath;
         reset();
         properties = loadProperties(configFilePath);
@@ -131,7 +134,7 @@ class Setup {
     }
 
     @NotNull
-    static Properties loadProperties(String configFile) {
+    public static Properties loadProperties(String configFile) {
         final Properties properties;
         try (InputStream input = new FileInputStream(configFile)) {
             properties = new Properties();
@@ -143,7 +146,7 @@ class Setup {
     }
 
     @NotNull
-    static String getCurlProxyCommand() {
+    public static String getCurlProxyCommand() {
         String curlProxyCommand = "";
         if (Boolean.TRUE.equals(configsBoolean.get(CLOUD_USE_PROXY))) {
             curlProxyCommand = " --proxy " + configs.get(PROXY_URL);
@@ -151,7 +154,7 @@ class Setup {
         return curlProxyCommand;
     }
 
-    static List<String> getExecutionArguments() {
+    public static List<String> getExecutionArguments() {
         loadAndUpdateConfigParameters(configFilePath);
 
         setupDirectories();
@@ -182,9 +185,10 @@ class Setup {
         loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
     }
 
-    static void loadAndUpdateConfigParameters(String configFilePath) {
+    public static void loadAndUpdateConfigParameters(String configFilePath) {
         configs.put(CONFIG_FILE, configFilePath);
         buildMapOfRequiredProperties();
+        setBrowserConfigFilePath();
         SensitiveDataMasker.setShowSensitiveData(getBooleanValueFromConfigs(SHOW_SENSITIVE_DATA));
     }
 
@@ -291,6 +295,10 @@ class Setup {
                 configs.get(TAG_FOR_REPORTPORTAL), configs.get(TARGET_ENVIRONMENT), OsUtils.getUserName(),
                 configsBoolean.get(IS_VISUAL), configs.get(BUILD_INITIATION_REASON));
 
+        if (currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.electron)) {
+            rpAttributes += String.format("WebEngine:%s; ", configs.get(WEB_ENGINE));
+        }
+
         if (!configs.get(APP_VERSION).equals(NOT_SET)) {
             rpAttributes += String.format("AppVersion: %s; ", configs.get(APP_VERSION));
         }
@@ -345,6 +353,7 @@ class Setup {
         configs.put(BRANCH_NAME, getOverriddenStringValue(BRANCH_NAME, getStringValueFromPropertiesIfAvailable(BRANCH_NAME, NOT_SET)));
         configs.put(BRANCH_NAME, getOverriddenStringValue(configs.get(BRANCH_NAME), getBranchNameUsingGitCommand()));
         configs.put(BROWSER, getOverriddenStringValue(BROWSER, getStringValueFromPropertiesIfAvailable(BROWSER, CHROME)));
+        configs.put(WEB_ENGINE, getOverriddenStringValue(WEB_ENGINE, getStringValueFromPropertiesIfAvailable(WEB_ENGINE, DEFAULT_WEB_ENGINE)));
         configs.put(BUILD_ID, getOverriddenStringValue(BUILD_ID, getStringValueFromPropertiesIfAvailable(BUILD_ID, NOT_SET)));
         configs.put(BUILD_ID, getOverriddenStringValue(configs.get(BUILD_ID), NOT_SET));
         configs.put(BUILD_INITIATION_REASON, getOverriddenStringValue(BUILD_INITIATION_REASON, getStringValueFromPropertiesIfAvailable(BUILD_INITIATION_REASON, NOT_SET)));
@@ -679,43 +688,43 @@ class Setup {
         }
     }
 
-    static String getFromEnvironmentConfiguration(String key) {
+    public static String getFromEnvironmentConfiguration(String key) {
         return String.valueOf(environmentConfiguration.get(key));
     }
 
-    static String getFromConfigs(String key) {
+    public static String getFromConfigs(String key) {
         return configs.get(key);
     }
 
-    static String getBooleanValueAsStringFromConfigs(String key) {
+    public static String getBooleanValueAsStringFromConfigs(String key) {
         return String.valueOf(configsBoolean.get(key));
     }
 
-    static boolean getBooleanValueFromConfigs(String key) {
+    public static boolean getBooleanValueFromConfigs(String key) {
         return configsBoolean.get(key);
     }
 
-    static void addToConfigs(String key, String value) {
+    public static void addToConfigs(String key, String value) {
         configs.put(key, value);
     }
 
-    static int getIntegerValueFromConfigs(String key) {
+    public static int getIntegerValueFromConfigs(String key) {
         return configsInteger.get(key);
     }
 
-    static String getIntegerValueAsStringFromConfigs(String key) {
+    public static String getIntegerValueAsStringFromConfigs(String key) {
         return String.valueOf(configsInteger.get(key));
     }
 
-    static void addIntegerValueToConfigs(String key, Integer value) {
+    public static void addIntegerValueToConfigs(String key, Integer value) {
         configsInteger.put(key, value);
     }
 
-    static String getTestDataValueAsStringForEnvironmentFor(String key) {
+    public static String getTestDataValueAsStringForEnvironmentFor(String key) {
         return String.valueOf(testDataForEnvironment.get(key));
     }
 
-    static Map getTestDataAsMapForEnvironmentFor(String key) {
+    public static Map getTestDataAsMapForEnvironmentFor(String key) {
         return testDataForEnvironment.get(key);
     }
 

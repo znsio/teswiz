@@ -4,6 +4,14 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.reporting.ScenarioArtifactReporter;
+import com.znsio.teswiz.session.SessionHandle;
+import com.znsio.teswiz.session.UserPersonaDetails;
+import com.znsio.teswiz.web.browser.BrowserDriverManager;
+import com.znsio.teswiz.web.browser.WebDriverSessionResult;
+import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
+import com.znsio.teswiz.web.provider.WebExecutionProvider;
+import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.Status;
 import kong.unirest.json.JSONObject;
@@ -14,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +36,8 @@ import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 public class Drivers {
     private static final Logger LOGGER = LogManager.getLogger(Drivers.class.getName());
     private static final String NO_DRIVER_FOUND_FOR_USER_PERSONA = "No Driver found for user " + "persona: '%s'";
+    private static final WebExecutionProviderResolver WEB_EXECUTION_PROVIDER_RESOLVER =
+            new WebExecutionProviderResolver();
 
     private Drivers() {
         LOGGER.debug("Drivers - private constructor");
@@ -40,7 +51,9 @@ public class Drivers {
             throw new InvalidTestDataException(message);
         }
         Driver currentDriver = userPersonaDetails.getDriverAssignedForUser(userPersona);
+        SessionHandle currentSessionHandle = userPersonaDetails.getSessionHandleAssignedForUser(userPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
+        context.addTestState(TEST_CONTEXT.CURRENT_SESSION_HANDLE, currentSessionHandle);
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, userPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, forPlatform);
         return currentDriver;
@@ -51,7 +64,7 @@ public class Drivers {
         return getUserPersonaDetails(context).isDriverAssignedForUser(userPersona);
     }
 
-    static UserPersonaDetails getUserPersonaDetails(TestExecutionContext context) {
+    public static UserPersonaDetails getUserPersonaDetails(TestExecutionContext context) {
         return (UserPersonaDetails) context.getTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS);
     }
 
@@ -72,62 +85,56 @@ public class Drivers {
             throw new InvalidTestDataException(message);
         }
 
-        Driver currentDriver = createDriverForPlatform(userPersona, browserName, forPlatform, context);
+        DriverAssignment driverAssignment = createDriverForPlatform(userPersona, browserName, forPlatform, context);
+        Driver currentDriver = driverAssignment.driver();
+        SessionHandle sessionHandle = driverAssignment.sessionHandle();
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
+        context.addTestState(TEST_CONTEXT.CURRENT_SESSION_HANDLE, sessionHandle);
         userPersonaDetails.addDriver(userPersona, currentDriver);
+        userPersonaDetails.addSessionHandle(userPersona, sessionHandle);
         LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n", userPersona, forPlatform.name()));
-        updateTestNameInCloud(currentDriver.getInnerDriver(), context.getTestName(), userPersona);
+        updateTestNameWithProvider(currentDriver.getInnerDriver(), context.getTestName(), userPersona);
         return currentDriver;
     }
 
-    private static void updateTestNameInCloud(WebDriver driver, String testName, String userPersona) {
+    private static void updateTestNameWithProvider(WebDriver driver, String testName, String userPersona) {
         String updatedTestName = testName + "-" + userPersona;
-        if (Runner.getCloudName().equalsIgnoreCase("browserstack")) {
-            LOGGER.info(String.format("updateTestNameInCloud for BrowserStack: '%s'", updatedTestName));
-            final JavascriptExecutor jse = (JavascriptExecutor) driver;
-            JSONObject executorObject = new JSONObject();
-            JSONObject argumentsObject = new JSONObject();
-            argumentsObject.put("name", updatedTestName);
-            executorObject.put("action", "setSessionName");
-            executorObject.put("arguments", argumentsObject);
-            jse.executeScript(String.format("browserstack_executor: %s", executorObject));
-        } else if (Runner.getCloudName().equalsIgnoreCase("lambdatest")) {
-            LOGGER.info(String.format("updateTestNameInCloud for LambdaTest: '%s'", updatedTestName));
-            final JavascriptExecutor jse = (JavascriptExecutor) driver;
-            try {
-                jse.executeScript(String.format("lambda-name=%s", updatedTestName));
-            } catch (RuntimeException e) {
-                LOGGER.warn("Unable to set LambdaTest session name using executor command: {}", e.getMessage());
-            }
+        if (!(driver instanceof JavascriptExecutor)) {
+            return;
         }
+        WebExecutionProvider provider = WEB_EXECUTION_PROVIDER_RESOLVER.resolve();
+        provider.updateSessionName((JavascriptExecutor) driver, updatedTestName);
     }
 
     @NotNull
-    private static Driver createDriverForPlatform(String userPersona, String browserName, Platform forPlatform, TestExecutionContext context) {
+    private static DriverAssignment createDriverForPlatform(String userPersona, String browserName, Platform forPlatform,
+            TestExecutionContext context) {
         Driver currentDriver;
         switch (forPlatform) {
             case android:
                 currentDriver = AppiumDriverManager.createAndroidDriverForUser(userPersona, forPlatform, context);
-                break;
+                return new DriverAssignment(currentDriver,
+                        buildSessionHandle(userPersona, browserName, forPlatform, context, currentDriver));
             case iOS:
                 currentDriver = AppiumDriverManager.createIOSDriverForUser(userPersona, forPlatform, context);
-                break;
+                return new DriverAssignment(currentDriver,
+                        buildSessionHandle(userPersona, browserName, forPlatform, context, currentDriver));
             case windows:
                 currentDriver = AppiumDriverManager.createWindowsDriverForUser(userPersona, forPlatform, context);
-                break;
+                return new DriverAssignment(currentDriver,
+                        buildSessionHandle(userPersona, browserName, forPlatform, context, currentDriver));
             case web:
-                currentDriver = BrowserDriverManager.createWebDriverForUser(userPersona, browserName, forPlatform, context);
-                break;
+                return createWebDriverAssignment(userPersona, browserName, forPlatform, context);
             case electron:
                 currentDriver = BrowserDriverManager.createElectronDriverForUser(userPersona, browserName, forPlatform, context);
-                break;
+                return new DriverAssignment(currentDriver,
+                        buildSessionHandle(userPersona, browserName, forPlatform, context, currentDriver));
             default:
                 throw new InvalidTestDataException(String.format("Unexpected platform value: '%s' provided to assign Driver for user: '%s': ", forPlatform, userPersona));
         }
-        return currentDriver;
     }
 
-    static String getCapabilityFor(org.openqa.selenium.Capabilities capabilities, String name) {
+    public static String getCapabilityFor(org.openqa.selenium.Capabilities capabilities, String name) {
         Object capability = capabilities.getCapability(name);
         return null == capability ? "" : capability.toString();
     }
@@ -161,11 +168,24 @@ public class Drivers {
         return userPersonaDetails.getDriverAssignedForUser(userPersona);
     }
 
+    public static SessionHandle getSessionHandleForCurrentUser(long threadId) {
+        TestExecutionContext context = getTestExecutionContext(threadId);
+        String userPersona = context.getTestStateAsString(TEST_CONTEXT.CURRENT_USER_PERSONA);
+        UserPersonaDetails userPersonaDetails = getUserPersonaDetails(context);
+
+        if (!userPersonaDetails.isSessionHandleAssignedForUser(userPersona)) {
+            throw new InvalidTestDataException(String.format("No SessionHandle found for user persona: '%s'",
+                    userPersona));
+        }
+
+        return userPersonaDetails.getSessionHandleAssignedForUser(userPersona);
+    }
+
     public static String getNameOfDeviceUsedByUser(String userPersona) {
         return getDeviceOrBrowserNameFromCapabilitiesForUser(userPersona, DEVICE_NAME_OPTION);
     }
 
-    static String getBrowserNameForUser(String userPersona) {
+    public static String getBrowserNameForUser(String userPersona) {
         return getDeviceOrBrowserNameFromCapabilitiesForUser(userPersona, BROWSER_NAME);
     }
 
@@ -208,7 +228,9 @@ public class Drivers {
             validateVisualTestResults(userPersona, driver);
             attachLogsAndCloseDriver(userPersona, driver);
         });
+        ScenarioArtifactReporter.publish(context, userPersonaDetails);
         userPersonaDetails.clearAllDrivers();
+        userPersonaDetails.clearAllSessionHandles();
         userPersonaDetails.clearAllAppNames();
         userPersonaDetails.clearAllCapabilities();
         userPersonaDetails.clearAllPlatforms();
@@ -236,36 +258,9 @@ public class Drivers {
 
         LOGGER.info(String.format("Scenario status: '%s' :: '%s'", scenarioStatus, scenarioFailureReasons));
 
-        if (Runner.getCloudName().equalsIgnoreCase("browserstack")) {
-            updateTestStatusInBrowserStack((JavascriptExecutor) driver, scenarioStatus, scenarioFailureReasons);
-        } else if (Runner.getCloudName().equalsIgnoreCase("lambdatest")) {
-            updateTestStatusInLambdaTest((JavascriptExecutor) driver, scenarioStatus, scenarioFailureReasons);
-        }
-    }
-
-    private static void updateTestStatusInBrowserStack(JavascriptExecutor driver, String scenarioStatus, String scenarioFailureReasons) {
-        LOGGER.info(String.format("updateTestStatusInCloud for BrowserStack: '%s'", scenarioStatus));
-        JSONObject executorObject = new JSONObject();
-        JSONObject argumentsObject = new JSONObject();
-        argumentsObject.put("status", scenarioStatus);
-        argumentsObject.put("reason", scenarioFailureReasons);
-        executorObject.put("action", "setSessionStatus");
-        executorObject.put("arguments", argumentsObject);
-        try {
-            driver.executeScript(String.format("browserstack_executor: %s", executorObject));
-        } catch (RuntimeException e) {
-            LOGGER.warn("Unable to set BrowserStack session status using executor command: {}", e.getMessage());
-        }
-    }
-
-    private static void updateTestStatusInLambdaTest(JavascriptExecutor driver, String scenarioStatus, String scenarioFailureReasons) {
-        LOGGER.info(String.format("updateTestStatusInCloud for LambdaTest: '%s'", scenarioStatus));
-        String sanitizedFailureReason = scenarioFailureReasons.replace("\n", " ").replace("\r", " ");
-        try {
-            driver.executeScript(String.format("lambda-status=%s", scenarioStatus));
-            driver.executeScript(String.format("lambda-comment=%s", sanitizedFailureReason));
-        } catch (RuntimeException e) {
-            LOGGER.warn("Unable to set LambdaTest session status using executor command: {}", e.getMessage());
+        if (driver instanceof JavascriptExecutor) {
+            WebExecutionProvider provider = WEB_EXECUTION_PROVIDER_RESOLVER.resolve();
+            provider.updateSessionStatus((JavascriptExecutor) driver, scenarioStatus, scenarioFailureReasons);
         }
     }
 
@@ -310,8 +305,10 @@ public class Drivers {
 
         Driver currentDriver = userPersonaDetails.getDriverAssignedForUser(userPersona);
         Platform currentPlatform = userPersonaDetails.getPlatformAssignedForUser(userPersona);
+        SessionHandle currentSessionHandle = userPersonaDetails.getSessionHandleAssignedForUser(userPersona);
 
         context.addTestState(TEST_CONTEXT.CURRENT_DRIVER, currentDriver);
+        context.addTestState(TEST_CONTEXT.CURRENT_SESSION_HANDLE, currentSessionHandle);
         context.addTestState(TEST_CONTEXT.CURRENT_USER_PERSONA, newUserPersona);
         context.addTestState(TEST_CONTEXT.CURRENT_PLATFORM, currentPlatform);
 
@@ -320,7 +317,7 @@ public class Drivers {
         LOGGER.info(String.format("assignNewPersonaToExistingDriver: Persona updated from '%s' to '%s'", userPersona, newUserPersona));
     }
 
-    static void addUserPersonaDriverCapabilities(String userPersona, Capabilities capabilities) {
+    public static void addUserPersonaDriverCapabilities(String userPersona, Capabilities capabilities) {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(getTestExecutionContext(Thread.currentThread().getId()));
         userPersonaDetails.addCapabilities(userPersona, capabilities);
     }
@@ -335,7 +332,7 @@ public class Drivers {
         return userPersonaDetails.getCapabilitiesAssignedForUser(userPersona);
     }
 
-    static String getAppNamefor(String userPersona) {
+    public static String getAppNamefor(String userPersona) {
         UserPersonaDetails userPersonaDetails = getUserPersonaDetails(getTestExecutionContext(Thread.currentThread().getId()));
         return userPersonaDetails.getAppName(userPersona);
     }
@@ -353,6 +350,55 @@ public class Drivers {
         userPersonaDetails.addAppName(userPersona, pdfFileName);
         userPersonaDetails.addPlatform(userPersona, forPlatform);
         userPersonaDetails.addDriver(userPersona, currentDriver);
+        SessionHandle sessionHandle = SessionHandle.create(userPersona, forPlatform, Driver.PDF_DRIVER,
+                context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY), Map.of("pdfFileName", pdfFileName));
+        context.addTestState(TEST_CONTEXT.CURRENT_SESSION_HANDLE, sessionHandle);
+        userPersonaDetails.addSessionHandle(userPersona, sessionHandle);
         LOGGER.info(String.format("createDriverFor: done: userPersona: '%s', Platform: '%s'%n", userPersona, forPlatform.name()));
+    }
+
+    private static SessionHandle buildSessionHandle(String userPersona, String browserName, Platform forPlatform,
+            TestExecutionContext context, Driver currentDriver) {
+        String artifactPath = context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+        String engine = forPlatform.equals(Platform.web) || forPlatform.equals(Platform.electron)
+                ? Runner.getWebEngine().getConfigValue()
+                : Driver.APPIUM_DRIVER;
+        Map<String, String> metadata = buildSessionMetadata(browserName, currentDriver);
+        if (currentDriver.getInnerDriver() instanceof RemoteWebDriver) {
+            String remoteSessionId = ((RemoteWebDriver) currentDriver.getInnerDriver()).getSessionId().toString();
+            return new SessionHandle(userPersona, forPlatform, engine, remoteSessionId, artifactPath, metadata);
+        }
+        return SessionHandle.create(userPersona, forPlatform, engine, artifactPath, metadata);
+    }
+
+    private static DriverAssignment createWebDriverAssignment(String userPersona, String browserName, Platform forPlatform,
+            TestExecutionContext context) {
+        WebDriverSessionResult sessionResult = BrowserDriverManager.createWebSessionForUser(
+                userPersona, browserName, forPlatform, context);
+        if (null != sessionResult.capabilities()) {
+            addUserPersonaDriverCapabilities(userPersona, sessionResult.capabilities());
+        }
+        Driver currentDriver = new Driver(context.getTestName() + "-" + userPersona, forPlatform, userPersona,
+                getAppNamefor(userPersona), sessionResult.webDriver(), sessionResult.headless());
+        SessionHandle sessionHandle = null != sessionResult.sessionHandle()
+                ? sessionResult.sessionHandle()
+                : buildSessionHandle(userPersona, browserName, forPlatform, context, currentDriver);
+        return new DriverAssignment(currentDriver, sessionHandle);
+    }
+
+    private static Map<String, String> buildSessionMetadata(String browserName, Driver currentDriver) {
+        WebExecutionProvider provider = WEB_EXECUTION_PROVIDER_RESOLVER.resolve();
+        Map<String, String> metadata = new java.util.LinkedHashMap<>();
+        metadata.put("browserName", browserName);
+        metadata.put("provider", provider.name());
+        metadata.put("driverClass", currentDriver.getInnerDriver().getClass().getSimpleName());
+        if (currentDriver.getInnerDriver() instanceof RemoteWebDriver) {
+            metadata.put("remoteSessionId",
+                    ((RemoteWebDriver) currentDriver.getInnerDriver()).getSessionId().toString());
+        }
+        return metadata;
+    }
+
+    private record DriverAssignment(Driver driver, SessionHandle sessionHandle) {
     }
 }

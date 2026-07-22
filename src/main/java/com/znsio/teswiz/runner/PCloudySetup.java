@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
+import com.znsio.teswiz.mobile.provider.PCloudyMobileCapabilitySetup;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
@@ -13,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -44,27 +44,15 @@ class PCloudySetup {
         String appPath = getFromConfigs(APP_PATH);
         Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
         String platformName = getPlatform().name();
-        Map loadedPlatformCapability = loadedCapabilityFile.get(platformName);
-        String deviceVersion = String.valueOf(loadedPlatformCapability.get("os_version"));
-        String deviceManufacturer = String.valueOf(loadedPlatformCapability.get("device"));
-        String appiumVersion;
-        if (loadedPlatformCapability.containsKey("appiumVersion")) {
-            appiumVersion = String.valueOf(loadedPlatformCapability.get("appiumVersion"));
-            loadedPlatformCapability.remove("appiumVersion");
-        } else {
-            appiumVersion = String.valueOf(loadedPlatformCapability.get("appium:appiumVersion"));
-            loadedPlatformCapability.remove("appium:appiumVersion");
-        }
-        loadedPlatformCapability.remove("app");
-        loadedPlatformCapability.put("platformVersion", loadedPlatformCapability.get("os_version"));
-        Map pCloudyOptions = (Map) loadedPlatformCapability.get("pcloudy:options");
-        pCloudyOptions.put("pCloudy_Username", emailID);
-        pCloudyOptions.put("pCloudy_ApiKey", authenticationKey);
-        pCloudyOptions.put("pCloudy_ApplicationName", getAppName(appPath));
-        pCloudyOptions.put("pCloudy_DeviceVersion", deviceVersion);
-        pCloudyOptions.put("pCloudy_DeviceManufacturer", deviceManufacturer.toUpperCase());
-        pCloudyOptions.put("appiumVersion", appiumVersion);
-        updateCapabilities(loadedCapabilityFile);
+        Map<String, Object> loadedPlatformCapability = loadedCapabilityFile.get(platformName);
+        PCloudyMobileCapabilitySetup.PreparedPCloudyCapabilities preparedCapabilities =
+                PCloudyMobileCapabilitySetup.prepareCapabilities(
+                        loadedPlatformCapability,
+                        emailID,
+                        authenticationKey,
+                        appPath,
+                        getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS));
+        updateCapabilities(loadedCapabilityFile, preparedCapabilities.devices());
     }
 
     private static void fetchAuthTokenAndUploadAPKToPCloudy(String emailID,
@@ -85,28 +73,11 @@ class PCloudySetup {
         }
     }
 
-    private static String getAppName(String appPath) {
-        return new File(appPath).getName();
-    }
-
-    static void updateCapabilities(Map<String, Map> loadedCapabilityFile) {
+    static void updateCapabilities(Map<String, Map> loadedCapabilityFile, ArrayList<Map<String, String>> devices) {
         String capabilityFile = getFromConfigs(CAPS);
         String platformName = getPlatform().name();
-        ArrayList listOfAndroidDevices = new ArrayList();
-        for(int numDevices = 0;
-            numDevices < getIntegerValueFromConfigs(MAX_NUMBER_OF_APPIUM_DRIVERS);
-            numDevices++) {
-            HashMap<String, String> deviceInfo = new HashMap();
-            deviceInfo.put("pCloudy_DeviceManufacturer",
-                    loadedCapabilityFile.get(platformName).get("device").toString().toUpperCase());
-            deviceInfo.put("pCloudy_DeviceVersion", String.valueOf(
-                    loadedCapabilityFile.get(platformName).get("os_version")));
-            deviceInfo.put("platform",
-                    loadedCapabilityFile.get(platformName).get("platformName").toString().toLowerCase());
-            listOfAndroidDevices.add(deviceInfo);
-        }
         DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
-                                            listOfAndroidDevices);
+                                            devices);
     }
 
     private static String getPCloudyAuthToken(String emailID, String authenticationKey,

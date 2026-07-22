@@ -2,6 +2,7 @@ package com.znsio.teswiz.runner;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.znsio.teswiz.mobile.provider.HeadSpinMobileCapabilitySetup;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
@@ -50,13 +51,13 @@ class HeadSpinSetup {
                     deviceLabURL);
         }
         LOGGER.info("Using appId: " + appIdFromHeadspin);
-        loadedPlatformCapability.put("headspin:app.id", appIdFromHeadspin);
-        loadedPlatformCapability.remove("app");
-        String osVersion = String.valueOf(loadedPlatformCapability.getOrDefault(PLATFORM_VERSION, ""));
-        String deviceManufacturer = loadedPlatformCapability.getOrDefault("device", "").toString().toUpperCase();
-//        loadedPlatformCapability.put("headspin:selector", "os_version:>=" + osVersion + "+device_type:" + platformName + "+manufacturer:" + deviceManufacturer);
-        loadedPlatformCapability.remove(PLATFORM_VERSION);
-        updateCapabilities(loadedCapabilityFile, osVersion, deviceManufacturer);
+        HeadSpinMobileCapabilitySetup.PreparedHeadSpinCapabilities preparedCapabilities =
+                HeadSpinMobileCapabilitySetup.prepareCapabilities(
+                        loadedPlatformCapability,
+                        platformName,
+                        appIdFromHeadspin,
+                        Setup.getIntegerValueFromConfigs(Setup.MAX_NUMBER_OF_APPIUM_DRIVERS));
+        updateCapabilities(loadedCapabilityFile, preparedCapabilities.devices());
     }
 
     private static String uploadAPKToHeadspin(String authenticationKey, String appPath, String deviceLabURL) {
@@ -108,21 +109,11 @@ class HeadSpinSetup {
         return uploadedAppId.get();
     }
 
-    static void updateCapabilities(Map<String, Map> loadedCapabilityFile, String osVersion, String deviceManufacturer) {
+    static void updateCapabilities(Map<String, Map> loadedCapabilityFile, ArrayList<Map<String, String>> devices) {
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
         String platformName = Setup.getPlatform().name();
-        ArrayList listOfAndroidDevices = new ArrayList();
-        for (int numDevices = 0;
-             numDevices < Setup.getIntegerValueFromConfigs(Setup.MAX_NUMBER_OF_APPIUM_DRIVERS);
-             numDevices++) {
-            HashMap<String, String> deviceInfo = new HashMap();
-            deviceInfo.put("platform", platformName.toLowerCase());
-            deviceInfo.put("platformVersion", osVersion);
-            deviceInfo.put("deviceName", deviceManufacturer);
-            listOfAndroidDevices.add(deviceInfo);
-        }
         DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
-                listOfAndroidDevices);
+                devices);
     }
 
     private static JsonObject getListOfAppPackagesFromHeadSpin(String authenticationKey,

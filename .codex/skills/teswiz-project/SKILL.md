@@ -16,6 +16,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Execution configs: `configs/<app>/...`
 - Capability files: `caps/<app>/...`
 - Visual-testing docs: `docs/RunningVisualTests-README.md`
+- Architecture notes: `docs/Architecture-README.md`
 
 ## Working conventions
 
@@ -23,6 +24,42 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Use `apply_patch` for manual source edits.
 - Do not revert unrelated worktree changes.
 - Favor focused Gradle verification over broad test runs when touching a narrow area.
+- Whenever code or documentation changes are made, always include a concise suggested commit message in the final response.
+- Keep the repo instructions aligned across Codex, Claude, and Antigravity entry points:
+  - `.codex/skills/teswiz-project/SKILL.md`
+  - `CLAUDE.md`
+  - `ANTIGRAVITY.md`
+- If one of those instruction files changes, update the others in the same spirit so guidance stays consistent.
+
+## Package boundaries
+
+- Treat `com.znsio.teswiz.runner` as the stable framework-facing orchestration package.
+- Keep these classes in `runner` unless there is an explicit breaking-change decision:
+  - `Driver`
+  - `Drivers`
+  - `Runner`
+  - `Setup`
+  - `Visual`
+- Prefer internal dual-engine support classes in:
+  - `com.znsio.teswiz.session`
+  - `com.znsio.teswiz.config.browser`
+  - `com.znsio.teswiz.mobile.provider`
+  - `com.znsio.teswiz.web`
+  - `com.znsio.teswiz.web.browser`
+  - `com.znsio.teswiz.web.provider`
+  - `com.znsio.teswiz.web.selenium`
+  - `com.znsio.teswiz.web.provider.selenium`
+  - `com.znsio.teswiz.web.playwright`
+  - `com.znsio.teswiz.visual`
+- When adding new Playwright, browser-config, session, or visual-helper code, do not place it in `runner` by default.
+- When adding Selenium web engine runtime code, prefer `com.znsio.teswiz.web.selenium`.
+- When adding browser-engine orchestration code, prefer `com.znsio.teswiz.web.browser`.
+- Mobile cloud capability shaping helpers belong in `com.znsio.teswiz.mobile.provider`; keep `runner` setup classes as compatibility delegates unless a breaking change is intentional.
+- Mobile cloud upload/parsing helpers should also prefer `com.znsio.teswiz.mobile.provider` when they can be extracted as pure provider logic.
+- If a change affects these boundaries, update:
+  - `README.md`
+  - `docs/Architecture-README.md`
+  - this skill file
 
 ## Visual testing rules
 
@@ -74,6 +111,10 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - If behavior changes for visual testing, update both:
   - `README.md`
   - `docs/RunningVisualTests-README.md`
+- If architecture boundaries or stable-vs-internal package intent changes, update:
+  - `README.md`
+  - `docs/Architecture-README.md`
+  - `.codex/skills/teswiz-project/SKILL.md`
 - Keep docs aligned with the current supported flow; remove stale references rather than documenting both old and new patterns.
 
 ## Release checklist
@@ -93,6 +134,8 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 
 - Update this skill whenever repo conventions change for:
   - Applitools naming
+  - package-boundary rules
   - step-definition ownership
   - preferred verification commands
   - config/caps layout
+  - final-response requirements such as commit-message suggestions
