@@ -16,7 +16,7 @@ class ScreenContractCoverageReporterTest {
                 .expectedClassName("com.znsio.teswiz.screen.theapp.LoginScreen");
 
         assertThat(expectedClassName)
-                .isEqualTo("com.znsio.teswiz.screen.web.playwright.theapp.LoginScreenPlaywrightTs");
+                .isEqualTo("com.znsio.teswiz.screen.web.playwright.theapp.LoginScreenPlaywrightTsAdapter");
     }
 
     @Test
@@ -28,7 +28,8 @@ class ScreenContractCoverageReporterTest {
                                 new ScreenContractCoverageReporter.TargetCoverage("android",
                                         "com.znsio.teswiz.screen.android.theapp.LoginScreenAndroid", true),
                                 new ScreenContractCoverageReporter.TargetCoverage("web-playwright-ts",
-                                        "com.znsio.teswiz.screen.web.playwright.theapp.LoginScreenPlaywrightTs", false)))));
+                                        "com.znsio.teswiz.screen.web.playwright.theapp.LoginScreenPlaywrightTsAdapter",
+                                        false)))));
 
         assertThat(report.toDisplayString()).contains("web-playwright-ts");
         assertThat(report.toDisplayString()).contains("with gaps");

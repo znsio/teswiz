@@ -49,6 +49,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Route screen creation via config-driven screen factories for TheApp web screens
 - [x] Add first explicit Java screen implementations for the `playwright-ts` web engine for the TheApp invalid-login flow
 - [x] Add the first real worker-side `.ts` screen modules and bridge them through the Java screen contract for TheApp invalid-login
+- [x] Rename current Java bridge classes to `...PlaywrightTsAdapter` so they are not confused with Playwright-Java implementations
 - [x] Add explicit Java screen implementations for the `playwright-ts` web engine for the TheApp file-upload flow
 - [x] Centralize contract-to-implementation resolution so screen `get()` methods stay one-line and non-breaking
 - [ ] Add screen contract compliance checks for supported platform/engine combinations

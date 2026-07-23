@@ -8,15 +8,15 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.googlesearch.GoogleSearchLandingScreen;
 import com.znsio.teswiz.screen.googlesearch.GoogleSearchResultsScreen;
 
-public class GoogleSearchLandingScreenPlaywrightTs extends GoogleSearchLandingScreen {
+public class GoogleSearchLandingScreenPlaywrightTsAdapter extends GoogleSearchLandingScreen {
     private static final String URL = "https://google.com";
     private static final By SEARCH_INPUT = By.name("q");
 
     private final Driver driver;
     private final Visual visually;
-    private final String screenName = GoogleSearchLandingScreenPlaywrightTs.class.getSimpleName();
+    private final String screenName = GoogleSearchLandingScreenPlaywrightTsAdapter.class.getSimpleName();
 
-    public GoogleSearchLandingScreenPlaywrightTs(Driver driver, Visual visually) {
+    public GoogleSearchLandingScreenPlaywrightTsAdapter(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
         openLandingPage();

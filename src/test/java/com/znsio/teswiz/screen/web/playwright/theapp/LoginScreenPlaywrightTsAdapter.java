@@ -7,14 +7,14 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.theapp.LoginScreen;
 import com.znsio.teswiz.web.playwright.PlaywrightTsScreenActionExecutor;
 
-public class LoginScreenPlaywrightTs extends LoginScreen {
+public class LoginScreenPlaywrightTsAdapter extends LoginScreen {
     private static final String SCREEN_MODULE = "theapp/login.screen.ts";
     private final Driver driver;
     private final Visual visually;
-    private final String screenName = LoginScreenPlaywrightTs.class.getSimpleName();
+    private final String screenName = LoginScreenPlaywrightTsAdapter.class.getSimpleName();
     private final PlaywrightTsScreenActionExecutor screenActionExecutor;
 
-    public LoginScreenPlaywrightTs(Driver driver, Visual visually) {
+    public LoginScreenPlaywrightTsAdapter(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
         this.screenActionExecutor = new PlaywrightTsScreenActionExecutor(driver);

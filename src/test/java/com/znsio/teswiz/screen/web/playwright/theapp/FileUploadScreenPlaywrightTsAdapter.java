@@ -8,7 +8,7 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.theapp.FileUploadScreen;
 
-public class FileUploadScreenPlaywrightTs extends FileUploadScreen {
+public class FileUploadScreenPlaywrightTsAdapter extends FileUploadScreen {
     private static final By FILE_UPLOAD_LINK = By.xpath("//a[@href=\"/upload\"]");
     private static final By FILE_INPUT = By.xpath("//input[@name=\"file\"]");
     private static final By UPLOAD_BUTTON = By.id("file-submit");
@@ -16,7 +16,7 @@ public class FileUploadScreenPlaywrightTs extends FileUploadScreen {
 
     private final Driver driver;
 
-    public FileUploadScreenPlaywrightTs(Driver driver, Visual visually) {
+    public FileUploadScreenPlaywrightTsAdapter(Driver driver, Visual visually) {
         this.driver = driver;
     }
 

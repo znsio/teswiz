@@ -8,14 +8,14 @@ import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.googlesearch.GoogleSearchResultsScreen;
 
-public class GoogleSearchResultsScreenPlaywrightTs extends GoogleSearchResultsScreen {
+public class GoogleSearchResultsScreenPlaywrightTsAdapter extends GoogleSearchResultsScreen {
     private static final By SEARCH_RESULT_HEADINGS = By.cssSelector("a div[role='heading']");
 
     private final Driver driver;
     private final Visual visually;
-    private final String screenName = GoogleSearchResultsScreenPlaywrightTs.class.getSimpleName();
+    private final String screenName = GoogleSearchResultsScreenPlaywrightTsAdapter.class.getSimpleName();
 
-    public GoogleSearchResultsScreenPlaywrightTs(Driver driver, Visual visually) {
+    public GoogleSearchResultsScreenPlaywrightTsAdapter(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
     }

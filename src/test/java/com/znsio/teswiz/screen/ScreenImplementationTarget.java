@@ -8,7 +8,7 @@ enum ScreenImplementationTarget {
     WINDOWS("windows", "windows", "Windows"),
     PDF("pdf", "pdf", "PDF"),
     WEB_SELENIUM("web-selenium", "web", "Web"),
-    WEB_PLAYWRIGHT_TS("web-playwright-ts", "web.playwright", "PlaywrightTs");
+    WEB_PLAYWRIGHT_TS("web-playwright-ts", "web.playwright", "PlaywrightTsAdapter");
 
     private static final String ROOT_PACKAGE = "com.znsio.teswiz.screen";
 

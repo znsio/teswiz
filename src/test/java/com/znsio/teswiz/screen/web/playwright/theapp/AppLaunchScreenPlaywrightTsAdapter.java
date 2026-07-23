@@ -10,15 +10,15 @@ import com.znsio.teswiz.screen.theapp.EchoScreen;
 import com.znsio.teswiz.screen.theapp.LoginScreen;
 import com.znsio.teswiz.web.playwright.PlaywrightTsScreenActionExecutor;
 
-public class AppLaunchScreenPlaywrightTs extends AppLaunchScreen {
-    private static final Logger LOGGER = LogManager.getLogger(AppLaunchScreenPlaywrightTs.class.getName());
+public class AppLaunchScreenPlaywrightTsAdapter extends AppLaunchScreen {
+    private static final Logger LOGGER = LogManager.getLogger(AppLaunchScreenPlaywrightTsAdapter.class.getName());
     private static final String SCREEN_MODULE = "theapp/app-launch.screen.ts";
     private final Driver driver;
     private final Visual visually;
-    private final String screenName = AppLaunchScreenPlaywrightTs.class.getSimpleName();
+    private final String screenName = AppLaunchScreenPlaywrightTsAdapter.class.getSimpleName();
     private final PlaywrightTsScreenActionExecutor screenActionExecutor;
 
-    public AppLaunchScreenPlaywrightTs(Driver driver, Visual visually) {
+    public AppLaunchScreenPlaywrightTsAdapter(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
         this.screenActionExecutor = new PlaywrightTsScreenActionExecutor(driver);

@@ -61,7 +61,7 @@ public final class ScreenImplementationResolver {
             case pdf -> "PDF";
             case web, electron -> switch (webEngine) {
                 case SELENIUM -> "Web";
-                case PLAYWRIGHT_TS -> "PlaywrightTs";
+                case PLAYWRIGHT_TS -> "PlaywrightTsAdapter";
             };
             default -> throw new NotImplementedException("Unsupported platform: " + platform);
         };

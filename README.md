@@ -101,7 +101,7 @@ The dual-engine web support is intentionally organized behind internal support p
 * `com.znsio.teswiz.web.playwright`
   * Playwright TS worker bridge, driver, and session internals
 
-For `WEB_ENGINE=playwright-ts`, teswiz uses the same Java BL and screen contracts, while the `playwright-ts` screen implementation can delegate to worker-side TypeScript screen modules for Playwright-native behavior.
+For `WEB_ENGINE=playwright-ts`, teswiz uses the same Java BL and screen contracts, while the `playwright-ts` screen adapter can delegate to worker-side TypeScript screen modules for Playwright-native behavior.
 
 * `com.znsio.teswiz.reporting`
   * scenario metadata publishing and engine-specific artifact reporting helpers

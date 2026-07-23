@@ -24,7 +24,7 @@ class ScreenImplementationResolverTest {
                 AppLaunchScreen.class, Platform.web, WebEngine.PLAYWRIGHT_TS);
 
         assertThat(implementationClass.getName())
-                .isEqualTo("com.znsio.teswiz.screen.web.playwright.theapp.AppLaunchScreenPlaywrightTs");
+                .isEqualTo("com.znsio.teswiz.screen.web.playwright.theapp.AppLaunchScreenPlaywrightTsAdapter");
     }
 
     @Test
