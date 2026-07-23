@@ -54,6 +54,19 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldTreatMigratedJioMeetTsModulesAsImplementedTargets() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("src/test/resources/playwright/screens/jiomeet/landing.screen.ts");
+        assertThat(report.toDisplayString())
+                .doesNotContain("src/test/resources/playwright/screens/jiomeet/sign-in.screen.ts");
+        assertThat(report.toDisplayString())
+                .doesNotContain("src/test/resources/playwright/screens/jiomeet/in-a-meeting.screen.ts");
+    }
+
+    @Test
     void shouldReportMissingTargetsForContract() {
         ScreenContractCoverageReporter.CoverageReport report = new ScreenContractCoverageReporter.CoverageReport(List.of(
                 new ScreenContractCoverageReporter.ContractCoverage(

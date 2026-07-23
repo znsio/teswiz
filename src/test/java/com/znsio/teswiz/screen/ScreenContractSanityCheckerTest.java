@@ -86,6 +86,23 @@ class ScreenContractSanityCheckerTest {
         assertThat(resultsResult.violations()).isEmpty();
     }
 
+    @Test
+    void shouldValidateMigratedJioMeetTsModulesAgainstContracts() {
+        ScreenContractSanityChecker checker =
+                new ScreenContractSanityChecker(java.nio.file.Path.of("src/test/java/com/znsio/teswiz/screen"));
+
+        ScreenContractSanityChecker.ContractValidationResult landingResult =
+                checker.validateContract("com.znsio.teswiz.screen.jiomeet.LandingScreen");
+        ScreenContractSanityChecker.ContractValidationResult signInResult =
+                checker.validateContract("com.znsio.teswiz.screen.jiomeet.SignInScreen");
+        ScreenContractSanityChecker.ContractValidationResult inAMeetingResult =
+                checker.validateContract("com.znsio.teswiz.screen.jiomeet.InAMeetingScreen");
+
+        assertThat(landingResult.violations()).isEmpty();
+        assertThat(signInResult.violations()).isEmpty();
+        assertThat(inAMeetingResult.violations()).isEmpty();
+    }
+
     public abstract static class ExampleContract {
         public abstract ExampleContract doSomething(String value);
     }
