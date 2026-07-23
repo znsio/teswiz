@@ -11,14 +11,17 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class ScreenContractSanityChecker {
     private final ScreenClassCatalog classCatalog;
+    private final PlaywrightTsScreenModuleSupport moduleSupport;
 
     public ScreenContractSanityChecker(Path sourceRoot) {
         this.classCatalog = new ScreenClassCatalog(sourceRoot);
+        this.moduleSupport = new PlaywrightTsScreenModuleSupport();
     }
 
     public static void main(String[] args) throws IOException {
@@ -44,9 +47,17 @@ public final class ScreenContractSanityChecker {
         Class<?> contractClass = ScreenContractReflection.loadClass(contractClassName);
         List<String> implementationClassNames = classCatalog.discoverImplementationClassNames(contractClassName);
         List<String> violations = new ArrayList<>();
+        boolean hasPlaywrightTsModule = moduleSupport.hasModuleFor(contractClassName);
 
-        if (implementationClassNames.isEmpty()) {
+        if (implementationClassNames.isEmpty() && !hasPlaywrightTsModule) {
             violations.add("No screen implementations found");
+        }
+
+        if (hasPlaywrightTsModule) {
+            violations.addAll(validatePlaywrightTsModule(contractClass).stream()
+                    .map(message -> "playwright/screens/" + moduleSupport.modulePathFor(contractClassName) + ": "
+                            + message)
+                    .toList());
         }
 
         for (String implementationClassName : implementationClassNames) {
@@ -57,6 +68,14 @@ public final class ScreenContractSanityChecker {
         }
 
         return new ContractValidationResult(contractClassName, implementationClassNames, violations);
+    }
+
+    private List<String> validatePlaywrightTsModule(Class<?> contractClass) {
+        Set<String> exportedFunctions = moduleSupport.exportedFunctionsFor(contractClass.getName());
+        return ScreenContractReflection.publicAbstractMethods(contractClass).stream()
+                .filter(method -> !exportedFunctions.contains(method.getName()))
+                .map(method -> "missing exported function: " + ScreenContractReflection.methodSignature(method))
+                .toList();
     }
 
     static List<String> validateImplementation(Class<?> contractClass, Class<?> implementationClass) {

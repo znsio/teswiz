@@ -7,9 +7,11 @@ import java.util.stream.Collectors;
 
 public final class ScreenContractCoverageReporter {
     private final ScreenClassCatalog classCatalog;
+    private final PlaywrightTsScreenModuleSupport moduleSupport;
 
     public ScreenContractCoverageReporter(Path sourceRoot) {
         this.classCatalog = new ScreenClassCatalog(sourceRoot);
+        this.moduleSupport = new PlaywrightTsScreenModuleSupport();
     }
 
     public static void main(String[] args) throws IOException {
@@ -38,6 +40,9 @@ public final class ScreenContractCoverageReporter {
     private TargetCoverage describeTargetCoverage(String contractClassName, List<String> implementationClassNames,
                                                   ScreenImplementationTarget target) {
         String expectedClassName = target.expectedClassName(contractClassName);
+        if (target == ScreenImplementationTarget.WEB_PLAYWRIGHT_TS && moduleSupport.hasModuleFor(contractClassName)) {
+            return new TargetCoverage(target.displayName(), moduleSupport.modulePathFor(contractClassName), true);
+        }
         boolean implemented = implementationClassNames.contains(expectedClassName);
         return new TargetCoverage(target.displayName(), expectedClassName, implemented);
     }

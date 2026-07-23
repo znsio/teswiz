@@ -19,11 +19,11 @@ class ScreenImplementationResolverTest {
     }
 
     @Test
-    void shouldResolvePlaywrightTsConventionForWebScreen() {
-        Class<? extends AppLaunchScreen> implementationClass = ScreenImplementationResolver.resolve(
-                AppLaunchScreen.class, Platform.web, WebEngine.PLAYWRIGHT_TS);
+    void shouldBuildPlaywrightTsConventionForWebScreen() {
+        String expectedImplementation = ScreenImplementationTarget.WEB_PLAYWRIGHT_TS
+                .expectedClassName(AppLaunchScreen.class.getName());
 
-        assertThat(implementationClass.getName())
+        assertThat(expectedImplementation)
                 .isEqualTo("com.znsio.teswiz.screen.web.playwright.theapp.AppLaunchScreenPlaywrightTsAdapter");
     }
 

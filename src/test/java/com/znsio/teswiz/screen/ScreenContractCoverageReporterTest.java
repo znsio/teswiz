@@ -20,6 +20,16 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldTreatPlaywrightTsModuleAsImplementedTarget() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString()).contains("GeneratedPlaywrightTsTestScreen");
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwright.generateddemo.GeneratedPlaywrightTsTestScreenPlaywrightTsAdapter");
+    }
+
+    @Test
     void shouldReportMissingTargetsForContract() {
         ScreenContractCoverageReporter.CoverageReport report = new ScreenContractCoverageReporter.CoverageReport(List.of(
                 new ScreenContractCoverageReporter.ContractCoverage(
@@ -50,6 +60,7 @@ class ScreenContractCoverageReporterTest {
                 .buildReport();
 
         assertThat(report.toDisplayString()).contains("AppLaunchScreen");
-        assertThat(report.toDisplayString()).contains("web-playwright-ts");
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwright.theapp.AppLaunchScreenPlaywrightTsAdapter");
     }
 }
