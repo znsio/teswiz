@@ -2,40 +2,35 @@ package com.znsio.teswiz.screen.web.playwright.theapp;
 
 import static com.znsio.teswiz.tools.Wait.waitFor;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.theapp.LoginScreen;
-import com.znsio.teswiz.web.playwright.PlaywrightBy;
+import com.znsio.teswiz.web.playwright.PlaywrightTsScreenActionExecutor;
 
 public class LoginScreenPlaywrightTs extends LoginScreen {
-    private static final By USERNAME_INPUT = By.id("username");
-    private static final By PASSWORD_INPUT = By.id("password");
-    private static final By LOGIN_BUTTON = PlaywrightBy.role("button", "Login");
-    private static final By ERROR_MESSAGE = By.id("flash");
+    private static final String SCREEN_MODULE = "theapp/login.screen.ts";
     private final Driver driver;
     private final Visual visually;
     private final String screenName = LoginScreenPlaywrightTs.class.getSimpleName();
+    private final PlaywrightTsScreenActionExecutor screenActionExecutor;
 
     public LoginScreenPlaywrightTs(Driver driver, Visual visually) {
         this.driver = driver;
         this.visually = visually;
+        this.screenActionExecutor = new PlaywrightTsScreenActionExecutor(driver);
     }
 
     @Override
     public LoginScreen enterLoginDetails(String username, String password) {
         waitFor(1);
-        driver.findElement(USERNAME_INPUT).sendKeys(username);
-        driver.findElement(PASSWORD_INPUT).sendKeys(password);
+        screenActionExecutor.run(SCREEN_MODULE, "enterLoginDetails", username, password);
         visually.checkWindow(screenName, "Entered login details");
         return this;
     }
 
     @Override
     public LoginScreen login() {
-        driver.findElement(LOGIN_BUTTON).click();
+        screenActionExecutor.run(SCREEN_MODULE, "login");
         waitFor(1);
         visually.checkWindow(screenName, "Clicked on Login");
         return this;
@@ -43,13 +38,13 @@ public class LoginScreenPlaywrightTs extends LoginScreen {
 
     @Override
     public String getInvalidLoginError() {
-        WebElement alertText = driver.waitTillElementIsPresent(ERROR_MESSAGE);
         visually.checkWindow(screenName, "Invalid Login alert");
-        return alertText.getText().trim();
+        return screenActionExecutor.runForString(SCREEN_MODULE, "getInvalidLoginError").trim();
     }
 
     @Override
     public LoginScreen dismissAlert() {
+        screenActionExecutor.run(SCREEN_MODULE, "dismissAlert");
         visually.checkWindow(screenName, "Invalid Login alert dismissed");
         return this;
     }

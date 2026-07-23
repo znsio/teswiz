@@ -53,6 +53,7 @@ sequenceDiagram
     participant Se as Selenium screen
     participant PJ as Playwright-Java screen
     participant PT as "Java screen implementation for the playwright-ts engine"
+    participant TS as "Playwright TS screen module"
     participant App as Appium screen
     participant Worker as TS worker
 
@@ -67,7 +68,9 @@ sequenceDiagram
     else web + playwright-ts
         Router-->>BL: Java screen implementation for the `playwright-ts` engine
         BL->>PT: Screen action
-        PT->>Worker: IPC command
+        PT->>Worker: screenAction(screenModule, action, args)
+        Worker->>TS: invoke exported action
+        TS->>Worker: Playwright Page/Context result
         Worker-->>PT: Browser result
     else mobile + Appium
         Router-->>BL: Appium screen

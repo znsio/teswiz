@@ -2,10 +2,13 @@ import readline from "node:readline";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { chromium, firefox, webkit } from "playwright";
 
 const sessions = new Map();
 const browsers = new Map();
+const screenModules = new Map();
+const screenRootDirectory = path.resolve(process.cwd(), "playwright", "screens");
 
 function normalizeBrowserName(browserName) {
   switch ((browserName || "chromium").toLowerCase()) {
@@ -290,6 +293,28 @@ function okResponse(requestId, action, payload = {}) {
 
 function errorResponse(requestId, action, message) {
   return JSON.stringify({ requestId, action, ok: false, payload: { message } });
+}
+
+async function loadScreenModule(screenModulePath) {
+  const normalizedPath = path.normalize(screenModulePath);
+  const absolutePath = path.resolve(screenRootDirectory, normalizedPath);
+  if (!absolutePath.startsWith(screenRootDirectory)) {
+    throw new Error(`Invalid screen module path: ${screenModulePath}`);
+  }
+  if (screenModules.has(absolutePath)) {
+    return screenModules.get(absolutePath);
+  }
+  const importedModule = await import(pathToFileURL(absolutePath).href);
+  screenModules.set(absolutePath, importedModule);
+  return importedModule;
+}
+
+function getScreenAction(screenModule, actionName) {
+  const action = screenModule[actionName];
+  if (typeof action !== "function") {
+    throw new Error(`Unsupported screen action: ${actionName}`);
+  }
+  return action;
 }
 
 const rl = readline.createInterface({
@@ -711,6 +736,22 @@ rl.on("line", async (line) => {
         const session = getSession(payload.sessionId);
         await getCurrentPage(session).reload({ waitUntil: "load" });
         process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
+        break;
+      }
+      case "screenAction": {
+        const session = getSession(payload.sessionId);
+        const screenModule = await loadScreenModule(payload.screenModule);
+        const screenAction = getScreenAction(screenModule, payload.actionName);
+        const value = await screenAction(
+          {
+            session,
+            context: session.context,
+            page: getCurrentPage(session),
+            root: getCurrentRoot(session),
+          },
+          ...(payload.arguments || []),
+        );
+        process.stdout.write(`${okResponse(requestId, action, { value: value ?? null })}\n`);
         break;
       }
       case "closeSession": {

@@ -98,6 +98,10 @@ public final class PlaywrightWebDriver implements WebDriver, JavascriptExecutor,
         close();
     }
 
+    public Object runScreenAction(String screenModule, String actionName, JSONArray arguments) {
+        return workerClient.invokeScreenAction(session.sessionId(), screenModule, actionName, arguments);
+    }
+
     @Override
     public Set<String> getWindowHandles() {
         return workerClient.getWindowHandles(session.sessionId());

@@ -9,6 +9,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Playwright TS local multi-user web runs work
 - [x] Playwright TS local mixed Android + web runs work
 - [x] TheApp invalid-login web flow uses explicit Java screen implementations for the `playwright-ts` engine instead of Selenium web screens
+- [x] TheApp invalid-login Playwright path calls real worker-side TypeScript screen modules
 - [x] Google Search web flow uses explicit Java screen implementations for the `playwright-ts` engine instead of Selenium web screens
 - [x] TheApp local single-user Playwright-TS validation passes through the first-class screen path
 - [x] TheApp local multi-user Playwright-TS validation passes through the first-class screen path
@@ -47,6 +48,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [ ] Remove reliance on automatic Selenium-to-Playwright mapping where Java screen implementations for Playwright engines exist
 - [x] Route screen creation via config-driven screen factories for TheApp web screens
 - [x] Add first explicit Java screen implementations for the `playwright-ts` web engine for the TheApp invalid-login flow
+- [x] Add the first real worker-side `.ts` screen modules and bridge them through the Java screen contract for TheApp invalid-login
 - [x] Add explicit Java screen implementations for the `playwright-ts` web engine for the TheApp file-upload flow
 - [x] Centralize contract-to-implementation resolution so screen `get()` methods stay one-line and non-breaking
 - [ ] Add screen contract compliance checks for supported platform/engine combinations

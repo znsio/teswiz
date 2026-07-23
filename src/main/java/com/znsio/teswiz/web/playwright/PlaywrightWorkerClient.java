@@ -51,7 +51,7 @@ public class PlaywrightWorkerClient implements AutoCloseable {
                     String.format("Playwright worker script not found: '%s'", workerScriptPath));
         }
 
-        ProcessBuilder processBuilder = new ProcessBuilder(List.of(NODE_EXECUTABLE, workerScriptPath.toString()));
+        ProcessBuilder processBuilder = new ProcessBuilder(buildStartCommand());
         try {
             process = processBuilder.start();
             requestWriter = process.outputWriter();
@@ -375,6 +375,16 @@ public class PlaywrightWorkerClient implements AutoCloseable {
         sendCommand("refresh", new JSONObject().put("sessionId", sessionId));
     }
 
+    public synchronized Object invokeScreenAction(String sessionId, String screenModule, String actionName,
+            JSONArray arguments) {
+        JSONObject payload = sendCommand("screenAction", new JSONObject()
+                .put("sessionId", sessionId)
+                .put("screenModule", screenModule)
+                .put("actionName", actionName)
+                .put("arguments", null == arguments ? new JSONArray() : arguments)).payload();
+        return payload.has("value") ? payload.get("value") : null;
+    }
+
     public synchronized PlaywrightWorkerResponse shutdown() {
         if (!isRunning()) {
             return new PlaywrightWorkerResponse("shutdown-skipped", "shutdown", true,
@@ -455,6 +465,10 @@ public class PlaywrightWorkerClient implements AutoCloseable {
             payload.put("value", value);
         }
         return sendCommand("elementAction", payload);
+    }
+
+    List<String> buildStartCommand() {
+        return List.of(NODE_EXECUTABLE, "--experimental-strip-types", workerScriptPath.toString());
     }
 
     @Override
