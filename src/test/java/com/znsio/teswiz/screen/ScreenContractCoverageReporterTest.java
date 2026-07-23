@@ -41,6 +41,19 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldTreatMigratedIndigoTsModulesAsImplementedTargets() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("src/test/resources/playwright/screens/indigo/indigo-home.screen.ts");
+        assertThat(report.toDisplayString())
+                .doesNotContain("src/test/resources/playwright/screens/indigo/indigo-gift-vouchers.screen.ts");
+        assertThat(report.toDisplayString())
+                .doesNotContain("src/test/resources/playwright/screens/indigo/indigo-flight-search-results.screen.ts");
+    }
+
+    @Test
     void shouldReportMissingTargetsForContract() {
         ScreenContractCoverageReporter.CoverageReport report = new ScreenContractCoverageReporter.CoverageReport(List.of(
                 new ScreenContractCoverageReporter.ContractCoverage(

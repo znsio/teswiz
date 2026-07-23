@@ -69,6 +69,23 @@ class ScreenContractSanityCheckerTest {
         assertThat(resultsResult.violations()).isEmpty();
     }
 
+    @Test
+    void shouldValidateMigratedIndigoTsModulesAgainstContracts() {
+        ScreenContractSanityChecker checker =
+                new ScreenContractSanityChecker(java.nio.file.Path.of("src/test/java/com/znsio/teswiz/screen"));
+
+        ScreenContractSanityChecker.ContractValidationResult homeResult =
+                checker.validateContract("com.znsio.teswiz.screen.indigo.IndigoHomeScreen");
+        ScreenContractSanityChecker.ContractValidationResult voucherResult =
+                checker.validateContract("com.znsio.teswiz.screen.indigo.IndigoGiftVouchersScreen");
+        ScreenContractSanityChecker.ContractValidationResult resultsResult =
+                checker.validateContract("com.znsio.teswiz.screen.indigo.IndigoFlightSearchResultsScreen");
+
+        assertThat(homeResult.violations()).isEmpty();
+        assertThat(voucherResult.violations()).isEmpty();
+        assertThat(resultsResult.violations()).isEmpty();
+    }
+
     public abstract static class ExampleContract {
         public abstract ExampleContract doSomething(String value);
     }
