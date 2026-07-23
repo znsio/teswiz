@@ -55,6 +55,20 @@ class ScreenContractSanityCheckerTest {
         assertThat(result.violations()).isEmpty();
     }
 
+    @Test
+    void shouldValidateMigratedGoogleSearchTsModulesAgainstContracts() {
+        ScreenContractSanityChecker checker =
+                new ScreenContractSanityChecker(java.nio.file.Path.of("src/test/java/com/znsio/teswiz/screen"));
+
+        ScreenContractSanityChecker.ContractValidationResult landingResult =
+                checker.validateContract("com.znsio.teswiz.screen.googlesearch.GoogleSearchLandingScreen");
+        ScreenContractSanityChecker.ContractValidationResult resultsResult =
+                checker.validateContract("com.znsio.teswiz.screen.googlesearch.GoogleSearchResultsScreen");
+
+        assertThat(landingResult.violations()).isEmpty();
+        assertThat(resultsResult.violations()).isEmpty();
+    }
+
     public abstract static class ExampleContract {
         public abstract ExampleContract doSomething(String value);
     }

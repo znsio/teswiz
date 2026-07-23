@@ -8,9 +8,9 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Playwright TS local single-user web runs work
 - [x] Playwright TS local multi-user web runs work
 - [x] Playwright TS local mixed Android + web runs work
-- [x] TheApp invalid-login web flow uses explicit Java screen implementations for the `playwright-ts` engine instead of Selenium web screens
+- [x] TheApp invalid-login web flow uses first-class `playwright-ts` screen execution instead of Selenium web screens
 - [x] TheApp invalid-login Playwright path calls real worker-side TypeScript screen modules
-- [x] Google Search web flow uses explicit Java screen implementations for the `playwright-ts` engine instead of Selenium web screens
+- [x] Google Search web flow uses real worker-side TypeScript screen modules instead of Selenium web screens
 - [x] TheApp local single-user Playwright-TS validation passes through the first-class screen path
 - [x] TheApp local multi-user Playwright-TS validation passes through the first-class screen path
 - [x] Browser-config migration reporting and visible guidance are implemented
@@ -26,6 +26,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Focused browser-routing and web-engine tests pass
 - [x] Screen contracts can resolve implementations through centralized `ScreenRegistry.getScreen(...)`
 - [x] User-facing screen runtime and screen verification/reporting infrastructure now ship from `src/main`
+- [x] Framework-owned Playwright TS screen bridging removes the need for test-side Java adapter classes when a matching `.ts` screen module exists
 - [x] PDF validation now lives directly in the main-side visual framework instead of test-side screen overrides
 
 ## Milestone 1: Normalize package boundaries and reduce public surface area
@@ -45,16 +46,17 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 
 ## Milestone 2: Add first-class Playwright-engine screen implementations
 
-- [ ] Create explicit Java screen implementations for the Playwright-Java and `playwright-ts` web engines for the shared business contract, starting with TheApp flows
+- [ ] Create explicit Java screen implementations for the Playwright-Java web engine for the shared business contract, starting with TheApp flows
+- [x] Create framework-owned `playwright-ts` screen bridging for the shared business contract so users only implement the contract and matching `.ts` module
 - [ ] Retire the current Selenium-screen-through-Playwright compatibility path once equivalent first-class Java screen implementations for Playwright engines are in place
 - [ ] Remove reliance on automatic Selenium-to-Playwright mapping where Java screen implementations for Playwright engines exist
 - [x] Route screen creation via config-driven screen factories for TheApp web screens
-- [x] Add first explicit Java screen implementations for the `playwright-ts` web engine for the TheApp invalid-login flow
+- [x] Add first-class `playwright-ts` screen execution for the TheApp invalid-login flow
 - [x] Add the first real worker-side `.ts` screen modules and bridge them through the Java screen contract for TheApp invalid-login
-- [x] Rename current Java bridge classes to `...PlaywrightTsAdapter` so they are not confused with Playwright-Java implementations
+- [x] Remove test-side Java adapter classes where framework-owned `playwright-ts` screen bridging is available
 - [x] Add explicit Java screen implementations for the `playwright-ts` web engine for the TheApp file-upload flow
 - [x] Centralize contract-to-implementation resolution so screen `get()` methods stay one-line and non-breaking
-- [ ] Add screen contract compliance checks for supported platform/engine combinations
+- [x] Add screen contract compliance checks for supported platform/engine combinations
 - [ ] Add local single-user Selenium/Playwright parity tests for the shared screen contract
 - [ ] Keep Selenium screens working exactly as before while adding Java screen implementations for Playwright engines
 
@@ -68,9 +70,9 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 ## Milestone 4: Add missing-contract generation task
 
 - [x] Implement a separate Gradle command to enumerate missing contracts across supported platforms
-- [ ] Keep contract-generation intentionally separate from normal builds so it remains an explicit maintenance command
+- [x] Keep contract-generation intentionally separate from normal builds so it remains an explicit maintenance command
 - [x] Make the output suitable for a human-readable gap report
-- [ ] Keep this command opt-in and non-blocking for normal test runs
+- [x] Keep this command opt-in and non-blocking for normal test runs
 
 ## Milestone 5: Expand multi-user and multi-platform coverage
 
@@ -105,6 +107,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 ## Notes
 
 - The goal is to keep Selenium Java stable while first-class Playwright-Java and `playwright-ts` support grows.
+- For `playwright-ts`, the intended user model is: Java screen contract in `src/test`, matching `.ts` module under `playwright/screens`, and no extra Java adapter class.
 - Engine and provider namespaces should stay separate and easy to infer.
 - The compatibility adapter path is useful only as long as it helps bridge the transition to first-class Java screen implementations for Playwright engines.
 - This file should be updated whenever a milestone changes state so it remains the live implementation checklist.

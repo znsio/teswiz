@@ -54,6 +54,7 @@ class PlaywrightTsScreenBridgeFactoryTest {
                 .enterValue("framework-owned bridge");
 
         assertThat(screen.readValue()).isEqualTo("framework-owned bridge");
+        assertThat(screen.readValues()).containsExactly("framework-owned bridge", "framework-owned bridge-copy");
         assertThat(context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER)).isNotNull();
     }
 

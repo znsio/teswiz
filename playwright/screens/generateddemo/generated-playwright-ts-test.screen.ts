@@ -20,3 +20,8 @@ export async function readValue(screen: ScreenContext): Promise<string> {
   const currentValue = await screen.page.locator(LOCATORS.output).textContent();
   return currentValue?.trim() ?? "";
 }
+
+export async function readValues(screen: ScreenContext): Promise<string[]> {
+  const currentValue = await readValue(screen);
+  return [currentValue, `${currentValue}-copy`];
+}

@@ -8,6 +8,7 @@ import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 public final class PlaywrightTsScreenActionExecutor {
     private static final String SCREEN_ROUTE = "teswizScreenRoute";
@@ -58,6 +59,9 @@ public final class PlaywrightTsScreenActionExecutor {
         }
         if (isScreenContract(returnType)) {
             return adaptScreenResult(currentScreen, returnType, actionResult);
+        }
+        if (List.class.isAssignableFrom(returnType) && actionResult instanceof JSONArray jsonArray) {
+            return jsonArray.toList();
         }
         return actionResult;
     }
