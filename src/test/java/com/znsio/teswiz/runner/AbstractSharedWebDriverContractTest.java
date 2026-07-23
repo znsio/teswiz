@@ -104,6 +104,14 @@ abstract class AbstractSharedWebDriverContractTest {
         SharedWebDriverContract.assertBrowserLogs(driver, SharedWebDriverTestPages.writeConsoleLogPage());
     }
 
+    @Test
+    void shouldUploadFilesThroughFileInputs() throws Exception {
+        WebDriver driver = createDriver("upload-user");
+        java.nio.file.Path uploadFile = java.nio.file.Files.createTempFile("shared-upload-", ".txt");
+        java.nio.file.Files.writeString(uploadFile, "teswiz upload");
+        SharedWebDriverContract.assertFileUpload(driver, SharedWebDriverTestPages.writeFileUploadPage(), uploadFile);
+    }
+
     protected abstract SharedWebDriverFixture createFixture();
 
     private WebDriver createDriver(String userPersona) {

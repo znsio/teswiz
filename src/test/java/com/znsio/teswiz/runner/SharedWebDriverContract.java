@@ -204,6 +204,14 @@ final class SharedWebDriverContract {
         assertThat(driver.manage().logs().get(LogType.PERFORMANCE).getAll()).isEmpty();
     }
 
+    static void assertFileUpload(WebDriver driver, Path htmlFile, Path uploadFile) {
+        driver.get(htmlFile.toUri().toString());
+
+        driver.findElement(By.id("file")).sendKeys(uploadFile.toAbsolutePath().toString());
+
+        assertThat(driver.findElement(By.id("file-name")).getText()).isEqualTo(uploadFile.getFileName().toString());
+    }
+
     static void assertOpenShadowDomHandling(WebDriver driver, Path htmlFile) {
         driver.get(htmlFile.toUri().toString());
 

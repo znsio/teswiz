@@ -148,4 +148,30 @@ final class SharedWebDriverTestPages {
         Files.writeString(file, html);
         return file;
     }
+
+    static Path writeFileUploadPage() throws Exception {
+        String html = """
+                <!doctype html>
+                <html>
+                <head>
+                  <meta charset="UTF-8" />
+                  <title>Playwright Upload Bridge</title>
+                </head>
+                <body>
+                  <input id="file" type="file" />
+                  <div id="file-name">none</div>
+                  <script>
+                    const fileInput = document.getElementById('file');
+                    fileInput.addEventListener('change', () => {
+                      const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : 'none';
+                      document.getElementById('file-name').innerText = fileName;
+                    });
+                  </script>
+                </body>
+                </html>
+                """;
+        Path file = Files.createTempFile("shared-webdriver-upload-", ".html");
+        Files.writeString(file, html);
+        return file;
+    }
 }

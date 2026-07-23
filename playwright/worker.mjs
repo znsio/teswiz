@@ -176,6 +176,12 @@ async function countLocatorMatches(locator, timeoutMs = 0) {
   return locator.count();
 }
 
+async function isFileInput(locator) {
+  return locator.evaluate((node) => {
+    return node instanceof HTMLInputElement && node.type === "file";
+  }).catch(() => false);
+}
+
 function registerPage(session, page, pageId = `page-${randomUUID()}`) {
   for (const [existingHandle, existingPage] of session.pages.entries()) {
     if (existingPage === page) {
@@ -622,8 +628,12 @@ rl.on("line", async (line) => {
             value = true;
             break;
           case "type":
-            await locator.click();
-            await locator.pressSequentially(payload.value);
+            if (await isFileInput(locator)) {
+              await locator.setInputFiles(payload.value);
+            } else {
+              await locator.click();
+              await locator.pressSequentially(payload.value);
+            }
             value = true;
             break;
           case "clear":
