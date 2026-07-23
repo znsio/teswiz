@@ -107,7 +107,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 ## Notes
 
 - The goal is to keep Selenium Java stable while first-class Playwright-Java and `playwright-ts` support grows.
-- For `playwright-ts`, the intended user model is: Java screen contract in `src/test`, matching `.ts` module under `playwright/screens`, and no extra Java adapter class.
+- For `playwright-ts`, the intended user model is: Java screen contract in `src/test`, matching `.ts` module under `src/test/resources/playwright/screens`, and no extra Java adapter class.
 - Engine and provider namespaces should stay separate and easy to infer.
 - The compatibility adapter path is useful only as long as it helps bridge the transition to first-class Java screen implementations for Playwright engines.
 - This file should be updated whenever a milestone changes state so it remains the live implementation checklist.

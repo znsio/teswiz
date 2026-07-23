@@ -11,3 +11,4 @@ When working in this repository:
 - Keep changes focused and test-first when the task is a refactor or cleanup.
 - Prefer small, meaningfully named methods, variables, and classes.
 - Keep encapsulation tight; do not widen visibility unless there is a clear framework-facing need.
+- For `playwright-ts`, keep test-owned `.ts` screen modules under `src/test/resources/playwright/screens`.

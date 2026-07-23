@@ -98,6 +98,7 @@ Assumptions used by this architecture:
 * the screen contract stays stable across supported platform and engine combinations
 * the BL layer never calls TypeScript directly
 * Playwright-TS remains a Java-owned orchestration path with a TS worker at the execution boundary
+* test-owned Playwright-TS screen modules live under `src/test/resources/playwright/screens`
 * Selenium Java continues to work as it does today
 * multi-user and multi-platform routing remains persona/session-driven
 * engine-specific behavior belongs in engine-specific screen implementations, not in BL

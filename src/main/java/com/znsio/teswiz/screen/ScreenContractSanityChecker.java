@@ -55,7 +55,7 @@ public final class ScreenContractSanityChecker {
 
         if (hasPlaywrightTsModule) {
             violations.addAll(validatePlaywrightTsModule(contractClass).stream()
-                    .map(message -> "playwright/screens/" + moduleSupport.modulePathFor(contractClassName) + ": "
+                    .map(message -> "src/test/resources/playwright/screens/" + moduleSupport.modulePathFor(contractClassName) + ": "
                             + message)
                     .toList());
         }

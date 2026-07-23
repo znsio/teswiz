@@ -44,7 +44,7 @@ final class PlaywrightTsScreenModuleSupport {
         if (null == modulePath) {
             return Set.of();
         }
-        Path moduleFile = Path.of("playwright", "screens").resolve(modulePath);
+        Path moduleFile = resolveModuleFile(contractClassName);
         try {
             String fileContents = Files.readString(moduleFile);
             Matcher matcher = EXPORTED_FUNCTION_PATTERN.matcher(fileContents);
@@ -56,6 +56,15 @@ final class PlaywrightTsScreenModuleSupport {
         } catch (IOException exception) {
             throw new IllegalStateException("Unable to read Playwright TS screen module: " + moduleFile, exception);
         }
+    }
+
+    private Path resolveModuleFile(String contractClassName) {
+        String modulePath = expectedModulePathFor(contractClassName);
+        Path testResourcesModule = Path.of("src", "test", "resources", "playwright", "screens").resolve(modulePath);
+        if (Files.exists(testResourcesModule)) {
+            return testResourcesModule;
+        }
+        return Path.of("playwright", "screens").resolve(modulePath);
     }
 
     private String deriveModulePath(Class<?> contractClass) {

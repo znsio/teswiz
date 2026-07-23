@@ -8,7 +8,10 @@ import { chromium, firefox, webkit } from "playwright";
 const sessions = new Map();
 const browsers = new Map();
 const screenModules = new Map();
-const screenRootDirectory = path.resolve(process.cwd(), "playwright", "screens");
+const screenRootDirectories = [
+  path.resolve(process.cwd(), "src", "test", "resources", "playwright", "screens"),
+  path.resolve(process.cwd(), "playwright", "screens"),
+];
 
 function normalizeBrowserName(browserName) {
   switch ((browserName || "chromium").toLowerCase()) {
@@ -297,15 +300,37 @@ function errorResponse(requestId, action, message) {
 
 async function loadScreenModule(screenModulePath) {
   const normalizedPath = path.normalize(screenModulePath);
-  const absolutePath = path.resolve(screenRootDirectory, normalizedPath);
-  if (!absolutePath.startsWith(screenRootDirectory)) {
+  const candidatePaths = screenRootDirectories
+    .map((screenRootDirectory) => ({
+      rootDirectory: screenRootDirectory,
+      absolutePath: path.resolve(screenRootDirectory, normalizedPath),
+    }))
+    .filter(({ rootDirectory, absolutePath }) => absolutePath.startsWith(rootDirectory));
+
+  if (!candidatePaths.length) {
     throw new Error(`Invalid screen module path: ${screenModulePath}`);
   }
-  if (screenModules.has(absolutePath)) {
-    return screenModules.get(absolutePath);
+
+  const existingModule = await (async () => {
+    for (const candidate of candidatePaths) {
+      try {
+        await fs.access(candidate.absolutePath);
+        return candidate.absolutePath;
+      } catch {
+      }
+    }
+    return null;
+  })();
+
+  if (!existingModule) {
+    throw new Error(`Unable to find screen module: ${screenModulePath}`);
   }
-  const importedModule = await import(pathToFileURL(absolutePath).href);
-  screenModules.set(absolutePath, importedModule);
+
+  if (screenModules.has(existingModule)) {
+    return screenModules.get(existingModule);
+  }
+  const importedModule = await import(pathToFileURL(existingModule).href);
+  screenModules.set(existingModule, importedModule);
   return importedModule;
 }
 

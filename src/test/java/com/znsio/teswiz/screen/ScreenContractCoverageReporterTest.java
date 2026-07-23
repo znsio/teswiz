@@ -26,7 +26,7 @@ class ScreenContractCoverageReporterTest {
 
         assertThat(report.toDisplayString()).contains("GeneratedPlaywrightTsTestScreen");
         assertThat(report.toDisplayString())
-                .doesNotContain("playwright/screens/generateddemo/generated-playwright-ts-test.screen.ts");
+                .doesNotContain("src/test/resources/playwright/screens/generateddemo/generated-playwright-ts-test.screen.ts");
     }
 
     @Test
@@ -35,9 +35,9 @@ class ScreenContractCoverageReporterTest {
                 new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
 
         assertThat(report.toDisplayString())
-                .doesNotContain("playwright/screens/googlesearch/google-search-landing.screen.ts");
+                .doesNotContain("src/test/resources/playwright/screens/googlesearch/google-search-landing.screen.ts");
         assertThat(report.toDisplayString())
-                .doesNotContain("playwright/screens/googlesearch/google-search-results.screen.ts");
+                .doesNotContain("src/test/resources/playwright/screens/googlesearch/google-search-results.screen.ts");
     }
 
     @Test
@@ -49,7 +49,7 @@ class ScreenContractCoverageReporterTest {
                                 new ScreenContractCoverageReporter.TargetCoverage("android",
                                         "com.znsio.teswiz.screen.android.theapp.LoginScreenAndroid", true),
                                 new ScreenContractCoverageReporter.TargetCoverage("web-playwright-ts",
-                                        "playwright/screens/theapp/login.screen.ts",
+                                        "src/test/resources/playwright/screens/theapp/login.screen.ts",
                                         false)))));
 
         assertThat(report.toDisplayString()).contains("web-playwright-ts");
@@ -72,6 +72,6 @@ class ScreenContractCoverageReporterTest {
 
         assertThat(report.toDisplayString()).contains("AppLaunchScreen");
         assertThat(report.toDisplayString())
-                .doesNotContain("playwright/screens/theapp/app-launch.screen.ts");
+                .doesNotContain("src/test/resources/playwright/screens/theapp/app-launch.screen.ts");
     }
 }

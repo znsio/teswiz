@@ -13,6 +13,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Step definitions used by sample tests: `src/main/java/com/znsio/teswiz/steps`
 - Unit tests: `src/test/java/com/znsio/teswiz`
 - Feature files: `src/test/resources/com/znsio/teswiz/features`
+- Playwright TS test-owned screen modules: `src/test/resources/playwright/screens`
 - Execution configs: `configs/<app>/...`
 - Capability files: `caps/<app>/...`
 - Visual-testing docs: `docs/RunningVisualTests-README.md`

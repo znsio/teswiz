@@ -104,6 +104,7 @@ The dual-engine web support is intentionally organized behind internal support p
   * runtime screen resolution and user-invokable screen contract verification/reporting infrastructure
 
 For `WEB_ENGINE=playwright-ts`, teswiz uses the same Java BL and screen contracts, while the framework-owned `playwright-ts` bridge can delegate to worker-side TypeScript screen modules for Playwright-native behavior.
+Those test-owned TypeScript screen modules belong under `src/test/resources/playwright/screens`.
 
 * `com.znsio.teswiz.reporting`
   * scenario metadata publishing and engine-specific artifact reporting helpers
