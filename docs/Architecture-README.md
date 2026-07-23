@@ -102,6 +102,7 @@ Assumptions used by this architecture:
 * multi-user and multi-platform routing remains persona/session-driven
 * engine-specific behavior belongs in engine-specific screen implementations, not in BL
 * framework capabilities that are not real UI screens, such as PDF validation, should live in `src/main` framework classes rather than test-side screen contracts
+* runtime screen resolution and user-facing screen verification/reporting infrastructure should ship from `src/main`, while sample contracts and framework self-tests can remain in `src/test`
 
 ## Pattern matrix
 

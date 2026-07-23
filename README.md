@@ -100,8 +100,10 @@ The dual-engine web support is intentionally organized behind internal support p
   * Selenium web engine runtime internals
 * `com.znsio.teswiz.web.playwright`
   * Playwright TS worker bridge, driver, and session internals
+* `com.znsio.teswiz.screen`
+  * runtime screen resolution and user-invokable screen contract verification/reporting infrastructure
 
-For `WEB_ENGINE=playwright-ts`, teswiz uses the same Java BL and screen contracts, while the `playwright-ts` screen adapter can delegate to worker-side TypeScript screen modules for Playwright-native behavior.
+For `WEB_ENGINE=playwright-ts`, teswiz uses the same Java BL and screen contracts, while the framework-owned `playwright-ts` bridge can delegate to worker-side TypeScript screen modules for Playwright-native behavior.
 
 * `com.znsio.teswiz.reporting`
   * scenario metadata publishing and engine-specific artifact reporting helpers
@@ -112,6 +114,7 @@ For client projects, the intent is:
 
 * keep depending on the stable `runner` entry points unless explicitly documented otherwise
 * treat the packages above as internal implementation packages that may evolve as dual-engine support grows
+* keep user-authored sample/app test assets in `src/test`, while framework runtime and user-invokable verification/reporting infrastructure ship from `src/main`
 
 The architecture diagram and flow are documented in [`docs/Architecture-README.md`](docs/Architecture-README.md).
 
