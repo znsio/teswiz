@@ -103,6 +103,17 @@ class ScreenContractSanityCheckerTest {
         assertThat(inAMeetingResult.violations()).isEmpty();
     }
 
+    @Test
+    void shouldValidateMigratedScreenshotTsModuleAgainstContract() {
+        ScreenContractSanityChecker checker =
+                new ScreenContractSanityChecker(java.nio.file.Path.of("src/test/java/com/znsio/teswiz/screen"));
+
+        ScreenContractSanityChecker.ContractValidationResult result =
+                checker.validateContract("com.znsio.teswiz.screen.ScreenShotScreen");
+
+        assertThat(result.violations()).isEmpty();
+    }
+
     public abstract static class ExampleContract {
         public abstract ExampleContract doSomething(String value);
     }

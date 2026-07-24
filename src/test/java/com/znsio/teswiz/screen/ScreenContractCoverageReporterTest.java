@@ -67,6 +67,15 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldTreatMigratedScreenshotTsModuleAsImplementedTarget() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("src/test/resources/playwright/screens/screen-shot.screen.ts");
+    }
+
+    @Test
     void shouldReportMissingTargetsForContract() {
         ScreenContractCoverageReporter.CoverageReport report = new ScreenContractCoverageReporter.CoverageReport(List.of(
                 new ScreenContractCoverageReporter.ContractCoverage(
