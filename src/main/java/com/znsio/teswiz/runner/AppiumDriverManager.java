@@ -427,17 +427,21 @@ public class AppiumDriverManager {
             LOGGER.info(logMessage);
             ReportPortalLogger.logDebugMessage(logMessage);
 
-            androidDriver.terminateApp(appPackageName);
-            stopAppiumDriver();
-            applicationState = androidDriver.queryAppState(appPackageName);
+            applicationState = terminateAndroidApp(androidDriver, appPackageName);
             logMessage = String.format("App: '%s' Application state after closing app: '%s'%n", appPackageName,
                     applicationState);
             LOGGER.info(logMessage);
+            stopAppiumDriver();
         } catch (NoSuchSessionException e) {
             logMessage = e.getMessage();
             LOGGER.info(logMessage);
         }
         ReportPortalLogger.logDebugMessage(logMessage);
+    }
+
+    static ApplicationState terminateAndroidApp(AndroidDriver androidDriver, String appPackageName) {
+        androidDriver.terminateApp(appPackageName);
+        return androidDriver.queryAppState(appPackageName);
     }
 
     private static void attachDeviceLogsToReportPortal(String userPersona) {
