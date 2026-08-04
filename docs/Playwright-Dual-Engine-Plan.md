@@ -60,7 +60,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Add explicit Java screen implementations for the `playwright-ts` web engine for the TheApp file-upload flow
 - [x] Centralize contract-to-implementation resolution so screen `get()` methods stay one-line and non-breaking
 - [x] Add screen contract compliance checks for supported platform/engine combinations
-- [ ] Add local single-user Selenium/Playwright parity tests for the shared screen contract
+- [x] Add local single-user Selenium/Playwright parity tests for the shared screen contract
 - [ ] Keep Selenium screens working exactly as before while adding Java screen implementations for Playwright engines
 
 ## Milestone 3: Add explicit Gradle contract sanity check
