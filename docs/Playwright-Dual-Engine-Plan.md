@@ -7,8 +7,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] `WEB_ENGINE` is explicit in checked-in configs and report metadata
 - [x] Playwright TS local single-user web runs work
 - [x] Playwright TS local multi-user web runs work
-- [ ] Playwright TS local mixed Android + web runs work
-- [ ] Local mixed Android + web validation is currently blocked by `adb devices` returning no visible devices in the execution environment
+- [x] Playwright TS local mixed Android + web runs work
 - [x] TheApp invalid-login web flow uses first-class `playwright-ts` screen execution instead of Selenium web screens
 - [x] TheApp invalid-login Playwright path calls real worker-side TypeScript screen modules
 - [x] Google Search web flow uses real worker-side TypeScript screen modules instead of Selenium web screens
@@ -87,7 +86,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [ ] Verify persona switching and cleanup behavior under both single-user and multi-user runs
 - [x] Validate a local `playwright-ts` single-user web scenario end to end (`@theapp2 and @invalidLogin1 and @playwright-phase1`)
 - [x] Validate a local `playwright-ts` web-web multi-user scenario end to end (`@multiuser-web and @theapp7 and @playwright-phase1`)
-- [ ] Validate a local Android + `playwright-ts` web mixed scenario end to end (`@multiuser-android-web and @theapp5 and @playwright-phase1`)
+- [x] Validate a local Android + `playwright-ts` web mixed scenario end to end (`@multiuser-android-web and @theapp5 and @playwright-phase1`)
 
 ## Milestone 6: Visual and reporting parity
 
