@@ -49,6 +49,7 @@ public final class ScreenImplementationResolver {
     private static String webPackageSegment(WebEngine webEngine) {
         return switch (webEngine) {
             case SELENIUM -> "web";
+            case PLAYWRIGHT_JAVA -> "web.playwrightjava";
             case PLAYWRIGHT_TS -> "web.playwright";
         };
     }
@@ -61,6 +62,7 @@ public final class ScreenImplementationResolver {
             case pdf -> "PDF";
             case web, electron -> switch (webEngine) {
                 case SELENIUM -> "Web";
+                case PLAYWRIGHT_JAVA -> "PlaywrightJava";
                 case PLAYWRIGHT_TS -> "PlaywrightTsAdapter";
             };
             default -> throw new NotImplementedException("Unsupported platform: " + platform);

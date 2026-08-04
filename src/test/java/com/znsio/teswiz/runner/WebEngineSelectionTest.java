@@ -31,4 +31,13 @@ class WebEngineSelectionTest {
 
         assertThat(Runner.getWebEngine()).isEqualTo(WebEngine.PLAYWRIGHT_TS);
     }
+
+    @Test
+    void shouldAllowSelectingPlaywrightJavaFromSystemPropertyOverride() {
+        System.setProperty("WEB_ENGINE", "playwright-java");
+        Setup.load(CONFIG_FILE);
+        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+
+        assertThat(Runner.getWebEngine()).isEqualTo(WebEngine.PLAYWRIGHT_JAVA);
+    }
 }

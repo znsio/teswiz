@@ -6,6 +6,7 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 
 public enum WebEngine {
     SELENIUM("selenium"),
+    PLAYWRIGHT_JAVA("playwright-java"),
     PLAYWRIGHT_TS("playwright-ts");
 
     private final String configValue;
@@ -23,7 +24,7 @@ public enum WebEngine {
                 .filter(engine -> engine.configValue.equalsIgnoreCase(rawValue))
                 .findFirst()
                 .orElseThrow(() -> new InvalidTestDataException(
-                        String.format("Unsupported WEB_ENGINE: '%s'. Supported values are: selenium, playwright-ts",
+                        String.format("Unsupported WEB_ENGINE: '%s'. Supported values are: selenium, playwright-java, playwright-ts",
                                 rawValue)));
     }
 }

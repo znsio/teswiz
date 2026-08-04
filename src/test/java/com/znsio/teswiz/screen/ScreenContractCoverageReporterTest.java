@@ -20,6 +20,15 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldBuildExpectedClassNameForPlaywrightJavaWeb() {
+        String expectedClassName = ScreenImplementationTarget.WEB_PLAYWRIGHT_JAVA
+                .expectedClassName("com.znsio.teswiz.screen.theapp.LoginScreen");
+
+        assertThat(expectedClassName)
+                .isEqualTo("com.znsio.teswiz.screen.web.playwrightjava.theapp.LoginScreenPlaywrightJava");
+    }
+
+    @Test
     void shouldTreatPlaywrightTsModuleAsImplementedTarget() throws IOException {
         ScreenContractCoverageReporter.CoverageReport report =
                 new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();

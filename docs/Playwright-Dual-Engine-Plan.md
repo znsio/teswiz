@@ -49,6 +49,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 
 ## Milestone 2: Add first-class Playwright-engine screen implementations
 
+- [x] Model `playwright-java` as an explicit web engine in core engine selection, screen-target naming, and browser-manager routing
 - [ ] Create explicit Java screen implementations for the Playwright-Java web engine for the shared business contract, starting with TheApp flows
 - [x] Create framework-owned `playwright-ts` screen bridging for the shared business contract so users only implement the contract and matching `.ts` module
 - [ ] Retire the current Selenium-screen-through-Playwright compatibility path once equivalent first-class Java screen implementations for Playwright engines are in place
@@ -61,6 +62,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Centralize contract-to-implementation resolution so screen `get()` methods stay one-line and non-breaking
 - [x] Add screen contract compliance checks for supported platform/engine combinations
 - [x] Add local single-user Selenium/Playwright parity tests for the shared screen contract
+- [ ] Replace the temporary `playwright-java` fail-fast runtime seam with a real Playwright-Java browser session implementation
 - [ ] Keep Selenium screens working exactly as before while adding Java screen implementations for Playwright engines
 
 ## Milestone 3: Add explicit Gradle contract sanity check

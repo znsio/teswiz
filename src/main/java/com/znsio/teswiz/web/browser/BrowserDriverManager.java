@@ -9,6 +9,7 @@ import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.web.WebEngine;
+import com.znsio.teswiz.web.playwright.PlaywrightJavaDriverManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
 import com.znsio.teswiz.web.selenium.SeleniumDriverManager;
@@ -32,6 +33,9 @@ public final class BrowserDriverManager {
         switch (webEngine) {
             case SELENIUM:
                 return SeleniumDriverManager.createWebSessionForUser(userPersona, browserName, forPlatform, context);
+            case PLAYWRIGHT_JAVA:
+                return PlaywrightJavaDriverManager.createWebSessionForUser(userPersona, browserName, forPlatform,
+                        context);
             case PLAYWRIGHT_TS:
                 return createPlaywrightWebSessionForUser(userPersona, browserName, forPlatform, context,
                         playwrightWorkerManager);
@@ -45,6 +49,9 @@ public final class BrowserDriverManager {
         switch (Runner.getWebEngine()) {
             case SELENIUM:
                 SeleniumDriverManager.closeWebDriver(userPersona, driver);
+                break;
+            case PLAYWRIGHT_JAVA:
+                PlaywrightJavaDriverManager.closeWebDriver(userPersona, driver);
                 break;
             case PLAYWRIGHT_TS:
                 closePlaywrightWebDriver(driver);

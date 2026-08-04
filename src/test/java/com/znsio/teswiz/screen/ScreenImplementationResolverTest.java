@@ -28,6 +28,15 @@ class ScreenImplementationResolverTest {
     }
 
     @Test
+    void shouldBuildPlaywrightJavaConventionForWebScreen() {
+        String expectedImplementation = ScreenImplementationTarget.WEB_PLAYWRIGHT_JAVA
+                .expectedClassName(AppLaunchScreen.class.getName());
+
+        assertThat(expectedImplementation)
+                .isEqualTo("com.znsio.teswiz.screen.web.playwrightjava.theapp.AppLaunchScreenPlaywrightJava");
+    }
+
+    @Test
     void shouldResolveAndroidConventionForMobileScreen() {
         Class<? extends AppLaunchScreen> implementationClass = ScreenImplementationResolver.resolve(
                 AppLaunchScreen.class, Platform.android, null);

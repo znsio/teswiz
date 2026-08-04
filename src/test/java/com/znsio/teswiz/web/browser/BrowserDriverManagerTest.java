@@ -1,6 +1,7 @@
 package com.znsio.teswiz.web.browser;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -84,8 +85,30 @@ class BrowserDriverManagerTest {
         assertThat(workerClient.wasClosed()).isTrue();
     }
 
+    @Test
+    void shouldFailFastForPlaywrightJavaUntilRuntimeIsImplemented() throws Exception {
+        enablePlaywrightJavaHeadless();
+        TestExecutionContext context = createContext("browser-manager-playwright-java");
+        UserPersonaDetails userPersonaDetails = (UserPersonaDetails) context
+                .getTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS);
+        userPersonaDetails.addAppName("buyer", Runner.DEFAULT);
+
+        assertThatThrownBy(() -> BrowserDriverManager.createWebSessionForUser(
+                "buyer", "chrome", Platform.web, context))
+                .hasMessageContaining("WEB_ENGINE=playwright-java is recognized")
+                .hasMessageContaining("not implemented yet");
+    }
+
     private void enablePlaywrightHeadless() {
         System.setProperty("WEB_ENGINE", "playwright-ts");
+        System.setProperty("HEADLESS", "true");
+        Setup.load(CONFIG_FILE);
+        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+        Setup.getExecutionArguments();
+    }
+
+    private void enablePlaywrightJavaHeadless() {
+        System.setProperty("WEB_ENGINE", "playwright-java");
         System.setProperty("HEADLESS", "true");
         Setup.load(CONFIG_FILE);
         Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
