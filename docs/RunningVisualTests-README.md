@@ -107,6 +107,9 @@ Override it at runtime when you want to validate the same web flow on a Playwrig
 * `WEB_ENGINE=playwright-java`
 * `WEB_ENGINE=playwright-ts`
 
+Internally, Selenium web runs continue to use the Selenium Eyes path, while Playwright web runs use the Playwright-specific image-based visual adapter path.
+This keeps the checked-in Selenium behavior stable while allowing Playwright-specific visual execution to evolve independently.
+
 * `WEB_ENGINE=selenium`
   * uses the Selenium Applitools SDK path
   * supports Ultrafast Grid (`useUFG`) as documented above
