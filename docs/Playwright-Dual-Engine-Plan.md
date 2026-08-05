@@ -106,6 +106,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Keep Selenium Eyes behavior unchanged
 - [x] Ensure engine, provider, platform, persona, and session metadata are visible in reports
 - [x] Aggregate provider-native cloud session ids and report URLs into the cucumber HTML report metadata
+- [x] Emit provider-native web cloud report links into ReportPortal through the shared scenario reporting path
 
 ## Milestone 7: Cloud execution parity
 

@@ -288,6 +288,7 @@ Current reporting behavior includes:
 * `scenario-session-metadata.json` for per-scenario session metadata
 * `scenario-session-summary.txt` for quick human-readable session summaries
 * shared publication of Playwright trace, HAR, and console artifacts
+* ReportPortal log messages for web cloud provider report links when session metadata includes provider-native report details
 * HTML report classifications aggregated from scenario metadata, including personas, platforms, engines, providers,
   and when available, provider-native cloud session ids and provider report URLs
 

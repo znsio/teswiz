@@ -4,6 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.JavascriptExecutor;
 
+import com.znsio.teswiz.session.SessionHandle;
+
+import java.util.Optional;
+
 public final class LambdaTestWebExecutionProvider implements WebExecutionProvider {
     private static final Logger LOGGER = LogManager.getLogger(LambdaTestWebExecutionProvider.class.getName());
 
@@ -32,5 +36,20 @@ public final class LambdaTestWebExecutionProvider implements WebExecutionProvide
         } catch (RuntimeException e) {
             LOGGER.warn("Unable to set LambdaTest session status using executor command: {}", e.getMessage());
         }
+    }
+
+    @Override
+    public Optional<String> buildReportMessage(SessionHandle sessionHandle) {
+        String reportUrl = sessionHandle.metadata().get("providerReportUrl");
+        if (null == reportUrl || reportUrl.isBlank()) {
+            String providerSessionId = sessionHandle.metadata().get("providerSessionId");
+            if (null != providerSessionId && !providerSessionId.isBlank()) {
+                reportUrl = "https://automation.lambdatest.com/logs/?sessionID=" + providerSessionId;
+            }
+        }
+        if (null == reportUrl || reportUrl.isBlank()) {
+            return Optional.empty();
+        }
+        return Optional.of("LambdaTest Report link available here: " + reportUrl);
     }
 }

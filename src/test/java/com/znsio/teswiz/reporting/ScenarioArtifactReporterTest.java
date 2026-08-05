@@ -134,6 +134,58 @@ class ScenarioArtifactReporterTest {
     }
 
     @Test
+    void shouldPublishWebCloudReportLinksThroughTheSharedReportingPath() throws Exception {
+        TestExecutionContext context = new TestExecutionContext("web-cloud-report-links");
+        Path scenarioDir = Files.createTempDirectory("web-cloud-report-links");
+        context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioDir.toString());
+        context.addTestState(TEST_CONTEXT.NORMALISED_SCENARIO_NAME, "web-cloud-report-links");
+        context.addTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT, 1);
+
+        UserPersonaDetails userPersonaDetails = new UserPersonaDetails();
+        userPersonaDetails.addSessionHandle("buyer", new SessionHandle(
+                "buyer",
+                Platform.web,
+                "playwright-ts",
+                "playwright-session-1",
+                scenarioDir.toString(),
+                Map.of(
+                        "provider", "browserstack",
+                        "providerReportUrl", "https://browserstack.example/session/bs-session-1")));
+        userPersonaDetails.addSessionHandle("seller", new SessionHandle(
+                "seller",
+                Platform.web,
+                "playwright-java",
+                "playwright-session-2",
+                scenarioDir.toString(),
+                Map.of(
+                        "provider", "lambdatest",
+                        "providerSessionId", "lt-session-1")));
+        userPersonaDetails.addSessionHandle("approver", new SessionHandle(
+                "approver",
+                Platform.android,
+                "appium",
+                "appium-session-1",
+                scenarioDir.toString(),
+                Map.of(
+                        "provider", "browserstack",
+                        "providerReportUrl", "https://browserstack.example/mobile-session")));
+
+        List<PublishedArtifact> publishedArtifacts = new ArrayList<>();
+        List<String> reportMessages = new ArrayList<>();
+
+        ScenarioArtifactReporter.publish(context, userPersonaDetails,
+                (message, artifact) -> publishedArtifacts.add(new PublishedArtifact(message, artifact.toPath())),
+                reportMessages::add);
+
+        assertThat(publishedArtifacts).isNotEmpty();
+        assertThat(reportMessages)
+                .contains("BrowserStack Report link available here: https://browserstack.example/session/bs-session-1")
+                .contains("LambdaTest Report link available here: https://automation.lambdatest.com/logs/?sessionID=lt-session-1");
+        assertThat(reportMessages)
+                .noneMatch(message -> message.contains("mobile-session"));
+    }
+
+    @Test
     void shouldWriteAggregatedScenarioMetadataForMixedSessions() throws Exception {
         TestExecutionContext context = new TestExecutionContext("mixed-reporting-parity");
         Path scenarioDir = Files.createTempDirectory("mixed-scenario-artifacts");

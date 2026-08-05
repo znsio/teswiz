@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,11 +19,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.session.UserPersonaDetails;
 import com.znsio.teswiz.tools.ReportPortalLogger;
+import com.znsio.teswiz.web.provider.WebExecutionProvider;
+import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
 
 public final class ScenarioArtifactReporter {
     private static final Logger LOGGER = LogManager.getLogger(ScenarioArtifactReporter.class.getName());
@@ -36,20 +40,29 @@ public final class ScenarioArtifactReporter {
             "-trace.zip",
             "-network.har",
             "-console.log");
+    private static final WebExecutionProviderResolver WEB_EXECUTION_PROVIDER_RESOLVER = new WebExecutionProviderResolver();
 
     private ScenarioArtifactReporter() {
     }
 
     public static Path publish(TestExecutionContext context, UserPersonaDetails userPersonaDetails) {
-        return publish(context, userPersonaDetails, ReportPortalLogger::attachFileInReportPortal);
+        return publish(context, userPersonaDetails, ReportPortalLogger::attachFileInReportPortal,
+                ReportPortalLogger::logInfoMessage);
     }
 
     static Path publish(TestExecutionContext context, UserPersonaDetails userPersonaDetails,
             ScenarioArtifactPublisher artifactPublisher) {
+        return publish(context, userPersonaDetails, artifactPublisher, message -> {
+        });
+    }
+
+    static Path publish(TestExecutionContext context, UserPersonaDetails userPersonaDetails,
+            ScenarioArtifactPublisher artifactPublisher, Consumer<String> reportMessagePublisher) {
         Path metadataFile = writeScenarioMetadata(context, userPersonaDetails);
         Path summaryFile = writeScenarioSummary(context, userPersonaDetails);
         publishArtifact("Scenario session metadata", metadataFile.toFile(), artifactPublisher);
         publishArtifact("Scenario session summary", summaryFile.toFile(), artifactPublisher);
+        publishWebCloudReportMessages(userPersonaDetails, reportMessagePublisher);
         for (Path artifact : discoverVisualArtifacts(context)) {
             publishArtifact("Visual artifact: " + artifact.getFileName(), artifact.toFile(), artifactPublisher);
         }
@@ -58,6 +71,17 @@ public final class ScenarioArtifactReporter {
                     artifact.path().toFile(), artifactPublisher);
         }
         return metadataFile;
+    }
+
+    private static void publishWebCloudReportMessages(UserPersonaDetails userPersonaDetails,
+            Consumer<String> reportMessagePublisher) {
+        for (SessionHandle sessionHandle : userPersonaDetails.getAllAssignedUserPersonasAndSessionHandles().values()) {
+            if (!isWebSession(sessionHandle)) {
+                continue;
+            }
+            resolveWebExecutionProvider(sessionHandle).buildReportMessage(sessionHandle)
+                    .ifPresent(reportMessagePublisher);
+        }
     }
 
     private static void publishArtifact(String message, File artifact, ScenarioArtifactPublisher artifactPublisher) {
@@ -223,6 +247,14 @@ public final class ScenarioArtifactReporter {
 
     private static boolean isPlaywrightEngine(String engine) {
         return "playwright-ts".equalsIgnoreCase(engine) || "playwright-java".equalsIgnoreCase(engine);
+    }
+
+    private static boolean isWebSession(SessionHandle sessionHandle) {
+        return sessionHandle.platform() == Platform.web;
+    }
+
+    private static WebExecutionProvider resolveWebExecutionProvider(SessionHandle sessionHandle) {
+        return WEB_EXECUTION_PROVIDER_RESOLVER.resolve(sessionHandle.metadata().get("provider"));
     }
 
     private static String getSessionProvider(SessionHandle sessionHandle) {

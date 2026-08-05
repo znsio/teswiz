@@ -152,6 +152,10 @@ Reports will be uploaded to reportportal.io, that you would need to setup separa
 src/test/resources/reportportal.properties file or provide the path to the file using this environment
 variable: `REPORT_PORTAL_FILE`
 
+For web cloud runs, teswiz now also emits provider report-link messages into ReportPortal when the session metadata
+contains provider-native report details, so BrowserStack and LambdaTest Playwright runs expose direct execution links
+alongside the shared scenario/session artifacts.
+
 The generated Cucumber HTML report includes `WEB_ENGINE` in its execution metadata so the selected web engine is visible in the report.
 For runs that publish `scenario-session-metadata.json`, the HTML report also aggregates session personas/platforms/engines/providers,
 and when available, provider-native cloud session ids and provider report URLs.

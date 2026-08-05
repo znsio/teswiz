@@ -5,6 +5,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.JavascriptExecutor;
 
+import com.znsio.teswiz.session.SessionHandle;
+
+import java.util.Optional;
+
 public final class BrowserStackWebExecutionProvider implements WebExecutionProvider {
     private static final Logger LOGGER = LogManager.getLogger(BrowserStackWebExecutionProvider.class.getName());
 
@@ -42,5 +46,14 @@ public final class BrowserStackWebExecutionProvider implements WebExecutionProvi
         } catch (RuntimeException e) {
             LOGGER.warn("Unable to set BrowserStack session status using executor command: {}", e.getMessage());
         }
+    }
+
+    @Override
+    public Optional<String> buildReportMessage(SessionHandle sessionHandle) {
+        String reportUrl = sessionHandle.metadata().get("providerReportUrl");
+        if (null == reportUrl || reportUrl.isBlank()) {
+            return Optional.empty();
+        }
+        return Optional.of("BrowserStack Report link available here: " + reportUrl);
     }
 }

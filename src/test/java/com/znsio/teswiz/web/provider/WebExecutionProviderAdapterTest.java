@@ -7,6 +7,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.JavascriptExecutor;
 
+import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.session.SessionHandle;
+
+import java.util.Map;
+
 class WebExecutionProviderAdapterTest {
     @AfterEach
     void cleanUp() {
@@ -40,6 +45,36 @@ class WebExecutionProviderAdapterTest {
                 .updateSessionStatus(failingExecutor, "failed", "Assertion failure"));
         assertThatNoException().isThrownBy(() -> new LambdaTestWebExecutionProvider()
                 .updateSessionName(failingExecutor, "sample-test"));
+    }
+
+    @Test
+    void shouldBuildProviderSpecificWebReportMessages() {
+        assertThat(new BrowserStackWebExecutionProvider().buildReportMessage(new SessionHandle(
+                "buyer",
+                Platform.web,
+                "playwright-ts",
+                "session-1",
+                "/tmp/artifacts",
+                Map.of("providerReportUrl", "https://browserstack.example/session-1"))))
+                .hasValue("BrowserStack Report link available here: https://browserstack.example/session-1");
+
+        assertThat(new LambdaTestWebExecutionProvider().buildReportMessage(new SessionHandle(
+                "seller",
+                Platform.web,
+                "playwright-java",
+                "session-2",
+                "/tmp/artifacts",
+                Map.of("providerSessionId", "lt-session-1"))))
+                .hasValue("LambdaTest Report link available here: https://automation.lambdatest.com/logs/?sessionID=lt-session-1");
+
+        assertThat(new LocalWebExecutionProvider().buildReportMessage(new SessionHandle(
+                "guest",
+                Platform.web,
+                "selenium",
+                "session-3",
+                "/tmp/artifacts",
+                Map.of())))
+                .isEmpty();
     }
 
     private static final class FailingJavascriptExecutor implements JavascriptExecutor {
