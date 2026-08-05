@@ -106,4 +106,47 @@ class CustomReportsTest {
                 .containsEntry("SESSION_PROVIDER_REPORT_URLS",
                         "https://automation.lambdatest.com/logs/?sessionID=lt-session-1, https://browserstack.example/session/bs-session-1");
     }
+
+    @Test
+    void shouldAggregateSeleniumProviderSessionMetadataIntoCustomReportMetadata() throws Exception {
+        Path reportsDir = Files.createTempDirectory("custom-reports-selenium-provider-metadata");
+        Path scenarioDir = Files.createDirectories(reportsDir.resolve("scenario-1"));
+        Files.writeString(scenarioDir.resolve("scenario-session-metadata.json"), """
+                {
+                  "engines": ["selenium"],
+                  "providers": ["browserstack", "lambdatest"],
+                  "sessions": [
+                    {
+                      "userPersona": "buyer",
+                      "engine": "selenium",
+                      "metadata": {
+                        "providerSessionId": "bs-selenium-session-1",
+                        "providerReportUrl": "https://browserstack.example/session/bs-selenium-session-1"
+                      }
+                    },
+                    {
+                      "userPersona": "seller",
+                      "engine": "selenium",
+                      "metadata": {
+                        "providerSessionId": "lt-selenium-session-1",
+                        "providerReportUrl": "https://automation.lambdatest.com/logs/?sessionID=lt-selenium-session-1"
+                      }
+                    }
+                  ]
+                }
+                """);
+
+        Setup.load(CONFIG_FILE);
+        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+        Setup.getExecutionArguments();
+
+        HashMap<String, Object> metadata = CustomReports.buildTestRunMetadata(reportsDir.toString());
+
+        assertThat(metadata)
+                .containsEntry("SESSION_ENGINES", "selenium")
+                .containsEntry("SESSION_PROVIDERS", "browserstack, lambdatest")
+                .containsEntry("SESSION_PROVIDER_SESSION_IDS", "bs-selenium-session-1, lt-selenium-session-1")
+                .containsEntry("SESSION_PROVIDER_REPORT_URLS",
+                        "https://automation.lambdatest.com/logs/?sessionID=lt-selenium-session-1, https://browserstack.example/session/bs-selenium-session-1");
+    }
 }
