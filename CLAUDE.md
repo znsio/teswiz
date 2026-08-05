@@ -15,5 +15,6 @@ When working in this repository:
 - Prefer internal mobile device-session state under `com.znsio.teswiz.mobile.session` instead of growing `runner`.
 - Prefer local mobile device and simulator setup under `com.znsio.teswiz.mobile.device` instead of growing `runner`.
 - Prefer internal Appium server lifecycle code under `com.znsio.teswiz.mobile.server` instead of growing `runner`.
+- Prefer mobile cloud setup and cleanup routing under `com.znsio.teswiz.mobile.provider` instead of growing `runner`.
 - For stricter screen-contract audits, use `./gradlew verifyScreenContracts -PincludeMissingScreenTargets=true`.
 - Prefer serial focused Gradle verification runs on the same checkout; parallel independent Gradle invocations can produce misleading failures because they share build outputs and intermediates.

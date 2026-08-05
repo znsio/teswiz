@@ -65,6 +65,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Local mobile device and simulator setup belongs in `com.znsio.teswiz.mobile.device`; keep `runner` compatibility wrappers only when they help avoid a breaking change.
 - Mobile Appium server lifecycle and hub URL normalization belong in `com.znsio.teswiz.mobile.server`; keep `runner` compatibility wrappers only when they help avoid a breaking change.
 - Mobile cloud capability shaping helpers belong in `com.znsio.teswiz.mobile.provider`; keep `runner` setup classes as compatibility delegates unless a breaking change is intentional.
+- Mobile cloud setup and cleanup routing should also prefer `com.znsio.teswiz.mobile.provider` when `runner` only needs to delegate orchestration.
 - Mobile cloud upload/parsing helpers should also prefer `com.znsio.teswiz.mobile.provider` when they can be extracted as pure provider logic.
 - If a change affects these boundaries, update:
   - `README.md`

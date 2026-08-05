@@ -2,6 +2,7 @@ package com.znsio.teswiz.runner;
 
 import com.google.gson.internal.LinkedTreeMap;
 import com.znsio.teswiz.mobile.device.LocalMobileDeviceSetup;
+import com.znsio.teswiz.mobile.provider.MobileCloudExecutionManager;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
@@ -42,9 +43,15 @@ class DeviceSetup {
     private static final String DEFAULT_TEMP_SAMPLE_APP_DIRECTORY =
             System.getProperty("user.dir") + File.separator +
                     "temp" + File.separator + "sampleApps";
-    private static final String CLOUD_NAME_NOT_SUPPORTED_MESSAGE = "Provided cloudName: '%s' is not supported";
     private static final String CUCUMBER_SCENARIO_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioListener";
     private static final String CUCUMBER_SCENARIO_REPORTER_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioReporterListener";
+    private static final MobileCloudExecutionManager MOBILE_CLOUD_EXECUTION_MANAGER =
+            new MobileCloudExecutionManager(
+                    BrowserStackSetup::updateBrowserStackCapabilities,
+                    LambdaTestSetup::updateLambdaTestCapabilities,
+                    HeadSpinSetup::updateHeadspinCapabilities,
+                    PCloudySetup::updatePCloudyCapabilities,
+                    BrowserStackSetup::cleanUp);
 
     private DeviceSetup() {
         LOGGER.debug("DeviceSetup - private constructor");
@@ -246,28 +253,7 @@ class DeviceSetup {
 
     static void setupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
-        String deviceLabURL;
-        switch (cloudName.toLowerCase()) {
-            case "headspin":
-                deviceLabURL = getCloudApiUrlFromCapabilities();
-                HeadSpinSetup.updateHeadspinCapabilities(deviceLabURL);
-                break;
-            case "pcloudy":
-                deviceLabURL = getCloudApiUrlFromCapabilities();
-                PCloudySetup.updatePCloudyCapabilities(deviceLabURL);
-                break;
-            case "browserstack":
-                deviceLabURL = getCloudApiUrlFromCapabilities();
-                BrowserStackSetup.updateBrowserStackCapabilities(deviceLabURL);
-                break;
-            case "lambdatest":
-                deviceLabURL = getCloudApiUrlFromCapabilities();
-                LambdaTestSetup.updateLambdaTestCapabilities(deviceLabURL);
-                break;
-            default:
-                throw new InvalidTestDataException(
-                    String.format(CLOUD_NAME_NOT_SUPPORTED_MESSAGE, cloudName));
-        }
+        MOBILE_CLOUD_EXECUTION_MANAGER.setupCloudExecution(cloudName, getCloudApiUrlFromCapabilities());
         Setup.addToConfigs(EXECUTED_ON, cloudName);
     }
 
@@ -384,23 +370,7 @@ class DeviceSetup {
 
     static void cleanupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
-        switch (cloudName.toLowerCase()) {
-            case "browserstack":
-                BrowserStackSetup.cleanUp();
-                break;
-            case "headspin":
-            case "pcloudy":
-            case "lambdatest":
-            case "saucelabs":
-                LOGGER.info(String.format("No cleanup required for cloud: '%s'", cloudName));
-                break;
-            case "docker":
-                LOGGER.info(String.format("No cleanup required for: '%s'", cloudName));
-                break;
-            default:
-                throw new InvalidTestDataException(
-                        String.format(CLOUD_NAME_NOT_SUPPORTED_MESSAGE, cloudName));
-        }
+        MOBILE_CLOUD_EXECUTION_MANAGER.cleanupCloudExecution(cloudName);
     }
 
     static ArrayList<String> setupIOSExecution()  {

@@ -187,11 +187,13 @@ Current examples:
 
 ### `com.znsio.teswiz.mobile.provider`
 
-Owns provider-aware mobile execution behavior extracted from Appium orchestration, starting with cloud report-link publication.
+Owns provider-aware mobile execution behavior extracted from Appium orchestration, including cloud setup,
+cleanup, capability shaping, upload helpers, and report-link publication.
 
 Current examples:
 
 * `MobileExecutionProvider`
+* `MobileCloudExecutionManager`
 
 ### `com.znsio.teswiz.mobile.session`
 

@@ -93,7 +93,7 @@ The dual-engine web support is intentionally organized behind internal support p
 * `com.znsio.teswiz.mobile.server`
   * Appium local server lifecycle and remote hub URL normalization
 * `com.znsio.teswiz.mobile.provider`
-  * mobile cloud provider adapters for report-link and future provider-specific Appium behavior
+  * mobile cloud provider adapters for setup, cleanup, report-link, and provider-specific Appium behavior
 * `com.znsio.teswiz.web`
   * shared web engine concepts such as `WebEngine`
 * `com.znsio.teswiz.web.browser`
@@ -157,6 +157,7 @@ For BrowserStack and LambdaTest web runs, teswiz now normalizes provider-native 
 On the mobile side, extraction has started the same way:
 
 * cloud report-link publication is provider-based
+* mobile cloud setup and cleanup routing are now owned by the internal mobile provider package
 * LambdaTest mobile capability shaping is now owned by the internal mobile provider package
 * LambdaTest mobile app upload command/response handling is now owned by the internal mobile provider package
 * BrowserStack mobile capability shaping is now owned by the internal mobile provider package
