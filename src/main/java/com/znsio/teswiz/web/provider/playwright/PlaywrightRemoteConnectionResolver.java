@@ -192,7 +192,10 @@ public final class PlaywrightRemoteConnectionResolver {
     }
 
     private static UnsupportedOperationException unsupportedRemoteProviderError(String providerName) {
+        if ("headspin".equalsIgnoreCase(providerName)) {
+            return new UnsupportedOperationException("HeadSpin is not supported with Playwright web engines in teswiz.");
+        }
         return new UnsupportedOperationException(
-                "Playwright remote provider '%s' is not yet supported for the current engine".formatted(providerName));
+                "Playwright remote provider '%s' is not supported for the current engine".formatted(providerName));
     }
 }

@@ -106,7 +106,7 @@ test("buildRemoteLaunchDescriptor fails fast for unsupported remote providers", 
         },
         "buyer"
       ),
-    /not yet supported/
+    /HeadSpin is not supported with Playwright web engines in teswiz/
   );
 });
 

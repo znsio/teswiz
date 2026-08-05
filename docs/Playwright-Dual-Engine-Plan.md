@@ -111,8 +111,8 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Add the first real `playwright-ts` provider adapter at the worker boundary for local execution and BrowserStack websocket connection shaping
 - [x] Add the LambdaTest `playwright-ts` worker adapter using the current teswiz web capability shape
 - [x] Add Playwright-Java remote connection resolution for BrowserStack and LambdaTest using the same normalized provider seam
-- [x] Fail fast for unsupported `playwright-ts` remote providers instead of silently attempting partial execution
-- [ ] Add or complete provider-specific Playwright web adapters for BrowserStack, LambdaTest, HeadSpin, and local CI
+- [x] Fail fast with an explicit HeadSpin-not-supported error when Playwright web engines are used with HeadSpin config
+- [ ] Add or complete provider-specific Playwright web adapters for BrowserStack, LambdaTest, and local CI
 - [ ] Keep provider logic at the boundary
 - [ ] Preserve Selenium cloud behavior unchanged while adding Playwright cloud support
 - [ ] Normalize cloud metadata and artifacts across engines and providers
@@ -129,5 +129,6 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - The goal is to keep Selenium Java stable while first-class Playwright-Java and `playwright-ts` support grows.
 - For `playwright-ts`, the intended user model is: Java screen contract in `src/test`, matching `.ts` module under `src/test/resources/playwright/screens`, and no extra Java adapter class.
 - Engine and provider namespaces should stay separate and easy to infer.
+- HeadSpin is intentionally out of scope for Playwright web support in teswiz. If selected with `playwright-java` or `playwright-ts`, teswiz should fail immediately with an explicit unsupported message.
 - The compatibility adapter path is useful only as long as it helps bridge the transition to first-class Java screen implementations for Playwright engines.
 - This file should be updated whenever a milestone changes state so it remains the live implementation checklist.

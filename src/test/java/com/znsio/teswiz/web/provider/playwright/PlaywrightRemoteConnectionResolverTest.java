@@ -98,7 +98,7 @@ class PlaywrightRemoteConnectionResolverTest {
                         Map.of("browserName", "chrome")),
                 "buyer"))
                         .isInstanceOf(UnsupportedOperationException.class)
-                        .hasMessageContaining("not yet supported");
+                        .hasMessage("HeadSpin is not supported with Playwright web engines in teswiz.");
     }
 
     private static PlaywrightBrowserConfig browserConfig(String browserName) {

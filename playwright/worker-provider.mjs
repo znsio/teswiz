@@ -198,10 +198,10 @@ function copyLambdaTestOptionIfPresent(options, key, webCapabilities) {
 }
 
 function unsupportedRemoteProviderError(providerName) {
-  return new Error(
-    `Playwright TS remote provider '${providerName}' is not yet supported by teswiz worker. ` +
-      "The provider config seam is in place, but the provider-specific remote adapter is still pending."
-  );
+  if (providerName === "headspin") {
+    return new Error("HeadSpin is not supported with Playwright web engines in teswiz.");
+  }
+  return new Error(`Playwright TS remote provider '${providerName}' is not supported by teswiz worker.`);
 }
 
 function mapBrowserStackCapabilityKey(key) {
