@@ -27,6 +27,7 @@ import com.znsio.teswiz.tools.ReportPortalLogger;
 public final class ScenarioArtifactReporter {
     private static final Logger LOGGER = LogManager.getLogger(ScenarioArtifactReporter.class.getName());
     private static final String SCENARIO_METADATA_FILE_NAME = "scenario-session-metadata.json";
+    private static final String SCENARIO_SUMMARY_FILE_NAME = "scenario-session-summary.txt";
     private static final List<String> PLAYWRIGHT_ARTIFACT_SUFFIXES = List.of(
             "-trace.zip",
             "-network.har",
@@ -42,7 +43,9 @@ public final class ScenarioArtifactReporter {
     static Path publish(TestExecutionContext context, UserPersonaDetails userPersonaDetails,
             ScenarioArtifactPublisher artifactPublisher) {
         Path metadataFile = writeScenarioMetadata(context, userPersonaDetails);
+        Path summaryFile = writeScenarioSummary(context, userPersonaDetails);
         publishArtifact("Scenario session metadata", metadataFile.toFile(), artifactPublisher);
+        publishArtifact("Scenario session summary", summaryFile.toFile(), artifactPublisher);
         for (Path artifact : discoverPlaywrightArtifacts(userPersonaDetails)) {
             publishArtifact("Playwright artifact: " + artifact.getFileName(), artifact.toFile(), artifactPublisher);
         }
@@ -57,11 +60,8 @@ public final class ScenarioArtifactReporter {
     }
 
     static Path writeScenarioMetadata(TestExecutionContext context, UserPersonaDetails userPersonaDetails) {
-        String scenarioLogDirectory = context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
-        if (null == scenarioLogDirectory || scenarioLogDirectory.isBlank()) {
-            throw new IllegalStateException("Scenario log directory is required to publish scenario artifacts");
-        }
-        Path metadataFile = Path.of(scenarioLogDirectory, SCENARIO_METADATA_FILE_NAME);
+        Path scenarioLogDirectory = getScenarioLogDirectory(context);
+        Path metadataFile = scenarioLogDirectory.resolve(SCENARIO_METADATA_FILE_NAME);
         try {
             Files.writeString(metadataFile, buildScenarioMetadata(context, userPersonaDetails).toString(2),
                     StandardCharsets.UTF_8);
@@ -69,6 +69,25 @@ public final class ScenarioArtifactReporter {
         } catch (IOException e) {
             throw new RuntimeException("Unable to write scenario metadata artifact: " + metadataFile, e);
         }
+    }
+
+    static Path writeScenarioSummary(TestExecutionContext context, UserPersonaDetails userPersonaDetails) {
+        Path scenarioLogDirectory = getScenarioLogDirectory(context);
+        Path summaryFile = scenarioLogDirectory.resolve(SCENARIO_SUMMARY_FILE_NAME);
+        try {
+            Files.writeString(summaryFile, buildScenarioSummary(context, userPersonaDetails), StandardCharsets.UTF_8);
+            return summaryFile;
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to write scenario summary artifact: " + summaryFile, e);
+        }
+    }
+
+    private static Path getScenarioLogDirectory(TestExecutionContext context) {
+        String scenarioLogDirectory = context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
+        if (null == scenarioLogDirectory || scenarioLogDirectory.isBlank()) {
+            throw new IllegalStateException("Scenario log directory is required to publish scenario artifacts");
+        }
+        return Path.of(scenarioLogDirectory);
     }
 
     private static JSONObject buildScenarioMetadata(TestExecutionContext context, UserPersonaDetails userPersonaDetails) {
@@ -125,6 +144,32 @@ public final class ScenarioArtifactReporter {
         } catch (RuntimeException e) {
             return Runner.NOT_SET;
         }
+    }
+
+    private static String buildScenarioSummary(TestExecutionContext context, UserPersonaDetails userPersonaDetails) {
+        StringBuilder summary = new StringBuilder();
+        summary.append("Scenario: ").append(context.getTestName()).append(System.lineSeparator());
+        summary.append("NormalisedScenario: ")
+                .append(context.getTestStateAsString(TEST_CONTEXT.NORMALISED_SCENARIO_NAME))
+                .append(System.lineSeparator());
+        summary.append("ScenarioRunCount: ").append(context.getTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT))
+                .append(System.lineSeparator());
+        summary.append("Provider: ").append(getProvider()).append(System.lineSeparator());
+        summary.append("WebEngine: ").append(getWebEngine()).append(System.lineSeparator());
+        summary.append(System.lineSeparator());
+        for (SessionHandle sessionHandle : userPersonaDetails.getAllAssignedUserPersonasAndSessionHandles().values()) {
+            summary.append("Persona: ").append(sessionHandle.userPersona()).append(System.lineSeparator());
+            summary.append("Platform: ").append(sessionHandle.platform().name()).append(System.lineSeparator());
+            summary.append("Engine: ").append(sessionHandle.engine()).append(System.lineSeparator());
+            summary.append("SessionId: ").append(sessionHandle.sessionId()).append(System.lineSeparator());
+            summary.append("ArtifactPath: ").append(sessionHandle.artifactPath()).append(System.lineSeparator());
+            for (Map.Entry<String, String> metadataEntry : sessionHandle.metadata().entrySet()) {
+                summary.append(metadataEntry.getKey()).append(": ").append(metadataEntry.getValue())
+                        .append(System.lineSeparator());
+            }
+            summary.append(System.lineSeparator());
+        }
+        return summary.toString();
     }
 
     static List<Path> discoverPlaywrightArtifacts(UserPersonaDetails userPersonaDetails) {

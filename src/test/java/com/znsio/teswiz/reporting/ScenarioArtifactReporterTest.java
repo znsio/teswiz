@@ -53,16 +53,23 @@ class ScenarioArtifactReporterTest {
 
         Path metadataFile = ScenarioArtifactReporter.publish(context, userPersonaDetails,
                 (message, artifact) -> publishedArtifacts.add(artifact.toPath()));
+        Path summaryFile = scenarioDir.resolve("scenario-session-summary.txt");
 
         assertThat(metadataFile).exists();
+        assertThat(summaryFile).exists();
         assertThat(Files.readString(metadataFile))
                 .contains("\"scenarioName\": \"reporting-parity\"")
                 .contains("\"provider\": \"local\"")
                 .contains("\"userPersona\": \"buyer\"")
                 .contains("\"engine\": \"playwright-ts\"")
                 .contains("\"browserName\": \"chrome\"");
+        assertThat(Files.readString(summaryFile))
+                .contains("Scenario: reporting-parity")
+                .contains("Persona: buyer")
+                .contains("Engine: playwright-ts")
+                .contains("SessionId: playwright-session-1");
         assertThat(publishedArtifacts)
-                .contains(metadataFile, traceFile, harFile, consoleFile);
+                .contains(metadataFile, summaryFile, traceFile, harFile, consoleFile);
     }
 
     @Test
