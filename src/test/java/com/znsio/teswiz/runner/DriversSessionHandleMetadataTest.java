@@ -20,16 +20,21 @@ import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.session.SessionHandle;
 
 class DriversSessionHandleMetadataTest {
-    private static final String CONFIG_FILE = "./configs/theapp/theapp_lambdatest_web_config.properties";
+    private static final String LAMBDATEST_CONFIG_FILE = "./configs/theapp/theapp_lambdatest_web_config.properties";
+    private static final String LAMBDATEST_CAPS_FILE = "./caps/theapp/theapp_lambdatest_web_capabilities.json";
+    private static final String BROWSERSTACK_CONFIG_FILE = "./configs/theapp/theapp_browserstack_web_config.properties";
+    private static final String BROWSERSTACK_CAPS_FILE = "./caps/theapp/theapp_browserstack_web_capabilities.json";
 
     @AfterEach
     void cleanUp() {
+        System.clearProperty(Setup.RUN_IN_CI);
+        System.clearProperty(Setup.CAPS);
         SessionContext.remove(Thread.currentThread().getId());
     }
 
     @Test
-    void shouldBuildSeleniumWebSessionHandleWithNormalizedCloudMetadata() throws Exception {
-        setupConfig();
+    void shouldBuildSeleniumWebSessionHandleWithNormalizedLambdaTestCloudMetadata() throws Exception {
+        setupConfig(LAMBDATEST_CONFIG_FILE, LAMBDATEST_CAPS_FILE);
         TestExecutionContext context = new TestExecutionContext("drivers-session-handle-cloud-metadata");
         Path scenarioDir = Files.createTempDirectory("drivers-session-handle-cloud-metadata");
         context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioDir.toString());
@@ -61,9 +66,43 @@ class DriversSessionHandleMetadataTest {
                         "https://automation.lambdatest.com/logs/?sessionID=lt-session-1");
     }
 
-    private static void setupConfig() {
-        Setup.load(CONFIG_FILE);
-        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+    @Test
+    void shouldBuildSeleniumWebSessionHandleWithNormalizedBrowserStackCloudMetadata() throws Exception {
+        setupConfig(BROWSERSTACK_CONFIG_FILE, BROWSERSTACK_CAPS_FILE);
+        TestExecutionContext context = new TestExecutionContext("drivers-session-handle-browserstack-metadata");
+        Path scenarioDir = Files.createTempDirectory("drivers-session-handle-browserstack-metadata");
+        context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioDir.toString());
+
+        RemoteWebDriver remoteWebDriver = mock(RemoteWebDriver.class);
+        when(remoteWebDriver.getSessionId()).thenReturn(new SessionId("remote-session-2"));
+        when(remoteWebDriver.executeScript("browserstack_executor: {\"action\": \"getSessionDetails\"}"))
+                .thenReturn("""
+                        {
+                          "hashed_id": "bs-session-1",
+                          "build_hashed_id": "bs-build-1",
+                          "browser_url": "https://browserstack.example/session/bs-session-1"
+                        }
+                        """);
+        Driver driver = mock(Driver.class);
+        when(driver.getInnerDriver()).thenReturn(remoteWebDriver);
+        SessionHandle sessionHandle = invokeBuildSessionHandle("seller", "chrome", Platform.web, context, driver);
+
+        assertThat(sessionHandle.engine()).isEqualTo("selenium");
+        assertThat(sessionHandle.sessionId()).isEqualTo("remote-session-2");
+        assertThat(sessionHandle.metadata())
+                .containsEntry("browserName", "chrome")
+                .containsEntry("provider", "browserstack")
+                .containsEntry("remoteSessionId", "remote-session-2")
+                .containsEntry("providerSessionId", "bs-session-1")
+                .containsEntry("providerBuildId", "bs-build-1")
+                .containsEntry("providerReportUrl", "https://browserstack.example/session/bs-session-1");
+    }
+
+    private static void setupConfig(String configFile, String capsFile) {
+        System.setProperty(Setup.RUN_IN_CI, "true");
+        System.setProperty(Setup.CAPS, capsFile);
+        Setup.load(configFile);
+        Setup.loadAndUpdateConfigParameters(configFile);
         Setup.getExecutionArguments();
     }
 
