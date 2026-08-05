@@ -16,6 +16,8 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Shared `ScreenShotScreen` web contract uses a real worker-side TypeScript screen module
 - [x] TheApp local single-user Playwright-TS validation passes through the first-class screen path
 - [x] TheApp local multi-user Playwright-TS validation passes through the first-class screen path
+- [x] TheApp local single-user Playwright-Java validation passes through the first-class screen path
+- [x] TheApp local multi-user Playwright-Java validation passes through the first-class screen path
 - [x] Browser-config migration reporting and visible guidance are implemented
 - [x] Architecture docs exist for the current web-engine model
 - [x] Repo guidance files are aligned for Codex, Claude, and Antigravity
@@ -62,7 +64,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Centralize contract-to-implementation resolution so screen `get()` methods stay one-line and non-breaking
 - [x] Add screen contract compliance checks for supported platform/engine combinations
 - [x] Add local single-user Selenium/Playwright parity tests for the shared screen contract
-- [ ] Replace the temporary `playwright-java` fail-fast runtime seam with a real Playwright-Java browser session implementation
+- [x] Replace the temporary `playwright-java` fail-fast runtime seam with a real Playwright-Java browser session implementation
 - [ ] Keep Selenium screens working exactly as before while adding Java screen implementations for Playwright engines
 
 ## Milestone 3: Add explicit Gradle contract sanity check
@@ -89,6 +91,8 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Validate a local `playwright-ts` single-user web scenario end to end (`@theapp2 and @invalidLogin1 and @playwright-phase1`)
 - [x] Validate a local `playwright-ts` web-web multi-user scenario end to end (`@multiuser-web and @theapp7 and @playwright-phase1`)
 - [x] Validate a local Android + `playwright-ts` web mixed scenario end to end (`@multiuser-android-web and @theapp5 and @playwright-phase1`)
+- [x] Validate a local `playwright-java` single-user web scenario end to end (`@theapp2 and @invalidLogin1`)
+- [x] Validate a local `playwright-java` web-web multi-user scenario end to end (`@multiuser-web and @theapp7`)
 
 ## Milestone 6: Visual and reporting parity
 

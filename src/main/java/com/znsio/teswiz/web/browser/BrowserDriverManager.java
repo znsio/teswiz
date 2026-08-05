@@ -16,17 +16,20 @@ import com.znsio.teswiz.web.selenium.SeleniumDriverManager;
 
 public final class BrowserDriverManager {
     private static final PlaywrightWorkerManager PLAYWRIGHT_WORKER_MANAGER = new PlaywrightWorkerManager();
+    private static final PlaywrightJavaDriverManager PLAYWRIGHT_JAVA_DRIVER_MANAGER = new PlaywrightJavaDriverManager();
 
     private BrowserDriverManager() {
     }
 
     public static WebDriverSessionResult createWebSessionForUser(String userPersona, String browserName,
             Platform forPlatform, TestExecutionContext context) {
-        return createWebSessionForUser(userPersona, browserName, forPlatform, context, PLAYWRIGHT_WORKER_MANAGER);
+        return createWebSessionForUser(userPersona, browserName, forPlatform, context, PLAYWRIGHT_WORKER_MANAGER,
+                PLAYWRIGHT_JAVA_DRIVER_MANAGER);
     }
 
     static WebDriverSessionResult createWebSessionForUser(String userPersona, String browserName,
-            Platform forPlatform, TestExecutionContext context, PlaywrightWorkerManager playwrightWorkerManager) {
+            Platform forPlatform, TestExecutionContext context, PlaywrightWorkerManager playwrightWorkerManager,
+            PlaywrightJavaDriverManager playwrightJavaDriverManager) {
         WebEngine webEngine = Runner.getWebEngine();
         String runningOn = Runner.isRunningInCI() ? "CI" : "local";
         context.addTestState(TEST_CONTEXT.WEB_BROWSER_ON, runningOn);
@@ -34,7 +37,7 @@ public final class BrowserDriverManager {
             case SELENIUM:
                 return SeleniumDriverManager.createWebSessionForUser(userPersona, browserName, forPlatform, context);
             case PLAYWRIGHT_JAVA:
-                return PlaywrightJavaDriverManager.createWebSessionForUser(userPersona, browserName, forPlatform,
+                return playwrightJavaDriverManager.createWebSessionForUser(userPersona, browserName, forPlatform,
                         context);
             case PLAYWRIGHT_TS:
                 return createPlaywrightWebSessionForUser(userPersona, browserName, forPlatform, context,
@@ -51,7 +54,7 @@ public final class BrowserDriverManager {
                 SeleniumDriverManager.closeWebDriver(userPersona, driver);
                 break;
             case PLAYWRIGHT_JAVA:
-                PlaywrightJavaDriverManager.closeWebDriver(userPersona, driver);
+                PLAYWRIGHT_JAVA_DRIVER_MANAGER.closeWebDriver(userPersona, driver);
                 break;
             case PLAYWRIGHT_TS:
                 closePlaywrightWebDriver(driver);

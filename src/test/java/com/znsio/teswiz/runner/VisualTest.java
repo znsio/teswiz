@@ -122,4 +122,12 @@ class VisualTest {
                 .hasMessageContaining(TEST_CONTEXT.APPLITOOLS_FIGMA_BASELINE_ENV_NAME);
     }
 
+    @Test
+    void convertValueFromConfigToIntShouldSupportMultipleNumberShapes() {
+        assertThat(Visual.convertValueFromConfigToInt(720)).isEqualTo(720);
+        assertThat(Visual.convertValueFromConfigToInt(720L)).isEqualTo(720);
+        assertThat(Visual.convertValueFromConfigToInt(720.0d)).isEqualTo(720);
+        assertThat(Visual.convertValueFromConfigToInt("720")).isEqualTo(720);
+    }
+
 }

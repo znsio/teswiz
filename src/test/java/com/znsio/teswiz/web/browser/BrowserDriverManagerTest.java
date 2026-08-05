@@ -1,7 +1,8 @@
 package com.znsio.teswiz.web.browser;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import com.znsio.teswiz.config.browser.PlaywrightBrowserConfig;
-import com.znsio.teswiz.config.browser.PlaywrightBrowserConfigResolver;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
@@ -23,8 +23,10 @@ import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Setup;
+import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.session.UserPersonaDetails;
 import com.znsio.teswiz.tools.ScreenShotManager;
+import com.znsio.teswiz.web.playwright.PlaywrightJavaDriverManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
@@ -53,7 +55,7 @@ class BrowserDriverManagerTest {
                 (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
 
         WebDriverSessionResult sessionResult = BrowserDriverManager.createWebSessionForUser(
-                "buyer", "chrome", Platform.web, context, manager);
+                "buyer", "chrome", Platform.web, context, manager, mock(PlaywrightJavaDriverManager.class));
 
         assertThat(sessionResult.webDriver()).isInstanceOf(PlaywrightWebDriver.class);
         assertThat(sessionResult.capabilities()).isNotNull();
@@ -76,7 +78,7 @@ class BrowserDriverManagerTest {
                 (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
 
         WebDriverSessionResult sessionResult = BrowserDriverManager.createWebSessionForUser(
-                "buyer", "chrome", Platform.web, context, manager);
+                "buyer", "chrome", Platform.web, context, manager, mock(PlaywrightJavaDriverManager.class));
         Driver driver = new Driver("browser-manager-playwright-close-buyer", Platform.web, "buyer",
                 Runner.DEFAULT, sessionResult.webDriver(), sessionResult.headless());
 
@@ -86,17 +88,25 @@ class BrowserDriverManagerTest {
     }
 
     @Test
-    void shouldFailFastForPlaywrightJavaUntilRuntimeIsImplemented() throws Exception {
+    void shouldRoutePlaywrightJavaThroughBrowserManager() throws Exception {
         enablePlaywrightJavaHeadless();
         TestExecutionContext context = createContext("browser-manager-playwright-java");
         UserPersonaDetails userPersonaDetails = (UserPersonaDetails) context
                 .getTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS);
         userPersonaDetails.addAppName("buyer", Runner.DEFAULT);
 
-        assertThatThrownBy(() -> BrowserDriverManager.createWebSessionForUser(
-                "buyer", "chrome", Platform.web, context))
-                .hasMessageContaining("WEB_ENGINE=playwright-java is recognized")
-                .hasMessageContaining("not implemented yet");
+        PlaywrightJavaDriverManager playwrightJavaDriverManager = mock(PlaywrightJavaDriverManager.class);
+        WebDriverSessionResult expectedResult = new WebDriverSessionResult(mock(org.openqa.selenium.WebDriver.class), true,
+                new org.openqa.selenium.MutableCapabilities(),
+                SessionHandle.create("buyer", Platform.web, "playwright-java", "/tmp/browser-manager-playwright-java",
+                        Map.of("browserName", "chrome")));
+        when(playwrightJavaDriverManager.createWebSessionForUser("buyer", "chrome", Platform.web, context))
+                .thenReturn(expectedResult);
+
+        WebDriverSessionResult actualResult = BrowserDriverManager.createWebSessionForUser("buyer", "chrome",
+                Platform.web, context, new PlaywrightWorkerManager(), playwrightJavaDriverManager);
+
+        assertThat(actualResult).isSameAs(expectedResult);
     }
 
     private void enablePlaywrightHeadless() {

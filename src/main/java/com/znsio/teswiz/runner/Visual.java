@@ -828,19 +828,19 @@ public class Visual {
                 actualBrowserSize = innerDriver.manage().window().getSize();
             }
             LOGGER.info(format("Actual browser dimensions: %s", actualBrowserSize));
-            Long actualHeight = (Long) js.executeScript("return (window.innerHeight);");
-            Long actualWidth = (Long) js.executeScript("return (window.innerWidth);");
+            int actualHeight = convertValueFromConfigToInt(js.executeScript("return (window.innerHeight);"));
+            int actualWidth = convertValueFromConfigToInt(js.executeScript("return (window.innerWidth);"));
 
-            if (providedBrowserViewPortSizeFromConfigHeight > actualHeight.intValue()
-                    || providedBrowserViewPortSizeFromConfigWidth > actualWidth.intValue()) {
-                return new RectangleSize(actualWidth.intValue(), actualHeight.intValue());
+            if (providedBrowserViewPortSizeFromConfigHeight > actualHeight
+                    || providedBrowserViewPortSizeFromConfigWidth > actualWidth) {
+                return new RectangleSize(actualWidth, actualHeight);
             } else {
                 return providedBrowserViewPortSizeFromConfig;
             }
         }
     }
 
-    private static int convertValueFromConfigToInt(Object valueFromConfig) {
+    static int convertValueFromConfigToInt(Object valueFromConfig) {
         try {
             return Integer.parseInt(valueOf(valueFromConfig));
         } catch (NumberFormatException e) {

@@ -222,6 +222,7 @@ dependencies {
     implementation 'com.jayway.jsonpath:json-path:3.0.0'
     // TODO - migrate to restassured
     implementation "com.konghq:unirest-java:3.14.5"
+    implementation "com.microsoft.playwright:playwright:1.49.0"
     implementation "com.squareup.okhttp3:okhttp:5.4.0"
     implementation "io.appium:java-client:10.1.1"
     implementation 'io.cucumber:cucumber-java:7.34.4'
