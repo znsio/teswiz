@@ -40,11 +40,12 @@ function buildRemoteLaunchDescriptor(browserName, browserConfig = {}, executionP
         wsEndpoint: buildBrowserStackWsEndpoint(browserName, browserConfig, provider, userPersona),
       };
     case "lambdatest":
+      return {
+        mode: "connect",
+        wsEndpoint: buildLambdaTestWsEndpoint(browserName, browserConfig, provider, userPersona),
+      };
     case "headspin":
-      throw new Error(
-        `Playwright TS remote provider '${provider.providerName}' is not yet supported by teswiz worker. ` +
-          "The provider config seam is in place, but the provider-specific remote adapter is still pending."
-      );
+      throw unsupportedRemoteProviderError(provider.providerName);
     default:
       throw new Error(`Unsupported Playwright TS remote provider: ${provider.providerName}`);
   }
@@ -94,6 +95,57 @@ function buildBrowserStackCapabilities(browserName, browserConfig, provider, use
   return caps;
 }
 
+function buildLambdaTestWsEndpoint(browserName, browserConfig, provider, userPersona) {
+  if (!provider.username || !provider.accessKey) {
+    throw new Error("LambdaTest Playwright execution requires CLOUD_USERNAME and CLOUD_KEY");
+  }
+
+  const capabilities = buildLambdaTestCapabilities(browserName, browserConfig, provider, userPersona);
+  return `wss://cdp.lambdatest.com/playwright?capabilities=${encodeURIComponent(JSON.stringify(capabilities))}`;
+}
+
+function buildLambdaTestCapabilities(browserName, browserConfig, provider, userPersona) {
+  const webCapabilities = provider.webCapabilities || {};
+  const ltOptions = getLambdaTestOptions(webCapabilities);
+  const capabilities = {};
+  const resolvedBrowserName = webCapabilities.browserName || webCapabilities.browser || browserName;
+  const resolvedBrowserVersion =
+    webCapabilities.browserVersion || webCapabilities.version || webCapabilities.browser_version;
+  const resolvedPlatformName = resolveLambdaTestPlatformName(webCapabilities, ltOptions);
+
+  capabilities.browserName = resolvedBrowserName;
+  if (resolvedBrowserVersion) {
+    capabilities.browserVersion = resolvedBrowserVersion;
+  }
+
+  const normalizedLtOptions = {
+    ...ltOptions,
+    platform: resolvedPlatformName,
+    platformName: resolvedPlatformName,
+    name: ltOptions.name || userPersona || "teswiz-playwright-ts",
+    build: ltOptions.build || webCapabilities.build || webCapabilities.buildName || "teswiz-playwright-ts",
+    user: ltOptions.user || provider.username,
+    username: ltOptions.username || provider.username,
+    accessKey: ltOptions.accessKey || provider.accessKey,
+  };
+
+  copyLambdaTestOptionIfPresent(normalizedLtOptions, "resolution", webCapabilities);
+  copyLambdaTestOptionIfPresent(normalizedLtOptions, "network", webCapabilities);
+  copyLambdaTestOptionIfPresent(normalizedLtOptions, "appProfiling", webCapabilities);
+  copyLambdaTestOptionIfPresent(normalizedLtOptions, "console", webCapabilities);
+  copyLambdaTestOptionIfPresent(normalizedLtOptions, "visual", webCapabilities);
+  copyLambdaTestOptionIfPresent(normalizedLtOptions, "tunnel", webCapabilities);
+
+  capabilities["LT:Options"] = normalizedLtOptions;
+  if (resolvedPlatformName) {
+    capabilities.platformName = resolvedPlatformName;
+  }
+  if (browserConfig.headless !== undefined) {
+    capabilities["LT:Options"].headless = browserConfig.headless;
+  }
+  return capabilities;
+}
+
 function getBrowserStackOptions(webCapabilities) {
   if (webCapabilities.browserstackOptions && typeof webCapabilities.browserstackOptions === "object") {
     return webCapabilities.browserstackOptions;
@@ -102,6 +154,54 @@ function getBrowserStackOptions(webCapabilities) {
     return webCapabilities["bstack:options"];
   }
   return {};
+}
+
+function getLambdaTestOptions(webCapabilities) {
+  if (webCapabilities["LT:Options"] && typeof webCapabilities["LT:Options"] === "object") {
+    return { ...webCapabilities["LT:Options"] };
+  }
+  if (webCapabilities.ltOptions && typeof webCapabilities.ltOptions === "object") {
+    return { ...webCapabilities.ltOptions };
+  }
+  if (webCapabilities["lt:options"] && typeof webCapabilities["lt:options"] === "object") {
+    return { ...webCapabilities["lt:options"] };
+  }
+  return {};
+}
+
+function resolveLambdaTestPlatformName(webCapabilities, ltOptions) {
+  if (ltOptions.platformName) {
+    return ltOptions.platformName;
+  }
+  if (ltOptions.platform) {
+    return ltOptions.platform;
+  }
+  if (webCapabilities.platformName) {
+    return webCapabilities.platformName;
+  }
+  if (webCapabilities.platform) {
+    return webCapabilities.platform;
+  }
+  if (webCapabilities.os && webCapabilities.os_version) {
+    return `${webCapabilities.os} ${webCapabilities.os_version}`;
+  }
+  return undefined;
+}
+
+function copyLambdaTestOptionIfPresent(options, key, webCapabilities) {
+  if (options[key] !== undefined) {
+    return;
+  }
+  if (webCapabilities[key] !== undefined) {
+    options[key] = webCapabilities[key];
+  }
+}
+
+function unsupportedRemoteProviderError(providerName) {
+  return new Error(
+    `Playwright TS remote provider '${providerName}' is not yet supported by teswiz worker. ` +
+      "The provider config seam is in place, but the provider-specific remote adapter is still pending."
+  );
 }
 
 function mapBrowserStackCapabilityKey(key) {
@@ -127,6 +227,7 @@ function mapBrowserStackCapabilityKey(key) {
 
 export {
   buildBrowserStackCapabilities,
+  buildLambdaTestCapabilities,
   buildRemoteLaunchDescriptor,
   normalizeExecutionProvider,
 };

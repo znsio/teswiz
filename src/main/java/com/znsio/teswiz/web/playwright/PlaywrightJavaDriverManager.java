@@ -32,6 +32,7 @@ import com.znsio.teswiz.web.WebEngine;
 import com.znsio.teswiz.web.browser.WebDriverSessionResult;
 import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfig;
 import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfigResolver;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightRemoteConnectionResolver;
 import com.znsio.teswiz.web.selenium.WebBaseUrlResolver;
 
 public final class PlaywrightJavaDriverManager {
@@ -55,12 +56,14 @@ public final class PlaywrightJavaDriverManager {
     public WebDriverSessionResult createWebSessionForUser(String userPersona, String browserName, Platform forPlatform,
             TestExecutionContext context) {
         PlaywrightBrowserConfig browserConfig = browserConfigLookup.apply(browserName, context);
-        PlaywrightJavaSession session = createSession(userPersona, browserConfig, context);
+        PlaywrightExecutionProviderConfig providerConfig = providerConfigSupplier.get();
+        PlaywrightJavaSession session = createSession(userPersona, browserConfig, providerConfig, context);
         PlaywrightJavaWebDriver webDriver = new PlaywrightJavaWebDriver(session);
         String baseUrl = WebBaseUrlResolver.resolve(Drivers.getAppNamefor(userPersona));
         webDriver.get(baseUrl);
 
-        SessionHandle sessionHandle = buildSessionHandle(userPersona, forPlatform, context, session, browserConfig);
+        SessionHandle sessionHandle = buildSessionHandle(userPersona, forPlatform, context, session, browserConfig,
+                providerConfig);
         return new WebDriverSessionResult(webDriver, browserConfig.headless(),
                 createCapabilities(browserConfig, sessionHandle), sessionHandle);
     }
@@ -72,8 +75,8 @@ public final class PlaywrightJavaDriverManager {
     }
 
     private SessionHandle buildSessionHandle(String userPersona, Platform forPlatform, TestExecutionContext context,
-            PlaywrightJavaSession session, PlaywrightBrowserConfig browserConfig) {
-        PlaywrightExecutionProviderConfig providerConfig = providerConfigSupplier.get();
+            PlaywrightJavaSession session, PlaywrightBrowserConfig browserConfig,
+            PlaywrightExecutionProviderConfig providerConfig) {
         Map<String, String> metadata = new LinkedHashMap<>();
         metadata.put("browserName", browserConfig.browserName());
         metadata.put("browserVersion", session.runtime().browser().version());
@@ -105,14 +108,15 @@ public final class PlaywrightJavaDriverManager {
     }
 
     interface PlaywrightJavaRuntimeFactory {
-        PlaywrightJavaRuntime create(PlaywrightBrowserConfig browserConfig, Path artifactDirectory);
+        PlaywrightJavaRuntime create(PlaywrightBrowserConfig browserConfig, Path artifactDirectory,
+                PlaywrightExecutionProviderConfig providerConfig, String userPersona);
     }
 
     private PlaywrightJavaSession createSession(String userPersona, PlaywrightBrowserConfig browserConfig,
-            TestExecutionContext context) {
+            PlaywrightExecutionProviderConfig providerConfig, TestExecutionContext context) {
         Path artifactDirectory = Path.of(context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY));
         PlaywrightJavaRuntime runtime = new PlaywrightJavaRuntimePool(context, runtimeFactory)
-                .getOrCreate(browserConfig, artifactDirectory);
+                .getOrCreate(browserConfig, artifactDirectory, providerConfig, userPersona);
         runtime.incrementSessions();
         String sessionId = UUID.randomUUID().toString();
         Path traceFile = artifactDirectory.resolve(userPersona + "-" + sessionId + "-trace.zip");
@@ -132,12 +136,17 @@ public final class PlaywrightJavaDriverManager {
     }
 
     private static final class DefaultPlaywrightJavaRuntimeFactory implements PlaywrightJavaRuntimeFactory {
+        private final PlaywrightRemoteConnectionResolver remoteConnectionResolver = new PlaywrightRemoteConnectionResolver();
+
         @Override
-        public PlaywrightJavaRuntime create(PlaywrightBrowserConfig browserConfig, Path artifactDirectory) {
+        public PlaywrightJavaRuntime create(PlaywrightBrowserConfig browserConfig, Path artifactDirectory,
+                PlaywrightExecutionProviderConfig providerConfig, String userPersona) {
             Playwright playwright = Playwright.create();
             BrowserType browserType = resolveBrowserType(playwright, browserConfig.browserName());
-            BrowserType.LaunchOptions launchOptions = buildLaunchOptions(browserConfig);
-            Browser browser = browserType.launch(launchOptions);
+            Browser browser = remoteConnectionResolver
+                    .resolve(browserConfig.browserName(), browserConfig, providerConfig, userPersona)
+                    .map(remoteConnection -> browserType.connect(remoteConnection.wsEndpoint()))
+                    .orElseGet(() -> browserType.launch(buildLaunchOptions(browserConfig)));
             return new PlaywrightJavaRuntime(playwright, browser);
         }
 

@@ -109,6 +109,8 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 
 - [x] Add a shared Playwright provider-config seam for BrowserStack, LambdaTest, HeadSpin, and local execution so both Playwright engines receive normalized provider metadata and endpoints
 - [x] Add the first real `playwright-ts` provider adapter at the worker boundary for local execution and BrowserStack websocket connection shaping
+- [x] Add the LambdaTest `playwright-ts` worker adapter using the current teswiz web capability shape
+- [x] Add Playwright-Java remote connection resolution for BrowserStack and LambdaTest using the same normalized provider seam
 - [x] Fail fast for unsupported `playwright-ts` remote providers instead of silently attempting partial execution
 - [ ] Add or complete provider-specific Playwright web adapters for BrowserStack, LambdaTest, HeadSpin, and local CI
 - [ ] Keep provider logic at the boundary

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import {
   buildBrowserStackCapabilities,
+  buildLambdaTestCapabilities,
   buildRemoteLaunchDescriptor,
   normalizeExecutionProvider,
 } from "./worker-provider.mjs";
@@ -100,13 +101,113 @@ test("buildRemoteLaunchDescriptor fails fast for unsupported remote providers", 
         "chrome",
         {},
         {
-          providerName: "lambdatest",
-          remoteUrl: "https://hub.lambdatest.com/wd/hub",
-          username: "lt_user",
-          accessKey: "lt_key",
+          providerName: "headspin",
+          remoteUrl: "https://headspin.example.com",
         },
         "buyer"
       ),
     /not yet supported/
   );
+});
+
+test("buildLambdaTestCapabilities shapes capabilities from the current teswiz web config", () => {
+  const capabilities = buildLambdaTestCapabilities(
+    "chrome",
+    { headless: true },
+    {
+      username: "lt_user",
+      accessKey: "lt_key",
+      webCapabilities: {
+        browserName: "chrome",
+        version: "latest",
+        platform: "Windows 11",
+        resolution: "1920x1080",
+        network: true,
+        appProfiling: true,
+        console: true,
+        visual: true,
+        tunnel: false,
+      },
+    },
+    "buyer"
+  );
+
+  assert.equal(capabilities.browserName, "chrome");
+  assert.equal(capabilities.browserVersion, "latest");
+  assert.equal(capabilities.platformName, "Windows 11");
+  assert.equal(capabilities["LT:Options"].platform, "Windows 11");
+  assert.equal(capabilities["LT:Options"].platformName, "Windows 11");
+  assert.equal(capabilities["LT:Options"].user, "lt_user");
+  assert.equal(capabilities["LT:Options"].username, "lt_user");
+  assert.equal(capabilities["LT:Options"].accessKey, "lt_key");
+  assert.equal(capabilities["LT:Options"].name, "buyer");
+  assert.equal(capabilities["LT:Options"].resolution, "1920x1080");
+  assert.equal(capabilities["LT:Options"].network, true);
+  assert.equal(capabilities["LT:Options"].appProfiling, true);
+  assert.equal(capabilities["LT:Options"].console, true);
+  assert.equal(capabilities["LT:Options"].visual, true);
+  assert.equal(capabilities["LT:Options"].tunnel, false);
+  assert.equal(capabilities["LT:Options"].headless, true);
+});
+
+test("buildLambdaTestCapabilities preserves LT options when already present", () => {
+  const capabilities = buildLambdaTestCapabilities(
+    "chrome",
+    {},
+    {
+      username: "lt_user",
+      accessKey: "lt_key",
+      webCapabilities: {
+        browser: "Chrome",
+        browser_version: "109.0",
+        os: "Windows",
+        os_version: "10",
+        "LT:Options": {
+          build: "teswiz-build",
+          name: "preconfigured-name",
+          network: false,
+          tunnel: true,
+        },
+      },
+    },
+    "buyer"
+  );
+
+  assert.equal(capabilities.browserName, "Chrome");
+  assert.equal(capabilities.browserVersion, "109.0");
+  assert.equal(capabilities.platformName, "Windows 10");
+  assert.equal(capabilities["LT:Options"].build, "teswiz-build");
+  assert.equal(capabilities["LT:Options"].name, "preconfigured-name");
+  assert.equal(capabilities["LT:Options"].network, false);
+  assert.equal(capabilities["LT:Options"].tunnel, true);
+  assert.equal(capabilities["LT:Options"].user, "lt_user");
+});
+
+test("buildRemoteLaunchDescriptor creates LambdaTest websocket endpoint", () => {
+  const descriptor = buildRemoteLaunchDescriptor(
+    "chrome",
+    { headless: true },
+    {
+      providerName: "lambdatest",
+      remoteUrl: "https://mobile-hub.lambdatest.com",
+      username: "lt_user",
+      accessKey: "lt_key",
+      webCapabilities: {
+        browserName: "chrome",
+        version: "latest",
+        platform: "Windows 11",
+      },
+    },
+    "buyer"
+  );
+
+  assert.equal(descriptor.mode, "connect");
+  assert.match(descriptor.wsEndpoint, /^wss:\/\/cdp\.lambdatest\.com\/playwright\?capabilities=/);
+  const encodedCapabilities = descriptor.wsEndpoint.split("capabilities=")[1];
+  const capabilities = JSON.parse(decodeURIComponent(encodedCapabilities));
+  assert.equal(capabilities.browserName, "chrome");
+  assert.equal(capabilities.browserVersion, "latest");
+  assert.equal(capabilities["LT:Options"].user, "lt_user");
+  assert.equal(capabilities["LT:Options"].accessKey, "lt_key");
+  assert.equal(capabilities["LT:Options"].name, "buyer");
 });

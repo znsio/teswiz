@@ -8,6 +8,7 @@ import java.util.Objects;
 import com.znsio.teswiz.config.browser.PlaywrightBrowserConfig;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfig;
 
 final class PlaywrightJavaRuntimePool {
     private static final String PLAYWRIGHT_JAVA_RUNTIMES = TEST_CONTEXT.class.getName() + ".playwrightJavaRuntimes";
@@ -20,10 +21,12 @@ final class PlaywrightJavaRuntimePool {
         this.runtimeFactory = runtimeFactory;
     }
 
-    PlaywrightJavaRuntime getOrCreate(PlaywrightBrowserConfig browserConfig, Path artifactDirectory) {
+    PlaywrightJavaRuntime getOrCreate(PlaywrightBrowserConfig browserConfig, Path artifactDirectory,
+            PlaywrightExecutionProviderConfig providerConfig, String userPersona) {
         Map<String, PlaywrightJavaRuntime> runtimes = getRuntimeMap();
         String runtimeKey = RuntimeKey.forBrowserConfig(browserConfig);
-        return runtimes.computeIfAbsent(runtimeKey, ignored -> runtimeFactory.create(browserConfig, artifactDirectory));
+        return runtimes.computeIfAbsent(runtimeKey,
+                ignored -> runtimeFactory.create(browserConfig, artifactDirectory, providerConfig, userPersona));
     }
 
     void remove(PlaywrightBrowserConfig browserConfig) {

@@ -67,7 +67,8 @@ class PlaywrightJavaDriverManagerTest {
                 (browserName, currentContext) -> new PlaywrightBrowserConfig(browserName, true, List.of("--headless=new"),
                         "chrome", null, Map.of("ignoreHTTPSErrors", true), Map.of()),
                 () -> PlaywrightExecutionProviderConfig.local(),
-                (browserConfig, artifactDirectory) -> new PlaywrightJavaRuntime(playwright, browser));
+                (browserConfig, artifactDirectory, providerConfig, userPersona) -> new PlaywrightJavaRuntime(playwright,
+                        browser));
 
         WebDriverSessionResult result = manager.createWebSessionForUser("buyer", "chrome", Platform.web, context);
 
@@ -108,7 +109,8 @@ class PlaywrightJavaDriverManagerTest {
                 (browserName, currentContext) -> new PlaywrightBrowserConfig(browserName, true, List.of("--headless=new"),
                         "chrome", null, Map.of(), Map.of()),
                 () -> PlaywrightExecutionProviderConfig.local(),
-                (browserConfig, artifactDirectory) -> new PlaywrightJavaRuntime(playwright, browser));
+                (browserConfig, artifactDirectory, providerConfig, userPersona) -> new PlaywrightJavaRuntime(playwright,
+                        browser));
 
         WebDriverSessionResult buyerResult = manager.createWebSessionForUser("buyer", "chrome", Platform.web, context);
         WebDriverSessionResult sellerResult = manager.createWebSessionForUser("seller", "chrome", Platform.web, context);
@@ -155,7 +157,8 @@ class PlaywrightJavaDriverManagerTest {
                         "browserstack_user",
                         "browserstack_key",
                         Map.of("browserName", "chrome")),
-                (browserConfig, artifactDirectory) -> new PlaywrightJavaRuntime(playwright, browser));
+                (browserConfig, artifactDirectory, providerConfig, userPersona) -> new PlaywrightJavaRuntime(playwright,
+                        browser));
 
         WebDriverSessionResult result = manager.createWebSessionForUser("buyer", "chrome", Platform.web, context);
 
