@@ -18,6 +18,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] TheApp local multi-user Playwright-TS validation passes through the first-class screen path
 - [x] TheApp local single-user Playwright-Java validation passes through the first-class screen path
 - [x] TheApp local multi-user Playwright-Java validation passes through the first-class screen path
+- [x] TheApp local mixed Android + Playwright-Java validation passes through the first-class screen path
 - [x] Browser-config migration reporting and visible guidance are implemented
 - [x] Playwright-Java trace, HAR, and console artifacts flow through the shared scenario artifact reporter
 - [x] Architecture docs exist for the current web-engine model
@@ -94,12 +95,13 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Validate a local Android + `playwright-ts` web mixed scenario end to end (`@multiuser-android-web and @theapp5 and @playwright-phase1`)
 - [x] Validate a local `playwright-java` single-user web scenario end to end (`@theapp2 and @invalidLogin1`)
 - [x] Validate a local `playwright-java` web-web multi-user scenario end to end (`@multiuser-web and @theapp7`)
+- [x] Validate a local Android + `playwright-java` web mixed scenario end to end (`@multiuser-android-web and @theapp5`)
 
 ## Milestone 6: Visual and reporting parity
 
 - [ ] Keep Applitools, ReportPortal, HTML reports, logs, and artifact attachment behavior consistent across all web engines
 - [ ] Confirm Playwright-specific visual, trace, console, and HAR artifacts flow through the same reporting contract
-- [ ] Add a Playwright-specific visual adapter path
+- [x] Add a Playwright-specific visual adapter path
 - [ ] Keep Selenium Eyes behavior unchanged
 - [ ] Ensure engine, provider, platform, persona, and session metadata are visible in reports
 

@@ -106,6 +106,7 @@ class PlaywrightVisualCheckSettingsMapperTest {
                 new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB)))
                 .isInstanceOf(VisualTestSetupException.class)
                 .hasMessageContaining("frame-based visual checks")
+                .hasMessageContaining("playwright-java")
                 .hasMessageContaining("playwright-ts");
     }
 }

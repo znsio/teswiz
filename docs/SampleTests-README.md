@@ -1,7 +1,8 @@
 # Running the sample tests
 
 All checked-in sample `config.properties` files now include `WEB_ENGINE=selenium`.
-If you want to run the same web scenario on Playwright TS, override it from the command line with `WEB_ENGINE=playwright-ts`.
+This keeps the default checked-in experience stable and explicit, while letting you opt into either Playwright engine only when you want that behavior.
+For web runs, you can override from the command line with either `WEB_ENGINE=playwright-java` or `WEB_ENGINE=playwright-ts`.
 
 ## Playwright TS Phase 1 local feedback path
 
@@ -46,6 +47,34 @@ Notes:
 * The mixed-platform scenario still requires the Android/Appium local prerequisites to be available.
 * These are the recommended first scenarios before enabling visual validation or cloud execution.
 * If you omit `WEB_ENGINE`, the checked-in sample configs use Selenium.
+
+## Playwright Java local feedback path
+
+Use the same TheApp scenarios to validate the first-class Playwright-Java engine:
+
+### 1. Single-user web
+
+```bash
+WEB_ENGINE=playwright-java HEADLESS=true CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@theapp2 and @invalidLogin1" ./gradlew run
+```
+
+### 2. Multi-user web
+
+```bash
+WEB_ENGINE=playwright-java HEADLESS=true CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@multiuser-web and @theapp7" ./gradlew run
+```
+
+### 3. Mixed platform (Appium Android + Playwright-Java web)
+
+```bash
+WEB_ENGINE=playwright-java HEADLESS=true CONFIG=./configs/theapp/theapp_local_android_config.properties TAG="@multiuser-android-web and @theapp5" ./gradlew run
+```
+
+Notes:
+
+* These use the same feature file and BL contract as Selenium and `playwright-ts`.
+* `HEADLESS=true` is recommended for local verification to avoid unmanaged browser windows during framework checks.
+* The Android + web path requires the Android/Appium local prerequisites to be available.
 
 ### Android tests
   Example:

@@ -19,6 +19,9 @@ import com.applitools.eyes.selenium.fluent.SimpleRegionByTargetPathLocator;
 import com.znsio.teswiz.exceptions.VisualTestSetupException;
 
 public final class PlaywrightVisualCheckSettingsMapper {
+    private static final String PLAYWRIGHT_ENGINE_HINT =
+            "WEB_ENGINE=playwright-java or WEB_ENGINE=playwright-ts";
+
     @FunctionalInterface
     public interface RegionBoundsProvider {
         Region resolve(By by);
@@ -111,7 +114,7 @@ public final class PlaywrightVisualCheckSettingsMapper {
             return resolveTargetPathLocator(simpleRegion.getTargetPathLocator());
         }
         throw new VisualTestSetupException(
-                "Visual validation for WEB_ENGINE=playwright-ts does not yet support Applitools region type: '"
+                "Visual validation for " + PLAYWRIGHT_ENGINE_HINT + " does not yet support Applitools region type: '"
                         + getRegion.getClass().getSimpleName() + "'");
     }
 
@@ -137,7 +140,8 @@ public final class PlaywrightVisualCheckSettingsMapper {
         int width = clamp(cropRegion.getWidth(), 0, maxWidth);
         int height = clamp(cropRegion.getHeight(), 0, maxHeight);
         if (width <= 0 || height <= 0) {
-            throw new VisualTestSetupException("Visual validation for WEB_ENGINE=playwright-ts resolved an empty target region.");
+            throw new VisualTestSetupException("Visual validation for " + PLAYWRIGHT_ENGINE_HINT
+                    + " resolved an empty target region.");
         }
         return screenshot.getSubimage(x, y, width, height);
     }
@@ -163,14 +167,15 @@ public final class PlaywrightVisualCheckSettingsMapper {
             case "link text" -> By.linkText(selector);
             case "partial link text" -> By.partialLinkText(selector);
             default -> throw new VisualTestSetupException(
-                    "Visual validation for WEB_ENGINE=playwright-ts does not yet support Applitools selector type: '"
+                    "Visual validation for " + PLAYWRIGHT_ENGINE_HINT
+                            + " does not yet support Applitools selector type: '"
                             + type + "'");
         };
     }
 
     private VisualTestSetupException unsupported(String capability) {
         return new VisualTestSetupException(
-                "Visual validation for WEB_ENGINE=playwright-ts does not yet support " + capability
+                "Visual validation for " + PLAYWRIGHT_ENGINE_HINT + " does not yet support " + capability
                         + ". Use Target.window() based checks for Playwright in the current phase.");
     }
 
