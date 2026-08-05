@@ -196,6 +196,56 @@ class ScenarioArtifactReporterTest {
     }
 
     @Test
+    void shouldWriteSeleniumCloudSessionMetadataIntoScenarioArtifacts() throws Exception {
+        TestExecutionContext context = new TestExecutionContext("selenium-cloud-reporting-parity");
+        Path scenarioDir = Files.createTempDirectory("selenium-cloud-reporting-parity");
+        context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioDir.toString());
+        context.addTestState(TEST_CONTEXT.NORMALISED_SCENARIO_NAME, "selenium-cloud-reporting-parity");
+        context.addTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT, 3);
+
+        UserPersonaDetails userPersonaDetails = new UserPersonaDetails();
+        userPersonaDetails.addSessionHandle("auditor", new SessionHandle(
+                "auditor",
+                Platform.web,
+                "selenium",
+                "selenium-session-1",
+                scenarioDir.toString(),
+                Map.of(
+                        "browserName", "chrome",
+                        "provider", "browserstack",
+                        "providerSessionId", "bs-selenium-session-1",
+                        "providerBuildId", "bs-build-1",
+                        "providerReportUrl", "https://browserstack.example/session/bs-selenium-session-1")));
+
+        List<PublishedArtifact> publishedArtifacts = new ArrayList<>();
+        List<String> reportMessages = new ArrayList<>();
+
+        Path metadataFile = ScenarioArtifactReporter.publish(context, userPersonaDetails,
+                (message, artifact) -> publishedArtifacts.add(new PublishedArtifact(message, artifact.toPath())),
+                reportMessages::add);
+        Path summaryFile = scenarioDir.resolve("scenario-session-summary.txt");
+
+        assertThat(metadataFile).exists();
+        assertThat(summaryFile).exists();
+        assertThat(Files.readString(metadataFile))
+                .contains("\"engine\": \"selenium\"")
+                .contains("\"provider\": \"browserstack\"")
+                .contains("\"providerSessionId\": \"bs-selenium-session-1\"")
+                .contains("\"providerBuildId\": \"bs-build-1\"")
+                .contains("\"providerReportUrl\": \"https://browserstack.example/session/bs-selenium-session-1\"");
+        assertThat(Files.readString(summaryFile))
+                .contains("Engine: selenium")
+                .contains("Provider: browserstack")
+                .contains("providerSessionId: bs-selenium-session-1")
+                .contains("providerBuildId: bs-build-1")
+                .contains("providerReportUrl: https://browserstack.example/session/bs-selenium-session-1");
+        assertThat(publishedArtifacts.stream().map(PublishedArtifact::path))
+                .contains(metadataFile, summaryFile);
+        assertThat(reportMessages)
+                .contains("BrowserStack Report link available here: https://browserstack.example/session/bs-selenium-session-1");
+    }
+
+    @Test
     void shouldWriteAggregatedScenarioMetadataForMixedSessions() throws Exception {
         TestExecutionContext context = new TestExecutionContext("mixed-reporting-parity");
         Path scenarioDir = Files.createTempDirectory("mixed-scenario-artifacts");
