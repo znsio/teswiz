@@ -13,6 +13,11 @@ const screenRootDirectories = [
   path.resolve(process.cwd(), "src", "test", "resources", "playwright", "screens"),
   path.resolve(process.cwd(), "playwright", "screens"),
 ];
+const BROWSERSTACK_EXECUTOR_PREFIX = "browserstack_executor:";
+const LAMBDATEST_ACTION_PREFIX = "lambdatest_action:";
+const LEGACY_LAMBDATEST_NAME_PREFIX = "lambda-name=";
+const LEGACY_LAMBDATEST_STATUS_PREFIX = "lambda-status=";
+const LEGACY_LAMBDATEST_COMMENT_PREFIX = "lambda-comment=";
 
 function normalizeBrowserName(browserName) {
   switch ((browserName || "chromium").toLowerCase()) {
@@ -332,6 +337,50 @@ function errorResponse(requestId, action, message) {
   return JSON.stringify({ requestId, action, ok: false, payload: { message } });
 }
 
+function isCloudControlScript(script) {
+  return script.startsWith(BROWSERSTACK_EXECUTOR_PREFIX)
+    || script.startsWith(LAMBDATEST_ACTION_PREFIX)
+    || script.startsWith(LEGACY_LAMBDATEST_NAME_PREFIX)
+    || script.startsWith(LEGACY_LAMBDATEST_STATUS_PREFIX)
+    || script.startsWith(LEGACY_LAMBDATEST_COMMENT_PREFIX);
+}
+
+async function executeCloudControlScript(session, script) {
+  if (script.startsWith(BROWSERSTACK_EXECUTOR_PREFIX) || script.startsWith(LAMBDATEST_ACTION_PREFIX)) {
+    return getCurrentPage(session).evaluate(() => {}, script);
+  }
+  if (script.startsWith(LEGACY_LAMBDATEST_NAME_PREFIX)) {
+    return getCurrentPage(session).evaluate(() => {}, buildLambdaTestNameCommand(script.slice(LEGACY_LAMBDATEST_NAME_PREFIX.length)));
+  }
+  if (script.startsWith(LEGACY_LAMBDATEST_STATUS_PREFIX)) {
+    session.pendingLambdaTestStatus = script.slice(LEGACY_LAMBDATEST_STATUS_PREFIX.length);
+    return session.pendingLambdaTestStatus;
+  }
+  if (script.startsWith(LEGACY_LAMBDATEST_COMMENT_PREFIX)) {
+    const status = session.pendingLambdaTestStatus || "passed";
+    session.pendingLambdaTestStatus = null;
+    return getCurrentPage(session).evaluate(
+      () => {},
+      buildLambdaTestStatusCommand(status, script.slice(LEGACY_LAMBDATEST_COMMENT_PREFIX.length)),
+    );
+  }
+  return null;
+}
+
+function buildLambdaTestNameCommand(testName) {
+  return `${LAMBDATEST_ACTION_PREFIX} ${JSON.stringify({
+    action: "setTestName",
+    arguments: { name: testName },
+  })}`;
+}
+
+function buildLambdaTestStatusCommand(status, remark) {
+  return `${LAMBDATEST_ACTION_PREFIX} ${JSON.stringify({
+    action: "setTestStatus",
+    arguments: { status, remark },
+  })}`;
+}
+
 async function loadScreenModule(screenModulePath) {
   const normalizedPath = path.normalize(screenModulePath);
   const candidatePaths = screenRootDirectories
@@ -446,6 +495,7 @@ rl.on("line", async (line) => {
           consoleLogPath,
           consoleMessages,
           consoleEntries,
+          pendingLambdaTestStatus: null,
         };
         context.setDefaultNavigationTimeout(session.navigationTimeoutMs);
         context.on("dialog", (dialog) => {
@@ -771,6 +821,11 @@ rl.on("line", async (line) => {
       }
       case "executeScript": {
         const session = getSession(payload.sessionId);
+        if (isCloudControlScript(payload.script)) {
+          const value = await executeCloudControlScript(session, payload.script);
+          process.stdout.write(`${okResponse(requestId, action, { value: value ?? null })}\n`);
+          break;
+        }
         const root = getCurrentRoot(session);
         const scriptArgs = await Promise.all((payload.args || []).map((arg) => resolveScriptArg(root, arg)));
         const value = await root.evaluate(

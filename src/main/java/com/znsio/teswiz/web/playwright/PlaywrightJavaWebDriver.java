@@ -23,6 +23,7 @@ import org.openqa.selenium.WindowType;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.Logs;
+import org.json.JSONObject;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Page.NavigateOptions;
@@ -31,10 +32,16 @@ import com.microsoft.playwright.options.WaitUntilState;
 
 public final class PlaywrightJavaWebDriver implements WebDriver, org.openqa.selenium.JavascriptExecutor,
         org.openqa.selenium.TakesScreenshot {
+    private static final String BROWSERSTACK_EXECUTOR_PREFIX = "browserstack_executor:";
+    private static final String LAMBDATEST_ACTION_PREFIX = "lambdatest_action:";
+    private static final String LEGACY_LAMBDATEST_NAME_PREFIX = "lambda-name=";
+    private static final String LEGACY_LAMBDATEST_STATUS_PREFIX = "lambda-status=";
+    private static final String LEGACY_LAMBDATEST_COMMENT_PREFIX = "lambda-comment=";
     private final PlaywrightJavaSession session;
     private Duration implicitWaitTimeout = Duration.ZERO;
     private Duration pageLoadTimeout = Duration.ofSeconds(30);
     private Duration scriptTimeout = Duration.ofSeconds(30);
+    private String pendingLambdaTestStatus;
 
     public PlaywrightJavaWebDriver(PlaywrightJavaSession session) {
         this.session = session;
@@ -311,6 +318,9 @@ public final class PlaywrightJavaWebDriver implements WebDriver, org.openqa.sele
 
     @Override
     public Object executeScript(String script, Object... args) {
+        if (isCloudControlScript(script)) {
+            return executeCloudControlScript(script);
+        }
         return evaluateScript(session.page(), script, args);
     }
 
@@ -331,6 +341,60 @@ public final class PlaywrightJavaWebDriver implements WebDriver, org.openqa.sele
         } catch (RuntimeException exception) {
             throw new WebDriverException("Unable to execute Playwright Java script: " + script, exception);
         }
+    }
+
+    private boolean isCloudControlScript(String script) {
+        return script.startsWith(BROWSERSTACK_EXECUTOR_PREFIX)
+                || script.startsWith(LAMBDATEST_ACTION_PREFIX)
+                || script.startsWith(LEGACY_LAMBDATEST_NAME_PREFIX)
+                || script.startsWith(LEGACY_LAMBDATEST_STATUS_PREFIX)
+                || script.startsWith(LEGACY_LAMBDATEST_COMMENT_PREFIX);
+    }
+
+    private Object executeCloudControlScript(String script) {
+        if (script.startsWith(BROWSERSTACK_EXECUTOR_PREFIX) || script.startsWith(LAMBDATEST_ACTION_PREFIX)) {
+            return executeProviderAction(script);
+        }
+        if (script.startsWith(LEGACY_LAMBDATEST_NAME_PREFIX)) {
+            return executeProviderAction(buildLambdaTestNameCommand(script.substring(LEGACY_LAMBDATEST_NAME_PREFIX.length())));
+        }
+        if (script.startsWith(LEGACY_LAMBDATEST_STATUS_PREFIX)) {
+            pendingLambdaTestStatus = script.substring(LEGACY_LAMBDATEST_STATUS_PREFIX.length());
+            return pendingLambdaTestStatus;
+        }
+        if (script.startsWith(LEGACY_LAMBDATEST_COMMENT_PREFIX)) {
+            String status = null == pendingLambdaTestStatus || pendingLambdaTestStatus.isBlank()
+                    ? "passed"
+                    : pendingLambdaTestStatus;
+            pendingLambdaTestStatus = null;
+            return executeProviderAction(buildLambdaTestStatusCommand(status,
+                    script.substring(LEGACY_LAMBDATEST_COMMENT_PREFIX.length())));
+        }
+        return null;
+    }
+
+    private Object executeProviderAction(String command) {
+        try {
+            return session.page().evaluate("_ => {}", command);
+        } catch (RuntimeException exception) {
+            throw new WebDriverException("Unable to execute Playwright Java cloud command: " + command, exception);
+        }
+    }
+
+    private String buildLambdaTestNameCommand(String testName) {
+        JSONObject action = new JSONObject()
+                .put("action", "setTestName")
+                .put("arguments", new JSONObject().put("name", testName));
+        return LAMBDATEST_ACTION_PREFIX + " " + action;
+    }
+
+    private String buildLambdaTestStatusCommand(String status, String remark) {
+        JSONObject action = new JSONObject()
+                .put("action", "setTestStatus")
+                .put("arguments", new JSONObject()
+                        .put("status", status)
+                        .put("remark", remark));
+        return LAMBDATEST_ACTION_PREFIX + " " + action;
     }
 
     private void closeSession() {

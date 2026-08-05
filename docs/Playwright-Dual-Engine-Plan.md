@@ -112,6 +112,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Add the LambdaTest `playwright-ts` worker adapter using the current teswiz web capability shape
 - [x] Add Playwright-Java remote connection resolution for BrowserStack and LambdaTest using the same normalized provider seam
 - [x] Fail fast with an explicit HeadSpin-not-supported error when Playwright web engines are used with HeadSpin config
+- [x] Route BrowserStack and LambdaTest session-name/status commands through Playwright cloud-control script paths for both Playwright engines
 - [ ] Add or complete provider-specific Playwright web adapters for BrowserStack, LambdaTest, and local CI
 - [ ] Keep provider logic at the boundary
 - [ ] Preserve Selenium cloud behavior unchanged while adding Playwright cloud support

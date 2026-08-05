@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -71,6 +72,24 @@ class PlaywrightWorkerClientTest {
                 "getInvalidLoginError", new JSONArray());
 
         assertThat(invalidLoginError).isEqualTo("Your username is invalid!");
+    }
+
+    @Test
+    void shouldAcceptCloudControlScriptsWithoutTreatingThemAsRegularJavaScript() {
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+
+        PlaywrightWorkerSession session = workerClient.createSession("buyer", "chrome");
+
+        assertThat(workerClient.executeScript(session.sessionId(),
+                "browserstack_executor: {\"action\":\"setSessionStatus\",\"arguments\":{\"status\":\"passed\",\"reason\":\"ok\"}}"))
+                        .isIn(null, JSONObject.NULL);
+
+        assertThat(workerClient.executeScript(session.sessionId(), "lambda-status=failed")).isEqualTo("failed");
+        assertThat(workerClient.executeScript(session.sessionId(), "lambda-comment=Assertion failure"))
+                .isIn(null, JSONObject.NULL);
+        assertThat(workerClient.executeScript(session.sessionId(), "lambda-name=buyer-test"))
+                .isIn(null, JSONObject.NULL);
     }
 
     private Path writeTheAppLikePage(Path tempDir) throws IOException {
