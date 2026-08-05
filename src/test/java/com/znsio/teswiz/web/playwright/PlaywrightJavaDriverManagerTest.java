@@ -33,6 +33,7 @@ import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.session.UserPersonaDetails;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import com.znsio.teswiz.web.browser.WebDriverSessionResult;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightCloudSessionMetadataResolver;
 import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfig;
 
 class PlaywrightJavaDriverManagerTest {
@@ -68,7 +69,8 @@ class PlaywrightJavaDriverManagerTest {
                         "chrome", null, Map.of("ignoreHTTPSErrors", true), Map.of()),
                 () -> PlaywrightExecutionProviderConfig.local(),
                 (browserConfig, artifactDirectory, providerConfig, userPersona) -> new PlaywrightJavaRuntime(playwright,
-                        browser));
+                        browser),
+                new PlaywrightCloudSessionMetadataResolver());
 
         WebDriverSessionResult result = manager.createWebSessionForUser("buyer", "chrome", Platform.web, context);
 
@@ -110,7 +112,8 @@ class PlaywrightJavaDriverManagerTest {
                         "chrome", null, Map.of(), Map.of()),
                 () -> PlaywrightExecutionProviderConfig.local(),
                 (browserConfig, artifactDirectory, providerConfig, userPersona) -> new PlaywrightJavaRuntime(playwright,
-                        browser));
+                        browser),
+                new PlaywrightCloudSessionMetadataResolver());
 
         WebDriverSessionResult buyerResult = manager.createWebSessionForUser("buyer", "chrome", Platform.web, context);
         WebDriverSessionResult sellerResult = manager.createWebSessionForUser("seller", "chrome", Platform.web, context);
@@ -158,14 +161,25 @@ class PlaywrightJavaDriverManagerTest {
                         "browserstack_key",
                         Map.of("browserName", "chrome")),
                 (browserConfig, artifactDirectory, providerConfig, userPersona) -> new PlaywrightJavaRuntime(playwright,
-                        browser));
+                        browser),
+                mockCloudSessionMetadataResolver(Map.of(
+                        "providerSessionId", "bs-session-1",
+                        "providerReportUrl", "https://browserstack.example/session/bs-session-1")));
 
         WebDriverSessionResult result = manager.createWebSessionForUser("buyer", "chrome", Platform.web, context);
 
         assertThat(result.sessionHandle().metadata())
                 .containsEntry("provider", "browserstack")
                 .containsEntry("remoteUrl", "https://hub-cloud.browserstack.com")
-                .containsEntry("apiUrl", "https://api-cloud.browserstack.com/app-automate/");
+                .containsEntry("apiUrl", "https://api-cloud.browserstack.com/app-automate/")
+                .containsEntry("providerSessionId", "bs-session-1")
+                .containsEntry("providerReportUrl", "https://browserstack.example/session/bs-session-1");
+    }
+
+    private PlaywrightCloudSessionMetadataResolver mockCloudSessionMetadataResolver(Map<String, String> metadata) {
+        PlaywrightCloudSessionMetadataResolver resolver = mock(PlaywrightCloudSessionMetadataResolver.class);
+        when(resolver.resolve(any(), anyString())).thenReturn(metadata);
+        return resolver;
     }
 
     private void enablePlaywrightJavaHeadless() {

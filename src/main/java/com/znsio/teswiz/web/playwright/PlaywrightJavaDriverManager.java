@@ -30,6 +30,7 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.web.WebEngine;
 import com.znsio.teswiz.web.browser.WebDriverSessionResult;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightCloudSessionMetadataResolver;
 import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfig;
 import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfigResolver;
 import com.znsio.teswiz.web.provider.playwright.PlaywrightRemoteConnectionResolver;
@@ -39,18 +40,22 @@ public final class PlaywrightJavaDriverManager {
     private final BiFunction<String, TestExecutionContext, PlaywrightBrowserConfig> browserConfigLookup;
     private final Supplier<PlaywrightExecutionProviderConfig> providerConfigSupplier;
     private final PlaywrightJavaRuntimeFactory runtimeFactory;
+    private final PlaywrightCloudSessionMetadataResolver cloudSessionMetadataResolver;
 
     public PlaywrightJavaDriverManager() {
         this(new PlaywrightBrowserConfigResolver()::resolve,
                 new PlaywrightExecutionProviderConfigResolver()::resolve,
-                new DefaultPlaywrightJavaRuntimeFactory());
+                new DefaultPlaywrightJavaRuntimeFactory(),
+                new PlaywrightCloudSessionMetadataResolver());
     }
 
     PlaywrightJavaDriverManager(BiFunction<String, TestExecutionContext, PlaywrightBrowserConfig> browserConfigLookup,
-            Supplier<PlaywrightExecutionProviderConfig> providerConfigSupplier, PlaywrightJavaRuntimeFactory runtimeFactory) {
+            Supplier<PlaywrightExecutionProviderConfig> providerConfigSupplier, PlaywrightJavaRuntimeFactory runtimeFactory,
+            PlaywrightCloudSessionMetadataResolver cloudSessionMetadataResolver) {
         this.browserConfigLookup = browserConfigLookup;
         this.providerConfigSupplier = providerConfigSupplier;
         this.runtimeFactory = runtimeFactory;
+        this.cloudSessionMetadataResolver = cloudSessionMetadataResolver;
     }
 
     public WebDriverSessionResult createWebSessionForUser(String userPersona, String browserName, Platform forPlatform,
@@ -63,7 +68,7 @@ public final class PlaywrightJavaDriverManager {
         webDriver.get(baseUrl);
 
         SessionHandle sessionHandle = buildSessionHandle(userPersona, forPlatform, context, session, browserConfig,
-                providerConfig);
+                providerConfig, cloudSessionMetadataResolver.resolve(webDriver, providerConfig.providerName()));
         return new WebDriverSessionResult(webDriver, browserConfig.headless(),
                 createCapabilities(browserConfig, sessionHandle), sessionHandle);
     }
@@ -76,7 +81,7 @@ public final class PlaywrightJavaDriverManager {
 
     private SessionHandle buildSessionHandle(String userPersona, Platform forPlatform, TestExecutionContext context,
             PlaywrightJavaSession session, PlaywrightBrowserConfig browserConfig,
-            PlaywrightExecutionProviderConfig providerConfig) {
+            PlaywrightExecutionProviderConfig providerConfig, Map<String, String> providerSessionMetadata) {
         Map<String, String> metadata = new LinkedHashMap<>();
         metadata.put("browserName", browserConfig.browserName());
         metadata.put("browserVersion", session.runtime().browser().version());
@@ -86,6 +91,7 @@ public final class PlaywrightJavaDriverManager {
         metadata.put("harFile", session.harFile().getFileName().toString());
         metadata.put("consoleFile", session.consoleFile().getFileName().toString());
         addProviderMetadata(providerConfig, metadata);
+        metadata.putAll(providerSessionMetadata);
         return new SessionHandle(userPersona, forPlatform, WebEngine.PLAYWRIGHT_JAVA.getConfigValue(),
                 session.sessionId(), context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY), metadata);
     }

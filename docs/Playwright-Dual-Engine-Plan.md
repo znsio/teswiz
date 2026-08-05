@@ -21,6 +21,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] TheApp local mixed Android + Playwright-Java validation passes through the first-class screen path
 - [x] Browser-config migration reporting and visible guidance are implemented
 - [x] Playwright-Java trace, HAR, and console artifacts flow through the shared scenario artifact reporter
+- [x] Playwright BrowserStack and LambdaTest session metadata is normalized into shared session/report metadata
 - [x] Architecture docs exist for the current web-engine model
 - [x] Repo guidance files are aligned for Codex, Claude, and Antigravity
 - [x] Browser orchestration lives in `com.znsio.teswiz.web.browser`
@@ -113,6 +114,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Add Playwright-Java remote connection resolution for BrowserStack and LambdaTest using the same normalized provider seam
 - [x] Fail fast with an explicit HeadSpin-not-supported error when Playwright web engines are used with HeadSpin config
 - [x] Route BrowserStack and LambdaTest session-name/status commands through Playwright cloud-control script paths for both Playwright engines
+- [x] Normalize BrowserStack and LambdaTest provider session/report artifact URLs into Playwright session metadata
 - [ ] Add or complete provider-specific Playwright web adapters for BrowserStack, LambdaTest, and local CI
 - [ ] Keep provider logic at the boundary
 - [ ] Preserve Selenium cloud behavior unchanged while adding Playwright cloud support

@@ -31,6 +31,7 @@ import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerSession;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightCloudSessionMetadataResolver;
 import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfig;
 
 class BrowserDriverManagerTest {
@@ -65,6 +66,36 @@ class BrowserDriverManagerTest {
         assertThat(sessionResult.sessionHandle().engine()).isEqualTo("playwright-ts");
         assertThat(workerClient.lastNavigatedUrl()).isEqualTo(Runner.getFromEnvironmentConfiguration("BASE_URL"));
         assertThat(context.getTestStateAsString(TEST_CONTEXT.WEB_BROWSER_ON)).isEqualTo("local");
+    }
+
+    @Test
+    void shouldMergeCloudMetadataIntoPlaywrightTsSessionHandle() throws Exception {
+        enablePlaywrightHeadless();
+        TestExecutionContext context = createContext("browser-manager-playwright-cloud-metadata");
+        UserPersonaDetails userPersonaDetails = (UserPersonaDetails) context
+                .getTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS);
+        userPersonaDetails.addAppName("buyer", Runner.DEFAULT);
+
+        FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
+        PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
+                (browserName, currentContext) -> stubBrowserConfig(browserName),
+                () -> new PlaywrightExecutionProviderConfig("browserstack",
+                        "wss://cdp.browserstack.com/playwright",
+                        "https://api-cloud.browserstack.com/app-automate/",
+                        "browserstack_user",
+                        "browserstack_key",
+                        Map.of("browserName", "chrome")));
+
+        WebDriverSessionResult sessionResult = BrowserDriverManager.createWebSessionForUser(
+                "buyer", "chrome", Platform.web, context, manager, mock(PlaywrightJavaDriverManager.class),
+                stubCloudSessionMetadataResolver(Map.of(
+                        "providerSessionId", "bs-session-ts-1",
+                        "providerReportUrl", "https://browserstack.example/session/bs-session-ts-1")));
+
+        assertThat(sessionResult.sessionHandle().metadata())
+                .containsEntry("provider", "browserstack")
+                .containsEntry("providerSessionId", "bs-session-ts-1")
+                .containsEntry("providerReportUrl", "https://browserstack.example/session/bs-session-ts-1");
     }
 
     @Test
@@ -190,5 +221,12 @@ class BrowserDriverManagerTest {
     private static PlaywrightBrowserConfig stubBrowserConfig(String browserName) {
         return new PlaywrightBrowserConfig(browserName, true, List.of("--disable-gpu"), null, null,
                 Map.of("ignoreHTTPSErrors", true), Map.of());
+    }
+
+    private static PlaywrightCloudSessionMetadataResolver stubCloudSessionMetadataResolver(Map<String, String> metadata) {
+        PlaywrightCloudSessionMetadataResolver resolver = mock(PlaywrightCloudSessionMetadataResolver.class);
+        when(resolver.resolve(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.anyString()))
+                .thenReturn(metadata);
+        return resolver;
     }
 }
