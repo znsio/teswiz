@@ -99,7 +99,8 @@ class PlaywrightWorkerManagerTest {
                         "https://hub.lambdatest.com/wd/hub",
                         "https://manual-api.lambdatest.com",
                         "lt_user",
-                        "lt_key"));
+                        "lt_key",
+                        Map.of("browserName", "chrome", "platform", "Windows 11")));
 
         SessionHandle sessionHandle = manager.createSessionHandle("buyer", "chrome", Platform.web, context);
 

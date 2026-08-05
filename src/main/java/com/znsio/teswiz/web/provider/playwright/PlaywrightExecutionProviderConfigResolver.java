@@ -2,6 +2,7 @@ package com.znsio.teswiz.web.provider.playwright;
 
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.znsio.teswiz.runner.Setup;
@@ -36,8 +37,10 @@ public final class PlaywrightExecutionProviderConfigResolver {
         String apiUrl = readValue(capabilityFile, loadedCapabilities, CLOUD_API_URL_PATH);
         String username = normalize(Setup.getFromConfigs(Setup.CLOUD_USERNAME));
         String accessKey = normalize(Setup.getFromConfigs(Setup.CLOUD_KEY));
+        Map<String, Object> webCapabilities = extractWebCapabilities(loadedCapabilities);
 
-        return new PlaywrightExecutionProviderConfig(providerName, remoteUrl, apiUrl, username, accessKey);
+        return new PlaywrightExecutionProviderConfig(providerName, remoteUrl, apiUrl, username, accessKey,
+                webCapabilities);
     }
 
     private String resolveProviderName(String capabilityFile, Map<String, Map> loadedCapabilities) {
@@ -58,5 +61,19 @@ public final class PlaywrightExecutionProviderConfigResolver {
             return null;
         }
         return value;
+    }
+
+    private Map<String, Object> extractWebCapabilities(Map<String, Map> loadedCapabilities) {
+        Object webNode = loadedCapabilities.get("web");
+        if (!(webNode instanceof Map<?, ?> webCapabilities)) {
+            return Map.of();
+        }
+        Map<String, Object> normalizedCapabilities = new LinkedHashMap<>();
+        for (Map.Entry<?, ?> entry : webCapabilities.entrySet()) {
+            if (entry.getKey() instanceof String key) {
+                normalizedCapabilities.put(key, entry.getValue());
+            }
+        }
+        return normalizedCapabilities;
     }
 }

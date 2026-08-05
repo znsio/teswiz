@@ -108,6 +108,8 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 ## Milestone 7: Cloud execution parity
 
 - [x] Add a shared Playwright provider-config seam for BrowserStack, LambdaTest, HeadSpin, and local execution so both Playwright engines receive normalized provider metadata and endpoints
+- [x] Add the first real `playwright-ts` provider adapter at the worker boundary for local execution and BrowserStack websocket connection shaping
+- [x] Fail fast for unsupported `playwright-ts` remote providers instead of silently attempting partial execution
 - [ ] Add or complete provider-specific Playwright web adapters for BrowserStack, LambdaTest, HeadSpin, and local CI
 - [ ] Keep provider logic at the boundary
 - [ ] Preserve Selenium cloud behavior unchanged while adding Playwright cloud support

@@ -42,7 +42,8 @@ class PlaywrightExecutionProviderConfigResolverTest {
         Files.writeString(caps, """
                 {
                   "web": {
-                    "browserName": "chrome"
+                    "browserName": "chrome",
+                    "platform": "Windows 11"
                   },
                   "serverConfig": {
                     "server": {
@@ -75,6 +76,7 @@ class PlaywrightExecutionProviderConfigResolverTest {
         assertThat(config.apiUrl()).isEqualTo("https://api-cloud.browserstack.com/app-automate/");
         assertThat(config.username()).isEqualTo("browserstack_user");
         assertThat(config.accessKey()).isEqualTo("browserstack_key");
+        assertThat(config.webCapabilities()).containsEntry("browserName", "chrome");
     }
 
     @Test
@@ -83,7 +85,8 @@ class PlaywrightExecutionProviderConfigResolverTest {
         Files.writeString(caps, """
                 {
                   "web": {
-                    "browserName": "chrome"
+                    "browserName": "chrome",
+                    "platform": "Windows 11"
                   },
                   "serverConfig": {
                     "server": {
@@ -116,6 +119,9 @@ class PlaywrightExecutionProviderConfigResolverTest {
         assertThat(config.apiUrl()).isEqualTo("https://manual-api.lambdatest.com");
         assertThat(config.username()).isEqualTo("lt_user");
         assertThat(config.accessKey()).isEqualTo("lt_key");
+        assertThat(config.webCapabilities())
+                .containsEntry("browserName", "chrome")
+                .containsEntry("platform", "Windows 11");
     }
 
     private static void setLoadedCapabilityFile(Map<String, Map> loadedCapabilities)

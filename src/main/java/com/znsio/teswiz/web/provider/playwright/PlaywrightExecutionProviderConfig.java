@@ -8,7 +8,12 @@ public record PlaywrightExecutionProviderConfig(
         String remoteUrl,
         String apiUrl,
         String username,
-        String accessKey) {
+        String accessKey,
+        Map<String, Object> webCapabilities) {
+
+    public PlaywrightExecutionProviderConfig {
+        webCapabilities = null == webCapabilities ? Map.of() : Map.copyOf(webCapabilities);
+    }
 
     public boolean isRemote() {
         return null != remoteUrl && !remoteUrl.isBlank();
@@ -29,10 +34,13 @@ public record PlaywrightExecutionProviderConfig(
         if (null != accessKey && !accessKey.isBlank()) {
             config.put("accessKey", accessKey);
         }
+        if (!webCapabilities.isEmpty()) {
+            config.put("webCapabilities", webCapabilities);
+        }
         return config;
     }
 
     public static PlaywrightExecutionProviderConfig local() {
-        return new PlaywrightExecutionProviderConfig("local", null, null, null, null);
+        return new PlaywrightExecutionProviderConfig("local", null, null, null, null, Map.of());
     }
 }

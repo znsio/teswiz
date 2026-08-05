@@ -153,7 +153,8 @@ class PlaywrightJavaDriverManagerTest {
                         "https://hub-cloud.browserstack.com",
                         "https://api-cloud.browserstack.com/app-automate/",
                         "browserstack_user",
-                        "browserstack_key"),
+                        "browserstack_key",
+                        Map.of("browserName", "chrome")),
                 (browserConfig, artifactDirectory) -> new PlaywrightJavaRuntime(playwright, browser));
 
         WebDriverSessionResult result = manager.createWebSessionForUser("buyer", "chrome", Platform.web, context);

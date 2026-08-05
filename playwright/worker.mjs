@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium, firefox, webkit } from "playwright";
+import { buildRemoteLaunchDescriptor } from "./worker-provider.mjs";
 
 const sessions = new Map();
 const browsers = new Map();
@@ -28,30 +29,49 @@ function normalizeBrowserName(browserName) {
   }
 }
 
+function resolveBrowserType(browserName) {
+  const normalizedBrowserName = normalizeBrowserName(browserName);
+  return normalizedBrowserName === "firefox"
+    ? firefox
+    : normalizedBrowserName === "webkit"
+      ? webkit
+      : chromium;
+}
+
 async function getBrowser(browserName) {
   return getBrowserWithConfig(browserName, {});
 }
 
 async function getBrowserWithConfig(browserName, browserConfig = {}) {
-  const normalizedBrowserName = normalizeBrowserName(browserName);
+  const remoteLaunchDescriptor = buildRemoteLaunchDescriptor(
+    browserName,
+    browserConfig,
+    browserConfig.executionProvider || {},
+    browserConfig.userPersona || ""
+  );
   const browserKey = JSON.stringify({
-    browserName: normalizedBrowserName,
+    browserName: normalizeBrowserName(browserName),
     channel: browserConfig.channel || null,
     executablePath: browserConfig.executablePath || null,
     headless: browserConfig.headless ?? true,
     proxy: browserConfig.launchOptions?.proxy || null,
     launchArgs: browserConfig.launchArgs || [],
+    remoteMode: remoteLaunchDescriptor?.mode || null,
+    remoteEndpoint: remoteLaunchDescriptor?.wsEndpoint || null,
   });
   if (browsers.has(browserKey)) {
     return browsers.get(browserKey);
   }
 
-  const browserType =
-    normalizedBrowserName === "firefox"
-      ? firefox
-      : normalizedBrowserName === "webkit"
-        ? webkit
-        : chromium;
+  const browser = remoteLaunchDescriptor
+    ? await connectRemoteBrowser(browserName, remoteLaunchDescriptor)
+    : await launchLocalBrowser(browserName, browserConfig);
+  browsers.set(browserKey, browser);
+  return browser;
+}
+
+async function launchLocalBrowser(browserName, browserConfig) {
+  const browserType = resolveBrowserType(browserName);
   const launchConfig = {
     headless: browserConfig.headless ?? true,
   };
@@ -67,10 +87,24 @@ async function getBrowserWithConfig(browserName, browserConfig = {}) {
   if (browserConfig.launchOptions?.proxy) {
     launchConfig.proxy = browserConfig.launchOptions.proxy;
   }
+  return browserType.launch(launchConfig);
+}
 
-  const browser = await browserType.launch(launchConfig);
-  browsers.set(browserKey, browser);
-  return browser;
+async function connectRemoteBrowser(browserName, remoteLaunchDescriptor) {
+  if (remoteLaunchDescriptor.mode !== "connect") {
+    throw new Error(`Unsupported Playwright worker remote mode: ${remoteLaunchDescriptor.mode}`);
+  }
+
+  const browserType = resolveRemoteBrowserType(browserName);
+  return browserType.connect(remoteLaunchDescriptor.wsEndpoint);
+}
+
+function resolveRemoteBrowserType(browserName) {
+  const normalizedBrowserName = normalizeBrowserName(browserName);
+  if (normalizedBrowserName === "chromium") {
+    return chromium;
+  }
+  return chromium;
 }
 
 async function finalizeSessionArtifacts(session) {
@@ -368,7 +402,11 @@ rl.on("line", async (line) => {
         process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
         break;
       case "createSession": {
-        const browser = await getBrowserWithConfig(payload.browserName, payload.browserConfig || {});
+        const browserConfig = {
+          ...(payload.browserConfig || {}),
+          userPersona: payload.userPersona,
+        };
+        const browser = await getBrowserWithConfig(payload.browserName, browserConfig);
         const sessionId = randomUUID();
         const artifactPath = payload.artifactPath || null;
         if (artifactPath) {
@@ -379,7 +417,7 @@ rl.on("line", async (line) => {
         const consoleLogPath = artifactPath
           ? path.join(artifactPath, `${payload.userPersona}-${sessionId}-console.log`)
           : null;
-        const contextOptions = { ...(payload.browserConfig?.contextOptions || {}) };
+        const contextOptions = { ...(browserConfig.contextOptions || {}) };
         if (harPath) {
           contextOptions.recordHar = { path: harPath };
         }
