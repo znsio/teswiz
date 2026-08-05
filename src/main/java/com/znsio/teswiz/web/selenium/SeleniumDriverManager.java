@@ -51,9 +51,7 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.session.UserPersonaDetails;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
-import static com.znsio.teswiz.runner.Setup.CAPS;
 import static com.znsio.teswiz.runner.Setup.HEADLESS;
-import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.OsUtils;
 import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue;
@@ -61,8 +59,6 @@ import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.web.browser.WebDriverSessionResult;
-import com.znsio.teswiz.web.provider.selenium.BrowserStackWebSetup;
-import com.znsio.teswiz.web.provider.selenium.LambdaTestWebSetup;
 import com.znsio.teswiz.web.provider.selenium.SeleniumRemoteWebDriverRequest;
 import com.znsio.teswiz.web.provider.selenium.SeleniumRemoteWebDriverRequestResolver;
 
