@@ -49,6 +49,26 @@ class ScreenContractSanityCheckerTest {
     }
 
     @Test
+    void shouldGroupJavaAndPlaywrightTsIssuesSeparatelyInReport() {
+        ScreenContractSanityChecker.ValidationReport report = new ScreenContractSanityChecker.ValidationReport(List.of(
+                new ScreenContractSanityChecker.ContractValidationResult(
+                        "com.znsio.teswiz.screen.theapp.LoginScreen",
+                        List.of("com.znsio.teswiz.screen.web.theapp.LoginScreenWeb"),
+                        List.of(
+                                "missing public constructor (Driver, Visual)",
+                                "missing playwright-ts module: src/test/resources/playwright/screens/theapp/login.screen.ts",
+                                "src/test/resources/playwright/screens/theapp/login.screen.ts: missing exported function: dismissAlert()"))));
+
+        assertThat(report.toDisplayString())
+                .contains("Java implementations: com.znsio.teswiz.screen.web.theapp.LoginScreenWeb")
+                .contains("Java issues:")
+                .contains("missing public constructor (Driver, Visual)")
+                .contains("Playwright-TS module issues:")
+                .contains("missing playwright-ts module: src/test/resources/playwright/screens/theapp/login.screen.ts")
+                .contains("src/test/resources/playwright/screens/theapp/login.screen.ts: missing exported function: dismissAlert()");
+    }
+
+    @Test
     void shouldValidatePlaywrightTsModuleExportsAgainstContract() {
         ScreenContractSanityChecker checker =
                 new ScreenContractSanityChecker(java.nio.file.Path.of("src/test/java/com/znsio/teswiz/screen"));
