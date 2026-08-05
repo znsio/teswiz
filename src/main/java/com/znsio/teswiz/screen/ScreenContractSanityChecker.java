@@ -50,7 +50,9 @@ public final class ScreenContractSanityChecker {
         boolean hasPlaywrightTsModule = moduleSupport.hasModuleFor(contractClassName);
 
         if (implementationClassNames.isEmpty() && !hasPlaywrightTsModule) {
-            violations.add("No screen implementations found");
+            violations.add("missing Java screen implementations");
+            violations.add("missing playwright-ts module: src/test/resources/playwright/screens/"
+                    + moduleSupport.expectedModulePathFor(contractClassName));
         }
 
         if (hasPlaywrightTsModule) {

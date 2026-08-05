@@ -28,7 +28,7 @@ flowchart LR
 
     WSEL --> WD[Selenium WebDriver]
     WPJ --> PWJ[Playwright Java runtime]
-    WPTS --> IPC[Java adapter -> TS worker IPC]
+    WPTS --> IPC[Java module bridge -> TS worker IPC]
     IPC --> PWT[Playwright TS worker]
     MAPP --> APP[Appium Java runtime]
 
@@ -52,7 +52,7 @@ sequenceDiagram
     participant Router as Screen / engine router
     participant Se as Selenium screen
     participant PJ as Playwright-Java screen
-    participant PT as "Java screen implementation for the playwright-ts engine"
+    participant PT as "Framework-owned playwright-ts module bridge"
     participant TS as "Playwright TS screen module"
     participant App as Appium screen
     participant Worker as TS worker
@@ -66,7 +66,7 @@ sequenceDiagram
         Router-->>BL: Playwright-Java screen
         BL->>PJ: Screen action
     else web + playwright-ts
-        Router-->>BL: Java screen implementation for the `playwright-ts` engine
+        Router-->>BL: Framework-owned `playwright-ts` module bridge
         BL->>PT: Screen action
         PT->>Worker: screenAction(screenModule, action, args)
         Worker->>TS: invoke exported action
@@ -85,7 +85,7 @@ flowchart TD
     G["Gradle sanity-check task (verifyScreenContracts)"] --> C[Validate screen contract parity]
     C --> S1[Check Selenium screens]
     C --> S2[Check Playwright-Java screens]
-    C --> S3["Check Java screen implementations for playwright-ts"]
+    C --> S3["Check playwright-ts screen modules"]
     C --> S4[Check Android / iOS screens]
     C --> R[Report missing or mismatched contracts]
 
@@ -99,6 +99,7 @@ Assumptions used by this architecture:
 * the BL layer never calls TypeScript directly
 * Playwright-TS remains a Java-owned orchestration path with a TS worker at the execution boundary
 * test-owned Playwright-TS screen modules live under `src/test/resources/playwright/screens`
+* `playwright-ts` screen resolution is module-based rather than Java-class-based
 * Selenium Java continues to work as it does today
 * multi-user and multi-platform routing remains persona/session-driven
 * engine-specific behavior belongs in engine-specific screen implementations, not in BL

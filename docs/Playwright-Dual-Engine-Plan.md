@@ -37,7 +37,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Focused browser-routing and web-engine tests pass
 - [x] Screen contracts can resolve implementations through centralized `ScreenRegistry.getScreen(...)`
 - [x] User-facing screen runtime and screen verification/reporting infrastructure now ship from `src/main`
-- [x] Framework-owned Playwright TS screen bridging removes the need for test-side Java adapter classes when a matching `.ts` screen module exists
+- [x] Framework-owned Playwright TS module bridging removes the need for test-side Java adapter classes when a matching `.ts` screen module exists
 - [x] `playwright-ts` screen resolution now fails explicitly on missing `.ts` modules instead of falling through to generic Java implementation resolution
 - [x] Runtime coverage proves missing `playwright-ts` business-screen modules fail with the expected module path
 - [x] PDF validation now lives directly in the main-side visual framework instead of test-side screen overrides
@@ -61,14 +61,14 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 
 - [x] Model `playwright-java` as an explicit web engine in core engine selection, screen-target naming, and browser-manager routing
 - [ ] Create explicit Java screen implementations for the Playwright-Java web engine for the shared business contract, starting with TheApp flows
-- [x] Create framework-owned `playwright-ts` screen bridging for the shared business contract so users only implement the contract and matching `.ts` module
+- [x] Create framework-owned `playwright-ts` module bridging for the shared business contract so users only implement the contract and matching `.ts` module
 - [ ] Retire the current Selenium-screen-through-Playwright compatibility path once equivalent first-class Java screen implementations for Playwright engines are in place
 - [ ] Remove reliance on automatic Selenium-to-Playwright mapping where Java screen implementations for Playwright engines exist
 - [x] Route screen creation via config-driven screen factories for TheApp web screens
 - [x] Add first-class `playwright-ts` screen execution for the TheApp invalid-login flow
 - [x] Add the first real worker-side `.ts` screen modules and bridge them through the Java screen contract for TheApp invalid-login
 - [x] Remove test-side Java adapter classes where framework-owned `playwright-ts` screen bridging is available
-- [x] Add explicit Java screen implementations for the `playwright-ts` web engine for the TheApp file-upload flow
+- [x] Add first-class `playwright-ts` screen-module execution for the TheApp file-upload flow
 - [x] Centralize contract-to-implementation resolution so screen `get()` methods stay one-line and non-breaking
 - [x] Add screen contract compliance checks for supported platform/engine combinations
 - [x] Add local single-user Selenium/Playwright parity tests for the shared screen contract

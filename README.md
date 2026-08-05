@@ -103,7 +103,7 @@ The dual-engine web support is intentionally organized behind internal support p
 * `com.znsio.teswiz.screen`
   * runtime screen resolution and user-invokable screen contract verification/reporting infrastructure
 
-For `WEB_ENGINE=playwright-ts`, teswiz uses the same Java BL and screen contracts, while the framework-owned `playwright-ts` bridge can delegate to worker-side TypeScript screen modules for Playwright-native behavior.
+For `WEB_ENGINE=playwright-ts`, teswiz uses the same Java BL and screen contracts, while the framework-owned `playwright-ts` module bridge delegates to worker-side TypeScript screen modules for Playwright-native behavior.
 Those test-owned TypeScript screen modules belong under `src/test/resources/playwright/screens`.
 
 * `com.znsio.teswiz.reporting`
@@ -124,6 +124,7 @@ To explicitly validate discovered screen implementations against their shared co
 `./gradlew verifyScreenContracts`
 
 This command is intentionally separate from normal test execution so teams can check screen compliance on demand while adding new Selenium, Playwright, or mobile screen implementations.
+For `playwright-ts`, this verification now calls out missing TypeScript screen modules separately from missing Java screen implementations.
 
 To report missing screen implementations for the currently supported target combinations, run:
 

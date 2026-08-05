@@ -39,9 +39,13 @@ class ScreenContractSanityCheckerTest {
                 new ScreenContractSanityChecker.ContractValidationResult(
                         "com.znsio.teswiz.screen.theapp.AppLaunchScreen",
                         List.of(),
-                        List.of("No screen implementations found"))));
+                        List.of(
+                                "missing Java screen implementations",
+                                "missing playwright-ts module: src/test/resources/playwright/screens/theapp/app-launch.screen.ts"))));
 
-        assertThat(report.toDisplayString()).contains("No screen implementations found");
+        assertThat(report.toDisplayString()).contains("missing Java screen implementations");
+        assertThat(report.toDisplayString())
+                .contains("missing playwright-ts module: src/test/resources/playwright/screens/theapp/app-launch.screen.ts");
     }
 
     @Test
