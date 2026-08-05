@@ -1,5 +1,5 @@
 import type { ScreenContext } from "../screen-context.ts";
-import { returnNoScreen, stayOnCurrentScreen } from "../screen-route.ts";
+import { stayOnCurrentScreen, unsupportedScreenAction } from "../screen-route.ts";
 
 const LOCATORS = {
   loginLink: "Form Authentication",
@@ -14,8 +14,13 @@ export function goBack() {
 }
 
 export function selectEcho() {
+  return unsupportedScreenAction(
+    "TheApp Echo screen is not supported on web for WEB_ENGINE=playwright-ts.",
+  );
 }
 
 export function goToClipboardDemo() {
-  return returnNoScreen();
+  return unsupportedScreenAction(
+    "TheApp Clipboard Demo screen is not supported on web for WEB_ENGINE=playwright-ts.",
+  );
 }

@@ -14,6 +14,7 @@ import com.znsio.teswiz.screen.theapp.LoginScreen;
 public class AppLaunchScreenPlaywrightJava extends AppLaunchScreen {
     private static final Logger LOGGER = LogManager.getLogger(AppLaunchScreenPlaywrightJava.class.getName());
     private static final By LOGIN_FORM_LINK = By.linkText("Form Authentication");
+    private static final String ENGINE_NAME = "playwright-java";
     private final Driver driver;
     private final Visual visually;
     private final String screenName = AppLaunchScreenPlaywrightJava.class.getSimpleName();
@@ -39,12 +40,17 @@ public class AppLaunchScreenPlaywrightJava extends AppLaunchScreen {
 
     @Override
     public EchoScreen selectEcho() {
-        LOGGER.info("Skipping this step for Playwright Java web");
-        return EchoScreen.get();
+        throw unsupported("Echo");
     }
 
     @Override
     public ClipboardDemoScreen goToClipboardDemo() {
-        return null;
+        throw unsupported("Clipboard Demo");
+    }
+
+    private UnsupportedOperationException unsupported(String screenName) {
+        return new UnsupportedOperationException(String.format(
+                "TheApp %s screen is not supported on web for WEB_ENGINE=%s.",
+                screenName, ENGINE_NAME));
     }
 }

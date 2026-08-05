@@ -14,6 +14,8 @@ public final class PlaywrightTsScreenActionExecutor {
     private static final String SCREEN_ROUTE = "teswizScreenRoute";
     private static final String CURRENT_SCREEN = "current";
     private static final String NO_SCREEN = "none";
+    private static final String UNSUPPORTED_SCREEN = "unsupported";
+    private static final String MESSAGE = "message";
 
     private final Class<?> screenContract;
     private final Driver driver;
@@ -69,6 +71,10 @@ public final class PlaywrightTsScreenActionExecutor {
     private Object adaptScreenResult(Object currentScreen, Class<?> returnType, Object actionResult) {
         if (actionResult instanceof JSONObject routeInstruction) {
             String route = routeInstruction.optString(SCREEN_ROUTE);
+            if (UNSUPPORTED_SCREEN.equals(route)) {
+                throw new UnsupportedOperationException(routeInstruction.optString(MESSAGE,
+                        "Unsupported playwright-ts screen action for " + screenContract.getSimpleName()));
+            }
             if (NO_SCREEN.equals(route)) {
                 return null;
             }

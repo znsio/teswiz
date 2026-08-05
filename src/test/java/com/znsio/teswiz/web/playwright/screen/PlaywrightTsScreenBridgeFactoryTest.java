@@ -1,6 +1,7 @@
 package com.znsio.teswiz.web.playwright.screen;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,6 +18,7 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Setup;
+import com.znsio.teswiz.screen.theapp.AppLaunchScreen;
 import com.znsio.teswiz.screen.generateddemo.GeneratedPlaywrightTsTestScreen;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
@@ -56,6 +58,25 @@ class PlaywrightTsScreenBridgeFactoryTest {
         assertThat(screen.readValue()).isEqualTo("framework-owned bridge");
         assertThat(screen.readValues()).containsExactly("framework-owned bridge", "framework-owned bridge-copy");
         assertThat(context.getTestState(TEST_CONTEXT.SCREENSHOT_MANAGER)).isNotNull();
+    }
+
+    @Test
+    void shouldFailFastWhenTypeScriptScreenMarksActionAsUnsupported(@TempDir Path tempDir) throws IOException {
+        setupConfig();
+        setUpContext(tempDir);
+        workerClient = new PlaywrightWorkerClient();
+        workerClient.start();
+
+        PlaywrightWorkerSession session = workerClient.createSession("buyer", "chromium", tempDir);
+        Driver driver = createDriver(session);
+        AppLaunchScreen screen = new PlaywrightTsScreenBridgeFactory()
+                .createIfSupported(AppLaunchScreen.class, driver, driver.getVisual())
+                .orElseThrow();
+
+        assertThatThrownBy(screen::goToClipboardDemo)
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessageContaining("Clipboard Demo")
+                .hasMessageContaining("playwright-ts");
     }
 
     private static void setupConfig() {
