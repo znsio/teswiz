@@ -2,13 +2,13 @@ package com.znsio.teswiz.web.provider;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.JavascriptExecutor;
 
 import com.znsio.teswiz.session.SessionHandle;
 
+import java.util.List;
 import java.util.Optional;
 
-public final class LambdaTestWebExecutionProvider implements WebExecutionProvider {
+public final class LambdaTestWebExecutionProvider extends AbstractWebExecutionProvider {
     private static final Logger LOGGER = LogManager.getLogger(LambdaTestWebExecutionProvider.class.getName());
 
     @Override
@@ -17,25 +17,26 @@ public final class LambdaTestWebExecutionProvider implements WebExecutionProvide
     }
 
     @Override
-    public void updateSessionName(JavascriptExecutor executor, String sessionName) {
-        LOGGER.info("updateSessionName for LambdaTest: '{}'", sessionName);
-        try {
-            executor.executeScript(String.format("lambda-name=%s", sessionName));
-        } catch (RuntimeException e) {
-            LOGGER.warn("Unable to set LambdaTest session name using executor command: {}", e.getMessage());
-        }
+    protected Logger log() {
+        return LOGGER;
     }
 
     @Override
-    public void updateSessionStatus(JavascriptExecutor executor, String scenarioStatus, String scenarioFailureReasons) {
-        LOGGER.info("updateSessionStatus for LambdaTest: '{}'", scenarioStatus);
+    protected String displayName() {
+        return "LambdaTest";
+    }
+
+    @Override
+    protected List<String> buildSessionNameCommands(String sessionName) {
+        return List.of(String.format("lambda-name=%s", sessionName));
+    }
+
+    @Override
+    protected List<String> buildSessionStatusCommands(String scenarioStatus, String scenarioFailureReasons) {
         String sanitizedFailureReason = scenarioFailureReasons.replace("\n", " ").replace("\r", " ");
-        try {
-            executor.executeScript(String.format("lambda-status=%s", scenarioStatus));
-            executor.executeScript(String.format("lambda-comment=%s", sanitizedFailureReason));
-        } catch (RuntimeException e) {
-            LOGGER.warn("Unable to set LambdaTest session status using executor command: {}", e.getMessage());
-        }
+        return List.of(
+                String.format("lambda-status=%s", scenarioStatus),
+                String.format("lambda-comment=%s", sanitizedFailureReason));
     }
 
     @Override

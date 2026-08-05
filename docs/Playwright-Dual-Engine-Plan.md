@@ -120,6 +120,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Validate Selenium web session-handle creation against the shared cloud metadata normalization path for LambdaTest and BrowserStack
 - [ ] Add or complete provider-specific Playwright web adapters for BrowserStack, LambdaTest, and local CI
 - [x] Move web cloud provider-config parsing into the shared `web.provider` boundary
+- [x] Move web cloud session-name/status command shaping into the shared `web.provider` boundary
 - [ ] Preserve Selenium cloud behavior unchanged while adding Playwright cloud support
 - [x] Normalize cloud metadata and artifacts across engines and providers
 - [ ] Keep provider-specific setup hidden from business tests

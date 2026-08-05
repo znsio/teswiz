@@ -1,23 +1,34 @@
 package com.znsio.teswiz.web.provider;
 
-import org.openqa.selenium.JavascriptExecutor;
-
 import com.znsio.teswiz.session.SessionHandle;
 
+import java.util.List;
 import java.util.Optional;
 
-public final class LocalWebExecutionProvider implements WebExecutionProvider {
+public final class LocalWebExecutionProvider extends AbstractWebExecutionProvider {
     @Override
     public String name() {
         return "local";
     }
 
     @Override
-    public void updateSessionName(JavascriptExecutor executor, String sessionName) {
+    protected org.apache.logging.log4j.Logger log() {
+        return org.apache.logging.log4j.LogManager.getLogger(LocalWebExecutionProvider.class.getName());
     }
 
     @Override
-    public void updateSessionStatus(JavascriptExecutor executor, String scenarioStatus, String scenarioFailureReasons) {
+    protected String displayName() {
+        return "Local";
+    }
+
+    @Override
+    protected List<String> buildSessionNameCommands(String sessionName) {
+        return List.of();
+    }
+
+    @Override
+    protected List<String> buildSessionStatusCommands(String scenarioStatus, String scenarioFailureReasons) {
+        return List.of();
     }
 
     @Override

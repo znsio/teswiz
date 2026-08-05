@@ -3,14 +3,16 @@ package com.znsio.teswiz.web.provider;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.JavascriptExecutor;
 
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.session.SessionHandle;
-
-import java.util.Map;
 
 class WebExecutionProviderAdapterTest {
     @AfterEach
@@ -77,6 +79,34 @@ class WebExecutionProviderAdapterTest {
                 .isEmpty();
     }
 
+    @Test
+    void shouldBuildExpectedBrowserStackExecutorCommands() {
+        RecordingJavascriptExecutor executor = new RecordingJavascriptExecutor();
+
+        new BrowserStackWebExecutionProvider().updateSessionName(executor, "sample-test");
+        new BrowserStackWebExecutionProvider().updateSessionStatus(executor, "passed", "Scenario passed");
+
+        assertThat(executor.commands())
+                .containsExactly(
+                        "browserstack_executor: {\"action\":\"setSessionName\",\"arguments\":{\"name\":\"sample-test\"}}",
+                        "browserstack_executor: {\"action\":\"setSessionStatus\",\"arguments\":{\"status\":\"passed\",\"reason\":\"Scenario passed\"}}");
+    }
+
+    @Test
+    void shouldBuildExpectedLambdaTestExecutorCommands() {
+        RecordingJavascriptExecutor executor = new RecordingJavascriptExecutor();
+
+        new LambdaTestWebExecutionProvider().updateSessionName(executor, "sample-test");
+        new LambdaTestWebExecutionProvider().updateSessionStatus(executor, "failed",
+                "Assertion failure\nwith newline");
+
+        assertThat(executor.commands())
+                .containsExactly(
+                        "lambda-name=sample-test",
+                        "lambda-status=failed",
+                        "lambda-comment=Assertion failure with newline");
+    }
+
     private static final class FailingJavascriptExecutor implements JavascriptExecutor {
         @Override
         public Object executeScript(String script, Object... args) {
@@ -86,6 +116,25 @@ class WebExecutionProviderAdapterTest {
         @Override
         public Object executeAsyncScript(String script, Object... args) {
             throw new RuntimeException("Session not started or terminated");
+        }
+    }
+
+    private static final class RecordingJavascriptExecutor implements JavascriptExecutor {
+        private final List<String> commands = new ArrayList<>();
+
+        @Override
+        public Object executeScript(String script, Object... args) {
+            commands.add(script);
+            return null;
+        }
+
+        @Override
+        public Object executeAsyncScript(String script, Object... args) {
+            throw new UnsupportedOperationException("Not required for this test");
+        }
+
+        private List<String> commands() {
+            return commands;
         }
     }
 }
