@@ -69,4 +69,41 @@ class CustomReportsTest {
                 .containsEntry("SESSION_ENGINES", "appium, playwright-java")
                 .containsEntry("SESSION_PROVIDERS", "browserstack, local");
     }
+
+    @Test
+    void shouldIncludeAggregatedProviderSessionMetadataInReportMetadataWhenAvailable() throws Exception {
+        Path reportsDir = Files.createTempDirectory("custom-reports-provider-metadata");
+        Path scenarioDir = Files.createDirectories(reportsDir.resolve("scenario-1"));
+        Files.writeString(scenarioDir.resolve("scenario-session-metadata.json"), """
+                {
+                  "sessions": [
+                    {
+                      "userPersona": "buyer",
+                      "metadata": {
+                        "providerSessionId": "bs-session-1",
+                        "providerReportUrl": "https://browserstack.example/session/bs-session-1"
+                      }
+                    },
+                    {
+                      "userPersona": "seller",
+                      "metadata": {
+                        "providerSessionId": "lt-session-1",
+                        "providerReportUrl": "https://automation.lambdatest.com/logs/?sessionID=lt-session-1"
+                      }
+                    }
+                  ]
+                }
+                """);
+
+        Setup.load(CONFIG_FILE);
+        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+        Setup.getExecutionArguments();
+
+        HashMap<String, Object> metadata = CustomReports.buildTestRunMetadata(reportsDir.toString());
+
+        assertThat(metadata)
+                .containsEntry("SESSION_PROVIDER_SESSION_IDS", "bs-session-1, lt-session-1")
+                .containsEntry("SESSION_PROVIDER_REPORT_URLS",
+                        "https://automation.lambdatest.com/logs/?sessionID=lt-session-1, https://browserstack.example/session/bs-session-1");
+    }
 }

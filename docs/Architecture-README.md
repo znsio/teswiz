@@ -283,6 +283,14 @@ Current examples:
 
 * `ScenarioArtifactReporter`
 
+Current reporting behavior includes:
+
+* `scenario-session-metadata.json` for per-scenario session metadata
+* `scenario-session-summary.txt` for quick human-readable session summaries
+* shared publication of Playwright trace, HAR, and console artifacts
+* HTML report classifications aggregated from scenario metadata, including personas, platforms, engines, providers,
+  and when available, provider-native cloud session ids and provider report URLs
+
 ### `com.znsio.teswiz.visual`
 
 Owns engine-specific visual helper implementations that support `runner.Visual`.

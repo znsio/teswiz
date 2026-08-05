@@ -153,6 +153,8 @@ src/test/resources/reportportal.properties file or provide the path to the file 
 variable: `REPORT_PORTAL_FILE`
 
 The generated Cucumber HTML report includes `WEB_ENGINE` in its execution metadata so the selected web engine is visible in the report.
+For runs that publish `scenario-session-metadata.json`, the HTML report also aggregates session personas/platforms/engines/providers,
+and when available, provider-native cloud session ids and provider report URLs.
 
 Test can run on local browsers / devices, or against any cloud provider, such as TestMu AI (formerly LambdaTest), HeadSpin, BrowserStack, SauceLabs, pCloudy.
 

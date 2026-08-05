@@ -138,16 +138,21 @@ class CustomReports {
         SortedSet<String> platforms = new TreeSet<>();
         SortedSet<String> engines = new TreeSet<>();
         SortedSet<String> providers = new TreeSet<>();
+        SortedSet<String> providerSessionIds = new TreeSet<>();
+        SortedSet<String> providerReportUrls = new TreeSet<>();
         jsonFiles.stream()
                 .filter(CustomReports::isScenarioSessionMetadataFile)
                 .sorted(Comparator.comparing(File::getAbsolutePath))
-                .forEach(file -> addSessionMetadataFrom(file, personas, platforms, engines, providers));
+                .forEach(file -> addSessionMetadataFrom(file, personas, platforms, engines, providers,
+                        providerSessionIds, providerReportUrls));
 
         Map<String, String> aggregatedMetadata = new LinkedHashMap<>();
         addJoinedMetadata(aggregatedMetadata, "SESSION_PERSONAS", personas);
         addJoinedMetadata(aggregatedMetadata, "SESSION_PLATFORMS", platforms);
         addJoinedMetadata(aggregatedMetadata, "SESSION_ENGINES", engines);
         addJoinedMetadata(aggregatedMetadata, "SESSION_PROVIDERS", providers);
+        addJoinedMetadata(aggregatedMetadata, "SESSION_PROVIDER_SESSION_IDS", providerSessionIds);
+        addJoinedMetadata(aggregatedMetadata, "SESSION_PROVIDER_REPORT_URLS", providerReportUrls);
         return aggregatedMetadata;
     }
 
@@ -156,15 +161,36 @@ class CustomReports {
     }
 
     private static void addSessionMetadataFrom(File file, Set<String> personas, Set<String> platforms,
-            Set<String> engines, Set<String> providers) {
+            Set<String> engines, Set<String> providers, Set<String> providerSessionIds,
+            Set<String> providerReportUrls) {
         try {
             JSONObject metadata = new JSONObject(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
             addJsonArrayValues(metadata.optJSONArray("personas"), personas);
             addJsonArrayValues(metadata.optJSONArray("platforms"), platforms);
             addJsonArrayValues(metadata.optJSONArray("engines"), engines);
             addJsonArrayValues(metadata.optJSONArray("providers"), providers);
+            addSessionDetails(metadata.optJSONArray("sessions"), providerSessionIds, providerReportUrls);
         } catch (IOException e) {
             LOGGER.warn("Unable to read scenario session metadata file: {}", file.getAbsolutePath(), e);
+        }
+    }
+
+    private static void addSessionDetails(JSONArray sessions, Set<String> providerSessionIds,
+            Set<String> providerReportUrls) {
+        if (null == sessions) {
+            return;
+        }
+        for (int index = 0; index < sessions.length(); index++) {
+            JSONObject session = sessions.optJSONObject(index);
+            if (null == session) {
+                continue;
+            }
+            JSONObject metadata = session.optJSONObject("metadata");
+            if (null == metadata) {
+                continue;
+            }
+            addJsonValue(metadata, "providerSessionId", providerSessionIds);
+            addJsonValue(metadata, "providerReportUrl", providerReportUrls);
         }
     }
 
@@ -173,10 +199,18 @@ class CustomReports {
             return;
         }
         for (int index = 0; index < values.length(); index++) {
-            String value = values.optString(index, "").trim();
-            if (!value.isBlank()) {
-                target.add(value);
-            }
+            addValue(values.optString(index, ""), target);
+        }
+    }
+
+    private static void addJsonValue(JSONObject source, String key, Set<String> target) {
+        addValue(source.optString(key, ""), target);
+    }
+
+    private static void addValue(String value, Set<String> target) {
+        String normalizedValue = value.trim();
+        if (!normalizedValue.isBlank()) {
+            target.add(normalizedValue);
         }
     }
 

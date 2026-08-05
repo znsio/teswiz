@@ -105,6 +105,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Add a Playwright-specific visual adapter path
 - [x] Keep Selenium Eyes behavior unchanged
 - [x] Ensure engine, provider, platform, persona, and session metadata are visible in reports
+- [x] Aggregate provider-native cloud session ids and report URLs into the cucumber HTML report metadata
 
 ## Milestone 7: Cloud execution parity
 
