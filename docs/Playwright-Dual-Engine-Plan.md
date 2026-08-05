@@ -117,6 +117,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Fail fast with an explicit HeadSpin-not-supported error when Playwright web engines are used with HeadSpin config
 - [x] Route BrowserStack and LambdaTest session-name/status commands through Playwright cloud-control script paths for both Playwright engines
 - [x] Normalize BrowserStack and LambdaTest provider session/report artifact URLs into Playwright session metadata
+- [x] Validate Selenium web session-handle creation against the shared cloud metadata normalization path
 - [ ] Add or complete provider-specific Playwright web adapters for BrowserStack, LambdaTest, and local CI
 - [ ] Keep provider logic at the boundary
 - [ ] Preserve Selenium cloud behavior unchanged while adding Playwright cloud support
