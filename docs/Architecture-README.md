@@ -192,6 +192,11 @@ Owns provider-aware mobile execution behavior extracted from Appium orchestratio
 Current examples:
 
 * `MobileExecutionProvider`
+
+### `com.znsio.teswiz.mobile.session`
+
+Owns internal Appium device-session state and registries so mobile runtime metadata can move out of `runner`
+without changing the stable orchestration-facing entry points.
 * `MobileExecutionProviderResolver`
 * `LocalMobileExecutionProvider`
 * `BrowserStackMobileExecutionProvider`
@@ -317,6 +322,7 @@ When adding new code for the dual-engine architecture:
 * prefer engine-specific code under `web.playwright`
 * prefer provider-specific web execution code under `web.provider`
 * prefer Selenium web cloud capability setup under `web.provider.selenium`
+* prefer Appium device-session state under `mobile.session`
 * prefer provider-specific Appium/mobile cloud behavior under `mobile.provider`
 * prefer reporting adaptation code under `reporting`
 * prefer browser-config evolution code under `config.browser`

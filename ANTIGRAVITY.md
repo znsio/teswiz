@@ -12,5 +12,6 @@ When working in this repository:
 - Prefer small, meaningfully named methods, variables, and classes.
 - Keep encapsulation tight; do not widen visibility unless there is a clear framework-facing need.
 - For `playwright-ts`, keep test-owned `.ts` screen modules under `src/test/resources/playwright/screens`.
+- Prefer internal mobile device-session state under `com.znsio.teswiz.mobile.session` instead of growing `runner`.
 - For stricter screen-contract audits, use `./gradlew verifyScreenContracts -PincludeMissingScreenTargets=true`.
 - Prefer serial focused Gradle verification runs on the same checkout; parallel independent Gradle invocations can produce misleading failures because they share build outputs and intermediates.

@@ -24,6 +24,8 @@ import com.epam.reportportal.service.ReportPortal;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.znsio.teswiz.mobile.session.AppiumDeviceSessionRegistry;
+import com.znsio.teswiz.mobile.session.MobileDriverSession;
 import com.znsio.teswiz.mobile.provider.MobileExecutionProvider;
 import com.znsio.teswiz.mobile.provider.MobileExecutionProviderResolver;
 import com.znsio.teswiz.context.SessionContext;
@@ -147,11 +149,11 @@ public class AppiumDriverManager {
         Integer scenarioCount = (Integer) testExecutionContext.getTestState(TEST_CONTEXT.EXAMPLE_RUN_COUNT);
         String deviceLogDirectory = testExecutionContext.getTestStateAsString(TEST_CONTEXT.DEVICE_LOGS_DIRECTORY);
         String fileName = String.format("%s-Device-%s-run-%s.log", scenarioCount, numberOfAppiumDriversUsed + 1,
-                AppiumDeviceManager.getAppiumDevice().getUdid());
+                AppiumDeviceSessionRegistry.getCurrentDevice().getUdid());
         if (!Runner.getCloudName().equalsIgnoreCase(NOT_SET)) {
             LOGGER.warn("Skipping logcat capture for cloud devices");
         } else {
-            if ("android".equalsIgnoreCase(AppiumDeviceManager.getAppiumDevice().getPlatformName())) {
+            if ("android".equalsIgnoreCase(AppiumDeviceSessionRegistry.getCurrentDevice().getPlatformName())) {
                 try {
                     File logFile = new File(deviceLogDirectory, fileName);
                     fileName = logFile.getAbsolutePath();
@@ -210,8 +212,8 @@ public class AppiumDriverManager {
         AppiumDriver appiumDriver = allocateDeviceAndStartDriver(testExecutionContext.getTestName());
         String deviceLogFileName = startDataCapture();
         testExecutionContext.addTestState(TEST_CONTEXT.APPIUM_DRIVER, appiumDriver);
-        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ID, AppiumDeviceManager.getAppiumDevice().getUdid());
-        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_INFO, AppiumDeviceManager.getAppiumDevice());
+        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ID, AppiumDeviceSessionRegistry.getCurrentDevice().getUdid());
+        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_INFO, AppiumDeviceSessionRegistry.getCurrentDevice());
         testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_LOG, deviceLogFileName);
 
         Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
@@ -271,7 +273,7 @@ public class AppiumDriverManager {
 
     private static boolean isRunningOnpCloudy() {
         boolean isPCloudy = getCloudName().equalsIgnoreCase("pCloudy");
-        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
+        LOGGER.info(AppiumDeviceSessionRegistry.getCurrentDevice().getUdid() + ": running on: " + getCloudName());
         return isPCloudy;
     }
 
@@ -281,19 +283,19 @@ public class AppiumDriverManager {
 
     private static boolean isRunningOnBrowserStack() {
         boolean isBrowserStack = getCloudName().equalsIgnoreCase("browserstack");
-        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
+        LOGGER.info(AppiumDeviceSessionRegistry.getCurrentDevice().getUdid() + ": running on: " + getCloudName());
         return isBrowserStack;
     }
 
     private static boolean isRunningOnHeadspin() {
         boolean isHeadspin = getCloudName().equalsIgnoreCase("headspin");
-        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
+        LOGGER.info(AppiumDeviceSessionRegistry.getCurrentDevice().getUdid() + ": running on: " + getCloudName());
         return isHeadspin;
     }
 
     private static boolean isRunningOnLambdaTest() {
         boolean isLambdaTest = getCloudName().equalsIgnoreCase("lambdatest");
-        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
+        LOGGER.info(AppiumDeviceSessionRegistry.getCurrentDevice().getUdid() + ": running on: " + getCloudName());
         return isLambdaTest;
     }
 
@@ -627,13 +629,13 @@ public class AppiumDriverManager {
         LOGGER.info("Session Created for " + platform.name() + "\n\tSession Id: " + currentDriverSession.getSessionId()
                 + "\n\tUDID: " + currentDriverSessionCapabilities.getCapability("udid"));
         String json = new Gson().toJson(currentDriverSessionCapabilities.asMap());
-        DriverSession driverSessions = null;
+        MobileDriverSession driverSessions = null;
         try {
             driverSessions = (new ObjectMapper().readValue(json, DriverSession.class));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        AppiumDeviceManager.setDevice(driverSessions);
+        AppiumDeviceSessionRegistry.setCurrentDevice(driverSessions);
         return currentDriverSession;
     }
 
