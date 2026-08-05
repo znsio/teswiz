@@ -48,6 +48,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
   - `com.znsio.teswiz.session`
   - `com.znsio.teswiz.config.browser`
   - `com.znsio.teswiz.mobile.session`
+  - `com.znsio.teswiz.mobile.server`
   - `com.znsio.teswiz.mobile.provider`
   - `com.znsio.teswiz.web`
   - `com.znsio.teswiz.web.browser`
@@ -60,6 +61,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - When adding Selenium web engine runtime code, prefer `com.znsio.teswiz.web.selenium`.
 - When adding browser-engine orchestration code, prefer `com.znsio.teswiz.web.browser`.
 - Mobile device-session state and registries belong in `com.znsio.teswiz.mobile.session`; keep `runner` compatibility wrappers only when they help avoid a breaking change.
+- Mobile Appium server lifecycle and hub URL normalization belong in `com.znsio.teswiz.mobile.server`; keep `runner` compatibility wrappers only when they help avoid a breaking change.
 - Mobile cloud capability shaping helpers belong in `com.znsio.teswiz.mobile.provider`; keep `runner` setup classes as compatibility delegates unless a breaking change is intentional.
 - Mobile cloud upload/parsing helpers should also prefer `com.znsio.teswiz.mobile.provider` when they can be extracted as pure provider logic.
 - If a change affects these boundaries, update:

@@ -140,6 +140,11 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [ ] Document any explicit user migration steps, if they are needed
 - [ ] Keep the plan file itself updated as milestones change
 
+## Package cleanup progress
+
+- [x] Extract mobile device-session state behind `mobile.session` while keeping `runner` compatibility delegates
+- [x] Extract Appium server lifecycle behind `mobile.server` while keeping `runner.AppiumServerManager` as a compatibility facade
+
 ## Notes
 
 - The goal is to keep Selenium Java stable while first-class Playwright-Java and `playwright-ts` support grows.

@@ -197,6 +197,11 @@ Current examples:
 
 Owns internal Appium device-session state and registries so mobile runtime metadata can move out of `runner`
 without changing the stable orchestration-facing entry points.
+
+### `com.znsio.teswiz.mobile.server`
+
+Owns internal Appium local-server lifecycle and remote hub URL normalization so Appium runtime plumbing can move
+out of `runner` while stable orchestration delegates remain intact.
 * `MobileExecutionProviderResolver`
 * `LocalMobileExecutionProvider`
 * `BrowserStackMobileExecutionProvider`
@@ -323,6 +328,7 @@ When adding new code for the dual-engine architecture:
 * prefer provider-specific web execution code under `web.provider`
 * prefer Selenium web cloud capability setup under `web.provider.selenium`
 * prefer Appium device-session state under `mobile.session`
+* prefer Appium server lifecycle and hub URL normalization under `mobile.server`
 * prefer provider-specific Appium/mobile cloud behavior under `mobile.provider`
 * prefer reporting adaptation code under `reporting`
 * prefer browser-config evolution code under `config.browser`
