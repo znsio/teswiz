@@ -63,6 +63,8 @@ import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.web.browser.WebDriverSessionResult;
 import com.znsio.teswiz.web.provider.selenium.BrowserStackWebSetup;
 import com.znsio.teswiz.web.provider.selenium.LambdaTestWebSetup;
+import com.znsio.teswiz.web.provider.selenium.SeleniumRemoteWebDriverRequest;
+import com.znsio.teswiz.web.provider.selenium.SeleniumRemoteWebDriverRequestResolver;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
@@ -77,6 +79,8 @@ public class SeleniumDriverManager {
     private static int numberOfWebDriversUsed = 0;
     private static boolean shouldBrowserBeMaximized = false;
     private static boolean isRunInHeadlessMode = false;
+    private static final SeleniumRemoteWebDriverRequestResolver REMOTE_WEB_DRIVER_REQUEST_RESOLVER =
+            new SeleniumRemoteWebDriverRequestResolver();
 
     private SeleniumDriverManager() {
         LOGGER.debug("SeleniumDriverManager - private constructor");
@@ -494,37 +498,14 @@ public class SeleniumDriverManager {
     @NotNull
     private static RemoteWebDriver createRemoteWebDriver(MutableCapabilities capabilities) {
         try {
-            String cloudName = Runner.getCloudName();
-            String webDriverHubSuffix = "/wd/hub";
-            String remoteUrl = "http://" + Runner.getRemoteDriverGridHostName() + ":" + Runner.getRemoteDriverGridPort()
-                    + webDriverHubSuffix;
-            if (cloudName.equalsIgnoreCase("headspin")) {
-                String authenticationKey = Runner.getCloudKey();
-                String capabilityFile = System.getProperty(CAPS);
-                Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
-                ArrayList hostMachinesList = (ArrayList) loadedCapabilityFile.get("hostMachines");
-                Map hostMachines = (Map) hostMachinesList.get(0);
-                String remoteServerURL = String.valueOf(hostMachines.get("machineIP"));
-                remoteUrl = remoteServerURL.endsWith("/")
-                        ? remoteServerURL + authenticationKey + webDriverHubSuffix
-                        : remoteServerURL + "/" + authenticationKey + webDriverHubSuffix;
-                remoteUrl = remoteUrl.startsWith("https") ? remoteUrl : "https://" + remoteUrl;
-            } else if (cloudName.equalsIgnoreCase("browserstack")) {
-                String authenticationUser = Runner.getCloudUser();
-                String authenticationKey = Runner.getCloudKey();
-                remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub-cloud.browserstack.com/wd/hub";
-                capabilities = BrowserStackWebSetup.updateCapabilities(capabilities);
-            } else if (cloudName.equalsIgnoreCase("lambdatest")) {
-                String authenticationUser = Runner.getCloudUser();
-                String authenticationKey = Runner.getCloudKey();
-                remoteUrl = "https://" + authenticationUser + ":" + authenticationKey + "@hub.lambdatest.com/wd/hub";
-                capabilities = LambdaTestWebSetup.updateCapabilities(capabilities);
-            }
+            SeleniumRemoteWebDriverRequest request = REMOTE_WEB_DRIVER_REQUEST_RESOLVER.resolve(capabilities);
+            String remoteUrl = request.remoteUrl();
+            MutableCapabilities resolvedCapabilities = request.capabilities();
 
             LOGGER.info(String.format("Starting RemoteWebDriver using url: %s with capabilities: '%s'",
                     SensitiveDataMasker.mask(remoteUrl),
-                    SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(capabilities))));
-            RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(remoteUrl), capabilities);
+                    SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(resolvedCapabilities))));
+            RemoteWebDriver remoteWebDriver = new RemoteWebDriver(new URL(remoteUrl), resolvedCapabilities);
             LOGGER.info(String.format("RemoteWebDriver created using url: %s",
                     SensitiveDataMasker.mask(remoteUrl)));
             return remoteWebDriver;

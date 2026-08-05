@@ -235,6 +235,8 @@ Current examples:
 * `LambdaTestWebSetup`
 * `BrowserStackWebCapabilitySetup`
 * `LambdaTestWebCapabilitySetup`
+* `SeleniumRemoteWebDriverRequestResolver`
+* `SeleniumRemoteWebDriverRequest`
 
 ### `com.znsio.teswiz.web.provider.playwright`
 
