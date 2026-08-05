@@ -115,6 +115,14 @@ When teswiz finds `scenario-session-metadata.json` files in the reports director
 * `SESSION_PLATFORMS`
 * `SESSION_ENGINES`
 * `SESSION_PROVIDERS`
+* `SESSION_PROVIDER_SESSION_IDS`
+* `SESSION_PROVIDER_REPORT_URLS`
+* `SESSION_PROVIDER_CONSOLE_LOG_URLS`
+* `SESSION_PROVIDER_NETWORK_LOG_URLS`
+* `SESSION_PROVIDER_VIDEO_URLS`
+* `SESSION_PROVIDER_PLAYWRIGHT_LOG_URLS`
+* `SESSION_PROVIDER_COMMAND_LOG_URLS`
+* `SESSION_PROVIDER_SCREENSHOT_URLS`
 
 This gives report readers a suite-level view of mixed persona, platform, engine, and provider usage without opening each scenario artifact manually.
 

@@ -32,6 +32,10 @@ The attached session summary and Playwright artifact messages include the follow
 
 This makes it easier to inspect mixed Selenium, Playwright, and Appium scenarios in ReportPortal without guessing which backend or persona produced a given artifact.
 
+For suite-level HTML reporting, teswiz also aggregates provider-native session and artifact URLs from
+`scenario-session-metadata.json`, including report links plus normalized console, network, video, Playwright-log,
+command-log, and screenshot URLs when the active provider exposes them.
+
 At launch level, teswiz also publishes ReportPortal attributes such as:
 
 * `Platform`

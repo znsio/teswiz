@@ -108,6 +108,55 @@ class CustomReportsTest {
     }
 
     @Test
+    void shouldIncludeAggregatedProviderArtifactUrlsInReportMetadataWhenAvailable() throws Exception {
+        Path reportsDir = Files.createTempDirectory("custom-reports-provider-artifact-metadata");
+        Path scenarioDir = Files.createDirectories(reportsDir.resolve("scenario-1"));
+        Files.writeString(scenarioDir.resolve("scenario-session-metadata.json"), """
+                {
+                  "sessions": [
+                    {
+                      "userPersona": "buyer",
+                      "metadata": {
+                        "providerConsoleLogsUrl": "https://browserstack.example/console/bs-session-1",
+                        "providerNetworkLogsUrl": "https://browserstack.example/network/bs-session-1",
+                        "providerVideoUrl": "https://browserstack.example/video/bs-session-1",
+                        "providerPlaywrightLogsUrl": "https://browserstack.example/playwright/bs-session-1"
+                      }
+                    },
+                    {
+                      "userPersona": "seller",
+                      "metadata": {
+                        "providerConsoleLogsUrl": "https://lambdatest.example/console/lt-session-1",
+                        "providerCommandLogsUrl": "https://lambdatest.example/commands/lt-session-1",
+                        "providerScreenshotUrl": "https://lambdatest.example/screenshots/lt-session-1"
+                      }
+                    }
+                  ]
+                }
+                """);
+
+        Setup.load(CONFIG_FILE);
+        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+        Setup.getExecutionArguments();
+
+        HashMap<String, Object> metadata = CustomReports.buildTestRunMetadata(reportsDir.toString());
+
+        assertThat(metadata)
+                .containsEntry("SESSION_PROVIDER_CONSOLE_LOG_URLS",
+                        "https://browserstack.example/console/bs-session-1, https://lambdatest.example/console/lt-session-1")
+                .containsEntry("SESSION_PROVIDER_NETWORK_LOG_URLS",
+                        "https://browserstack.example/network/bs-session-1")
+                .containsEntry("SESSION_PROVIDER_VIDEO_URLS",
+                        "https://browserstack.example/video/bs-session-1")
+                .containsEntry("SESSION_PROVIDER_PLAYWRIGHT_LOG_URLS",
+                        "https://browserstack.example/playwright/bs-session-1")
+                .containsEntry("SESSION_PROVIDER_COMMAND_LOG_URLS",
+                        "https://lambdatest.example/commands/lt-session-1")
+                .containsEntry("SESSION_PROVIDER_SCREENSHOT_URLS",
+                        "https://lambdatest.example/screenshots/lt-session-1");
+    }
+
+    @Test
     void shouldAggregateSeleniumProviderSessionMetadataIntoCustomReportMetadata() throws Exception {
         Path reportsDir = Files.createTempDirectory("custom-reports-selenium-provider-metadata");
         Path scenarioDir = Files.createDirectories(reportsDir.resolve("scenario-1"));

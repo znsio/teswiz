@@ -166,7 +166,8 @@ alongside the shared scenario/session artifacts.
 
 The generated Cucumber HTML report includes `WEB_ENGINE` in its execution metadata so the selected web engine is visible in the report.
 For runs that publish `scenario-session-metadata.json`, the HTML report also aggregates session personas/platforms/engines/providers,
-and when available, provider-native cloud session ids and provider report URLs.
+and when available, provider-native cloud session ids, report URLs, and normalized artifact URLs such as console logs,
+network logs, video links, Playwright logs, command logs, and screenshots.
 
 Test can run on local browsers / devices, or against any cloud provider, such as TestMu AI (formerly LambdaTest), HeadSpin, BrowserStack, SauceLabs, pCloudy.
 

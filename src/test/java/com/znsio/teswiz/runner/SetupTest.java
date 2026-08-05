@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Map;
 
@@ -158,17 +160,18 @@ class SetupTest {
         assertThat(batchInfo.getName()).as("Applitools Batch name suffix is not set as expected").endsWith(batchNameSuffix);
     }
 
-    @Test
-    void shouldIncludeProviderAndWebEngineInReportPortalAttributesForWebRuns() {
+    @ParameterizedTest
+    @ValueSource(strings = {"selenium", "playwright-java", "playwright-ts"})
+    void shouldIncludeProviderAndWebEngineInReportPortalAttributesForWebRuns(String webEngine) {
         String webConfigFilePath = "./configs/theapp/theapp_local_web_config.properties";
-        System.setProperty(Setup.WEB_ENGINE, "playwright-java");
+        System.setProperty(Setup.WEB_ENGINE, webEngine);
         Setup.load(webConfigFilePath);
         Setup.loadAndUpdateConfigParameters(webConfigFilePath);
         Setup.getExecutionArguments();
 
         assertThat(System.getProperty("rp.attributes"))
                 .contains("Platform:web;")
-                .contains("WebEngine:playwright-java;")
+                .contains("WebEngine:" + webEngine + ";")
                 .contains("Provider:local;");
     }
 }

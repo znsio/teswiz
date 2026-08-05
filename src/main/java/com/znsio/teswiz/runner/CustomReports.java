@@ -22,6 +22,15 @@ import static com.znsio.teswiz.runner.Setup.*;
 
 class CustomReports {
     private static final Logger LOGGER = LogManager.getLogger(CustomReports.class.getName());
+    private static final Map<String, String> PROVIDER_ARTIFACT_METADATA_KEYS = Map.of(
+            "providerSessionId", "SESSION_PROVIDER_SESSION_IDS",
+            "providerReportUrl", "SESSION_PROVIDER_REPORT_URLS",
+            "providerConsoleLogsUrl", "SESSION_PROVIDER_CONSOLE_LOG_URLS",
+            "providerNetworkLogsUrl", "SESSION_PROVIDER_NETWORK_LOG_URLS",
+            "providerVideoUrl", "SESSION_PROVIDER_VIDEO_URLS",
+            "providerPlaywrightLogsUrl", "SESSION_PROVIDER_PLAYWRIGHT_LOG_URLS",
+            "providerCommandLogsUrl", "SESSION_PROVIDER_COMMAND_LOG_URLS",
+            "providerScreenshotUrl", "SESSION_PROVIDER_SCREENSHOT_URLS");
 
     private CustomReports() {
         LOGGER.debug("CustomReports - private constructor");
@@ -138,21 +147,19 @@ class CustomReports {
         SortedSet<String> platforms = new TreeSet<>();
         SortedSet<String> engines = new TreeSet<>();
         SortedSet<String> providers = new TreeSet<>();
-        SortedSet<String> providerSessionIds = new TreeSet<>();
-        SortedSet<String> providerReportUrls = new TreeSet<>();
+        Map<String, SortedSet<String>> providerArtifactMetadata = createProviderArtifactMetadataAccumulator();
         jsonFiles.stream()
                 .filter(CustomReports::isScenarioSessionMetadataFile)
                 .sorted(Comparator.comparing(File::getAbsolutePath))
                 .forEach(file -> addSessionMetadataFrom(file, personas, platforms, engines, providers,
-                        providerSessionIds, providerReportUrls));
+                        providerArtifactMetadata));
 
         Map<String, String> aggregatedMetadata = new LinkedHashMap<>();
         addJoinedMetadata(aggregatedMetadata, "SESSION_PERSONAS", personas);
         addJoinedMetadata(aggregatedMetadata, "SESSION_PLATFORMS", platforms);
         addJoinedMetadata(aggregatedMetadata, "SESSION_ENGINES", engines);
         addJoinedMetadata(aggregatedMetadata, "SESSION_PROVIDERS", providers);
-        addJoinedMetadata(aggregatedMetadata, "SESSION_PROVIDER_SESSION_IDS", providerSessionIds);
-        addJoinedMetadata(aggregatedMetadata, "SESSION_PROVIDER_REPORT_URLS", providerReportUrls);
+        addProviderArtifactMetadata(aggregatedMetadata, providerArtifactMetadata);
         return aggregatedMetadata;
     }
 
@@ -161,22 +168,20 @@ class CustomReports {
     }
 
     private static void addSessionMetadataFrom(File file, Set<String> personas, Set<String> platforms,
-            Set<String> engines, Set<String> providers, Set<String> providerSessionIds,
-            Set<String> providerReportUrls) {
+            Set<String> engines, Set<String> providers, Map<String, SortedSet<String>> providerArtifactMetadata) {
         try {
             JSONObject metadata = new JSONObject(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
             addJsonArrayValues(metadata.optJSONArray("personas"), personas);
             addJsonArrayValues(metadata.optJSONArray("platforms"), platforms);
             addJsonArrayValues(metadata.optJSONArray("engines"), engines);
             addJsonArrayValues(metadata.optJSONArray("providers"), providers);
-            addSessionDetails(metadata.optJSONArray("sessions"), providerSessionIds, providerReportUrls);
+            addSessionDetails(metadata.optJSONArray("sessions"), providerArtifactMetadata);
         } catch (IOException e) {
             LOGGER.warn("Unable to read scenario session metadata file: {}", file.getAbsolutePath(), e);
         }
     }
 
-    private static void addSessionDetails(JSONArray sessions, Set<String> providerSessionIds,
-            Set<String> providerReportUrls) {
+    private static void addSessionDetails(JSONArray sessions, Map<String, SortedSet<String>> providerArtifactMetadata) {
         if (null == sessions) {
             return;
         }
@@ -189,8 +194,29 @@ class CustomReports {
             if (null == metadata) {
                 continue;
             }
-            addJsonValue(metadata, "providerSessionId", providerSessionIds);
-            addJsonValue(metadata, "providerReportUrl", providerReportUrls);
+            addProviderArtifactMetadata(metadata, providerArtifactMetadata);
+        }
+    }
+
+    private static Map<String, SortedSet<String>> createProviderArtifactMetadataAccumulator() {
+        Map<String, SortedSet<String>> accumulator = new LinkedHashMap<>();
+        for (String metadataKey : PROVIDER_ARTIFACT_METADATA_KEYS.keySet()) {
+            accumulator.put(metadataKey, new TreeSet<>());
+        }
+        return accumulator;
+    }
+
+    private static void addProviderArtifactMetadata(JSONObject sessionMetadata,
+            Map<String, SortedSet<String>> providerArtifactMetadata) {
+        for (Map.Entry<String, String> entry : PROVIDER_ARTIFACT_METADATA_KEYS.entrySet()) {
+            addJsonValue(sessionMetadata, entry.getKey(), providerArtifactMetadata.get(entry.getKey()));
+        }
+    }
+
+    private static void addProviderArtifactMetadata(Map<String, String> aggregatedMetadata,
+            Map<String, SortedSet<String>> providerArtifactMetadata) {
+        for (Map.Entry<String, String> entry : PROVIDER_ARTIFACT_METADATA_KEYS.entrySet()) {
+            addJoinedMetadata(aggregatedMetadata, entry.getValue(), providerArtifactMetadata.get(entry.getKey()));
         }
     }
 

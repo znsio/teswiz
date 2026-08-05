@@ -169,5 +169,5 @@ To enable Visual test automation using Applitools Visual AI, follow the steps be
   * from the command line - ex: `CONFIG=./configs/jiomeet_local_config.properties IS_VISUAL=true ./gradlew run`, or
   * as an environment variable
 
-For web runs, the report metadata in the generated Cucumber HTML report includes `WEB_ENGINE`, and when scenario session metadata is available it also includes aggregated `SESSION_PERSONAS`, `SESSION_PLATFORMS`, `SESSION_ENGINES`, and `SESSION_PROVIDERS`.
+For web runs, the report metadata in the generated Cucumber HTML report includes `WEB_ENGINE`, and when scenario session metadata is available it also includes aggregated `SESSION_PERSONAS`, `SESSION_PLATFORMS`, `SESSION_ENGINES`, `SESSION_PROVIDERS`, and provider-side session artifact links such as `SESSION_PROVIDER_REPORT_URLS`, `SESSION_PROVIDER_CONSOLE_LOG_URLS`, and `SESSION_PROVIDER_NETWORK_LOG_URLS`.
 This helps visual report consumers understand mixed persona, platform, engine, and provider coverage for the run.

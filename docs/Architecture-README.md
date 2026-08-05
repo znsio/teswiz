@@ -296,7 +296,7 @@ Current reporting behavior includes:
 * shared publication of Playwright trace, HAR, and console artifacts
 * ReportPortal log messages for web cloud provider report links when session metadata includes provider-native report details
 * HTML report classifications aggregated from scenario metadata, including personas, platforms, engines, providers,
-  and when available, provider-native cloud session ids and provider report URLs
+  and when available, provider-native cloud session ids, report URLs, and normalized provider artifact URLs
 
 ### `com.znsio.teswiz.visual`
 
