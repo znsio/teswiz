@@ -9,7 +9,7 @@ enum ScreenImplementationTarget {
     PDF("pdf", "pdf", "PDF"),
     WEB_SELENIUM("web-selenium", "web", "Web"),
     WEB_PLAYWRIGHT_JAVA("web-playwright-java", "web.playwrightjava", "PlaywrightJava"),
-    WEB_PLAYWRIGHT_TS("web-playwright-ts", "web.playwright", "PlaywrightTsAdapter");
+    WEB_PLAYWRIGHT_TS("web-playwright-ts", null, null);
 
     private static final String ROOT_PACKAGE = "com.znsio.teswiz.screen";
 
@@ -28,13 +28,28 @@ enum ScreenImplementationTarget {
     }
 
     String expectedClassName(String contractClassName) {
+        if (isPlaywrightTsModuleTarget()) {
+            throw new IllegalStateException("playwright-ts uses TypeScript screen modules, not Java implementation classes");
+        }
         String domain = domainOf(contractClassName);
         String implementationPackage = joinPackage(packageSegment, domain);
         return implementationPackage + "." + simpleNameOf(contractClassName) + classSuffix;
     }
 
+    String expectedReference(String contractClassName) {
+        if (isPlaywrightTsModuleTarget()) {
+            return "src/test/resources/playwright/screens/"
+                    + new PlaywrightTsScreenModuleSupport().expectedModulePathFor(contractClassName);
+        }
+        return expectedClassName(contractClassName);
+    }
+
     static List<ScreenImplementationTarget> supportedTargets() {
         return List.of(values());
+    }
+
+    private boolean isPlaywrightTsModuleTarget() {
+        return this == WEB_PLAYWRIGHT_TS;
     }
 
     private static String simpleNameOf(String className) {

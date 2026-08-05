@@ -39,15 +39,11 @@ public final class ScreenContractCoverageReporter {
 
     private TargetCoverage describeTargetCoverage(String contractClassName, List<String> implementationClassNames,
                                                   ScreenImplementationTarget target) {
-        if (target == ScreenImplementationTarget.WEB_PLAYWRIGHT_TS) {
-            String expectedModulePath = "src/test/resources/playwright/screens/"
-                    + moduleSupport.expectedModulePathFor(contractClassName);
-            return new TargetCoverage(target.displayName(), expectedModulePath,
-                    moduleSupport.hasModuleFor(contractClassName));
-        }
-        String expectedClassName = target.expectedClassName(contractClassName);
-        boolean implemented = implementationClassNames.contains(expectedClassName);
-        return new TargetCoverage(target.displayName(), expectedClassName, implemented);
+        String expectedReference = target.expectedReference(contractClassName);
+        boolean implemented = target == ScreenImplementationTarget.WEB_PLAYWRIGHT_TS
+                ? moduleSupport.hasModuleFor(contractClassName)
+                : implementationClassNames.contains(expectedReference);
+        return new TargetCoverage(target.displayName(), expectedReference, implemented);
     }
 
     record ContractCoverage(String contractClassName, List<TargetCoverage> targetCoverage) {
