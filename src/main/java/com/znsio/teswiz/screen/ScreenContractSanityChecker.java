@@ -13,7 +13,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class ScreenContractSanityChecker {
     private final ScreenClassCatalog classCatalog;
@@ -141,19 +140,48 @@ public final class ScreenContractSanityChecker {
 
             String failures = results.stream()
                     .filter(result -> !result.isSuccessful())
-                    .map(result -> {
-                        String implementations = result.implementationClassNames().isEmpty()
-                                ? "none"
-                                : String.join(", ", result.implementationClassNames());
-                        String violations = result.violations().stream()
-                                .map(violation -> "  - " + violation)
-                                .collect(Collectors.joining(System.lineSeparator()));
-                        return result.contractClassName() + System.lineSeparator()
-                                + " Implementations: " + implementations + System.lineSeparator()
-                                + violations;
-                    })
+                    .map(this::formatContractFailure)
                     .collect(Collectors.joining(System.lineSeparator() + System.lineSeparator()));
             return summary + System.lineSeparator() + failures;
+        }
+
+        private String formatContractFailure(ContractValidationResult result) {
+            List<String> moduleViolations = result.violations().stream()
+                    .filter(this::isPlaywrightTsModuleViolation)
+                    .toList();
+            List<String> javaViolations = result.violations().stream()
+                    .filter(violation -> !isPlaywrightTsModuleViolation(violation))
+                    .toList();
+
+            List<String> lines = new ArrayList<>();
+            lines.add(result.contractClassName());
+            lines.add(" Java implementations: " + formatImplementations(result.implementationClassNames()));
+            if (!javaViolations.isEmpty()) {
+                lines.add(" Java issues:");
+                lines.add(formatViolations(javaViolations));
+            }
+            if (!moduleViolations.isEmpty()) {
+                lines.add(" Playwright-TS module issues:");
+                lines.add(formatViolations(moduleViolations));
+            }
+            return String.join(System.lineSeparator(), lines);
+        }
+
+        private String formatImplementations(List<String> implementationClassNames) {
+            return implementationClassNames.isEmpty()
+                    ? "none"
+                    : String.join(", ", implementationClassNames);
+        }
+
+        private String formatViolations(List<String> violations) {
+            return violations.stream()
+                    .map(violation -> "  - " + violation)
+                    .collect(Collectors.joining(System.lineSeparator()));
+        }
+
+        private boolean isPlaywrightTsModuleViolation(String violation) {
+            return violation.startsWith("missing playwright-ts module:")
+                    || violation.startsWith("src/test/resources/playwright/screens/");
         }
     }
 }
