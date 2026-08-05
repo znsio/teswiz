@@ -38,6 +38,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Screen contracts can resolve implementations through centralized `ScreenRegistry.getScreen(...)`
 - [x] User-facing screen runtime and screen verification/reporting infrastructure now ship from `src/main`
 - [x] Framework-owned Playwright TS screen bridging removes the need for test-side Java adapter classes when a matching `.ts` screen module exists
+- [x] `playwright-ts` screen resolution now fails explicitly on missing `.ts` modules instead of falling through to generic Java implementation resolution
 - [x] PDF validation now lives directly in the main-side visual framework instead of test-side screen overrides
 
 ## Milestone 1: Normalize package boundaries and reduce public surface area

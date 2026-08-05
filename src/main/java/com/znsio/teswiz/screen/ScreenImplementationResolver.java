@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.NotImplementedException;
 
 import com.znsio.teswiz.entities.Platform;
+import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.web.WebEngine;
 
 public final class ScreenImplementationResolver {
@@ -16,6 +17,9 @@ public final class ScreenImplementationResolver {
     }
 
     public static <T> Class<? extends T> resolve(Class<T> screenContract, Platform platform, WebEngine webEngine) {
+        if (isPlaywrightTs(platform, webEngine)) {
+            throw missingPlaywrightTsModule(screenContract);
+        }
         Class<?> override = OVERRIDES.get(new ScreenKey(screenContract, platform, webEngine));
         if (null == override) {
             override = OVERRIDES.get(new ScreenKey(screenContract, platform, null));
@@ -24,6 +28,19 @@ public final class ScreenImplementationResolver {
             return castOverride(screenContract, override);
         }
         return loadClass(screenContract, resolveByConvention(screenContract, platform, webEngine));
+    }
+
+    private static boolean isPlaywrightTs(Platform platform, WebEngine webEngine) {
+        return (Platform.web.equals(platform) || Platform.electron.equals(platform))
+                && WebEngine.PLAYWRIGHT_TS.equals(webEngine);
+    }
+
+    private static <T> InvalidTestDataException missingPlaywrightTsModule(Class<T> screenContract) {
+        String expectedModulePath = new PlaywrightTsScreenModuleSupport().expectedModulePathFor(screenContract.getName());
+        return new InvalidTestDataException(String.format(
+                "WEB_ENGINE=playwright-ts requires a matching TypeScript screen module for %s. Expected module: src/test/resources/playwright/screens/%s",
+                screenContract.getName(),
+                expectedModulePath));
     }
 
     private static <T> String resolveByConvention(Class<T> screenContract, Platform platform, WebEngine webEngine) {
@@ -50,7 +67,8 @@ public final class ScreenImplementationResolver {
         return switch (webEngine) {
             case SELENIUM -> "web";
             case PLAYWRIGHT_JAVA -> "web.playwrightjava";
-            case PLAYWRIGHT_TS -> "web.playwright";
+            case PLAYWRIGHT_TS -> throw new InvalidTestDataException(
+                    "playwright-ts screen resolution is module-based and should not resolve Java implementation packages");
         };
     }
 
@@ -63,7 +81,8 @@ public final class ScreenImplementationResolver {
             case web, electron -> switch (webEngine) {
                 case SELENIUM -> "Web";
                 case PLAYWRIGHT_JAVA -> "PlaywrightJava";
-                case PLAYWRIGHT_TS -> "PlaywrightTsAdapter";
+                case PLAYWRIGHT_TS -> throw new InvalidTestDataException(
+                        "playwright-ts screen resolution is module-based and should not resolve Java implementation suffixes");
             };
             default -> throw new NotImplementedException("Unsupported platform: " + platform);
         };

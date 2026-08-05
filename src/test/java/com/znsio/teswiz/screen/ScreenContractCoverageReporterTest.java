@@ -11,12 +11,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ScreenContractCoverageReporterTest {
     @Test
-    void shouldBuildExpectedClassNameForPlaywrightTsWeb() {
-        String expectedClassName = ScreenImplementationTarget.WEB_PLAYWRIGHT_TS
-                .expectedClassName("com.znsio.teswiz.screen.theapp.LoginScreen");
+    void shouldBuildExpectedModulePathForPlaywrightTsWeb() {
+        String expectedModulePath = new PlaywrightTsScreenModuleSupport()
+                .expectedModulePathFor("com.znsio.teswiz.screen.theapp.LoginScreen");
 
-        assertThat(expectedClassName)
-                .isEqualTo("com.znsio.teswiz.screen.web.playwright.theapp.LoginScreenPlaywrightTsAdapter");
+        assertThat(expectedModulePath)
+                .isEqualTo("theapp/login.screen.ts");
     }
 
     @Test
