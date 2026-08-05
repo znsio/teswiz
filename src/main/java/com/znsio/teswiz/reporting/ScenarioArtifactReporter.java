@@ -46,8 +46,9 @@ public final class ScenarioArtifactReporter {
         Path summaryFile = writeScenarioSummary(context, userPersonaDetails);
         publishArtifact("Scenario session metadata", metadataFile.toFile(), artifactPublisher);
         publishArtifact("Scenario session summary", summaryFile.toFile(), artifactPublisher);
-        for (Path artifact : discoverPlaywrightArtifacts(userPersonaDetails)) {
-            publishArtifact("Playwright artifact: " + artifact.getFileName(), artifact.toFile(), artifactPublisher);
+        for (SessionPlaywrightArtifact artifact : discoverPlaywrightArtifacts(userPersonaDetails)) {
+            publishArtifact("Playwright artifact: " + artifact.path().getFileName(), artifact.sessionHandle(),
+                    artifact.path().toFile(), artifactPublisher);
         }
         return metadataFile;
     }
@@ -161,6 +162,7 @@ public final class ScenarioArtifactReporter {
             summary.append("Persona: ").append(sessionHandle.userPersona()).append(System.lineSeparator());
             summary.append("Platform: ").append(sessionHandle.platform().name()).append(System.lineSeparator());
             summary.append("Engine: ").append(sessionHandle.engine()).append(System.lineSeparator());
+            summary.append("Provider: ").append(getSessionProvider(sessionHandle)).append(System.lineSeparator());
             summary.append("SessionId: ").append(sessionHandle.sessionId()).append(System.lineSeparator());
             summary.append("ArtifactPath: ").append(sessionHandle.artifactPath()).append(System.lineSeparator());
             for (Map.Entry<String, String> metadataEntry : sessionHandle.metadata().entrySet()) {
@@ -172,8 +174,12 @@ public final class ScenarioArtifactReporter {
         return summary.toString();
     }
 
-    static List<Path> discoverPlaywrightArtifacts(UserPersonaDetails userPersonaDetails) {
-        List<Path> artifacts = new ArrayList<>();
+    static List<Path> discoverPlaywrightArtifactsForTest(UserPersonaDetails userPersonaDetails) {
+        return discoverPlaywrightArtifacts(userPersonaDetails).stream().map(SessionPlaywrightArtifact::path).toList();
+    }
+
+    static List<SessionPlaywrightArtifact> discoverPlaywrightArtifacts(UserPersonaDetails userPersonaDetails) {
+        List<SessionPlaywrightArtifact> artifacts = new ArrayList<>();
         for (SessionHandle sessionHandle : userPersonaDetails.getAllAssignedUserPersonasAndSessionHandles().values()) {
             if (!isPlaywrightEngine(sessionHandle.engine())) {
                 continue;
@@ -183,11 +189,11 @@ public final class ScenarioArtifactReporter {
             for (String artifactSuffix : PLAYWRIGHT_ARTIFACT_SUFFIXES) {
                 Path artifact = artifactDirectory.resolve(artifactPrefix + artifactSuffix);
                 if (Files.exists(artifact)) {
-                    artifacts.add(artifact);
+                    artifacts.add(new SessionPlaywrightArtifact(sessionHandle, artifact));
                 }
             }
         }
-        artifacts.sort(Comparator.naturalOrder());
+        artifacts.sort(Comparator.comparing(sessionArtifact -> sessionArtifact.path().toString()));
         LOGGER.info("Discovered '{}' Playwright reporting artifacts", artifacts.size());
         return artifacts;
     }
@@ -196,8 +202,32 @@ public final class ScenarioArtifactReporter {
         return "playwright-ts".equalsIgnoreCase(engine) || "playwright-java".equalsIgnoreCase(engine);
     }
 
+    private static String getSessionProvider(SessionHandle sessionHandle) {
+        String provider = sessionHandle.metadata().get("provider");
+        if (null == provider || provider.isBlank()) {
+            return getProvider();
+        }
+        return provider;
+    }
+
+    private static String describeSession(SessionHandle sessionHandle) {
+        return "persona=" + sessionHandle.userPersona()
+                + ", platform=" + sessionHandle.platform().name()
+                + ", engine=" + sessionHandle.engine()
+                + ", provider=" + getSessionProvider(sessionHandle)
+                + ", sessionId=" + sessionHandle.sessionId();
+    }
+
+    private static void publishArtifact(String label, SessionHandle sessionHandle, File artifact,
+            ScenarioArtifactPublisher artifactPublisher) {
+        publishArtifact(label + " [" + describeSession(sessionHandle) + "]", artifact, artifactPublisher);
+    }
+
     @FunctionalInterface
     interface ScenarioArtifactPublisher {
         void publish(String message, File artifact);
+    }
+
+    record SessionPlaywrightArtifact(SessionHandle sessionHandle, Path path) {
     }
 }

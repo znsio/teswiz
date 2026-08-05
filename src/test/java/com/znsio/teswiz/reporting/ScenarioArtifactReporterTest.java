@@ -19,6 +19,9 @@ import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.session.UserPersonaDetails;
 
 class ScenarioArtifactReporterTest {
+    private record PublishedArtifact(String message, Path path) {
+    }
+
     @AfterEach
     void cleanUp() {
         SessionContext.remove(Thread.currentThread().getId());
@@ -49,10 +52,10 @@ class ScenarioArtifactReporterTest {
                         "contextId", "context-1",
                         "pageId", "page-1")));
 
-        List<Path> publishedArtifacts = new ArrayList<>();
+        List<PublishedArtifact> publishedArtifacts = new ArrayList<>();
 
         Path metadataFile = ScenarioArtifactReporter.publish(context, userPersonaDetails,
-                (message, artifact) -> publishedArtifacts.add(artifact.toPath()));
+                (message, artifact) -> publishedArtifacts.add(new PublishedArtifact(message, artifact.toPath())));
         Path summaryFile = scenarioDir.resolve("scenario-session-summary.txt");
 
         assertThat(metadataFile).exists();
@@ -67,9 +70,18 @@ class ScenarioArtifactReporterTest {
                 .contains("Scenario: reporting-parity")
                 .contains("Persona: buyer")
                 .contains("Engine: playwright-ts")
+                .contains("Provider: local")
+                .contains("Platform: web")
                 .contains("SessionId: playwright-session-1");
-        assertThat(publishedArtifacts)
+        assertThat(publishedArtifacts.stream().map(PublishedArtifact::path))
                 .contains(metadataFile, summaryFile, traceFile, harFile, consoleFile);
+        assertThat(publishedArtifacts.stream().map(PublishedArtifact::message))
+                .anySatisfy(message -> assertThat(message)
+                        .contains("persona=buyer")
+                        .contains("platform=web")
+                        .contains("engine=playwright-ts")
+                        .contains("provider=local")
+                        .contains("sessionId=playwright-session-1"));
     }
 
     @Test
@@ -96,17 +108,24 @@ class ScenarioArtifactReporterTest {
                         "browserName", "chrome",
                         "provider", "local")));
 
-        List<Path> publishedArtifacts = new ArrayList<>();
+        List<PublishedArtifact> publishedArtifacts = new ArrayList<>();
 
         Path metadataFile = ScenarioArtifactReporter.publish(context, userPersonaDetails,
-                (message, artifact) -> publishedArtifacts.add(artifact.toPath()));
+                (message, artifact) -> publishedArtifacts.add(new PublishedArtifact(message, artifact.toPath())));
 
         assertThat(metadataFile).exists();
         assertThat(Files.readString(metadataFile))
                 .contains("\"engine\": \"playwright-java\"")
                 .contains("\"browserName\": \"chrome\"");
-        assertThat(publishedArtifacts)
+        assertThat(publishedArtifacts.stream().map(PublishedArtifact::path))
                 .contains(metadataFile, traceFile, harFile, consoleFile);
+        assertThat(publishedArtifacts.stream().map(PublishedArtifact::message))
+                .anySatisfy(message -> assertThat(message)
+                        .contains("persona=seller")
+                        .contains("platform=web")
+                        .contains("engine=playwright-java")
+                        .contains("provider=local")
+                        .contains("sessionId=playwright-java-session-1"));
     }
 
     @Test
