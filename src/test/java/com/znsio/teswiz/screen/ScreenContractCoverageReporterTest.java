@@ -50,6 +50,26 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldTreatGoogleSearchPlaywrightJavaScreensAsImplementedTargets() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.googlesearch.GoogleSearchLandingScreenPlaywrightJava");
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.googlesearch.GoogleSearchResultsScreenPlaywrightJava");
+    }
+
+    @Test
+    void shouldTreatTheAppFileUploadPlaywrightJavaScreenAsImplementedTarget() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.theapp.FileUploadScreenPlaywrightJava");
+    }
+
+    @Test
     void shouldTreatMigratedIndigoTsModulesAsImplementedTargets() throws IOException {
         ScreenContractCoverageReporter.CoverageReport report =
                 new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();

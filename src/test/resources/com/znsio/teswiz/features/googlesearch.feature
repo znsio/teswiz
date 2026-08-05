@@ -3,6 +3,7 @@ Feature: Scenarios for "google-search"
 
 #  CONFIG=./configs/googlesearch/googlesearch_local_web_config.properties PLATFORM=web TAG="@google-search and @web" ./gradlew run
 #  WEB_ENGINE=playwright-ts CONFIG=./configs/googlesearch/googlesearch_local_web_config.properties PLATFORM=web TAG="@google-search and @web" ./gradlew run
+#  WEB_ENGINE=playwright-java CONFIG=./configs/googlesearch/googlesearch_local_web_config.properties PLATFORM=web TAG="@google-search and @web" ./gradlew run
 #  WEB_ENGINE=selenium CONFIG=./configs/googlesearch/googlesearch_local_web_config.properties PLATFORM=web TAG="@google-search and @web" ./gradlew run
 
 #  CONFIG=./configs/googlesearch/googlesearch_android_chrome_config.properties PLATFORM=android TAG="@google-search and @android-chrome" ./gradlew run

@@ -19,6 +19,8 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] TheApp local single-user Playwright-Java validation passes through the first-class screen path
 - [x] TheApp local multi-user Playwright-Java validation passes through the first-class screen path
 - [x] TheApp local mixed Android + Playwright-Java validation passes through the first-class screen path
+- [x] Google Search web contracts now have explicit `playwright-java` screen implementations
+- [x] TheApp file-upload web contract now has an explicit `playwright-java` screen implementation
 - [x] Browser-config migration reporting and visible guidance are implemented
 - [x] Playwright-Java trace, HAR, and console artifacts flow through the shared scenario artifact reporter
 - [x] Playwright BrowserStack and LambdaTest session metadata is normalized into shared session/report metadata
