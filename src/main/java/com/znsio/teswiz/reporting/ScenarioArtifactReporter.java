@@ -130,7 +130,7 @@ public final class ScenarioArtifactReporter {
     static List<Path> discoverPlaywrightArtifacts(UserPersonaDetails userPersonaDetails) {
         List<Path> artifacts = new ArrayList<>();
         for (SessionHandle sessionHandle : userPersonaDetails.getAllAssignedUserPersonasAndSessionHandles().values()) {
-            if (!"playwright-ts".equalsIgnoreCase(sessionHandle.engine())) {
+            if (!isPlaywrightEngine(sessionHandle.engine())) {
                 continue;
             }
             Path artifactDirectory = Path.of(sessionHandle.artifactPath());
@@ -145,6 +145,10 @@ public final class ScenarioArtifactReporter {
         artifacts.sort(Comparator.naturalOrder());
         LOGGER.info("Discovered '{}' Playwright reporting artifacts", artifacts.size());
         return artifacts;
+    }
+
+    private static boolean isPlaywrightEngine(String engine) {
+        return "playwright-ts".equalsIgnoreCase(engine) || "playwright-java".equalsIgnoreCase(engine);
     }
 
     @FunctionalInterface

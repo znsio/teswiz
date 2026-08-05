@@ -1,5 +1,7 @@
 package com.znsio.teswiz.web.playwright;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
@@ -24,6 +26,7 @@ import org.openqa.selenium.logging.Logs;
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Page.NavigateOptions;
+import com.microsoft.playwright.Tracing;
 import com.microsoft.playwright.options.WaitUntilState;
 
 public final class PlaywrightJavaWebDriver implements WebDriver, org.openqa.selenium.JavascriptExecutor,
@@ -331,6 +334,8 @@ public final class PlaywrightJavaWebDriver implements WebDriver, org.openqa.sele
     }
 
     private void closeSession() {
+        writeConsoleLog();
+        stopTracing();
         try {
             session.page().close();
         } catch (RuntimeException ignored) {
@@ -348,6 +353,20 @@ public final class PlaywrightJavaWebDriver implements WebDriver, org.openqa.sele
         } catch (RuntimeException ignored) {
         }
         runtime.playwright().close();
+    }
+
+    private void writeConsoleLog() {
+        try {
+            Files.write(session.consoleFile(), session.consoleMessages(), StandardCharsets.UTF_8);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void stopTracing() {
+        try {
+            session.browserContext().tracing().stop(new Tracing.StopOptions().setPath(session.traceFile()));
+        } catch (RuntimeException ignored) {
+        }
     }
 
     private UnsupportedOperationException unsupported(String operation) {

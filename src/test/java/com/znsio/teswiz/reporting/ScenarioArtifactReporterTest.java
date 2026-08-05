@@ -66,6 +66,43 @@ class ScenarioArtifactReporterTest {
     }
 
     @Test
+    void shouldPublishPlaywrightJavaArtifactsUsingTheSharedArtifactContract() throws Exception {
+        TestExecutionContext context = new TestExecutionContext("playwright-java-reporting-parity");
+        Path scenarioDir = Files.createTempDirectory("playwright-java-scenario-artifacts");
+        context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioDir.toString());
+        context.addTestState(TEST_CONTEXT.NORMALISED_SCENARIO_NAME, "playwright-java-reporting-parity");
+        context.addTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT, 1);
+
+        String sessionId = "playwright-java-session-1";
+        Path traceFile = Files.writeString(scenarioDir.resolve("seller-" + sessionId + "-trace.zip"), "trace");
+        Path harFile = Files.writeString(scenarioDir.resolve("seller-" + sessionId + "-network.har"), "har");
+        Path consoleFile = Files.writeString(scenarioDir.resolve("seller-" + sessionId + "-console.log"), "hello");
+
+        UserPersonaDetails userPersonaDetails = new UserPersonaDetails();
+        userPersonaDetails.addSessionHandle("seller", new SessionHandle(
+                "seller",
+                Platform.web,
+                "playwright-java",
+                sessionId,
+                scenarioDir.toString(),
+                Map.of(
+                        "browserName", "chrome",
+                        "provider", "local")));
+
+        List<Path> publishedArtifacts = new ArrayList<>();
+
+        Path metadataFile = ScenarioArtifactReporter.publish(context, userPersonaDetails,
+                (message, artifact) -> publishedArtifacts.add(artifact.toPath()));
+
+        assertThat(metadataFile).exists();
+        assertThat(Files.readString(metadataFile))
+                .contains("\"engine\": \"playwright-java\"")
+                .contains("\"browserName\": \"chrome\"");
+        assertThat(publishedArtifacts)
+                .contains(metadataFile, traceFile, harFile, consoleFile);
+    }
+
+    @Test
     void shouldWriteAggregatedScenarioMetadataForMixedSessions() throws Exception {
         TestExecutionContext context = new TestExecutionContext("mixed-reporting-parity");
         Path scenarioDir = Files.createTempDirectory("mixed-scenario-artifacts");

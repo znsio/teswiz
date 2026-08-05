@@ -1,9 +1,11 @@
 package com.znsio.teswiz.web.playwright;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -14,6 +16,7 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.Tracing;
 import com.microsoft.playwright.options.Proxy;
 import com.znsio.teswiz.config.browser.PlaywrightBrowserConfig;
 import com.znsio.teswiz.config.browser.PlaywrightBrowserConfigResolver;
@@ -51,7 +54,7 @@ public final class PlaywrightJavaDriverManager {
     public WebDriverSessionResult createWebSessionForUser(String userPersona, String browserName, Platform forPlatform,
             TestExecutionContext context) {
         PlaywrightBrowserConfig browserConfig = browserConfigLookup.apply(browserName, context);
-        PlaywrightJavaSession session = createSession(browserConfig, context);
+        PlaywrightJavaSession session = createSession(userPersona, browserConfig, context);
         PlaywrightJavaWebDriver webDriver = new PlaywrightJavaWebDriver(session);
         String baseUrl = WebBaseUrlResolver.resolve(Drivers.getAppNamefor(userPersona));
         webDriver.get(baseUrl);
@@ -74,6 +77,9 @@ public final class PlaywrightJavaDriverManager {
         metadata.put("browserVersion", session.runtime().browser().version());
         metadata.put("provider", providerNameSupplier.get());
         metadata.put("playwrightSessionId", session.sessionId());
+        metadata.put("traceFile", session.traceFile().getFileName().toString());
+        metadata.put("harFile", session.harFile().getFileName().toString());
+        metadata.put("consoleFile", session.consoleFile().getFileName().toString());
         return new SessionHandle(userPersona, forPlatform, WebEngine.PLAYWRIGHT_JAVA.getConfigValue(),
                 session.sessionId(), context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY), metadata);
     }
@@ -90,15 +96,27 @@ public final class PlaywrightJavaDriverManager {
         PlaywrightJavaRuntime create(PlaywrightBrowserConfig browserConfig, Path artifactDirectory);
     }
 
-    private PlaywrightJavaSession createSession(PlaywrightBrowserConfig browserConfig, TestExecutionContext context) {
+    private PlaywrightJavaSession createSession(String userPersona, PlaywrightBrowserConfig browserConfig,
+            TestExecutionContext context) {
         Path artifactDirectory = Path.of(context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY));
         PlaywrightJavaRuntime runtime = new PlaywrightJavaRuntimePool(context, runtimeFactory)
                 .getOrCreate(browserConfig, artifactDirectory);
         runtime.incrementSessions();
+        String sessionId = UUID.randomUUID().toString();
+        Path traceFile = artifactDirectory.resolve(userPersona + "-" + sessionId + "-trace.zip");
+        Path harFile = artifactDirectory.resolve(userPersona + "-" + sessionId + "-network.har");
+        Path consoleFile = artifactDirectory.resolve(userPersona + "-" + sessionId + "-console.log");
         BrowserContext browserContext = runtime.browser().newContext(
-                DefaultPlaywrightJavaRuntimeFactory.buildContextOptions(browserConfig));
-        return new PlaywrightJavaSession(UUID.randomUUID().toString(), runtime, browserConfig, browserContext,
-                browserContext.newPage());
+                DefaultPlaywrightJavaRuntimeFactory.buildContextOptions(browserConfig, harFile));
+        browserContext.tracing().start(new Tracing.StartOptions()
+                .setScreenshots(true)
+                .setSnapshots(true)
+                .setSources(true));
+        List<String> consoleMessages = new CopyOnWriteArrayList<>();
+        com.microsoft.playwright.Page page = browserContext.newPage();
+        page.onConsoleMessage(message -> consoleMessages.add("[%s] %s".formatted(message.type(), message.text())));
+        return new PlaywrightJavaSession(sessionId, userPersona, runtime, browserConfig, browserContext, page, traceFile,
+                harFile, consoleFile, consoleMessages);
     }
 
     private static final class DefaultPlaywrightJavaRuntimeFactory implements PlaywrightJavaRuntimeFactory {
@@ -151,7 +169,7 @@ public final class PlaywrightJavaDriverManager {
             }
         }
 
-        private static Browser.NewContextOptions buildContextOptions(PlaywrightBrowserConfig browserConfig) {
+        private static Browser.NewContextOptions buildContextOptions(PlaywrightBrowserConfig browserConfig, Path harFile) {
             Browser.NewContextOptions options = new Browser.NewContextOptions();
             Map<String, Object> contextOptions = browserConfig.contextOptions();
             if (contextOptions.containsKey("ignoreHTTPSErrors")) {
@@ -161,6 +179,7 @@ public final class PlaywrightJavaDriverManager {
                     && !baseUrl.isBlank()) {
                 options.setBaseURL(baseUrl);
             }
+            options.setRecordHarPath(harFile);
             return options;
         }
 

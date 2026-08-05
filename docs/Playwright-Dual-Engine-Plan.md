@@ -19,6 +19,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] TheApp local single-user Playwright-Java validation passes through the first-class screen path
 - [x] TheApp local multi-user Playwright-Java validation passes through the first-class screen path
 - [x] Browser-config migration reporting and visible guidance are implemented
+- [x] Playwright-Java trace, HAR, and console artifacts flow through the shared scenario artifact reporter
 - [x] Architecture docs exist for the current web-engine model
 - [x] Repo guidance files are aligned for Codex, Claude, and Antigravity
 - [x] Browser orchestration lives in `com.znsio.teswiz.web.browser`
