@@ -1,22 +1,21 @@
 package com.znsio.teswiz.web.provider.selenium;
 
-import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.runner.Setup;
-import com.znsio.teswiz.tools.JsonFile;
+import java.util.Map;
+
 import org.openqa.selenium.MutableCapabilities;
 
-import java.util.Map;
+import com.znsio.teswiz.runner.Setup;
 
 public final class LambdaTestWebSetup {
     private static final SeleniumWebSessionNameResolver SESSION_NAME_RESOLVER = new SeleniumWebSessionNameResolver();
+    private static final SeleniumWebPlatformCapabilityLoader PLATFORM_CAPABILITY_LOADER =
+            new SeleniumWebPlatformCapabilityLoader();
 
     private LambdaTestWebSetup() {
     }
 
     public static MutableCapabilities updateCapabilities(MutableCapabilities capabilities) {
-        String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
-        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
-        Map loadedPlatformCapability = loadedCapabilityFile.get(Platform.web.name());
+        Map loadedPlatformCapability = PLATFORM_CAPABILITY_LOADER.load();
         return LambdaTestWebCapabilitySetup.updateLambdaTestCapabilities(
                 capabilities,
                 loadedPlatformCapability,
