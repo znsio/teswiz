@@ -100,7 +100,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 ## Milestone 6: Visual and reporting parity
 
 - [ ] Keep Applitools, ReportPortal, HTML reports, logs, and artifact attachment behavior consistent across all web engines
-- [ ] Confirm Playwright-specific visual, trace, console, and HAR artifacts flow through the same reporting contract
+- [x] Confirm Playwright-specific visual, trace, console, and HAR artifacts flow through the same reporting contract
 - [x] Add a Playwright-specific visual adapter path
 - [x] Keep Selenium Eyes behavior unchanged
 - [x] Ensure engine, provider, platform, persona, and session metadata are visible in reports

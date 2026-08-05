@@ -28,6 +28,10 @@ public final class ScenarioArtifactReporter {
     private static final Logger LOGGER = LogManager.getLogger(ScenarioArtifactReporter.class.getName());
     private static final String SCENARIO_METADATA_FILE_NAME = "scenario-session-metadata.json";
     private static final String SCENARIO_SUMMARY_FILE_NAME = "scenario-session-summary.txt";
+    private static final List<String> VISUAL_ARTIFACT_FILE_NAMES = List.of(
+            "applitools-web.log",
+            "applitools-app.log",
+            "applitools-pdf.log");
     private static final List<String> PLAYWRIGHT_ARTIFACT_SUFFIXES = List.of(
             "-trace.zip",
             "-network.har",
@@ -46,6 +50,9 @@ public final class ScenarioArtifactReporter {
         Path summaryFile = writeScenarioSummary(context, userPersonaDetails);
         publishArtifact("Scenario session metadata", metadataFile.toFile(), artifactPublisher);
         publishArtifact("Scenario session summary", summaryFile.toFile(), artifactPublisher);
+        for (Path artifact : discoverVisualArtifacts(context)) {
+            publishArtifact("Visual artifact: " + artifact.getFileName(), artifact.toFile(), artifactPublisher);
+        }
         for (SessionPlaywrightArtifact artifact : discoverPlaywrightArtifacts(userPersonaDetails)) {
             publishArtifact("Playwright artifact: " + artifact.path().getFileName(), artifact.sessionHandle(),
                     artifact.path().toFile(), artifactPublisher);
@@ -176,6 +183,22 @@ public final class ScenarioArtifactReporter {
 
     static List<Path> discoverPlaywrightArtifactsForTest(UserPersonaDetails userPersonaDetails) {
         return discoverPlaywrightArtifacts(userPersonaDetails).stream().map(SessionPlaywrightArtifact::path).toList();
+    }
+
+    static List<Path> discoverVisualArtifacts(TestExecutionContext context) {
+        Path deviceLogsDirectory = getScenarioLogDirectory(context).resolve("deviceLogs");
+        if (!Files.isDirectory(deviceLogsDirectory)) {
+            return List.of();
+        }
+        List<Path> artifacts = new ArrayList<>();
+        for (String fileName : VISUAL_ARTIFACT_FILE_NAMES) {
+            Path artifact = deviceLogsDirectory.resolve(fileName);
+            if (Files.exists(artifact)) {
+                artifacts.add(artifact);
+            }
+        }
+        artifacts.sort(Comparator.naturalOrder());
+        return artifacts;
     }
 
     static List<SessionPlaywrightArtifact> discoverPlaywrightArtifacts(UserPersonaDetails userPersonaDetails) {

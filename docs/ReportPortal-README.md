@@ -19,6 +19,7 @@ For dual-engine and multi-user runs, this includes:
 
 * `scenario-session-metadata.json`
 * `scenario-session-summary.txt`
+* Applitools visual logs such as `applitools-web.log` when visual execution generates them
 * Playwright artifacts such as trace, HAR, and console logs when the active web engine is `playwright-java` or `playwright-ts`
 
 The attached session summary and Playwright artifact messages include the following session details where available:

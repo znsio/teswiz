@@ -91,11 +91,13 @@ class ScenarioArtifactReporterTest {
         context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioDir.toString());
         context.addTestState(TEST_CONTEXT.NORMALISED_SCENARIO_NAME, "playwright-java-reporting-parity");
         context.addTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT, 1);
+        Path deviceLogsDir = Files.createDirectories(scenarioDir.resolve("deviceLogs"));
 
         String sessionId = "playwright-java-session-1";
         Path traceFile = Files.writeString(scenarioDir.resolve("seller-" + sessionId + "-trace.zip"), "trace");
         Path harFile = Files.writeString(scenarioDir.resolve("seller-" + sessionId + "-network.har"), "har");
         Path consoleFile = Files.writeString(scenarioDir.resolve("seller-" + sessionId + "-console.log"), "hello");
+        Path visualLogFile = Files.writeString(deviceLogsDir.resolve("applitools-web.log"), "visual-log");
 
         UserPersonaDetails userPersonaDetails = new UserPersonaDetails();
         userPersonaDetails.addSessionHandle("seller", new SessionHandle(
@@ -118,14 +120,17 @@ class ScenarioArtifactReporterTest {
                 .contains("\"engine\": \"playwright-java\"")
                 .contains("\"browserName\": \"chrome\"");
         assertThat(publishedArtifacts.stream().map(PublishedArtifact::path))
-                .contains(metadataFile, traceFile, harFile, consoleFile);
+                .contains(metadataFile, traceFile, harFile, consoleFile, visualLogFile);
         assertThat(publishedArtifacts.stream().map(PublishedArtifact::message))
                 .anySatisfy(message -> assertThat(message)
                         .contains("persona=seller")
                         .contains("platform=web")
                         .contains("engine=playwright-java")
                         .contains("provider=local")
-                        .contains("sessionId=playwright-java-session-1"));
+                        .contains("sessionId=playwright-java-session-1"))
+                .anySatisfy(message -> assertThat(message)
+                        .contains("Visual artifact")
+                        .contains("applitools-web.log"));
     }
 
     @Test
