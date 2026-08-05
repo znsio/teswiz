@@ -409,7 +409,6 @@ public class AppiumDriverManager {
             ReportPortalLogger.logDebugMessage(logMessage);
         } else {
             LOGGER.info("Quit driver for persona: '{}'", userPersona);
-            attachDeviceLogsToReportPortal(userPersona);
             terminateAndroidAppOnDevice(appPackageName, appiumDriver);
         }
     }
@@ -442,16 +441,6 @@ public class AppiumDriverManager {
     static ApplicationState terminateAndroidApp(AndroidDriver androidDriver, String appPackageName) {
         androidDriver.terminateApp(appPackageName);
         return androidDriver.queryAppState(appPackageName);
-    }
-
-    private static void attachDeviceLogsToReportPortal(String userPersona) {
-        String deviceLogFileName = getDeviceLogFileNameFor(userPersona, Runner.getPlatform().toString());
-        File destinationFile = new File(deviceLogFileName);
-
-        String adbLogMessage = String.format("ADB Logs for %s, file name: %s",
-                Drivers.getNameOfDeviceUsedByUser(userPersona), destinationFile.getName());
-        LOGGER.info(adbLogMessage);
-        ReportPortalLogger.attachFileInReportPortal(adbLogMessage, destinationFile);
     }
 
     private static String getDeviceLogFileNameFor(String userPersona, String forPlatform) {
@@ -565,7 +554,6 @@ public class AppiumDriverManager {
                 iosDriver.terminateApp(appBundleId);
             } else {
                 quitDriver(appiumDriver, userPersona);
-                attachDeviceLogsToReportPortal(userPersona);
                 terminateIOSAppOnDevice(appBundleId, appiumDriver);
             }
         }

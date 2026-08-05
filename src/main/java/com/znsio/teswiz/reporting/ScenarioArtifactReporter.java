@@ -70,6 +70,10 @@ public final class ScenarioArtifactReporter {
         for (Path artifact : discoverVisualArtifacts(context)) {
             publishArtifact("Visual artifact: " + artifact.getFileName(), artifact.toFile(), artifactPublisher);
         }
+        for (SessionLogArtifact artifact : discoverRegisteredSessionLogs(userPersonaDetails)) {
+            publishArtifact("Session log artifact: " + artifact.path().getFileName(), artifact.sessionHandle(),
+                    artifact.path().toFile(), artifactPublisher);
+        }
         for (SessionPlaywrightArtifact artifact : discoverPlaywrightArtifacts(userPersonaDetails)) {
             publishArtifact("Playwright artifact: " + artifact.path().getFileName(), artifact.sessionHandle(),
                     artifact.path().toFile(), artifactPublisher);
@@ -213,6 +217,10 @@ public final class ScenarioArtifactReporter {
         return discoverPlaywrightArtifacts(userPersonaDetails).stream().map(SessionPlaywrightArtifact::path).toList();
     }
 
+    static List<Path> discoverRegisteredSessionLogsForTest(UserPersonaDetails userPersonaDetails) {
+        return discoverRegisteredSessionLogs(userPersonaDetails).stream().map(SessionLogArtifact::path).toList();
+    }
+
     static List<Path> discoverVisualArtifacts(TestExecutionContext context) {
         Path deviceLogsDirectory = getScenarioLogDirectory(context).resolve("deviceLogs");
         if (!Files.isDirectory(deviceLogsDirectory)) {
@@ -244,6 +252,52 @@ public final class ScenarioArtifactReporter {
         artifacts.sort(Comparator.comparing(sessionArtifact -> sessionArtifact.path().toString()));
         LOGGER.info("Discovered '{}' Playwright reporting artifacts", artifacts.size());
         return artifacts;
+    }
+
+    private static List<SessionLogArtifact> discoverRegisteredSessionLogs(UserPersonaDetails userPersonaDetails) {
+        List<SessionLogArtifact> artifacts = new ArrayList<>();
+        for (SessionHandle sessionHandle : userPersonaDetails.getAllAssignedUserPersonasAndSessionHandles().values()) {
+            resolveRegisteredLogPath(userPersonaDetails, sessionHandle)
+                    .filter(Files::exists)
+                    .map(path -> new SessionLogArtifact(sessionHandle, path))
+                    .ifPresent(artifacts::add);
+        }
+        artifacts.sort(Comparator.comparing(sessionArtifact -> sessionArtifact.path().toString()));
+        LOGGER.info("Discovered '{}' registered session log artifacts", artifacts.size());
+        return artifacts;
+    }
+
+    private static java.util.Optional<Path> resolveRegisteredLogPath(UserPersonaDetails userPersonaDetails,
+            SessionHandle sessionHandle) {
+        if (isWebSession(sessionHandle)) {
+            return resolveRegisteredBrowserLogPath(userPersonaDetails, sessionHandle);
+        }
+        return resolveRegisteredDeviceLogPath(userPersonaDetails, sessionHandle);
+    }
+
+    private static java.util.Optional<Path> resolveRegisteredBrowserLogPath(UserPersonaDetails userPersonaDetails,
+            SessionHandle sessionHandle) {
+        String browserName = sessionHandle.metadata().get("browserName");
+        if (null == browserName || browserName.isBlank()) {
+            return java.util.Optional.empty();
+        }
+        String browserLogFileName = userPersonaDetails.getBrowserLogFileNameFor(sessionHandle.userPersona(),
+                sessionHandle.platform().name(), browserName);
+        return toPath(browserLogFileName);
+    }
+
+    private static java.util.Optional<Path> resolveRegisteredDeviceLogPath(UserPersonaDetails userPersonaDetails,
+            SessionHandle sessionHandle) {
+        String deviceLogFileName = userPersonaDetails.getDeviceLogFileNameFor(sessionHandle.userPersona(),
+                sessionHandle.platform().name());
+        return toPath(deviceLogFileName);
+    }
+
+    private static java.util.Optional<Path> toPath(String fileName) {
+        if (null == fileName || fileName.isBlank()) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(Path.of(fileName));
     }
 
     private static boolean hasExplicitPlaywrightArtifacts(SessionHandle sessionHandle) {
@@ -320,5 +374,8 @@ public final class ScenarioArtifactReporter {
     }
 
     record SessionPlaywrightArtifact(SessionHandle sessionHandle, Path path) {
+    }
+
+    record SessionLogArtifact(SessionHandle sessionHandle, Path path) {
     }
 }

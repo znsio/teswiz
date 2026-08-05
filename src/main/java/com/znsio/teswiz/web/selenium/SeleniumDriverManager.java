@@ -519,7 +519,6 @@ public class SeleniumDriverManager {
         LOGGER.info("Reduced numberOfWebDriversUsed: {}", numberOfWebDriversUsed);
         String logMessage = String.format("Browser logs for user: %s" + "%nlogFileName: %s", userPersona, logFileName);
         LOGGER.info(logMessage);
-        ReportPortalLogger.attachFileInReportPortal(logMessage, new File(logFileName));
 
         WebDriver webDriver = driver.getInnerDriver();
         if (null == webDriver) {

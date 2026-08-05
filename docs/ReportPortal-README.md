@@ -20,9 +20,11 @@ For dual-engine and multi-user runs, this includes:
 * `scenario-session-metadata.json`
 * `scenario-session-summary.txt`
 * Applitools visual logs such as `applitools-web.log` when visual execution generates them
+* Selenium browser logs when the active web engine is `selenium`
 * Playwright artifacts such as trace, HAR, and console logs when the active web engine is `playwright-java` or `playwright-ts`
+* Appium device logs when they are available for the active mobile session
 
-The attached session summary and Playwright artifact messages include the following session details where available:
+The attached session summary and session artifact messages include the following session details where available:
 
 * persona
 * platform

@@ -337,4 +337,78 @@ class ScenarioArtifactReporterTest {
                 .contains("\"browserstack\"")
                 .contains("\"local\"");
     }
+
+    @Test
+    void shouldPublishRegisteredSeleniumBrowserLogsThroughTheSharedReportingPath() throws Exception {
+        TestExecutionContext context = new TestExecutionContext("selenium-browser-log-parity");
+        Path scenarioDir = Files.createTempDirectory("selenium-browser-log-parity");
+        context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioDir.toString());
+        context.addTestState(TEST_CONTEXT.NORMALISED_SCENARIO_NAME, "selenium-browser-log-parity");
+        context.addTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT, 1);
+
+        Path browserLogFile = Files.writeString(scenarioDir.resolve("buyer-browser.log"), "browser-log");
+        UserPersonaDetails userPersonaDetails = new UserPersonaDetails();
+        userPersonaDetails.addSessionHandle("buyer", new SessionHandle(
+                "buyer",
+                Platform.web,
+                "selenium",
+                "selenium-session-1",
+                scenarioDir.toString(),
+                Map.of(
+                        "provider", "local",
+                        "browserName", "chrome")));
+        userPersonaDetails.addBrowserLogFileNameFor("buyer", Platform.web.name(), "chrome", browserLogFile.toString());
+
+        List<PublishedArtifact> publishedArtifacts = new ArrayList<>();
+
+        ScenarioArtifactReporter.publish(context, userPersonaDetails,
+                (message, artifact) -> publishedArtifacts.add(new PublishedArtifact(message, artifact.toPath())));
+
+        assertThat(publishedArtifacts.stream().map(PublishedArtifact::path)).contains(browserLogFile);
+        assertThat(publishedArtifacts.stream().map(PublishedArtifact::message))
+                .anySatisfy(message -> assertThat(message)
+                        .contains("Session log artifact")
+                        .contains("persona=buyer")
+                        .contains("platform=web")
+                        .contains("engine=selenium")
+                        .contains("provider=local")
+                        .contains("sessionId=selenium-session-1"));
+    }
+
+    @Test
+    void shouldPublishRegisteredMobileDeviceLogsThroughTheSharedReportingPath() throws Exception {
+        TestExecutionContext context = new TestExecutionContext("mobile-device-log-parity");
+        Path scenarioDir = Files.createTempDirectory("mobile-device-log-parity");
+        context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioDir.toString());
+        context.addTestState(TEST_CONTEXT.NORMALISED_SCENARIO_NAME, "mobile-device-log-parity");
+        context.addTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT, 1);
+
+        Path deviceLogFile = Files.writeString(scenarioDir.resolve("customer-adb.log"), "adb-log");
+        UserPersonaDetails userPersonaDetails = new UserPersonaDetails();
+        userPersonaDetails.addSessionHandle("customer", new SessionHandle(
+                "customer",
+                Platform.android,
+                "appium",
+                "appium-session-1",
+                scenarioDir.toString(),
+                Map.of(
+                        "provider", "local",
+                        "deviceName", "Pixel 8")));
+        userPersonaDetails.addDeviceLogFileNameFor("customer", Platform.android.name(), deviceLogFile.toString());
+
+        List<PublishedArtifact> publishedArtifacts = new ArrayList<>();
+
+        ScenarioArtifactReporter.publish(context, userPersonaDetails,
+                (message, artifact) -> publishedArtifacts.add(new PublishedArtifact(message, artifact.toPath())));
+
+        assertThat(publishedArtifacts.stream().map(PublishedArtifact::path)).contains(deviceLogFile);
+        assertThat(publishedArtifacts.stream().map(PublishedArtifact::message))
+                .anySatisfy(message -> assertThat(message)
+                        .contains("Session log artifact")
+                        .contains("persona=customer")
+                        .contains("platform=android")
+                        .contains("engine=appium")
+                        .contains("provider=local")
+                        .contains("sessionId=appium-session-1"));
+    }
 }

@@ -105,9 +105,10 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 
 ## Milestone 6: Visual and reporting parity
 
-- [ ] Keep Applitools, ReportPortal, HTML reports, logs, and artifact attachment behavior consistent across all web engines
+- [x] Keep Applitools, ReportPortal, HTML reports, logs, and artifact attachment behavior consistent across all web engines
 - [x] Publish explicit Playwright artifact filenames in shared session metadata and use them before legacy naming fallbacks during report attachment
 - [x] Confirm Playwright-specific visual, trace, console, and HAR artifacts flow through the same reporting contract
+- [x] Route Selenium browser logs and Appium device logs through the shared scenario artifact publishing path
 - [x] Aggregate normalized provider-native artifact URLs into shared Cucumber HTML report metadata
 - [x] Add a Playwright-specific visual adapter path
 - [x] Keep Selenium Eyes behavior unchanged
