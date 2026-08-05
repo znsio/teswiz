@@ -160,6 +160,15 @@ class ScenarioArtifactReporterTest {
                 Map.of(
                         "provider", "lambdatest",
                         "providerSessionId", "lt-session-1")));
+        userPersonaDetails.addSessionHandle("auditor", new SessionHandle(
+                "auditor",
+                Platform.web,
+                "selenium",
+                "selenium-session-1",
+                scenarioDir.toString(),
+                Map.of(
+                        "provider", "browserstack",
+                        "providerReportUrl", "https://browserstack.example/session/selenium-session-1")));
         userPersonaDetails.addSessionHandle("approver", new SessionHandle(
                 "approver",
                 Platform.android,
@@ -180,6 +189,7 @@ class ScenarioArtifactReporterTest {
         assertThat(publishedArtifacts).isNotEmpty();
         assertThat(reportMessages)
                 .contains("BrowserStack Report link available here: https://browserstack.example/session/bs-session-1")
+                .contains("BrowserStack Report link available here: https://browserstack.example/session/selenium-session-1")
                 .contains("LambdaTest Report link available here: https://automation.lambdatest.com/logs/?sessionID=lt-session-1");
         assertThat(reportMessages)
                 .noneMatch(message -> message.contains("mobile-session"));
