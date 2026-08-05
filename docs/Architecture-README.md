@@ -222,6 +222,8 @@ Current examples:
 * `BrowserStackWebExecutionProvider`
 * `LambdaTestWebExecutionProvider`
 * `HeadSpinWebExecutionProvider`
+* `WebCloudSessionMetadataResolver`
+* `WebSessionMetadataBuilder`
 
 ### `com.znsio.teswiz.web.provider.selenium`
 

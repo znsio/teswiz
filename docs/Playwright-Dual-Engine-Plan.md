@@ -120,7 +120,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [ ] Add or complete provider-specific Playwright web adapters for BrowserStack, LambdaTest, and local CI
 - [ ] Keep provider logic at the boundary
 - [ ] Preserve Selenium cloud behavior unchanged while adding Playwright cloud support
-- [ ] Normalize cloud metadata and artifacts across engines and providers
+- [x] Normalize cloud metadata and artifacts across engines and providers
 - [ ] Keep provider-specific setup hidden from business tests
 
 ## Milestone 8: Documentation and upgrade guidance

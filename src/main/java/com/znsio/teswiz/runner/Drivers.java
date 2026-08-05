@@ -10,6 +10,7 @@ import com.znsio.teswiz.session.UserPersonaDetails;
 import com.znsio.teswiz.web.browser.BrowserDriverManager;
 import com.znsio.teswiz.web.browser.WebDriverSessionResult;
 import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
+import com.znsio.teswiz.web.provider.WebSessionMetadataBuilder;
 import com.znsio.teswiz.web.provider.WebExecutionProvider;
 import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
 import io.cucumber.java.Scenario;
@@ -38,6 +39,7 @@ public class Drivers {
     private static final String NO_DRIVER_FOUND_FOR_USER_PERSONA = "No Driver found for user " + "persona: '%s'";
     private static final WebExecutionProviderResolver WEB_EXECUTION_PROVIDER_RESOLVER =
             new WebExecutionProviderResolver();
+    private static final WebSessionMetadataBuilder WEB_SESSION_METADATA_BUILDER = new WebSessionMetadataBuilder();
 
     private Drivers() {
         LOGGER.debug("Drivers - private constructor");
@@ -387,16 +389,7 @@ public class Drivers {
     }
 
     private static Map<String, String> buildSessionMetadata(String browserName, Driver currentDriver) {
-        WebExecutionProvider provider = WEB_EXECUTION_PROVIDER_RESOLVER.resolve();
-        Map<String, String> metadata = new java.util.LinkedHashMap<>();
-        metadata.put("browserName", browserName);
-        metadata.put("provider", provider.name());
-        metadata.put("driverClass", currentDriver.getInnerDriver().getClass().getSimpleName());
-        if (currentDriver.getInnerDriver() instanceof RemoteWebDriver) {
-            metadata.put("remoteSessionId",
-                    ((RemoteWebDriver) currentDriver.getInnerDriver()).getSessionId().toString());
-        }
-        return metadata;
+        return WEB_SESSION_METADATA_BUILDER.build(browserName, currentDriver.getInnerDriver());
     }
 
     private record DriverAssignment(Driver driver, SessionHandle sessionHandle) {
