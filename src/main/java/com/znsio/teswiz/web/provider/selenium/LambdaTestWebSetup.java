@@ -1,7 +1,6 @@
 package com.znsio.teswiz.web.provider.selenium;
 
 import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.tools.JsonFile;
 import org.openqa.selenium.MutableCapabilities;
@@ -9,6 +8,8 @@ import org.openqa.selenium.MutableCapabilities;
 import java.util.Map;
 
 public final class LambdaTestWebSetup {
+    private static final SeleniumWebSessionNameResolver SESSION_NAME_RESOLVER = new SeleniumWebSessionNameResolver();
+
     private LambdaTestWebSetup() {
     }
 
@@ -24,7 +25,7 @@ public final class LambdaTestWebSetup {
                 Setup.getFromConfigs(Setup.APP_NAME),
                 Setup.getFromConfigs(Setup.LAUNCH_NAME),
                 Setup.getFromConfigs(Setup.LOG_DIR),
-                Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestName(),
+                SESSION_NAME_RESOLVER.resolve(),
                 Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING));
     }
 }

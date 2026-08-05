@@ -112,6 +112,17 @@ class LambdaTestWebSetupTest {
         assertThat(ltOptions.get("appProfiling")).isEqualTo(false);
     }
 
+    @Test
+    void shouldFallbackToLaunchNameWhenTestContextIsUnavailable() {
+        setupConfig(LAMBDATEST_WEB_CONFIG);
+        SessionContext.remove(Thread.currentThread().getId());
+
+        MutableCapabilities capabilities = LambdaTestWebSetup.updateCapabilities(new DesiredCapabilities());
+
+        Map<String, Object> ltOptions = (Map<String, Object>) capabilities.getCapability("LT:Options");
+        assertThat(ltOptions.get("name")).isEqualTo(Setup.getFromConfigs(Setup.LAUNCH_NAME));
+    }
+
     private static void setupConfig(String configPath) {
         Setup.load(configPath);
         Setup.loadAndUpdateConfigParameters(configPath);
