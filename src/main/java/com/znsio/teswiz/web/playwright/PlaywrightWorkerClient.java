@@ -106,7 +106,10 @@ public class PlaywrightWorkerClient implements AutoCloseable {
                 sessionPayload.getString("userPersona"),
                 sessionPayload.getString("browserName"),
                 sessionPayload.getString("contextId"),
-                sessionPayload.getString("pageId"));
+                sessionPayload.getString("pageId"),
+                sessionPayload.optString("traceFile", ""),
+                sessionPayload.optString("harFile", ""),
+                sessionPayload.optString("consoleFile", ""));
     }
 
     public synchronized void navigateTo(String sessionId, String url) {

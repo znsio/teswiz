@@ -519,6 +519,9 @@ rl.on("line", async (line) => {
           browserName: session.browserName,
           contextId: session.contextId,
           pageId,
+          traceFile: tracePath ? path.basename(tracePath) : "",
+          harFile: harPath ? path.basename(harPath) : "",
+          consoleFile: consoleLogPath ? path.basename(consoleLogPath) : "",
         })}\n`);
         break;
       }

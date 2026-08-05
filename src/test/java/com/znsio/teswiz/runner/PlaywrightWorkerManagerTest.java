@@ -66,6 +66,9 @@ class PlaywrightWorkerManagerTest {
         assertThat(sessionHandle.metadata()).containsEntry("contextId", "context-1");
         assertThat(sessionHandle.metadata()).containsEntry("pageId", "page-1");
         assertThat(sessionHandle.metadata()).containsEntry("workerSessionId", "playwright-session-1");
+        assertThat(sessionHandle.metadata()).containsEntry("traceFile", "buyer-playwright-session-1-trace.zip");
+        assertThat(sessionHandle.metadata()).containsEntry("harFile", "buyer-playwright-session-1-network.har");
+        assertThat(sessionHandle.metadata()).containsEntry("consoleFile", "buyer-playwright-session-1-console.log");
         assertThat(workerClient.lastBrowserConfig()).isNotNull();
         assertThat(workerClient.lastBrowserConfig().getBoolean("headless")).isTrue();
         assertThat(workerClient.lastBrowserConfig().getJSONArray("launchArgs").toList()).contains("--disable-gpu");
@@ -140,7 +143,10 @@ class PlaywrightWorkerManagerTest {
         @Override
         public synchronized PlaywrightWorkerSession createSession(String userPersona, String browserName) {
             return new PlaywrightWorkerSession("playwright-session-1", userPersona, browserName, "context-1",
-                    "page-1");
+                    "page-1",
+                    userPersona + "-playwright-session-1-trace.zip",
+                    userPersona + "-playwright-session-1-network.har",
+                    userPersona + "-playwright-session-1-console.log");
         }
 
         @Override

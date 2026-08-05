@@ -196,7 +196,10 @@ class BrowserDriverManagerTest {
         public synchronized PlaywrightWorkerSession createSession(String userPersona, String browserName,
                 JSONObject browserConfig, Path artifactPath) {
             return new PlaywrightWorkerSession("playwright-session-1", userPersona, browserName, "context-1",
-                    "page-1");
+                    "page-1",
+                    userPersona + "-playwright-session-1-trace.zip",
+                    userPersona + "-playwright-session-1-network.har",
+                    userPersona + "-playwright-session-1-console.log");
         }
 
         @Override

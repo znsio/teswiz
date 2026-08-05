@@ -46,6 +46,9 @@ class DriversPlaywrightIntegrationTest {
         assertThat(sessionHandle.metadata()).containsKey("contextId");
         assertThat(sessionHandle.metadata()).containsKey("pageId");
         assertThat(sessionHandle.metadata()).containsKey("workerSessionId");
+        assertThat(sessionHandle.metadata()).containsKey("traceFile");
+        assertThat(sessionHandle.metadata()).containsKey("harFile");
+        assertThat(sessionHandle.metadata()).containsKey("consoleFile");
     }
 
     @Test

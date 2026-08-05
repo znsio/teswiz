@@ -5,5 +5,8 @@ public record PlaywrightWorkerSession(
         String userPersona,
         String browserName,
         String contextId,
-        String pageId) {
+        String pageId,
+        String traceFile,
+        String harFile,
+        String consoleFile) {
 }

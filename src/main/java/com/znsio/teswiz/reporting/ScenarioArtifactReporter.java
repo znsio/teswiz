@@ -40,6 +40,10 @@ public final class ScenarioArtifactReporter {
             "-trace.zip",
             "-network.har",
             "-console.log");
+    private static final List<String> PLAYWRIGHT_ARTIFACT_METADATA_KEYS = List.of(
+            "traceFile",
+            "harFile",
+            "consoleFile");
     private static final WebExecutionProviderResolver WEB_EXECUTION_PROVIDER_RESOLVER = new WebExecutionProviderResolver();
 
     private ScenarioArtifactReporter() {
@@ -231,17 +235,49 @@ public final class ScenarioArtifactReporter {
             if (!isPlaywrightEngine(sessionHandle.engine())) {
                 continue;
             }
-            Path artifactDirectory = Path.of(sessionHandle.artifactPath());
-            String artifactPrefix = sessionHandle.userPersona() + "-" + sessionHandle.sessionId();
-            for (String artifactSuffix : PLAYWRIGHT_ARTIFACT_SUFFIXES) {
-                Path artifact = artifactDirectory.resolve(artifactPrefix + artifactSuffix);
-                if (Files.exists(artifact)) {
-                    artifacts.add(new SessionPlaywrightArtifact(sessionHandle, artifact));
-                }
+            artifacts.addAll(discoverExplicitPlaywrightArtifacts(sessionHandle));
+            if (hasExplicitPlaywrightArtifacts(sessionHandle)) {
+                continue;
             }
+            artifacts.addAll(discoverLegacyPlaywrightArtifacts(sessionHandle));
         }
         artifacts.sort(Comparator.comparing(sessionArtifact -> sessionArtifact.path().toString()));
         LOGGER.info("Discovered '{}' Playwright reporting artifacts", artifacts.size());
+        return artifacts;
+    }
+
+    private static boolean hasExplicitPlaywrightArtifacts(SessionHandle sessionHandle) {
+        return PLAYWRIGHT_ARTIFACT_METADATA_KEYS.stream()
+                .map(sessionHandle.metadata()::get)
+                .anyMatch(value -> null != value && !value.isBlank());
+    }
+
+    private static List<SessionPlaywrightArtifact> discoverExplicitPlaywrightArtifacts(SessionHandle sessionHandle) {
+        Path artifactDirectory = Path.of(sessionHandle.artifactPath());
+        List<SessionPlaywrightArtifact> artifacts = new ArrayList<>();
+        for (String metadataKey : PLAYWRIGHT_ARTIFACT_METADATA_KEYS) {
+            String artifactFileName = sessionHandle.metadata().get(metadataKey);
+            if (null == artifactFileName || artifactFileName.isBlank()) {
+                continue;
+            }
+            Path artifact = artifactDirectory.resolve(artifactFileName);
+            if (Files.exists(artifact)) {
+                artifacts.add(new SessionPlaywrightArtifact(sessionHandle, artifact));
+            }
+        }
+        return artifacts;
+    }
+
+    private static List<SessionPlaywrightArtifact> discoverLegacyPlaywrightArtifacts(SessionHandle sessionHandle) {
+        Path artifactDirectory = Path.of(sessionHandle.artifactPath());
+        String artifactPrefix = sessionHandle.userPersona() + "-" + sessionHandle.sessionId();
+        List<SessionPlaywrightArtifact> artifacts = new ArrayList<>();
+        for (String artifactSuffix : PLAYWRIGHT_ARTIFACT_SUFFIXES) {
+            Path artifact = artifactDirectory.resolve(artifactPrefix + artifactSuffix);
+            if (Files.exists(artifact)) {
+                artifacts.add(new SessionPlaywrightArtifact(sessionHandle, artifact));
+            }
+        }
         return artifacts;
     }
 

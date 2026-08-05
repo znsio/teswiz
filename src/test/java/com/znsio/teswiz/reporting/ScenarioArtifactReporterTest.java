@@ -134,6 +134,40 @@ class ScenarioArtifactReporterTest {
     }
 
     @Test
+    void shouldDiscoverPlaywrightArtifactsFromExplicitMetadataBeforeUsingLegacyNaming() throws Exception {
+        TestExecutionContext context = new TestExecutionContext("playwright-artifact-metadata-parity");
+        Path scenarioDir = Files.createTempDirectory("playwright-artifact-metadata-parity");
+        context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, scenarioDir.toString());
+        context.addTestState(TEST_CONTEXT.NORMALISED_SCENARIO_NAME, "playwright-artifact-metadata-parity");
+        context.addTestState(TEST_CONTEXT.SCENARIO_RUN_COUNT, 1);
+
+        Path traceFile = Files.writeString(scenarioDir.resolve("custom-trace.zip"), "trace");
+        Path harFile = Files.writeString(scenarioDir.resolve("custom-network.har"), "har");
+        Path consoleFile = Files.writeString(scenarioDir.resolve("custom-console.log"), "console");
+
+        UserPersonaDetails userPersonaDetails = new UserPersonaDetails();
+        userPersonaDetails.addSessionHandle("buyer", new SessionHandle(
+                "buyer",
+                Platform.web,
+                "playwright-ts",
+                "playwright-session-1",
+                scenarioDir.toString(),
+                Map.of(
+                        "provider", "local",
+                        "traceFile", traceFile.getFileName().toString(),
+                        "harFile", harFile.getFileName().toString(),
+                        "consoleFile", consoleFile.getFileName().toString())));
+
+        List<PublishedArtifact> publishedArtifacts = new ArrayList<>();
+
+        ScenarioArtifactReporter.publish(context, userPersonaDetails,
+                (message, artifact) -> publishedArtifacts.add(new PublishedArtifact(message, artifact.toPath())));
+
+        assertThat(publishedArtifacts.stream().map(PublishedArtifact::path))
+                .contains(traceFile, harFile, consoleFile);
+    }
+
+    @Test
     void shouldPublishWebCloudReportLinksThroughTheSharedReportingPath() throws Exception {
         TestExecutionContext context = new TestExecutionContext("web-cloud-report-links");
         Path scenarioDir = Files.createTempDirectory("web-cloud-report-links");

@@ -75,6 +75,9 @@ public final class PlaywrightWorkerManager {
         metadata.put("contextId", workerSession.contextId());
         metadata.put("pageId", workerSession.pageId());
         metadata.put("workerSessionId", workerSession.sessionId());
+        putIfPresent(metadata, "traceFile", workerSession.traceFile());
+        putIfPresent(metadata, "harFile", workerSession.harFile());
+        putIfPresent(metadata, "consoleFile", workerSession.consoleFile());
         addProviderMetadata(providerConfig, metadata);
         SessionHandle sessionHandle = new SessionHandle(userPersona, forPlatform, WebEngine.PLAYWRIGHT_TS.getConfigValue(),
                 workerSession.sessionId(), artifactPath, metadata);
@@ -122,6 +125,12 @@ public final class PlaywrightWorkerManager {
         }
         if (null != providerConfig.apiUrl() && !providerConfig.apiUrl().isBlank()) {
             metadata.put("apiUrl", providerConfig.apiUrl());
+        }
+    }
+
+    private void putIfPresent(Map<String, String> metadata, String key, String value) {
+        if (null != value && !value.isBlank()) {
+            metadata.put(key, value);
         }
     }
 

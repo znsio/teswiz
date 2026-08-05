@@ -51,6 +51,9 @@ class PlaywrightWorkerClientTest {
         assertThat(buyerSession.sessionId()).isNotEqualTo(sellerSession.sessionId());
         assertThat(buyerSession.contextId()).isNotEqualTo(sellerSession.contextId());
         assertThat(buyerSession.pageId()).isNotEqualTo(sellerSession.pageId());
+        assertThat(buyerSession.traceFile()).endsWith("-trace.zip");
+        assertThat(buyerSession.harFile()).endsWith("-network.har");
+        assertThat(buyerSession.consoleFile()).endsWith("-console.log");
     }
 
     @Test
