@@ -30,6 +30,7 @@ import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static com.znsio.teswiz.tools.OverriddenVariable.*;
 
@@ -298,6 +299,12 @@ public class Setup {
         if (currentPlatform.equals(Platform.web) || currentPlatform.equals(Platform.electron)) {
             rpAttributes += String.format("WebEngine:%s; ", configs.get(WEB_ENGINE));
         }
+
+        String providerName = getCloudNameFromCapabilities();
+        if (null == providerName || providerName.isBlank() || NOT_SET.equalsIgnoreCase(providerName)) {
+            providerName = "local";
+        }
+        rpAttributes += String.format("Provider:%s; ", providerName);
 
         if (!configs.get(APP_VERSION).equals(NOT_SET)) {
             rpAttributes += String.format("AppVersion: %s; ", configs.get(APP_VERSION));

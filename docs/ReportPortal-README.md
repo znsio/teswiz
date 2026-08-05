@@ -30,3 +30,11 @@ The attached session summary and Playwright artifact messages include the follow
 * session id
 
 This makes it easier to inspect mixed Selenium, Playwright, and Appium scenarios in ReportPortal without guessing which backend or persona produced a given artifact.
+
+At launch level, teswiz also publishes ReportPortal attributes such as:
+
+* `Platform`
+* `Provider`
+* `WebEngine` for web and electron runs
+
+This allows launch filtering and quick run identification before opening individual scenario artifacts.

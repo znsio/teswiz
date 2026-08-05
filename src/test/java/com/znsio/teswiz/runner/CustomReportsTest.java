@@ -39,8 +39,34 @@ class CustomReportsTest {
         Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
         Setup.getExecutionArguments();
 
-        HashMap<String, Object> metadata = CustomReports.buildTestRunMetadata();
+        HashMap<String, Object> metadata = CustomReports.buildTestRunMetadata(null);
 
         assertThat(metadata).containsEntry(Setup.WEB_ENGINE, "playwright-ts");
+    }
+
+    @Test
+    void shouldIncludeAggregatedSessionMetadataInReportMetadataWhenAvailable() throws Exception {
+        Path reportsDir = Files.createTempDirectory("custom-reports-metadata");
+        Path scenarioDir = Files.createDirectories(reportsDir.resolve("scenario-1"));
+        Files.writeString(scenarioDir.resolve("scenario-session-metadata.json"), """
+                {
+                  "personas": ["buyer", "seller"],
+                  "platforms": ["web", "android"],
+                  "engines": ["playwright-java", "appium"],
+                  "providers": ["local", "browserstack"]
+                }
+                """);
+
+        Setup.load(CONFIG_FILE);
+        Setup.loadAndUpdateConfigParameters(CONFIG_FILE);
+        Setup.getExecutionArguments();
+
+        HashMap<String, Object> metadata = CustomReports.buildTestRunMetadata(reportsDir.toString());
+
+        assertThat(metadata)
+                .containsEntry("SESSION_PERSONAS", "buyer, seller")
+                .containsEntry("SESSION_PLATFORMS", "android, web")
+                .containsEntry("SESSION_ENGINES", "appium, playwright-java")
+                .containsEntry("SESSION_PROVIDERS", "browserstack, local");
     }
 }

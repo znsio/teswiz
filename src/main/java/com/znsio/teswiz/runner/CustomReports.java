@@ -9,8 +9,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
@@ -49,7 +53,7 @@ class CustomReports {
         LOGGER.info(String.format("\tCreating rich reports: %s", richReportsPath));
         Configuration config = new Configuration(new File(richReportsPath),
                                                  Setup.getFromConfigs(APP_NAME));
-        return addTestExecutionMetaDataToReportConfig(excludeCustomTagsFromReport(config));
+        return addTestExecutionMetaDataToReportConfig(excludeCustomTagsFromReport(config), reportsDir);
     }
 
     private static Configuration excludeCustomTagsFromReport(Configuration config) {
@@ -86,8 +90,8 @@ class CustomReports {
         return fileName.startsWith("cucumber-") && fileName.endsWith(".json");
     }
 
-    private static Configuration addTestExecutionMetaDataToReportConfig(Configuration config) {
-        HashMap testRunMetadata = buildTestRunMetadata();
+    private static Configuration addTestExecutionMetaDataToReportConfig(Configuration config, String reportsDir) {
+        HashMap testRunMetadata = buildTestRunMetadata(reportsDir);
 
         // Convert hashmap entries to a list
         List<Map.Entry<String, Integer>> sortedTestMetaDataKeys = new ArrayList<>(testRunMetadata.entrySet());
@@ -104,7 +108,7 @@ class CustomReports {
         return config;
     }
 
-    static HashMap<String, Object> buildTestRunMetadata() {
+    static HashMap<String, Object> buildTestRunMetadata(String reportsDir) {
         HashMap<String, Object> testRunMetadata = new HashMap<>();
         testRunMetadata.put(TARGET_ENVIRONMENT, Setup.getFromConfigs(TARGET_ENVIRONMENT));
         testRunMetadata.put(PLATFORM, Setup.getFromConfigs(PLATFORM));
@@ -121,6 +125,65 @@ class CustomReports {
         testRunMetadata.put(HOST_NAME, Setup.getHostMachineName());
         testRunMetadata.put(BUILD_ID, Setup.getFromConfigs(BUILD_ID));
         testRunMetadata.put(BUILD_INITIATION_REASON, Setup.getFromConfigs(BUILD_INITIATION_REASON));
+        testRunMetadata.putAll(buildAggregatedSessionMetadata(reportsDir));
         return testRunMetadata;
+    }
+
+    private static Map<String, String> buildAggregatedSessionMetadata(String reportsDir) {
+        if (null == reportsDir || reportsDir.isBlank()) {
+            return Collections.emptyMap();
+        }
+        Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsDir), new String[]{"json"}, true);
+        SortedSet<String> personas = new TreeSet<>();
+        SortedSet<String> platforms = new TreeSet<>();
+        SortedSet<String> engines = new TreeSet<>();
+        SortedSet<String> providers = new TreeSet<>();
+        jsonFiles.stream()
+                .filter(CustomReports::isScenarioSessionMetadataFile)
+                .sorted(Comparator.comparing(File::getAbsolutePath))
+                .forEach(file -> addSessionMetadataFrom(file, personas, platforms, engines, providers));
+
+        Map<String, String> aggregatedMetadata = new LinkedHashMap<>();
+        addJoinedMetadata(aggregatedMetadata, "SESSION_PERSONAS", personas);
+        addJoinedMetadata(aggregatedMetadata, "SESSION_PLATFORMS", platforms);
+        addJoinedMetadata(aggregatedMetadata, "SESSION_ENGINES", engines);
+        addJoinedMetadata(aggregatedMetadata, "SESSION_PROVIDERS", providers);
+        return aggregatedMetadata;
+    }
+
+    private static boolean isScenarioSessionMetadataFile(File file) {
+        return "scenario-session-metadata.json".equals(file.getName());
+    }
+
+    private static void addSessionMetadataFrom(File file, Set<String> personas, Set<String> platforms,
+            Set<String> engines, Set<String> providers) {
+        try {
+            JSONObject metadata = new JSONObject(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
+            addJsonArrayValues(metadata.optJSONArray("personas"), personas);
+            addJsonArrayValues(metadata.optJSONArray("platforms"), platforms);
+            addJsonArrayValues(metadata.optJSONArray("engines"), engines);
+            addJsonArrayValues(metadata.optJSONArray("providers"), providers);
+        } catch (IOException e) {
+            LOGGER.warn("Unable to read scenario session metadata file: {}", file.getAbsolutePath(), e);
+        }
+    }
+
+    private static void addJsonArrayValues(JSONArray values, Set<String> target) {
+        if (null == values) {
+            return;
+        }
+        for (int index = 0; index < values.length(); index++) {
+            String value = values.optString(index, "").trim();
+            if (!value.isBlank()) {
+                target.add(value);
+            }
+        }
+    }
+
+    private static void addJoinedMetadata(Map<String, String> metadata, String key, SortedSet<String> values) {
+        if (values.isEmpty()) {
+            return;
+        }
+        metadata.put(key, String.join(", ", values));
     }
 }

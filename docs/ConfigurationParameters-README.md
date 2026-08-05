@@ -107,7 +107,16 @@ An optional Playwright-specific override block can be added under a browser entr
 
 When a Playwright engine is used with a browser config that does not yet have Playwright blocks, teswiz also generates a Playwright-ready recommended config in the current reports directory and prints a visible end-of-execution message with the generated file path and replacement guidance. The source config is not modified automatically.
 
-`WEB_ENGINE` is also added to the generated Cucumber HTML report metadata so report readers can see whether a web scenario ran on Selenium or Playwright TS.
+`WEB_ENGINE` is also added to the generated Cucumber HTML report metadata so report readers can see whether a web scenario ran on Selenium, Playwright-Java, or Playwright-TS.
+
+When teswiz finds `scenario-session-metadata.json` files in the reports directory, it also aggregates the following values into the generated Cucumber HTML report metadata:
+
+* `SESSION_PERSONAS`
+* `SESSION_PLATFORMS`
+* `SESSION_ENGINES`
+* `SESSION_PROVIDERS`
+
+This gives report readers a suite-level view of mixed persona, platform, engine, and provider usage without opening each scenario artifact manually.
 
 # Overriding the BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE for Web execution
 The BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE once set, cannot be changed for the test execution.

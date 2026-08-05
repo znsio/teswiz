@@ -103,7 +103,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [ ] Confirm Playwright-specific visual, trace, console, and HAR artifacts flow through the same reporting contract
 - [x] Add a Playwright-specific visual adapter path
 - [ ] Keep Selenium Eyes behavior unchanged
-- [ ] Ensure engine, provider, platform, persona, and session metadata are visible in reports
+- [x] Ensure engine, provider, platform, persona, and session metadata are visible in reports
 
 ## Milestone 7: Cloud execution parity
 
