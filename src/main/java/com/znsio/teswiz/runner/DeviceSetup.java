@@ -1,6 +1,7 @@
 package com.znsio.teswiz.runner;
 
 import com.google.gson.internal.LinkedTreeMap;
+import com.znsio.teswiz.mobile.device.LocalMobileDeviceSetup;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
@@ -83,7 +84,7 @@ class DeviceSetup {
             if (Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
-                LocalDevicesSetup.setupLocalExecution();
+                LocalMobileDeviceSetup.setupLocalExecution();
             }
             androidCukeArgs.add("--threads");
             androidCukeArgs.add(Setup.getIntegerValueAsStringFromConfigs(PARALLEL));
@@ -411,7 +412,7 @@ class DeviceSetup {
             if (Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
-                LocalDevicesSetup.setupLocalIOSExecution();
+                LocalMobileDeviceSetup.setupLocalIOSExecution();
             }
             iOSCukeArgs.add("--threads");
             iOSCukeArgs.add(Setup.getIntegerValueAsStringFromConfigs(PARALLEL));

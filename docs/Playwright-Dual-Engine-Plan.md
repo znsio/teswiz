@@ -143,6 +143,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 ## Package cleanup progress
 
 - [x] Extract mobile device-session state behind `mobile.session` while keeping `runner` compatibility delegates
+- [x] Extract local mobile device and simulator setup behind `mobile.device` while keeping `runner.LocalDevicesSetup` as a compatibility facade
 - [x] Extract Appium server lifecycle behind `mobile.server` while keeping `runner.AppiumServerManager` as a compatibility facade
 
 ## Notes

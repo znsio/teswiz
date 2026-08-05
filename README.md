@@ -88,6 +88,8 @@ The dual-engine web support is intentionally organized behind internal support p
   * browser config loading, Playwright config resolution, and migration reporting
 * `com.znsio.teswiz.mobile.session`
   * Appium device-session registry and internal mobile session state
+* `com.znsio.teswiz.mobile.device`
+  * local mobile device and simulator availability setup used by Appium orchestration
 * `com.znsio.teswiz.mobile.server`
   * Appium local server lifecycle and remote hub URL normalization
 * `com.znsio.teswiz.mobile.provider`
@@ -161,6 +163,7 @@ On the mobile side, extraction has started the same way:
 * HeadSpin mobile capability shaping is now owned by the internal mobile provider package
 * pCloudy mobile capability shaping is now owned by the internal mobile provider package
 * Appium device-session registry and preferred mobile session model are now owned by the internal mobile session package
+* local mobile device and simulator setup is now owned by the internal mobile device package
 * Appium server lifecycle and remote hub URL normalization are now owned by the internal mobile server package
 * `AppiumDriverManager` and runner setup classes still remain the stable orchestration-facing delegates
 
