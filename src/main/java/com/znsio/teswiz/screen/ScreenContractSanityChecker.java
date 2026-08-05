@@ -17,21 +17,40 @@ import java.util.stream.Collectors;
 public final class ScreenContractSanityChecker {
     private final ScreenClassCatalog classCatalog;
     private final PlaywrightTsScreenModuleSupport moduleSupport;
+    private final boolean includeMissingTargets;
 
     public ScreenContractSanityChecker(Path sourceRoot) {
+        this(sourceRoot, false);
+    }
+
+    public ScreenContractSanityChecker(Path sourceRoot, boolean includeMissingTargets) {
         this.classCatalog = new ScreenClassCatalog(sourceRoot);
         this.moduleSupport = new PlaywrightTsScreenModuleSupport();
+        this.includeMissingTargets = includeMissingTargets;
     }
 
     public static void main(String[] args) throws IOException {
         Path sourceRoot = args.length > 0
                 ? Path.of(args[0])
                 : Path.of("src/test/java/com/znsio/teswiz/screen");
-        ValidationReport report = new ScreenContractSanityChecker(sourceRoot).validate();
+        boolean includeMissingTargets = containsFlag(args, "--include-missing-targets");
+        ValidationReport report = new ScreenContractSanityChecker(sourceRoot, includeMissingTargets).validate();
         if (!report.isSuccessful()) {
             throw new NotImplementedException(report.toDisplayString());
         }
         System.out.println(report.toDisplayString());
+    }
+
+    private static boolean containsFlag(String[] args, String flag) {
+        if (null == args) {
+            return false;
+        }
+        for (String argument : args) {
+            if (flag.equals(argument)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     ValidationReport validate() throws IOException {
@@ -68,7 +87,27 @@ public final class ScreenContractSanityChecker {
                     .toList());
         }
 
+        if (includeMissingTargets) {
+            violations.addAll(findMissingTargetCoverage(contractClassName, implementationClassNames));
+        }
+
         return new ContractValidationResult(contractClassName, implementationClassNames, violations);
+    }
+
+    private List<String> findMissingTargetCoverage(String contractClassName, List<String> implementationClassNames) {
+        return ScreenImplementationTarget.supportedTargets().stream()
+                .filter(target -> !isTargetImplemented(contractClassName, implementationClassNames, target))
+                .map(target -> "missing target coverage: " + target.displayName() + " -> "
+                        + target.expectedReference(contractClassName))
+                .toList();
+    }
+
+    private boolean isTargetImplemented(String contractClassName, List<String> implementationClassNames,
+            ScreenImplementationTarget target) {
+        if (target == ScreenImplementationTarget.WEB_PLAYWRIGHT_TS) {
+            return moduleSupport.hasModuleFor(contractClassName);
+        }
+        return implementationClassNames.contains(target.expectedReference(contractClassName));
     }
 
     private List<String> validatePlaywrightTsModule(Class<?> contractClass) {
@@ -149,8 +188,11 @@ public final class ScreenContractSanityChecker {
             List<String> moduleViolations = result.violations().stream()
                     .filter(this::isPlaywrightTsModuleViolation)
                     .toList();
+            List<String> targetCoverageViolations = result.violations().stream()
+                    .filter(this::isTargetCoverageViolation)
+                    .toList();
             List<String> javaViolations = result.violations().stream()
-                    .filter(violation -> !isPlaywrightTsModuleViolation(violation))
+                    .filter(violation -> !isPlaywrightTsModuleViolation(violation) && !isTargetCoverageViolation(violation))
                     .toList();
 
             List<String> lines = new ArrayList<>();
@@ -163,6 +205,10 @@ public final class ScreenContractSanityChecker {
             if (!moduleViolations.isEmpty()) {
                 lines.add(" Playwright-TS module issues:");
                 lines.add(formatViolations(moduleViolations));
+            }
+            if (!targetCoverageViolations.isEmpty()) {
+                lines.add(" Target coverage issues:");
+                lines.add(formatViolations(targetCoverageViolations));
             }
             return String.join(System.lineSeparator(), lines);
         }
@@ -182,6 +228,10 @@ public final class ScreenContractSanityChecker {
         private boolean isPlaywrightTsModuleViolation(String violation) {
             return violation.startsWith("missing playwright-ts module:")
                     || violation.startsWith("src/test/resources/playwright/screens/");
+        }
+
+        private boolean isTargetCoverageViolation(String violation) {
+            return violation.startsWith("missing target coverage:");
         }
     }
 }

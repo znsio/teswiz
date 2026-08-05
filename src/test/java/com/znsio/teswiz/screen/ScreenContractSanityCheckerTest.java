@@ -138,6 +138,50 @@ class ScreenContractSanityCheckerTest {
         assertThat(result.violations()).isEmpty();
     }
 
+    @Test
+    void shouldNotReportMissingTargetCoverageByDefault() {
+        ScreenContractSanityChecker checker =
+                new ScreenContractSanityChecker(java.nio.file.Path.of("src/test/java/com/znsio/teswiz/screen"));
+
+        ScreenContractSanityChecker.ContractValidationResult result =
+                checker.validateContract("com.znsio.teswiz.screen.theapp.LoginScreen");
+
+        assertThat(result.violations())
+                .noneMatch(violation -> violation.startsWith("missing target coverage:"));
+    }
+
+    @Test
+    void shouldOptionallyReportMissingTargetCoverage() {
+        ScreenContractSanityChecker checker =
+                new ScreenContractSanityChecker(java.nio.file.Path.of("src/test/java/com/znsio/teswiz/screen"),
+                        true);
+
+        ScreenContractSanityChecker.ContractValidationResult result =
+                checker.validateContract("com.znsio.teswiz.screen.theapp.LoginScreen");
+
+        assertThat(result.violations())
+                .anyMatch(violation -> violation.startsWith("missing target coverage: windows"))
+                .anyMatch(violation -> violation.startsWith("missing target coverage: pdf"));
+    }
+
+    @Test
+    void shouldGroupTargetCoverageIssuesSeparatelyInReport() {
+        ScreenContractSanityChecker.ValidationReport report = new ScreenContractSanityChecker.ValidationReport(List.of(
+                new ScreenContractSanityChecker.ContractValidationResult(
+                        "com.znsio.teswiz.screen.theapp.LoginScreen",
+                        List.of("com.znsio.teswiz.screen.web.theapp.LoginScreenWeb"),
+                        List.of(
+                                "missing public constructor (Driver, Visual)",
+                                "missing target coverage: android -> com.znsio.teswiz.screen.android.theapp.LoginScreenAndroid",
+                                "missing playwright-ts module: src/test/resources/playwright/screens/theapp/login.screen.ts"))));
+
+        assertThat(report.toDisplayString())
+                .contains("Java issues:")
+                .contains("Playwright-TS module issues:")
+                .contains("Target coverage issues:")
+                .contains("missing target coverage: android -> com.znsio.teswiz.screen.android.theapp.LoginScreenAndroid");
+    }
+
     public abstract static class ExampleContract {
         public abstract ExampleContract doSomething(String value);
     }

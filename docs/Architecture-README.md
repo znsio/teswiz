@@ -88,6 +88,7 @@ flowchart TD
     C --> S3["Check playwright-ts screen modules"]
     C --> S4[Check Android / iOS screens]
     C --> R[Report missing or mismatched contracts]
+    C --> O["Optional: include missing target coverage (-PincludeMissingScreenTargets=true)"]
 
     M["Gradle coverage task (reportMissingScreenContracts)"] --> B[Enumerate missing platform contracts]
     B --> OUT[Write human-readable report for unsupported combinations]

@@ -125,6 +125,11 @@ To explicitly validate discovered screen implementations against their shared co
 
 This command is intentionally separate from normal test execution so teams can check screen compliance on demand while adding new Selenium, Playwright, or mobile screen implementations.
 For `playwright-ts`, this verification now calls out missing TypeScript screen modules separately from missing Java screen implementations.
+To also flag missing target combinations more explicitly, run:
+
+`./gradlew verifyScreenContracts -PincludeMissingScreenTargets=true`
+
+That stricter mode is opt-in so the default verification stays focused on implementation correctness instead of every uncovered platform/engine combination.
 Run focused Gradle verification commands serially on the same checkout. Parallel independent Gradle invocations against the same workspace can produce misleading compile/test failures because they share build outputs and intermediate state.
 
 To report missing screen implementations for the currently supported target combinations, run:

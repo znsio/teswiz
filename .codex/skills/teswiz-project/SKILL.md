@@ -106,6 +106,8 @@ Use this skill for changes inside the `znsio/teswiz` repo.
   `./gradlew -q compileTestJava`
 - For focused unit tests, prefer:
   `./gradlew -q test --tests <fully.qualified.TestClass>`
+- For stricter screen-contract audits that also flag missing target combinations, use:
+  `./gradlew verifyScreenContracts -PincludeMissingScreenTargets=true`
 - Do not treat parallel independent Gradle invocations against the same checkout as a reliable signal. Prefer serial focused runs because shared build outputs/intermediates can produce misleading symbol/compilation failures.
 - Useful recent targets:
   - `com.znsio.teswiz.runner.VisualTest`

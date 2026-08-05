@@ -429,6 +429,9 @@ tasks.register('verifyScreenContracts', JavaExec) {
     classpath = sourceSets.test.runtimeClasspath
     mainClass = "com.znsio.teswiz.screen.ScreenContractSanityChecker"
     args "src/test/java/com/znsio/teswiz/screen"
+    if (project.findProperty('includeMissingScreenTargets')?.toString()?.toBoolean()) {
+        args "--include-missing-targets"
+    }
 }
 
 tasks.register('reportMissingScreenContracts', JavaExec) {
