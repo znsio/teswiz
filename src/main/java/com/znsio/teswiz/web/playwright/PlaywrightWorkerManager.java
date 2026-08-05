@@ -16,25 +16,26 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.web.WebEngine;
-import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfig;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfigResolver;
 
 public final class PlaywrightWorkerManager {
     private final PlaywrightWorkerClientFactory clientFactory;
     private final BiFunction<String, TestExecutionContext, PlaywrightBrowserConfig> browserConfigLookup;
-    private final Supplier<String> providerNameSupplier;
+    private final Supplier<PlaywrightExecutionProviderConfig> providerConfigSupplier;
 
     public PlaywrightWorkerManager() {
         this(PlaywrightWorkerClient::new,
                 new PlaywrightBrowserConfigResolver()::resolve,
-                () -> new WebExecutionProviderResolver().resolve().name());
+                new PlaywrightExecutionProviderConfigResolver()::resolve);
     }
 
     public PlaywrightWorkerManager(PlaywrightWorkerClientFactory clientFactory,
             BiFunction<String, TestExecutionContext, PlaywrightBrowserConfig> browserConfigLookup,
-            Supplier<String> providerNameSupplier) {
+            Supplier<PlaywrightExecutionProviderConfig> providerConfigSupplier) {
         this.clientFactory = clientFactory;
         this.browserConfigLookup = browserConfigLookup;
-        this.providerNameSupplier = providerNameSupplier;
+        this.providerConfigSupplier = providerConfigSupplier;
     }
 
     public PlaywrightWorkerClient getOrStart(TestExecutionContext context) {
@@ -54,24 +55,27 @@ public final class PlaywrightWorkerManager {
     }
 
     public PlaywrightWorkerSession createSession(String userPersona, String browserName, TestExecutionContext context) {
+        PlaywrightExecutionProviderConfig providerConfig = providerConfigSupplier.get();
         return getOrStart(context).createSession(userPersona, browserName,
-                toJson(browserConfigLookup.apply(browserName, context)),
+                toJson(browserConfigLookup.apply(browserName, context), providerConfig),
                 Path.of(context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY)));
     }
 
     public ManagedPlaywrightSession createManagedSession(String userPersona, String browserName, Platform forPlatform,
             TestExecutionContext context) {
         PlaywrightWorkerClient workerClient = getOrStart(context);
+        PlaywrightExecutionProviderConfig providerConfig = providerConfigSupplier.get();
         PlaywrightWorkerSession workerSession = workerClient.createSession(userPersona, browserName,
-                toJson(browserConfigLookup.apply(browserName, context)),
+                toJson(browserConfigLookup.apply(browserName, context), providerConfig),
                 Path.of(context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY)));
         String artifactPath = context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY);
         Map<String, String> metadata = new LinkedHashMap<>();
         metadata.put("browserName", workerSession.browserName());
-        metadata.put("provider", providerNameSupplier.get());
+        metadata.put("provider", providerConfig.providerName());
         metadata.put("contextId", workerSession.contextId());
         metadata.put("pageId", workerSession.pageId());
         metadata.put("workerSessionId", workerSession.sessionId());
+        addProviderMetadata(providerConfig, metadata);
         SessionHandle sessionHandle = new SessionHandle(userPersona, forPlatform, WebEngine.PLAYWRIGHT_TS.getConfigValue(),
                 workerSession.sessionId(), artifactPath, metadata);
         return new ManagedPlaywrightSession(workerClient, workerSession, sessionHandle);
@@ -97,8 +101,8 @@ public final class PlaywrightWorkerManager {
         PlaywrightWorkerClient create();
     }
 
-    private JSONObject toJson(PlaywrightBrowserConfig browserConfig) {
-        return new JSONObject()
+    private JSONObject toJson(PlaywrightBrowserConfig browserConfig, PlaywrightExecutionProviderConfig providerConfig) {
+        JSONObject json = new JSONObject()
                 .put("browserName", browserConfig.browserName())
                 .put("headless", browserConfig.headless())
                 .put("launchArgs", browserConfig.launchArgs())
@@ -106,6 +110,19 @@ public final class PlaywrightWorkerManager {
                 .put("executablePath", browserConfig.executablePath())
                 .put("contextOptions", browserConfig.contextOptions())
                 .put("launchOptions", browserConfig.launchOptions());
+        if (!providerConfig.toMap().isEmpty()) {
+            json.put("executionProvider", providerConfig.toMap());
+        }
+        return json;
+    }
+
+    private void addProviderMetadata(PlaywrightExecutionProviderConfig providerConfig, Map<String, String> metadata) {
+        if (providerConfig.isRemote()) {
+            metadata.put("remoteUrl", providerConfig.remoteUrl());
+        }
+        if (null != providerConfig.apiUrl() && !providerConfig.apiUrl().isBlank()) {
+            metadata.put("apiUrl", providerConfig.apiUrl());
+        }
     }
 
     public record ManagedPlaywrightSession(PlaywrightWorkerClient workerClient, PlaywrightWorkerSession workerSession,

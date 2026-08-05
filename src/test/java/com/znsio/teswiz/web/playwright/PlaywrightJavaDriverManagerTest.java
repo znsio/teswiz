@@ -22,6 +22,7 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.Tracing;
 import com.znsio.teswiz.config.browser.PlaywrightBrowserConfig;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
@@ -32,6 +33,7 @@ import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.session.UserPersonaDetails;
 import com.znsio.teswiz.tools.ScreenShotManager;
 import com.znsio.teswiz.web.browser.WebDriverSessionResult;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfig;
 
 class PlaywrightJavaDriverManagerTest {
     private static final String CONFIG_FILE = "./configs/theapp/theapp_local_web_config.properties";
@@ -55,14 +57,16 @@ class PlaywrightJavaDriverManagerTest {
         Browser browser = mock(Browser.class);
         BrowserContext browserContext = mock(BrowserContext.class);
         Page page = mock(Page.class);
+        Tracing tracing = mock(Tracing.class);
         when(browser.version()).thenReturn("126.0");
         when(browser.newContext(any(Browser.NewContextOptions.class))).thenReturn(browserContext);
+        when(browserContext.tracing()).thenReturn(tracing);
         when(browserContext.newPage()).thenReturn(page);
 
         PlaywrightJavaDriverManager manager = new PlaywrightJavaDriverManager(
                 (browserName, currentContext) -> new PlaywrightBrowserConfig(browserName, true, List.of("--headless=new"),
                         "chrome", null, Map.of("ignoreHTTPSErrors", true), Map.of()),
-                () -> "local",
+                () -> PlaywrightExecutionProviderConfig.local(),
                 (browserConfig, artifactDirectory) -> new PlaywrightJavaRuntime(playwright, browser));
 
         WebDriverSessionResult result = manager.createWebSessionForUser("buyer", "chrome", Platform.web, context);
@@ -91,15 +95,19 @@ class PlaywrightJavaDriverManagerTest {
         BrowserContext sellerContext = mock(BrowserContext.class);
         Page buyerPage = mock(Page.class);
         Page sellerPage = mock(Page.class);
+        Tracing buyerTracing = mock(Tracing.class);
+        Tracing sellerTracing = mock(Tracing.class);
         when(browser.version()).thenReturn("126.0");
         when(browser.newContext(any(Browser.NewContextOptions.class))).thenReturn(buyerContext, sellerContext);
+        when(buyerContext.tracing()).thenReturn(buyerTracing);
+        when(sellerContext.tracing()).thenReturn(sellerTracing);
         when(buyerContext.newPage()).thenReturn(buyerPage);
         when(sellerContext.newPage()).thenReturn(sellerPage);
 
         PlaywrightJavaDriverManager manager = new PlaywrightJavaDriverManager(
                 (browserName, currentContext) -> new PlaywrightBrowserConfig(browserName, true, List.of("--headless=new"),
                         "chrome", null, Map.of(), Map.of()),
-                () -> "local",
+                () -> PlaywrightExecutionProviderConfig.local(),
                 (browserConfig, artifactDirectory) -> new PlaywrightJavaRuntime(playwright, browser));
 
         WebDriverSessionResult buyerResult = manager.createWebSessionForUser("buyer", "chrome", Platform.web, context);
@@ -118,6 +126,42 @@ class PlaywrightJavaDriverManagerTest {
         verify(sellerContext).close();
         verify(browser).close();
         verify(playwright).close();
+    }
+
+    @Test
+    void shouldAddRemoteProviderMetadataForPlaywrightJavaSessions() throws Exception {
+        enablePlaywrightJavaHeadless();
+        TestExecutionContext context = createContext("playwright-java-cloud-metadata");
+        UserPersonaDetails userPersonaDetails = (UserPersonaDetails) context
+                .getTestState(TEST_CONTEXT.CURRENT_USER_PERSONA_DETAILS);
+        userPersonaDetails.addAppName("buyer", Runner.DEFAULT);
+
+        Playwright playwright = mock(Playwright.class);
+        Browser browser = mock(Browser.class);
+        BrowserContext browserContext = mock(BrowserContext.class);
+        Page page = mock(Page.class);
+        Tracing tracing = mock(Tracing.class);
+        when(browser.version()).thenReturn("126.0");
+        when(browser.newContext(any(Browser.NewContextOptions.class))).thenReturn(browserContext);
+        when(browserContext.tracing()).thenReturn(tracing);
+        when(browserContext.newPage()).thenReturn(page);
+
+        PlaywrightJavaDriverManager manager = new PlaywrightJavaDriverManager(
+                (browserName, currentContext) -> new PlaywrightBrowserConfig(browserName, true, List.of("--headless=new"),
+                        "chrome", null, Map.of(), Map.of()),
+                () -> new PlaywrightExecutionProviderConfig("browserstack",
+                        "https://hub-cloud.browserstack.com",
+                        "https://api-cloud.browserstack.com/app-automate/",
+                        "browserstack_user",
+                        "browserstack_key"),
+                (browserConfig, artifactDirectory) -> new PlaywrightJavaRuntime(playwright, browser));
+
+        WebDriverSessionResult result = manager.createWebSessionForUser("buyer", "chrome", Platform.web, context);
+
+        assertThat(result.sessionHandle().metadata())
+                .containsEntry("provider", "browserstack")
+                .containsEntry("remoteUrl", "https://hub-cloud.browserstack.com")
+                .containsEntry("apiUrl", "https://api-cloud.browserstack.com/app-automate/");
     }
 
     private void enablePlaywrightJavaHeadless() {

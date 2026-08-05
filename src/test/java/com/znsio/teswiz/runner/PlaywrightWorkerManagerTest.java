@@ -21,6 +21,7 @@ import com.znsio.teswiz.web.WebEngine;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerSession;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfig;
 
 class PlaywrightWorkerManagerTest {
     @AfterEach
@@ -33,7 +34,8 @@ class PlaywrightWorkerManagerTest {
         TestExecutionContext context = new TestExecutionContext("playwright-worker-manager");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
+                (browserName, currentContext) -> stubBrowserConfig(browserName),
+                PlaywrightExecutionProviderConfig::local);
 
         PlaywrightWorkerClient firstClient = manager.getOrStart(context);
         PlaywrightWorkerClient secondClient = manager.getOrStart(context);
@@ -49,7 +51,8 @@ class PlaywrightWorkerManagerTest {
         context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, "/tmp/playwright-session-handle");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
+                (browserName, currentContext) -> stubBrowserConfig(browserName),
+                PlaywrightExecutionProviderConfig::local);
 
         SessionHandle sessionHandle = manager.createSessionHandle("buyer", "chrome", Platform.web, context);
 
@@ -66,6 +69,8 @@ class PlaywrightWorkerManagerTest {
         assertThat(workerClient.lastBrowserConfig()).isNotNull();
         assertThat(workerClient.lastBrowserConfig().getBoolean("headless")).isTrue();
         assertThat(workerClient.lastBrowserConfig().getJSONArray("launchArgs").toList()).contains("--disable-gpu");
+        assertThat(workerClient.lastBrowserConfig().getJSONObject("executionProvider").getString("providerName"))
+                .isEqualTo("local");
     }
 
     @Test
@@ -73,13 +78,41 @@ class PlaywrightWorkerManagerTest {
         TestExecutionContext context = new TestExecutionContext("playwright-shutdown");
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
+                (browserName, currentContext) -> stubBrowserConfig(browserName),
+                PlaywrightExecutionProviderConfig::local);
 
         manager.getOrStart(context);
         manager.shutdown(context);
 
         assertThat(workerClient.closeCount()).isEqualTo(1);
         assertThat(context.getTestState(TEST_CONTEXT.PLAYWRIGHT_WORKER_CLIENT)).isNull();
+    }
+
+    @Test
+    void shouldPropagateRemoteProviderDetailsIntoWorkerConfigAndSessionMetadata() {
+        TestExecutionContext context = new TestExecutionContext("playwright-remote-provider");
+        context.addTestState(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY, "/tmp/playwright-remote-provider");
+        FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
+        PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
+                (browserName, currentContext) -> stubBrowserConfig(browserName),
+                () -> new PlaywrightExecutionProviderConfig("lambdatest",
+                        "https://hub.lambdatest.com/wd/hub",
+                        "https://manual-api.lambdatest.com",
+                        "lt_user",
+                        "lt_key"));
+
+        SessionHandle sessionHandle = manager.createSessionHandle("buyer", "chrome", Platform.web, context);
+
+        assertThat(sessionHandle.metadata())
+                .containsEntry("provider", "lambdatest")
+                .containsEntry("remoteUrl", "https://hub.lambdatest.com/wd/hub")
+                .containsEntry("apiUrl", "https://manual-api.lambdatest.com");
+        assertThat(workerClient.lastBrowserConfig().getJSONObject("executionProvider").toMap())
+                .containsEntry("providerName", "lambdatest")
+                .containsEntry("remoteUrl", "https://hub.lambdatest.com/wd/hub")
+                .containsEntry("apiUrl", "https://manual-api.lambdatest.com")
+                .containsEntry("username", "lt_user")
+                .containsEntry("accessKey", "lt_key");
     }
 
     private static class FakePlaywrightWorkerClient extends PlaywrightWorkerClient {

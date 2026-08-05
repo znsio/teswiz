@@ -234,6 +234,15 @@ Current examples:
 * `BrowserStackWebCapabilitySetup`
 * `LambdaTestWebCapabilitySetup`
 
+### `com.znsio.teswiz.web.provider.playwright`
+
+Owns normalized provider-aware Playwright execution configuration so `playwright-java` and `playwright-ts` can receive the same provider metadata and endpoint details without pushing cloud conditionals back into `runner`.
+
+Current examples:
+
+* `PlaywrightExecutionProviderConfig`
+* `PlaywrightExecutionProviderConfigResolver`
+
 ### `com.znsio.teswiz.web.browser`
 
 Owns browser-engine orchestration that chooses Selenium or Playwright web execution.

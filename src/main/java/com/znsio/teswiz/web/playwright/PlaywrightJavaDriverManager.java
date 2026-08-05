@@ -30,24 +30,25 @@ import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.web.WebEngine;
 import com.znsio.teswiz.web.browser.WebDriverSessionResult;
-import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfig;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfigResolver;
 import com.znsio.teswiz.web.selenium.WebBaseUrlResolver;
 
 public final class PlaywrightJavaDriverManager {
     private final BiFunction<String, TestExecutionContext, PlaywrightBrowserConfig> browserConfigLookup;
-    private final Supplier<String> providerNameSupplier;
+    private final Supplier<PlaywrightExecutionProviderConfig> providerConfigSupplier;
     private final PlaywrightJavaRuntimeFactory runtimeFactory;
 
     public PlaywrightJavaDriverManager() {
         this(new PlaywrightBrowserConfigResolver()::resolve,
-                () -> new WebExecutionProviderResolver().resolve().name(),
+                new PlaywrightExecutionProviderConfigResolver()::resolve,
                 new DefaultPlaywrightJavaRuntimeFactory());
     }
 
     PlaywrightJavaDriverManager(BiFunction<String, TestExecutionContext, PlaywrightBrowserConfig> browserConfigLookup,
-            Supplier<String> providerNameSupplier, PlaywrightJavaRuntimeFactory runtimeFactory) {
+            Supplier<PlaywrightExecutionProviderConfig> providerConfigSupplier, PlaywrightJavaRuntimeFactory runtimeFactory) {
         this.browserConfigLookup = browserConfigLookup;
-        this.providerNameSupplier = providerNameSupplier;
+        this.providerConfigSupplier = providerConfigSupplier;
         this.runtimeFactory = runtimeFactory;
     }
 
@@ -72,16 +73,27 @@ public final class PlaywrightJavaDriverManager {
 
     private SessionHandle buildSessionHandle(String userPersona, Platform forPlatform, TestExecutionContext context,
             PlaywrightJavaSession session, PlaywrightBrowserConfig browserConfig) {
+        PlaywrightExecutionProviderConfig providerConfig = providerConfigSupplier.get();
         Map<String, String> metadata = new LinkedHashMap<>();
         metadata.put("browserName", browserConfig.browserName());
         metadata.put("browserVersion", session.runtime().browser().version());
-        metadata.put("provider", providerNameSupplier.get());
+        metadata.put("provider", providerConfig.providerName());
         metadata.put("playwrightSessionId", session.sessionId());
         metadata.put("traceFile", session.traceFile().getFileName().toString());
         metadata.put("harFile", session.harFile().getFileName().toString());
         metadata.put("consoleFile", session.consoleFile().getFileName().toString());
+        addProviderMetadata(providerConfig, metadata);
         return new SessionHandle(userPersona, forPlatform, WebEngine.PLAYWRIGHT_JAVA.getConfigValue(),
                 session.sessionId(), context.getTestStateAsString(TEST_CONTEXT.SCENARIO_LOG_DIRECTORY), metadata);
+    }
+
+    private void addProviderMetadata(PlaywrightExecutionProviderConfig providerConfig, Map<String, String> metadata) {
+        if (providerConfig.isRemote()) {
+            metadata.put("remoteUrl", providerConfig.remoteUrl());
+        }
+        if (null != providerConfig.apiUrl() && !providerConfig.apiUrl().isBlank()) {
+            metadata.put("apiUrl", providerConfig.apiUrl());
+        }
     }
 
     private Capabilities createCapabilities(PlaywrightBrowserConfig browserConfig, SessionHandle sessionHandle) {

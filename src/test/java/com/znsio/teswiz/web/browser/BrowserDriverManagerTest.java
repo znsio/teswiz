@@ -31,6 +31,7 @@ import com.znsio.teswiz.web.playwright.PlaywrightWebDriver;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerClient;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerManager;
 import com.znsio.teswiz.web.playwright.PlaywrightWorkerSession;
+import com.znsio.teswiz.web.provider.playwright.PlaywrightExecutionProviderConfig;
 
 class BrowserDriverManagerTest {
     private static final String CONFIG_FILE = "./configs/theapp/theapp_local_web_config.properties";
@@ -52,7 +53,8 @@ class BrowserDriverManagerTest {
 
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
+                (browserName, currentContext) -> stubBrowserConfig(browserName),
+                PlaywrightExecutionProviderConfig::local);
 
         WebDriverSessionResult sessionResult = BrowserDriverManager.createWebSessionForUser(
                 "buyer", "chrome", Platform.web, context, manager, mock(PlaywrightJavaDriverManager.class));
@@ -75,7 +77,8 @@ class BrowserDriverManagerTest {
 
         FakePlaywrightWorkerClient workerClient = new FakePlaywrightWorkerClient();
         PlaywrightWorkerManager manager = new PlaywrightWorkerManager(() -> workerClient,
-                (browserName, currentContext) -> stubBrowserConfig(browserName), () -> "local");
+                (browserName, currentContext) -> stubBrowserConfig(browserName),
+                PlaywrightExecutionProviderConfig::local);
 
         WebDriverSessionResult sessionResult = BrowserDriverManager.createWebSessionForUser(
                 "buyer", "chrome", Platform.web, context, manager, mock(PlaywrightJavaDriverManager.class));
