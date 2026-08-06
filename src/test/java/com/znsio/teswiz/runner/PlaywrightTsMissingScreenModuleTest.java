@@ -46,10 +46,10 @@ class PlaywrightTsMissingScreenModuleTest {
         TestExecutionContext context = createContext();
         createDriver(context);
 
-        assertThatThrownBy(() -> ScreenRegistry.getScreen(HomeScreen.class))
+        assertThatThrownBy(() -> ScreenRegistry.getScreen(com.znsio.teswiz.screen.missing.MissingTestScreen.class))
                 .isInstanceOf(InvalidTestDataException.class)
                 .hasMessageContaining("WEB_ENGINE=playwright-ts requires a matching TypeScript screen module")
-                .hasMessageContaining("src/test/resources/playwright/screens/ajio/home.screen.ts");
+                .hasMessageContaining("src/test/resources/playwright/screens/missing/missing-test.screen.ts");
     }
 
     private static void setupConfig() {

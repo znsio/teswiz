@@ -41,19 +41,24 @@ public class PlaywrightTsScreenBridgeFactory {
     }
 
     private Class<?> generateBridgeClass(Class<?> screenContract) {
+        String bridgeClassName = screenContract.getName() + "PlaywrightTsGeneratedBridge";
         try {
-            return new ByteBuddy()
-                    .subclass(screenContract)
-                    .name(screenContract.getName() + "PlaywrightTsGeneratedBridge")
-                    .defineField(EXECUTOR_FIELD_NAME, PlaywrightTsScreenActionExecutor.class)
-                    .method(ElementMatchers.isAbstract())
-                    .intercept(MethodDelegation.toField(EXECUTOR_FIELD_NAME))
-                    .make()
-                    .load(screenContract.getClassLoader(), ClassLoadingStrategy.Default.INJECTION)
-                    .getLoaded();
-        } catch (Exception exception) {
-            throw new IllegalStateException("Unable to generate playwright-ts screen bridge for "
-                    + screenContract.getName(), exception);
+            return Class.forName(bridgeClassName, false, screenContract.getClassLoader());
+        } catch (ClassNotFoundException e) {
+            try {
+                return new ByteBuddy()
+                        .subclass(screenContract)
+                        .name(bridgeClassName)
+                        .defineField(EXECUTOR_FIELD_NAME, PlaywrightTsScreenActionExecutor.class)
+                        .method(ElementMatchers.isAbstract())
+                        .intercept(MethodDelegation.toField(EXECUTOR_FIELD_NAME))
+                        .make()
+                        .load(screenContract.getClassLoader(), ClassLoadingStrategy.Default.INJECTION)
+                        .getLoaded();
+            } catch (Exception exception) {
+                throw new IllegalStateException("Unable to generate playwright-ts screen bridge for "
+                        + screenContract.getName(), exception);
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.tools.JsonFile;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -22,11 +23,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class LambdaTestSetupTest {
     private static final String LAMBDATEST_WEB_CONFIG = "./configs/theapp/theapp_lambdatest_web_config.properties";
 
+    @BeforeEach
+    void setUp() {
+        cleanUp();
+    }
+
     @AfterEach
     void cleanUp() {
         SessionContext.remove(Thread.currentThread().getId());
         System.clearProperty(Setup.CLOUD_UPLOAD_APP);
         System.clearProperty(Setup.APP_PATH);
+        System.clearProperty(Setup.CLOUD_USERNAME);
+        System.clearProperty(Setup.CLOUD_KEY);
     }
 
     @Test
