@@ -83,6 +83,19 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldTreatIndigoPlaywrightJavaScreensAsImplementedTargets() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.indigo.IndigoHomeScreenPlaywrightJava");
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.indigo.IndigoGiftVouchersScreenPlaywrightJava");
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.indigo.IndigoFlightSearchResultsScreenPlaywrightJava");
+    }
+
+    @Test
     void shouldTreatMigratedJioMeetTsModulesAsImplementedTargets() throws IOException {
         ScreenContractCoverageReporter.CoverageReport report =
                 new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
@@ -93,6 +106,19 @@ class ScreenContractCoverageReporterTest {
                 .doesNotContain("src/test/resources/playwright/screens/jiomeet/sign-in.screen.ts");
         assertThat(report.toDisplayString())
                 .doesNotContain("src/test/resources/playwright/screens/jiomeet/in-a-meeting.screen.ts");
+    }
+
+    @Test
+    void shouldTreatJioMeetPlaywrightJavaScreensAsImplementedTargets() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.jiomeet.LandingScreenPlaywrightJava");
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.jiomeet.SignInScreenPlaywrightJava");
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.jiomeet.InAMeetingScreenPlaywrightJava");
     }
 
     @Test
