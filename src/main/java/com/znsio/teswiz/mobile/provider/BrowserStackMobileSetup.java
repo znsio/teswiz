@@ -1,4 +1,4 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.mobile.provider;
 
 import java.io.File;
 import java.net.URL;
@@ -10,36 +10,31 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.MutableCapabilities;
-import static org.openqa.selenium.remote.CapabilityType.ACCEPT_INSECURE_CERTS;
-import static org.openqa.selenium.remote.CapabilityType.BROWSER_NAME;
 
 import com.browserstack.local.Local;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import com.znsio.teswiz.mobile.provider.BrowserStackMobileCapabilitySetup;
+import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.Randomizer;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import com.znsio.teswiz.web.provider.selenium.BrowserStackWebSetup;
 
-public class BrowserStackSetup {
-    private static final Logger LOGGER = LogManager.getLogger(BrowserStackSetup.class.getName());
+public class BrowserStackMobileSetup {
+    private static final Logger LOGGER = LogManager.getLogger(BrowserStackMobileSetup.class.getName());
     private static final String DEVICE = "device";
-    private static final String BSTACK_OPTIONS_CAPABILITY = "bstack:options";
     private static Local bsLocal;
     private static final String BROWSERSTACK_LOCAL_IDENTIFIER = Randomizer.randomize(10);
 
-    private BrowserStackSetup() {
-        LOGGER.debug("BrowserStackSetup - private constructor");
+    private BrowserStackMobileSetup() {
+        LOGGER.debug("BrowserStackMobileSetup - private constructor");
     }
 
     public static void updateBrowserStackCapabilities(String deviceLabURL) {
@@ -80,7 +75,7 @@ public class BrowserStackSetup {
                                                                       Map<String, Object> loadedPlatformCapability,
                                                                       String authenticationUser,
                                                                       String authenticationKey) {
-        Object browserName = loadedPlatformCapability.get(BROWSER_NAME);
+        Object browserName = loadedPlatformCapability.get("browserName");
         if (null != browserName) {
             LOGGER.info(String.format("app Id retrieved from browser stack is: %s", browserName));
             loadedPlatformCapability.put("browserstack.browserName", browserName);
@@ -91,10 +86,6 @@ public class BrowserStackSetup {
             LOGGER.info(String.format("app Id retrieved from browser stack is: %s", appIdFromBrowserStack));
             loadedPlatformCapability.put("app", appIdFromBrowserStack);
         }
-    }
-
-    public static MutableCapabilities updateBrowserStackCapabilities(MutableCapabilities capabilities) {
-        return BrowserStackWebSetup.updateCapabilities(capabilities);
     }
 
     private static String getSessionName() {
@@ -192,12 +183,17 @@ public class BrowserStackSetup {
             deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
             listOfDevices.add(deviceInfo);
         }
-        DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
+        // Save using helper in Runner package
+        // Note: DeviceSetup has package-private access to saveNewCapabilitiesFile, so we might need to expose it or call it if it's package-private.
+        // Wait, DeviceSetup is class DeviceSetup, so it is package-private. If we need to call it from another package, we can make it public or move it, or let's check its visibility.
+        // DeviceSetup has: static void saveNewCapabilitiesFile(...). Since it's in com.znsio.teswiz.runner, a class in com.znsio.teswiz.mobile.provider cannot access a package-private method.
+        // We will make saveNewCapabilitiesFile public in DeviceSetup!
+        com.znsio.teswiz.runner.DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
                 listOfDevices);
     }
 
     private static String uploadToBrowserStack(String authenticationKey, String appPath,
-                                                  String uploadUrl) {
+                                                   String uploadUrl) {
         LOGGER.info(String.format("uploadToBrowserStack for: '%s'%n",
                 SensitiveDataMasker.maskSecret(authenticationKey)));
 
@@ -234,7 +230,7 @@ public class BrowserStackSetup {
         return uploadedApkId;
     }
 
-    static String[] buildUploadAppCurlCommand(String authenticationKey,
+    public static String[] buildUploadAppCurlCommand(String authenticationKey,
                                               String appPath,
                                               String uploadUrl,
                                               String curlProxyCommand) {
@@ -290,7 +286,7 @@ public class BrowserStackSetup {
         return new File(appPath).getName();
     }
 
-    static void cleanUp() {
+    public static void cleanUp() {
         stopBrowserStackLocal();
     }
 

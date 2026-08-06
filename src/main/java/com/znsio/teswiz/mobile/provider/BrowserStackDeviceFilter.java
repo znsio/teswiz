@@ -1,9 +1,10 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.mobile.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jayway.jsonpath.JsonPath;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -18,9 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.znsio.teswiz.runner.Setup.getCurlProxyCommand;
-
-class BrowserStackDeviceFilter {
+public class BrowserStackDeviceFilter {
     private static final Logger LOGGER = LogManager.getLogger(BrowserStackDeviceFilter.class.getName());
 
     private BrowserStackDeviceFilter() {
@@ -33,7 +32,7 @@ class BrowserStackDeviceFilter {
         // fetch the browser list from browserstack
         List<BrowserStackDevice> filteredDevices = null;
         String filteredDeviceFileName = logDir + File.separator +
-                                        "filteredDevicesFromBrowserStack.yml";
+                                         "filteredDevicesFromBrowserStack.yml";
         String allAvailableBrowsersAndDevicesFileName = new File(
                 logDir + File.separator + "allAvailableBrowsersAndDevices.json").getAbsolutePath();
         try {
@@ -68,7 +67,7 @@ class BrowserStackDeviceFilter {
                                                                          String authenticationKey,
                                                                          String allAvailableBrowsersAndDevicesFileName) {
         return new String[]{
-                "curl --insecure " + getCurlProxyCommand() + " -u \"" + authenticationUser + ":" + authenticationKey + "\"",
+                "curl --insecure " + Setup.getCurlProxyCommand() + " -u \"" + authenticationUser + ":" + authenticationKey + "\"",
                 "\"https://api.browserstack.com/automate/browsers.json\"",
                 "> " + allAvailableBrowsersAndDevicesFileName};
     }
@@ -91,7 +90,7 @@ class BrowserStackDeviceFilter {
         if(filter.getKey().equals("Browser_version")) {
             all_devices = all_devices.stream()
                                      .filter(browserStackDevice -> (browserStackDevice.getBrowserVersion() != null && browserStackDevice.getBrowserVersion()
-                                                                                                                                        .split(" ")[0].equals(
+                                                                                                                                         .split(" ")[0].equals(
                                              filter.getValue()))).collect(Collectors.toList());
         }
         return all_devices;

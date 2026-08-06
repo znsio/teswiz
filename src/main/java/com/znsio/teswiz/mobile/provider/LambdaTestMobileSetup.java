@@ -1,33 +1,22 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.mobile.provider;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.MutableCapabilities;
 
-import com.google.gson.JsonObject;
-import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.mobile.provider.LambdaTestMobileAppUpload;
-import com.znsio.teswiz.mobile.provider.LambdaTestMobileCapabilitySetup;
+import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import com.znsio.teswiz.web.provider.selenium.LambdaTestWebSetup;
 
-public class LambdaTestSetup {
-    private static final Logger LOGGER = LogManager.getLogger(LambdaTestSetup.class.getName());
-    private static final String LT_OPTIONS = "LT:Options";
-    private static final String LT_OPTIONS_APPIUM = "lt:options";
-    private static final String DEVICE = "device";
-    private static final String PLATFORM_VERSION = "platformVersion";
-    private static final String OS_VERSION = "os_version";
+public class LambdaTestMobileSetup {
+    private static final Logger LOGGER = LogManager.getLogger(LambdaTestMobileSetup.class.getName());
 
-    private LambdaTestSetup() {
-        LOGGER.debug("LambdaTestSetup - private constructor");
+    private LambdaTestMobileSetup() {
+        LOGGER.debug("LambdaTestMobileSetup - private constructor");
     }
 
     public static void updateLambdaTestCapabilities(String apiUrl) {
@@ -50,12 +39,8 @@ public class LambdaTestSetup {
                 Setup.getFromConfigs(Setup.LOG_DIR),
                 Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING));
 
-        DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
+        com.znsio.teswiz.runner.DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
                 getExistingCloudDevices(loadedCapabilityFile));
-    }
-
-    public static MutableCapabilities updateLambdaTestCapabilities(MutableCapabilities capabilities) {
-        return LambdaTestWebSetup.updateCapabilities(capabilities);
     }
 
     private static void addAppOrBrowserNameToLambdaTestCapabilities(String apiUrl,

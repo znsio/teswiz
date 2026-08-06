@@ -1,17 +1,16 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.mobile.provider;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
-import com.znsio.teswiz.mobile.provider.PCloudyMobileCapabilitySetup;
+import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
 import com.znsio.teswiz.tools.cmd.CommandLineResponse;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
@@ -23,16 +22,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.znsio.teswiz.runner.Setup.*;
 
-class PCloudySetup {
-    private static final Logger LOGGER = LogManager.getLogger(PCloudySetup.class.getName());
+public class PCloudyMobileSetup {
+    private static final org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(PCloudyMobileSetup.class.getName());
     private static final String CURL_INSECURE = "curl --insecure";
     private static final String RESULT = "result";
 
-    private PCloudySetup() {
-        LOGGER.debug("PCloudySetup - private constructor");
+    private PCloudyMobileSetup() {
+        LOGGER.debug("PCloudyMobileSetup - private constructor");
     }
 
-    static void updatePCloudyCapabilities(String deviceLabURL) {
+    public static void updatePCloudyCapabilities(String deviceLabURL) {
         String emailID = getFromConfigs(CLOUD_USERNAME);
         String authenticationKey = getFromConfigs(CLOUD_KEY);
         if(getBooleanValueFromConfigs(CLOUD_UPLOAD_APP)) {
@@ -76,16 +75,16 @@ class PCloudySetup {
     static void updateCapabilities(Map<String, Map> loadedCapabilityFile, ArrayList<Map<String, String>> devices) {
         String capabilityFile = getFromConfigs(CAPS);
         String platformName = getPlatform().name();
-        DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
+        com.znsio.teswiz.runner.DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
                                             devices);
     }
 
     private static String getPCloudyAuthToken(String emailID, String authenticationKey,
-                                              String appPath, String deviceLabURL) {
+                                               String appPath, String deviceLabURL) {
         LOGGER.info("Get pCloudy Auth Token");
         String[] getAppToken = new String[]{CURL_INSECURE, getCurlProxyCommand(), "-u",
-                                            "\"" + emailID + ":" + authenticationKey + "\"",
-                                            deviceLabURL + "/api/access"};
+                                             "\"" + emailID + ":" + authenticationKey + "\"",
+                                             deviceLabURL + "/api/access"};
         CommandLineResponse authTokenResponse = CommandLineExecutor.execCommand(getAppToken);
         LOGGER.info("\tauthTokenResponse: {}",
                 SensitiveDataMasker.mask(authTokenResponse.getStdOut()));
@@ -101,7 +100,7 @@ class PCloudySetup {
     }
 
     private static boolean isAPKAlreadyAvailableInPCloudy(String authToken, String appPath,
-                                                          String deviceLabURL) {
+                                                           String deviceLabURL) {
         Path path = Paths.get(appPath);
         String appNameFromPath = path.getFileName().toString();
         LOGGER.info("isAPKAlreadyAvailableInCloud: Start: " + appPath);
@@ -148,12 +147,12 @@ class PCloudySetup {
 
     @NotNull
     private static StringBuilder getAppType() {
-        StringBuilder apptype= new StringBuilder();
+        StringBuilder apptype = new StringBuilder();
         if(Runner.getPlatform().equals(Platform.android)) {
             apptype = new StringBuilder("apk");
         }
         else if (Runner.getPlatform().equals(Platform.iOS)) {
-            apptype= new StringBuilder("ipa");
+            apptype = new StringBuilder("ipa");
         }
         return apptype;
     }
@@ -194,5 +193,4 @@ class PCloudySetup {
         String updatedPayload = payload.toString().replace("\"", "\\\"").replace("=", ":");
         return updatedPayload;
     }
-
 }

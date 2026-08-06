@@ -1,9 +1,9 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.mobile.provider;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.znsio.teswiz.mobile.provider.HeadSpinMobileCapabilitySetup;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.tools.JsonFile;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
@@ -13,21 +13,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 
-class HeadSpinSetup {
-    private static final Logger LOGGER = LogManager.getLogger(HeadSpinSetup.class.getName());
+public class HeadSpinMobileSetup {
+    private static final Logger LOGGER = LogManager.getLogger(HeadSpinMobileSetup.class.getName());
     private static final String PLATFORM_VERSION = "platformVersion";
 
-    private HeadSpinSetup() {
-        LOGGER.debug("HeadSpinSetup - private constructor");
+    private HeadSpinMobileSetup() {
+        LOGGER.debug("HeadSpinMobileSetup - private constructor");
     }
 
-    static void updateHeadspinCapabilities(String deviceLabURL) {
+    public static void updateHeadspinCapabilities(String deviceLabURL) {
         String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
         String platformName = Setup.getPlatform().name();
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
@@ -112,7 +111,7 @@ class HeadSpinSetup {
     static void updateCapabilities(Map<String, Map> loadedCapabilityFile, ArrayList<Map<String, String>> devices) {
         String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
         String platformName = Setup.getPlatform().name();
-        DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
+        com.znsio.teswiz.runner.DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
                 devices);
     }
 
@@ -146,5 +145,4 @@ class HeadSpinSetup {
             }
         }
     }
-
 }

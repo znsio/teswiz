@@ -2,6 +2,7 @@ package com.znsio.teswiz.runner;
 
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
+import com.znsio.teswiz.web.provider.selenium.BrowserStackWebSetup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.MutableCapabilities;
@@ -58,7 +59,7 @@ class BrowserStackSetupWebTest {
         Setup.addToConfigs(Setup.CAPS, caps.toString());
 
         MutableCapabilities inputCaps = new DesiredCapabilities();
-        MutableCapabilities updatedCaps = BrowserStackSetup.updateBrowserStackCapabilities(inputCaps);
+        MutableCapabilities updatedCaps = BrowserStackWebSetup.updateCapabilities(inputCaps);
 
         assertThat(updatedCaps.getCapability("browserName")).isEqualTo("chrome");
         Map<String, Object> bstackOptions = (Map<String, Object>) updatedCaps.getCapability("bstack:options");

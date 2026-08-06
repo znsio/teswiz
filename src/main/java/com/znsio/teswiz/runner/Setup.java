@@ -735,7 +735,7 @@ public class Setup {
         return testDataForEnvironment.get(key);
     }
 
-    static Platform getPlatform() {
+    public static Platform getPlatform() {
         return currentPlatform;
     }
 

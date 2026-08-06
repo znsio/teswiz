@@ -17,9 +17,14 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
+import com.znsio.teswiz.mobile.provider.BrowserStackMobileSetup;
+import com.znsio.teswiz.mobile.provider.LambdaTestMobileSetup;
+import com.znsio.teswiz.mobile.provider.HeadSpinMobileSetup;
+import com.znsio.teswiz.mobile.provider.PCloudyMobileSetup;
+
 import static com.znsio.teswiz.runner.Setup.*;
 
-class DeviceSetup {
+public class DeviceSetup {
     private static final Logger LOGGER = LogManager.getLogger(DeviceSetup.class.getName());
     private static final String DEFAULT_TEMP_SAMPLE_APP_DIRECTORY =
             System.getProperty("user.dir") + File.separator +
@@ -29,17 +34,17 @@ class DeviceSetup {
     private static final AppVersionDetector APP_VERSION_DETECTOR = new AppVersionDetector();
     private static final MobileCloudExecutionManager MOBILE_CLOUD_EXECUTION_MANAGER =
             new MobileCloudExecutionManager(
-                    BrowserStackSetup::updateBrowserStackCapabilities,
-                    LambdaTestSetup::updateLambdaTestCapabilities,
-                    HeadSpinSetup::updateHeadspinCapabilities,
-                    PCloudySetup::updatePCloudyCapabilities,
-                    BrowserStackSetup::cleanUp);
+                    BrowserStackMobileSetup::updateBrowserStackCapabilities,
+                    LambdaTestMobileSetup::updateLambdaTestCapabilities,
+                    HeadSpinMobileSetup::updateHeadspinCapabilities,
+                    PCloudyMobileSetup::updatePCloudyCapabilities,
+                    BrowserStackMobileSetup::cleanUp);
 
     private DeviceSetup() {
         LOGGER.debug("DeviceSetup - private constructor");
     }
 
-    static void saveNewCapabilitiesFile(String platformName, String capabilityFile,
+    public static void saveNewCapabilitiesFile(String platformName, String capabilityFile,
                                         Map<String, Map> loadedCapabilityFile,
                                         ArrayList listOfDevices) {
         String updatedCapabilitiesFile = CapabilityFileManager.saveDeviceFarmCapabilities(

@@ -1,8 +1,8 @@
-package com.znsio.teswiz.runner;
+package com.znsio.teswiz.mobile.provider;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-class BrowserStackDevice {
+public class BrowserStackDevice {
 
     private String name;
     private String device;
