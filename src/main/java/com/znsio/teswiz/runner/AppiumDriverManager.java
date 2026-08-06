@@ -218,7 +218,7 @@ public class AppiumDriverManager {
 
         Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
         if (isCloudExecution()) {
-            testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ON, getCloudName());
+            testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ON, Runner.getCloudName());
         } else {
             testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ON, "localDevice");
         }
@@ -238,95 +238,14 @@ public class AppiumDriverManager {
     }
 
     private static void disableNotificationsAndToastsOnDevice(Driver currentDriver, String deviceOn, String udid) {
-        if (Runner.isRunningInCI()) {
-            LOGGER.debug("Running in CI. No need to disable notifications.");
-            // disableNotificationsForDeviceInDeviceFarm(currentDriver, deviceOn);
-        } else {
-            disableNotificationsForLocalDevice(udid);
+        if (Runner.getPlatform().equals(Platform.android)) {
+            if (Runner.isRunningInCI()) {
+                LOGGER.debug("Running in CI. No need to disable notifications.");
+            } else {
+                MobileExecutionProvider provider = MOBILE_EXECUTION_PROVIDER_RESOLVER.resolve(Runner.getCloudName());
+                provider.disableNotifications(currentDriver, udid);
+            }
         }
-    }
-
-    private static void disableNotificationsForLocalDevice(String udid) {
-        String[] disableToastsCommand = new String[] { "adb", "-s", udid, "shell", "appops", "set",
-                Runner.getAppPackageName(), "TOAST_WINDOW", "deny" };
-        String[] disableNotificationsCommand = new String[] { "adb", "-s", udid, "shell", "settings", "put", "global",
-                "heads_up_notifications_enabled", "0" };
-
-        CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand);
-        LOGGER.info(String.format("disableToastsCommandResponse: %s", disableToastsCommandResponse));
-        CommandLineResponse disableNotificationsCommandResponse = CommandLineExecutor
-                .execCommand(disableNotificationsCommand);
-        LOGGER.info(String.format("disableNotificationsCommandResponse: %s", disableNotificationsCommandResponse));
-    }
-
-    private static void disableNotificationsForDeviceInDeviceFarm(Driver currentDriver, String deviceOn) {
-        if (deviceOn.equalsIgnoreCase("pCloudy")) {
-            Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript(
-                    "pCloudy_executeAdbCommand",
-                    "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW " + "deny");
-            LOGGER.info(String.format("@disableToastsCommandResponse: %s", disableToasts));
-            Object disableNotifications = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript(
-                    "pCloudy_executeAdbCommand", "adb shell settings put global heads_up_notifications_enabled 0");
-            LOGGER.info("@disableNotificationsCommandResponse: " + disableNotifications);
-        }
-    }
-
-    private static boolean isRunningOnpCloudy() {
-        boolean isPCloudy = getCloudName().equalsIgnoreCase("pCloudy");
-        LOGGER.info(AppiumDeviceSessionRegistry.getCurrentDevice().getUdid() + ": running on: " + getCloudName());
-        return isPCloudy;
-    }
-
-    private static String getCloudName() {
-        return Runner.getCloudName();
-    }
-
-    private static boolean isRunningOnBrowserStack() {
-        boolean isBrowserStack = getCloudName().equalsIgnoreCase("browserstack");
-        LOGGER.info(AppiumDeviceSessionRegistry.getCurrentDevice().getUdid() + ": running on: " + getCloudName());
-        return isBrowserStack;
-    }
-
-    private static boolean isRunningOnHeadspin() {
-        boolean isHeadspin = getCloudName().equalsIgnoreCase("headspin");
-        LOGGER.info(AppiumDeviceSessionRegistry.getCurrentDevice().getUdid() + ": running on: " + getCloudName());
-        return isHeadspin;
-    }
-
-    private static boolean isRunningOnLambdaTest() {
-        boolean isLambdaTest = getCloudName().equalsIgnoreCase("lambdatest");
-        LOGGER.info(AppiumDeviceSessionRegistry.getCurrentDevice().getUdid() + ": running on: " + getCloudName());
-        return isLambdaTest;
-    }
-
-    static String getCurlProxyCommand() {
-        String curlProxyCommand = "";
-        if (null != getOverriddenStringValue("PROXY_URL")) {
-            curlProxyCommand = " --proxy " + System.getProperty("PROXY_URL");
-        }
-        return curlProxyCommand;
-    }
-
-    private static String getReportLinkFromBrowserStack(String sessionId) {
-        String browserStackTestResultUrl = "";
-        String cloudUser = getOverriddenStringValue("CLOUD_USERNAME");
-        String cloudPassword = getOverriddenStringValue("CLOUD_KEY");
-        try {
-            String[] curlCommand = new String[] { "curl --in" + "secure " + getCurlProxyCommand() + " -u \"" + cloudUser
-                    + ":" + cloudPassword + "\" -X GET \"https://api-cloud.browserstack.com/app-automate/sessions/"
-                    + sessionId + ".json\"" };
-            CommandLineResponse commandLineResponse = CommandLineExecutor.execCommand(curlCommand);
-            LOGGER.info("Response from BrowserStack - '{}'",
-                    JsonPrettyPrinter.prettyPrint(SensitiveDataMasker.maskSecret(commandLineResponse.getStdOut())));
-            JSONObject pr = new JSONObject(commandLineResponse.getStdOut());
-            JSONObject automation_session = pr.getJSONObject("automation_session");
-            browserStackTestResultUrl = automation_session.getString("browser_url");
-            LOGGER.info("BrowserStack execution link: {}", browserStackTestResultUrl);
-        } catch (Exception e) {
-            LOGGER.info("Unable to get test execution link from BrowserStack: {}", e.getMessage());
-            ExceptionUtils.getStackTrace(e);
-        }
-        return browserStackTestResultUrl;
     }
 
     private static void attachCloudExecutionReportLinkToReportPortal(AppiumDriver driver) {
@@ -334,7 +253,7 @@ public class AppiumDriverManager {
             return;
         }
         String sessionId = driver.getSessionId().toString();
-        MobileExecutionProvider provider = MOBILE_EXECUTION_PROVIDER_RESOLVER.resolve(getCloudName());
+        MobileExecutionProvider provider = MOBILE_EXECUTION_PROVIDER_RESOLVER.resolve(Runner.getCloudName());
         provider.buildReportMessage(sessionId, () -> resolveProviderLink(driver, sessionId))
                 .ifPresent(message -> {
                     LOGGER.info(message);
@@ -343,13 +262,8 @@ public class AppiumDriverManager {
     }
 
     private static java.util.Optional<String> resolveProviderLink(AppiumDriver driver, String sessionId) {
-        if (isRunningOnpCloudy()) {
-            return java.util.Optional.ofNullable((String) driver.executeScript("pCloudy_getReportLink"));
-        }
-        if (isRunningOnBrowserStack()) {
-            return java.util.Optional.ofNullable(getReportLinkFromBrowserStack(sessionId));
-        }
-        return java.util.Optional.empty();
+        MobileExecutionProvider provider = MOBILE_EXECUTION_PROVIDER_RESOLVER.resolve(Runner.getCloudName());
+        return provider.getProviderReportLink(sessionId, driver);
     }
 
     static void closeAppiumDriver(String userPersona, Driver driver) {

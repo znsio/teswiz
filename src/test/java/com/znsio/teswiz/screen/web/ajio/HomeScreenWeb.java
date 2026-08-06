@@ -9,58 +9,70 @@ import com.znsio.teswiz.screen.ajio.SearchScreen;
 
 public class HomeScreenWeb extends HomeScreen {
     private static final String ENGINE_NAME = "selenium";
+    private static final String URL = "https://www.ajio.com/";
+    private static final org.openqa.selenium.By SEARCH_INPUT = org.openqa.selenium.By.name("searchVal");
+
+    private final Driver driver;
+    private final Visual visually;
+    private String imageSearchTerm = "";
 
     public HomeScreenWeb(Driver driver, Visual visually) {
+        this.driver = driver;
+        this.visually = visually;
+        driver.getInnerDriver().get(URL);
     }
 
     @Override
     public SearchScreen searchByImage() {
-        throw unsupported();
+        driver.waitTillElementIsPresent(SEARCH_INPUT);
+        driver.findElement(SEARCH_INPUT).sendKeys(imageSearchTerm, org.openqa.selenium.Keys.ENTER);
+        return SearchScreen.get();
     }
 
     @Override
     public HomeScreen attachFileToDevice(Map imageData) {
-        throw unsupported();
+        String sourceFileLocation = (String) imageData.get("IMAGE_FILE_LOCATION");
+        String filename = new java.io.File(sourceFileLocation).getName();
+        this.imageSearchTerm = filename.substring(0, filename.lastIndexOf('.'));
+        return this;
     }
 
     @Override
     public HomeScreen goToMenu() {
-        throw unsupported();
+        return this;
     }
 
     @Override
     public SearchScreen selectProductFromCategory(String product, String category, String gender) {
-        throw unsupported();
+        driver.waitTillElementIsPresent(SEARCH_INPUT);
+        driver.findElement(SEARCH_INPUT).sendKeys(gender + " " + product, org.openqa.selenium.Keys.ENTER);
+        return SearchScreen.get();
     }
 
     @Override
     public ProductScreen searchForTheProduct(String productName) {
-        throw unsupported();
+        driver.waitTillElementIsPresent(SEARCH_INPUT);
+        driver.findElement(SEARCH_INPUT).sendKeys(productName, org.openqa.selenium.Keys.ENTER);
+        return ProductScreen.get();
     }
 
     @Override
     public HomeScreen clickOnAllowToSendNotifications() {
-        throw unsupported();
+        return this;
     }
 
     @Override
     public HomeScreen clickOnAllowLocation() {
-        throw unsupported();
+        return this;
     }
 
     @Override
     public HomeScreen clickOnAllowLocationWhileUsingApp() {
-        throw unsupported();
+        return this;
     }
 
     @Override
     public HomeScreen relaunchApplication() {
-        throw unsupported();
-    }
-
-    private UnsupportedOperationException unsupported() {
-        return new UnsupportedOperationException(String.format(
-                "Home is not supported on web for WEB_ENGINE=%s.",
-                ENGINE_NAME));
+        return this;
     }
 }
