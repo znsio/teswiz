@@ -39,12 +39,12 @@ class PlaywrightWorkerClientTest {
     }
 
     @Test
-    void shouldCreateIsolatedSessionsForMultiplePersonas() {
+    void shouldCreateIsolatedSessionsForMultiplePersonas(@TempDir Path tempDir) {
         workerClient = new PlaywrightWorkerClient();
         workerClient.start();
 
-        PlaywrightWorkerSession buyerSession = workerClient.createSession("buyer", "chrome");
-        PlaywrightWorkerSession sellerSession = workerClient.createSession("seller", "chrome");
+        PlaywrightWorkerSession buyerSession = workerClient.createSession("buyer", "chrome", tempDir);
+        PlaywrightWorkerSession sellerSession = workerClient.createSession("seller", "chrome", tempDir);
 
         assertThat(buyerSession.userPersona()).isEqualTo("buyer");
         assertThat(sellerSession.userPersona()).isEqualTo("seller");
