@@ -70,6 +70,19 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldTreatTheAppUnsupportedWebScreensAsImplementedTargets() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.theapp.ClipboardDemoScreenWeb")
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.theapp.ClipboardDemoScreenPlaywrightJava")
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.theapp.EchoScreenPlaywrightJava")
+                .doesNotContain("src/test/resources/playwright/screens/theapp/clipboard-demo.screen.ts")
+                .doesNotContain("src/test/resources/playwright/screens/theapp/echo.screen.ts");
+    }
+
+    @Test
     void shouldTreatMigratedIndigoTsModulesAsImplementedTargets() throws IOException {
         ScreenContractCoverageReporter.CoverageReport report =
                 new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();

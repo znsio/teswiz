@@ -33,6 +33,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] ConfEngine web contract now has an explicit `playwright-java` screen implementation
 - [x] Vodqa web contracts now have explicit `playwright-java` screen implementations
 - [x] Unsupported web contracts now have explicit `playwright-java` screen implementations so failures are engine-aware instead of missing-class errors
+- [x] TheApp unsupported web contracts now have explicit Selenium, `playwright-java`, and `playwright-ts` screen implementations/modules
 - [x] Android-only TheApp web actions now fail explicitly and consistently across Selenium, Playwright-Java, and Playwright-TS
 - [x] Browser-config migration reporting and visible guidance are implemented
 - [x] Playwright-Java trace, HAR, and console artifacts flow through the shared scenario artifact reporter
