@@ -214,6 +214,12 @@ Current examples:
 
 * `MobileExecutionProvider`
 * `MobileCloudExecutionManager`
+* `BrowserStackMobileSetup`
+* `LambdaTestMobileSetup`
+* `HeadSpinMobileSetup`
+* `PCloudyMobileSetup`
+* `BrowserStackDevice`
+* `BrowserStackDeviceFilter`
 
 ### `com.znsio.teswiz.mobile.session`
 

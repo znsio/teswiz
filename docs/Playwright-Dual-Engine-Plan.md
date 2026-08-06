@@ -175,23 +175,23 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 
 ### Remaining execution and validation work
 
-- [ ] More explicit mixed persona / mixed engine / mixed platform coverage
-- [ ] Additional local or CI verification for:
-  - [ ] Selenium + Playwright-Java + Playwright-TS mixed suites
-  - [ ] cleanup behavior under heavier multi-user switching
-  - [ ] provider-specific Playwright flows beyond the current targeted validation
+- [x] More explicit mixed persona / mixed engine / mixed platform coverage
+- [x] Additional local or CI verification for:
+  - [x] Selenium + Playwright-Java + Playwright-TS mixed suites
+  - [x] cleanup behavior under heavier multi-user switching
+  - [x] provider-specific Playwright flows beyond the current targeted validation
 
 ### Remaining cloud/provider work
 
-- [ ] Complete any still-missing provider adapter details for Playwright web execution where current coverage is only partial
+- [x] Complete any still-missing provider adapter details for Playwright web execution where current coverage is only partial
 - [x] Reconfirm Selenium cloud behavior remains unchanged after provider normalization changes
 - [x] Keep provider-specific setup fully hidden from business tests
 
 ### Remaining docs/release work
 
-- [ ] Final pass to align README, architecture docs, config docs, and repo guidance with the end-state model
-- [ ] Document any user migration steps if the final release shape requires them
-- [ ] Keep this plan updated as the remaining Ajio and framework-cleanup work lands
+- [x] Final pass to align README, architecture docs, config docs, and repo guidance with the end-state model
+- [x] Document any user migration steps if the final release shape requires them
+- [x] Keep this plan updated as the remaining Ajio and framework-cleanup work lands
 
 ## Milestone 1: Normalize package boundaries and reduce public surface area
 
@@ -242,11 +242,11 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 
 ## Milestone 5: Expand multi-user and multi-platform coverage
 
-- [ ] Validate mixed persona flows across Selenium, Playwright-Java, Playwright-TS, and Appium combinations
-- [ ] Preserve persona/session routing, concurrent ownership, and mixed platform scenarios as engines multiply
-- [ ] Add at least one web-web multi-user scenario per supported web engine
-- [ ] Add at least one mixed web-mobile scenario per supported mobile platform
-- [ ] Verify persona switching and cleanup behavior under both single-user and multi-user runs
+- [x] Validate mixed persona flows across Selenium, Playwright-Java, Playwright-TS, and Appium combinations
+- [x] Preserve persona/session routing, concurrent ownership, and mixed platform scenarios as engines multiply
+- [x] Add at least one web-web multi-user scenario per supported web engine
+- [x] Add at least one mixed web-mobile scenario per supported mobile platform
+- [x] Verify persona switching and cleanup behavior under both single-user and multi-user runs
 - [x] Validate a local `playwright-ts` single-user web scenario end to end (`@theapp2 and @invalidLogin1 and @playwright-phase1`)
 - [x] Validate a local `playwright-ts` web-web multi-user scenario end to end (`@multiuser-web and @theapp7 and @playwright-phase1`)
 - [x] Validate a local Android + `playwright-ts` web mixed scenario end to end (`@multiuser-android-web and @theapp5 and @playwright-phase1`)
@@ -277,19 +277,19 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Route BrowserStack and LambdaTest session-name/status commands through Playwright cloud-control script paths for both Playwright engines
 - [x] Normalize BrowserStack and LambdaTest provider session/report artifact URLs into Playwright session metadata
 - [x] Validate Selenium web session-handle creation against the shared cloud metadata normalization path for LambdaTest and BrowserStack
-- [ ] Add or complete provider-specific Playwright web adapters for BrowserStack, LambdaTest, and local CI
+- [x] Add or complete provider-specific Playwright web adapters for BrowserStack, LambdaTest, and local CI
 - [x] Move web cloud provider-config parsing into the shared `web.provider` boundary
 - [x] Move web cloud session-name/status command shaping into the shared `web.provider` boundary
 - [x] Move Selenium remote URL/capability request shaping into `web.provider.selenium`
-- [ ] Preserve Selenium cloud behavior unchanged while adding Playwright cloud support
+- [x] Preserve Selenium cloud behavior unchanged while adding Playwright cloud support
 - [x] Normalize cloud metadata and artifacts across engines and providers
-- [ ] Keep provider-specific setup hidden from business tests
+- [x] Keep provider-specific setup hidden from business tests
 
 ## Milestone 8: Documentation and upgrade guidance
 
-- [ ] Keep README, architecture notes, config docs, and repo skills aligned with the final package and engine model
-- [ ] Document any explicit user migration steps, if they are needed
-- [ ] Keep the plan file itself updated as milestones change
+- [x] Keep README, architecture notes, config docs, and repo skills aligned with the final package and engine model
+- [x] Document any explicit user migration steps, if they are needed
+- [x] Keep the plan file itself updated as milestones change
 
 ## Package cleanup progress
 
