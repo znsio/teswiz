@@ -17,6 +17,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Dineout web contract uses a real worker-side TypeScript screen module
 - [x] ConfEngine web contract uses a real worker-side TypeScript screen module
 - [x] Unsupported web contracts now have explicit `playwright-ts` modules so failures are engine-aware instead of missing-module errors
+- [x] Runtime coverage proves explicit unsupported `playwright-ts` modules fail with engine-aware unsupported messages
 - [x] TheApp local single-user Playwright-TS validation passes through the first-class screen path
 - [x] TheApp local multi-user Playwright-TS validation passes through the first-class screen path
 - [x] TheApp local single-user Playwright-Java validation passes through the first-class screen path
@@ -30,6 +31,8 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Dineout web contract now has an explicit `playwright-java` screen implementation
 - [x] Generated demo web contract now has an explicit `playwright-java` screen implementation
 - [x] ConfEngine web contract now has an explicit `playwright-java` screen implementation
+- [x] Vodqa web contracts now have explicit `playwright-java` screen implementations
+- [x] Unsupported web contracts now have explicit `playwright-java` screen implementations so failures are engine-aware instead of missing-class errors
 - [x] Android-only TheApp web actions now fail explicitly and consistently across Selenium, Playwright-Java, and Playwright-TS
 - [x] Browser-config migration reporting and visible guidance are implemented
 - [x] Playwright-Java trace, HAR, and console artifacts flow through the shared scenario artifact reporter

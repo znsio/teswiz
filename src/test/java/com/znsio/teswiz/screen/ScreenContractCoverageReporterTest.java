@@ -204,6 +204,33 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldTreatVodqaPlaywrightJavaScreensAsImplementedTargets() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.vodqa.VodqaScreenPlaywrightJava")
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.vodqa.DragAndDropScreenPlaywrightJava")
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.vodqa.NativeViewScreenPlaywrightJava")
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.vodqa.WebViewScreenPlaywrightJava");
+    }
+
+    @Test
+    void shouldTreatUnsupportedPlaywrightJavaScreensAsImplementedTargets() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.helloWorld.HelloWorldScreenPlaywrightJava")
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.notepad.NotepadScreenPlaywrightJava")
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.duckduckgo.DuckDuckGoScreenPlaywrightJava")
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.autoscroll.AutoScrollScreenPlaywrightJava")
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.calculator.CalculatorScreenPlaywrightJava")
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.calculator.NewCalculatorScreenPlaywrightJava")
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.jiocinema.JioCinemaScreenPlaywrightJava");
+    }
+
+    @Test
     void shouldReportMissingTargetsForContract() {
         ScreenContractCoverageReporter.CoverageReport report = new ScreenContractCoverageReporter.CoverageReport(List.of(
                 new ScreenContractCoverageReporter.ContractCoverage(
