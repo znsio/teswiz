@@ -16,7 +16,7 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.screen.ScreenRegistry;
-import com.znsio.teswiz.screen.duckduckgo.DuckDuckGoScreen;
+import com.znsio.teswiz.screen.ajio.HomeScreen;
 import com.znsio.teswiz.session.SessionHandle;
 import com.znsio.teswiz.session.UserPersonaDetails;
 import com.znsio.teswiz.tools.ScreenShotManager;
@@ -46,10 +46,10 @@ class PlaywrightTsMissingScreenModuleTest {
         TestExecutionContext context = createContext();
         createDriver(context);
 
-        assertThatThrownBy(() -> ScreenRegistry.getScreen(DuckDuckGoScreen.class))
+        assertThatThrownBy(() -> ScreenRegistry.getScreen(HomeScreen.class))
                 .isInstanceOf(InvalidTestDataException.class)
                 .hasMessageContaining("WEB_ENGINE=playwright-ts requires a matching TypeScript screen module")
-                .hasMessageContaining("src/test/resources/playwright/screens/duckduckgo/duck-duck-go.screen.ts");
+                .hasMessageContaining("src/test/resources/playwright/screens/ajio/home.screen.ts");
     }
 
     private static void setupConfig() {

@@ -127,6 +127,25 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldTreatUnsupportedPlaywrightTsModulesAsImplementedTargets() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("src/test/resources/playwright/screens/helloWorld/hello-world.screen.ts")
+                .doesNotContain("src/test/resources/playwright/screens/notepad/notepad.screen.ts")
+                .doesNotContain("src/test/resources/playwright/screens/duckduckgo/duck-duck-go.screen.ts")
+                .doesNotContain("src/test/resources/playwright/screens/autoscroll/auto-scroll.screen.ts")
+                .doesNotContain("src/test/resources/playwright/screens/calculator/calculator.screen.ts")
+                .doesNotContain("src/test/resources/playwright/screens/calculator/new-calculator.screen.ts")
+                .doesNotContain("src/test/resources/playwright/screens/jiocinema/jio-cinema.screen.ts")
+                .doesNotContain("src/test/resources/playwright/screens/vodqa/vodqa.screen.ts")
+                .doesNotContain("src/test/resources/playwright/screens/vodqa/drag-and-drop.screen.ts")
+                .doesNotContain("src/test/resources/playwright/screens/vodqa/native-view.screen.ts")
+                .doesNotContain("src/test/resources/playwright/screens/vodqa/web-view.screen.ts");
+    }
+
+    @Test
     void shouldTreatJioMeetPlaywrightJavaScreensAsImplementedTargets() throws IOException {
         ScreenContractCoverageReporter.CoverageReport report =
                 new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();

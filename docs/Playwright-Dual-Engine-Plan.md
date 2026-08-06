@@ -16,6 +16,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Shared `ScreenShotScreen` web contract uses a real worker-side TypeScript screen module
 - [x] Dineout web contract uses a real worker-side TypeScript screen module
 - [x] ConfEngine web contract uses a real worker-side TypeScript screen module
+- [x] Unsupported web contracts now have explicit `playwright-ts` modules so failures are engine-aware instead of missing-module errors
 - [x] TheApp local single-user Playwright-TS validation passes through the first-class screen path
 - [x] TheApp local multi-user Playwright-TS validation passes through the first-class screen path
 - [x] TheApp local single-user Playwright-Java validation passes through the first-class screen path
