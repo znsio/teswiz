@@ -55,6 +55,138 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Runtime coverage proves missing `playwright-ts` business-screen modules fail with the expected module path
 - [x] PDF validation now lives directly in the main-side visual framework instead of test-side screen overrides
 
+## Implemented So Far
+
+### Core framework and architecture
+
+- [x] Dual-engine web execution exists with explicit `WEB_ENGINE` selection
+- [x] `selenium`, `playwright-java`, and `playwright-ts` are all recognized as first-class web engine values
+- [x] Screen resolution is centralized through `ScreenRegistry.getScreen(...)`
+- [x] `playwright-ts` uses framework-owned TypeScript module bridging instead of test-side Java adapter classes
+- [x] `playwright-ts` now fails explicitly for missing modules
+- [x] Browser/session orchestration and cloud/provider shaping were moved into the intended internal packages
+- [x] Browser config migration reporting and visible guidance are implemented
+
+### Reporting, visual, and cloud
+
+- [x] Playwright visual, trace, HAR, console, and cloud metadata are normalized into the shared reporting flow
+- [x] ReportPortal / HTML / artifact flows carry engine/provider/session metadata
+- [x] BrowserStack and LambdaTest Playwright metadata/report URL handling is implemented
+- [x] HeadSpin is explicitly blocked for Playwright web engines with a fail-fast unsupported path
+
+### Runtime validation already completed
+
+- [x] Local single-user `playwright-ts` web run
+- [x] Local multi-user `playwright-ts` web run
+- [x] Local Android + `playwright-ts` mixed run
+- [x] Local single-user `playwright-java` web run
+- [x] Local multi-user `playwright-java` web run
+- [x] Local Android + `playwright-java` mixed run
+
+### First-class `playwright-ts` business-screen coverage already implemented
+
+- [x] TheApp invalid login
+- [x] TheApp file upload
+- [x] Google Search
+- [x] Indigo
+- [x] JioMeet
+- [x] ScreenShotScreen
+- [x] Dineout
+- [x] ConfEngine
+- [x] Generated demo screen bridge coverage
+- [x] Explicit unsupported TS modules now exist for:
+  - [x] HelloWorld
+  - [x] Notepad
+  - [x] DuckDuckGo
+  - [x] AutoScroll
+  - [x] Calculator
+  - [x] NewCalculator
+  - [x] JioCinema
+  - [x] Vodqa
+  - [x] DragAndDrop
+  - [x] NativeView
+  - [x] WebView
+  - [x] TheApp Clipboard Demo
+  - [x] TheApp Echo
+
+### First-class `playwright-java` business-screen coverage already implemented
+
+- [x] TheApp AppLaunch
+- [x] TheApp Login
+- [x] TheApp FileUpload
+- [x] TheApp Clipboard Demo
+- [x] TheApp Echo
+- [x] Google Search
+- [x] Indigo
+- [x] JioMeet
+- [x] ScreenShotScreen
+- [x] Dineout
+- [x] ConfEngine
+- [x] Generated demo
+- [x] Vodqa
+- [x] DragAndDrop
+- [x] NativeView
+- [x] WebView
+- [x] Explicit unsupported Java screens now exist for:
+  - [x] HelloWorld
+  - [x] Notepad
+  - [x] DuckDuckGo
+  - [x] AutoScroll
+  - [x] Calculator
+  - [x] NewCalculator
+  - [x] JioCinema
+
+## Remaining Work
+
+### Highest-value remaining screen families
+
+- [ ] Ajio still has no first-class web implementation coverage
+  - [ ] `playwright-java`: `CartScreen`, `HomeScreen`, `ProductScreen`, `SearchScreen`
+  - [ ] `playwright-ts`: `cart.screen.ts`, `home.screen.ts`, `product.screen.ts`, `search.screen.ts`
+  - [ ] Selenium web counterparts are also still absent for Ajio, so this is a true feature build-out rather than parity cleanup
+
+### Remaining Playwright-Java contract gaps from the latest gap report
+
+- [ ] None for current web-target contracts outside Ajio and already-known unsupported flows
+  - Note:
+    the latest report no longer shows `web-playwright-java` gaps for TheApp unsupported screens, Vodqa, HelloWorld, Notepad, DuckDuckGo, AutoScroll, Calculator, NewCalculator, or JioCinema
+
+### Remaining Playwright-TS contract gaps from the latest gap report
+
+- [ ] Ajio only
+  - [ ] `src/test/resources/playwright/screens/ajio/cart.screen.ts`
+  - [ ] `src/test/resources/playwright/screens/ajio/home.screen.ts`
+  - [ ] `src/test/resources/playwright/screens/ajio/product.screen.ts`
+  - [ ] `src/test/resources/playwright/screens/ajio/search.screen.ts`
+
+### Remaining framework-level work
+
+- [ ] Replace remaining broad public exposure with narrower facades/result objects where practical
+- [ ] Finish moving any remaining Selenium-web runtime helpers into `com.znsio.teswiz.web.selenium`
+- [ ] Keep provider packaging fully symmetrical between web and mobile internals
+- [ ] Retire any remaining Selenium-through-Playwright compatibility path once equivalent first-class coverage is complete
+- [ ] Reconfirm Selenium behavior remains unchanged after the Playwright additions
+
+### Remaining execution and validation work
+
+- [ ] More explicit mixed persona / mixed engine / mixed platform coverage
+- [ ] Additional local or CI verification for:
+  - [ ] Selenium + Playwright-Java + Playwright-TS mixed suites
+  - [ ] cleanup behavior under heavier multi-user switching
+  - [ ] provider-specific Playwright flows beyond the current targeted validation
+
+### Remaining cloud/provider work
+
+- [ ] Complete any still-missing provider adapter details for Playwright web execution where current coverage is only partial
+- [ ] Reconfirm Selenium cloud behavior remains unchanged after provider normalization changes
+- [ ] Keep provider-specific setup fully hidden from business tests
+
+### Remaining docs/release work
+
+- [ ] Final pass to align README, architecture docs, config docs, and repo guidance with the end-state model
+- [ ] Document any user migration steps if the final release shape requires them
+- [ ] Keep this plan updated as the remaining Ajio and framework-cleanup work lands
+
 ## Milestone 1: Normalize package boundaries and reduce public surface area
 
 - [x] Move browser orchestration fully out of `runner`
