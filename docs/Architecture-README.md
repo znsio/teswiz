@@ -195,6 +195,16 @@ Current examples:
 * `AppPathResolver`
 * `AppVersionDetector`
 
+### `com.znsio.teswiz.config.capability`
+
+Owns shared capability lookup and device-farm capability-file persistence so runner and provider setup code do not
+need to keep JSON-path and file-rewrite logic inline.
+
+Current examples:
+
+* `CapabilityConfigResolver`
+* `CapabilityFileManager`
+
 ### `com.znsio.teswiz.mobile.provider`
 
 Owns provider-aware mobile execution behavior extracted from Appium orchestration, including cloud setup,
@@ -354,6 +364,7 @@ When adding new code for the dual-engine architecture:
 * prefer provider-specific Appium/mobile cloud behavior under `mobile.provider`
 * prefer reporting adaptation code under `reporting`
 * prefer shared app-path resolution, version detection, and download handling under `config.app`
+* prefer shared capability lookup and capability-file persistence under `config.capability`
 * prefer browser-config evolution code under `config.browser`
 * prefer visual-engine adaptation code under `visual`
 

@@ -1,5 +1,6 @@
 package com.znsio.teswiz.config.app;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -137,6 +138,11 @@ class AppPathResolverTest {
     void givenLambdaTestAppReferenceWhenCheckingAppPathThenReturnReferenceWithoutLocalValidation() {
         String actualAppPath = AppPathResolver.resolveAppPath(LAMBDATEST_APP_REFERENCE, DIRECTORY_PATH);
         assertEquals(LAMBDATEST_APP_REFERENCE, actualAppPath);
+    }
+
+    @Test
+    void shouldIdentifyNonUrlAppPathsWithoutThrowing() {
+        assertThat(AppPathResolver.isAppPathUrl("temp/sampleApps/TheApp.apk")).isFalse();
     }
 
     private static void deleteFile(String filePath) {

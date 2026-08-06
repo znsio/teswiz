@@ -33,7 +33,7 @@ public final class AppPathResolver {
         }
         String fileName = new File(appPath).getName();
         String localFilePath = saveToLocalDirectory + File.separator + fileName;
-        if (isAppPathAUrl(appPath)) {
+        if (isAppPathUrl(appPath)) {
             LOGGER.info(String.format("App url '%s' is provided in capabilities. Download it, if " +
                             "not already available at '%s'",
                     SensitiveDataMasker.mask(appPath), SensitiveDataMasker.mask(localFilePath)));
@@ -61,6 +61,18 @@ public final class AppPathResolver {
             return false;
         }
         return appPath.startsWith(LAMBDATEST_APP_PREFIX) || appPath.startsWith(BROWSERSTACK_APP_PREFIX);
+    }
+
+    public static boolean isAppPathUrl(String appPathUrl) {
+        try {
+            new URL(appPathUrl);
+            LOGGER.info(String.format("'%s' is a URL.", appPathUrl));
+            validateAppUrl(appPathUrl);
+            return true;
+        } catch (MalformedURLException e) {
+            LOGGER.info(String.format("'%s' is not a URL.", appPathUrl));
+            return false;
+        }
     }
 
     private static void downloadFile(String url, String filePath, String saveToDirectory) {
@@ -127,18 +139,6 @@ public final class AppPathResolver {
             downloadFile(appPath, filePath, saveToDirectory);
         } else {
             LOGGER.info(String.format("App is already available at path: '%s'. No need to download it.", appPath));
-        }
-    }
-
-    private static boolean isAppPathAUrl(String appPathUrl) {
-        try {
-            new URL(appPathUrl);
-            LOGGER.info(String.format("'%s' is a URL.", appPathUrl));
-            validateAppUrl(appPathUrl);
-            return true;
-        } catch (MalformedURLException e) {
-            LOGGER.info(String.format("'%s' is not a URL.", appPathUrl));
-            return false;
         }
     }
 

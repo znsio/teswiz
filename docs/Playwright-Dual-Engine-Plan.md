@@ -148,6 +148,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Extract mobile cloud setup and cleanup routing behind `mobile.provider` while keeping `runner.DeviceSetup` as the stable orchestration delegate
 - [x] Extract shared app artifact path resolution behind `config.app` while keeping `runner.DeviceSetup` as the stable orchestration delegate
 - [x] Extract shared app version detection behind `config.app` while keeping `runner.DeviceSetup` as the stable orchestration delegate
+- [x] Extract shared capability lookup and device-farm capability-file persistence behind `config.capability` while keeping `runner.DeviceSetup` as the stable orchestration delegate
 
 ## Notes
 

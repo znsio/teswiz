@@ -1,28 +1,18 @@
 package com.znsio.teswiz.runner;
 
-import com.google.gson.internal.LinkedTreeMap;
 import com.znsio.teswiz.config.app.AppPathResolver;
 import com.znsio.teswiz.config.app.AppVersionDetector;
+import com.znsio.teswiz.config.capability.CapabilityConfigResolver;
+import com.znsio.teswiz.config.capability.CapabilityFileManager;
 import com.znsio.teswiz.mobile.device.LocalMobileDeviceSetup;
 import com.znsio.teswiz.mobile.provider.MobileCloudExecutionManager;
 import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import com.znsio.teswiz.tools.JsonFile;
-import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.OsUtils;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
-import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
-import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -52,27 +42,16 @@ class DeviceSetup {
     static void saveNewCapabilitiesFile(String platformName, String capabilityFile,
                                         Map<String, Map> loadedCapabilityFile,
                                         ArrayList listOfDevices) {
-        Object pluginConfig = ((LinkedTreeMap) loadedCapabilityFile.get("serverConfig").get("server")).get(
-                "plugin");
-        Map cloudConfig = (Map) ((LinkedTreeMap) ((LinkedTreeMap) pluginConfig).get("device-farm")).get(
-                "cloud");
-        cloudConfig.put("devices", listOfDevices);
-
-        LOGGER.info(String.format("Updated Device Lab Capabilities file: %n%s", JsonPrettyPrinter.prettyPrint(loadedCapabilityFile)));
-
-        String updatedCapabilitiesFile = getPathForFileInLogDir(capabilityFile);
-        JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitiesFile);
+        String updatedCapabilitiesFile = CapabilityFileManager.saveDeviceFarmCapabilities(
+                capabilityFile,
+                loadedCapabilityFile,
+                listOfDevices,
+                Setup.getFromConfigs(LOG_DIR));
         Setup.addToConfigs(CAPS, updatedCapabilitiesFile);
     }
 
     static String getPathForFileInLogDir(String fullFilePath) {
-        LOGGER.info(String.format("\tgetPathForFileInLogDir: fullFilePath: %s", fullFilePath));
-        Path path = Paths.get(fullFilePath);
-        String fileName = path.getFileName().toString();
-        String newFileName = new File(
-                Setup.getFromConfigs(LOG_DIR) + File.separator + fileName).getAbsolutePath();
-        LOGGER.info(String.format("\tNew file available here: %s", newFileName));
-        return newFileName;
+        return CapabilityFileManager.getPathForFileInLogDir(fullFilePath, Setup.getFromConfigs(LOG_DIR));
     }
 
     static ArrayList<String> setupAndroidExecution() {
@@ -118,7 +97,7 @@ class DeviceSetup {
     private static void fetchAndroidAppVersion() {
         try {
             File appFile = new File(Setup.getFromConfigs(APP_PATH));
-            if (!isAppPathAUrl(appFile.getPath())) {
+            if (!AppPathResolver.isAppPathUrl(appFile.getPath())) {
                 APP_VERSION_DETECTOR.detectAndroidAppVersion(appFile.getPath(), System.getenv("ANDROID_HOME"),
                                 OsUtils.isWindows())
                         .ifPresent(DeviceSetup::setAppVersion);
@@ -136,69 +115,29 @@ class DeviceSetup {
     }
 
     private static String getAppPathFromCapabilities() {
-        String capabilityFile = Setup.getFromConfigs(CAPS);
-        return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
-                new String[]{Setup.getPlatform().name(), "app"}, Setup.getLoadedCapabilities());
-    }
-
-    private static boolean isAppPathAUrl(String appPathUrl) {
-        try {
-            new URL(appPathUrl);
-            LOGGER.info(String.format("'%s' is a URL.", appPathUrl));
-            isAppUrlValid(appPathUrl);
-            return true;
-        } catch (MalformedURLException e) {
-            LOGGER.info(String.format("'%s' is not a URL.", appPathUrl));
-            return false;
-        }
-    }
-
-    private static void isAppUrlValid(String appPathUrl) {
-        int responseCode=999;
-        String responseMessage=NOT_SET;
-        HttpURLConnection connection;
-        try {
-            connection = (HttpURLConnection) new URL(appPathUrl).openConnection();
-            connection.setRequestMethod("HEAD");
-            responseMessage = connection.getResponseMessage();
-            responseCode = connection.getResponseCode();
-            connection.disconnect();
-        } catch (IOException e) {
-            LOGGER.info(MessageFormat.format("isAppUrlValid response message: {0}'', responseCode: {1}",
-                    SensitiveDataMasker.mask(responseMessage), responseCode));
-            throw new InvalidTestDataException(String.format("Failed to make a connection using url: '%s'", appPathUrl) + e);
-        }
-
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            LOGGER.info(String.format("'%s' is an invalid URL.", appPathUrl));
-            throw new InvalidTestDataException("URL is not accessible: " + appPathUrl);
-        }
-        LOGGER.info(String.format("'%s' is a valid URL.", appPathUrl));
+        return CapabilityConfigResolver.getAppPath(
+                Setup.getFromConfigs(CAPS),
+                Setup.getPlatform().name(),
+                Setup.getLoadedCapabilities());
     }
 
     static String getCloudNameFromCapabilities() {
-        if (Runner.isRunningInCI() && !Runner.isAPI() && !Runner.isCLI() && !Runner.isPDF()) {
-            String capabilityFile = Setup.getFromConfigs(CAPS);
-            return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
-                    new String[]{"serverConfig", "server", "plugin",
-                            "device-farm", "cloud", "cloudName"}, Setup.getLoadedCapabilities());
-        } else {
-            return NOT_SET;
-        }
+        return CapabilityConfigResolver.getCloudName(
+                Runner.isRunningInCI(),
+                Runner.isAPI(),
+                Runner.isCLI(),
+                Runner.isPDF(),
+                Setup.getFromConfigs(CAPS),
+                Setup.getLoadedCapabilities(),
+                NOT_SET);
     }
 
     static String getCloudUrlFromCapabilities() {
-        String capabilityFile = Setup.getFromConfigs(CAPS);
-        return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
-                new String[]{"serverConfig", "server", "plugin",
-                        "device-farm", "cloud", "url"}, Setup.getLoadedCapabilities());
+        return CapabilityConfigResolver.getCloudUrl(Setup.getFromConfigs(CAPS), Setup.getLoadedCapabilities());
     }
 
     static String getCloudApiUrlFromCapabilities() {
-        String capabilityFile = Setup.getFromConfigs(CAPS);
-        return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
-                new String[]{"serverConfig", "server", "plugin",
-                        "device-farm", "cloud", "apiUrl"}, Setup.getLoadedCapabilities());
+        return CapabilityConfigResolver.getCloudApiUrl(Setup.getFromConfigs(CAPS), Setup.getLoadedCapabilities());
     }
 
     static ArrayList<String> setupWindowsExecution() {
