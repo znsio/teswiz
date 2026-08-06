@@ -167,8 +167,8 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 
 ### Remaining framework-level work
 
-- [ ] Replace remaining broad public exposure with narrower facades/result objects where practical
-- [ ] Finish moving any remaining Selenium-web runtime helpers into `com.znsio.teswiz.web.selenium`
+- [x] Replace remaining broad public exposure with narrower facades/result objects where practical
+- [x] Finish moving any remaining Selenium-web runtime helpers into `com.znsio.teswiz.web.selenium`
 - [x] Keep provider packaging fully symmetrical between web and mobile internals
 - [x] Retire any remaining Selenium-through-Playwright compatibility path once equivalent first-class coverage is complete
 - [x] Reconfirm Selenium behavior remains unchanged after the Playwright additions
@@ -203,10 +203,10 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Introduce a small public engine session/result API so `runner` can keep owning `Driver` construction while engine packages remain internal
 - [x] Re-run focused compile/test verification after each package move to keep the refactor mechanically safe
 - [x] Move user-facing screen runtime and screen validation/reporting infrastructure out of `src/test` and into `src/main`
-- [ ] Replace broad public exposure with small facades or result objects where needed
-- [ ] Move remaining Selenium-web runtime helpers into `com.znsio.teswiz.web.selenium`
+- [x] Replace broad public exposure with small facades or result objects where needed
+- [x] Move remaining Selenium-web runtime helpers into `com.znsio.teswiz.web.selenium`
 - [x] Keep web and mobile provider namespaces symmetrical
-- [ ] Keep the package surface small enough that engine internals stay easy to reason about
+- [x] Keep the package surface small enough that engine internals stay easy to reason about
 
 ## Milestone 2: Add first-class Playwright-engine screen implementations
 

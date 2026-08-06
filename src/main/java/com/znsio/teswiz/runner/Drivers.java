@@ -237,6 +237,7 @@ public class Drivers {
         userPersonaDetails.clearAllCapabilities();
         userPersonaDetails.clearAllPlatforms();
         userPersonaDetails.clearLogFileNames();
+        BrowserDriverManager.shutdownPlaywrightWorker(context);
     }
 
     private static void updateTestStatusInCloud(WebDriver driver, Status cucumberScenarioStatus) {

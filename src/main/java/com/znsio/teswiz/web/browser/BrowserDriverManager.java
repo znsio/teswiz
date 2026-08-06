@@ -117,4 +117,8 @@ public final class BrowserDriverManager {
         return new SessionHandle(sessionHandle.userPersona(), sessionHandle.platform(), sessionHandle.engine(),
                 sessionHandle.sessionId(), sessionHandle.artifactPath(), mergedMetadata);
     }
+
+    public static void shutdownPlaywrightWorker(TestExecutionContext context) {
+        PLAYWRIGHT_WORKER_MANAGER.shutdown(context);
+    }
 }
