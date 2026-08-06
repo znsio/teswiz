@@ -24,6 +24,6 @@ Follow these steps:
    2. Create your step definitions (`src/test/java/<package_name>/steps`)
    3. Implement your business layer classes/methods (`src/test/java/<package_name>/businessLayer`)
    3. Implement your screen classes/methods (`src/test/java/<package_name>/screen`) in the corresponding OS (Android/iOS) folders
-   4. [Setup Applitools Visual AI Testing](RunningVisualTests-README.md) 
+   4. [Setup Applitools Visual AI Testing](../features/RunningVisualTests-README.md) 
 2. Update the **run** task in build.gradle with appropriate values for config.properties, pathToStepDef, pathToFeaturesDir, pathToLogProperties
 1. Refer to the **[Running the tests](SampleTests-README.md)** section

@@ -1,6 +1,6 @@
 # FAQs / Troubleshooting guide
 
-If you are trying to figure out why a specific test failed, start with [DebuggingTests-README.md](DebuggingTests-README.md).
+If you are trying to figure out why a specific test failed, start with [DebuggingTests-README.md](../guides/DebuggingTests-README.md).
 
 ### Setting Environment Variables:
 

@@ -17,7 +17,7 @@ In Config properties files, which are related to cloud execution platforms such 
 **Note**: appium-device-farm plugin's version should be >= v8.1.0. minimum requirement is v8.1.0
 
 **Please Refer:**
-[Browser Stack Local File](https://github.com/znsio/teswiz/blob/main/docs/BrowserStackLocal_README.md)
+[Browser Stack Local File](../features/BrowserStackLocal_README.md)
 
 ## Method name and implementation changes
 

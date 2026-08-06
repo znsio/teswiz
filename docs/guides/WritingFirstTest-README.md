@@ -45,7 +45,7 @@
 
 ## Steps to writing and configure the first test case using teswiz:
 
-![Steps for Writing The First Test Case](StepsToWriteFirstTestInTeswiz.png)
+![Steps for Writing The First Test Case](../images/StepsToWriteFirstTestInTeswiz.png)
 
 1. Changes to be done in config files, Add my_web_config.properties file in ./configs directory as
    per the project or assignment requirement.\
@@ -67,7 +67,7 @@
    Check the path for the properties file for the cloud provider configuration
    (./configs/pcloudy_config.properties) if running from local to the cloud devices
    when passing the environment variable RUN_IN_CI = true.
-   ![Configuration File Setup](ConfigFileConfiguration.png)
+   ![Configuration File Setup](../images/ConfigFileConfiguration.png)
 4. Add required test data in ./src/test/resources/testData.json such as user details.
 5. Create a feature file in ./src/test/resources/com/znsio/sample/e2e/features directory.
    Ex: myFirstTest.feature

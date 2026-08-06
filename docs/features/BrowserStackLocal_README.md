@@ -21,7 +21,7 @@ Update the data (App Name, app package name, cloud UserName, cloud key) accordin
 ####  Running the tests in browser-Stack from local:
 
 Change the config file path in build.gradle file to get the configuration properties of browserstack
-![BuildGradleFileChanges.png](BuildGradleFileChanges.png)
+![BuildGradleFileChanges.png](../images/BuildGradleFileChanges.png)
 
 * Run the command from local:
 Sample command
@@ -30,7 +30,7 @@ Sample command
 
 #### Running from the pipeline (this is specifically for Azure), but similar changes can be done for any other CI tool as well.
   * Set the variable in azure-pipelines.yml
-    ![azurePipelineChanges.png](azurePipelineChanges.png)
+    ![azurePipelineChanges.png](../images/azurePipelineChanges.png)
 
     variables:
         * `CLOUD_KEY`: $(CLOUD_KEY)

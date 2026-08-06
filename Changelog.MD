@@ -94,7 +94,7 @@
 
 ### Documentation
 
-- Updated `README.md` and `docs/RunningVisualTests-README.md` to document:
+- Updated `README.md` and `docs/features/RunningVisualTests-README.md` to document:
   - `useNML`
   - the explicit Figma/Applitools naming step
   - the sample `applitools.feature` usage

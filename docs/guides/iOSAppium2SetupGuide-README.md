@@ -5,7 +5,7 @@ Refer to the [Prerequisites](Prerequisites-README.md) document for general setup
 <span style="font-size: larger;">This guide will walk you through the steps to set up Appium 2 for iOS.</span> 
 
 Verify XCUITest Driver installation path.
-   ![XCUITest-driver-path.png](XCUITest-driver-path.png)
+   ![XCUITest-driver-path.png](../images/XCUITest-driver-path.png)
 
 ## Setting Variables for Project Setup
 Set the **usePrebuiltWDA** capability to false in a capabilities file, you can use the following format:
@@ -24,7 +24,7 @@ To start Appium manually, run the following command:
 
 **Please keep in mind that teswiz will start the Appium 2 server and handle the necessary configurations.**
 
-![Launch-Appium-with-installed-plugins.png](Launch-Appium-with-installed-plugins.png)
+![Launch-Appium-with-installed-plugins.png](../images/Launch-Appium-with-installed-plugins.png)
 
 ## Connect your device or simulator
 
@@ -35,16 +35,16 @@ To start Appium manually, run the following command:
     xcrun simctl list | grep Booted
 
 
-![Booted-device-details.png](Booted-device-details.png)
+![Booted-device-details.png](../images/Booted-device-details.png)
 
 ## Connect Appium Inspector
 
 * You can connect Appium Inspector to your Appium session by opening the Appium Inspector app and entering the URL of your Appium server.
 
-![Sample-Desired-Capabilites.png](Sample-Desired-Capabilites.png)
+![Sample-Desired-Capabilites.png](../images/Sample-Desired-Capabilites.png)
 
 
-![Appium-Inspector-connected.png](Appium-Inspector-connected.png)
+![Appium-Inspector-connected.png](../images/Appium-Inspector-connected.png)
 
 
 

@@ -16,7 +16,7 @@ Check the values that control where and how the test runs:
 - `LOG_PROPERTIES_FILE`
 - `SHOW_SENSITIVE_DATA`
 
-The full list of supported configuration keys is in [ConfigurationParameters-README.md](ConfigurationParameters-README.md).
+The full list of supported configuration keys is in [ConfigurationParameters-README.md](../features/ConfigurationParameters-README.md).
 
 ## 2. Re-run the smallest useful slice
 
@@ -61,9 +61,9 @@ teswiz already supports several log sources that are useful during investigation
 
 Helpful references:
 
-- [ReportPortal-README.md](ReportPortal-README.md)
-- [AspectJLogging-README.md](AspectJLogging-README.md)
-- [RunningVisualTests-README.md](RunningVisualTests-README.md)
+- [ReportPortal-README.md](../features/ReportPortal-README.md)
+- [AspectJLogging-README.md](../features/AspectJLogging-README.md)
+- [RunningVisualTests-README.md](../features/RunningVisualTests-README.md)
 
 ## 5. Check failure artifacts
 
@@ -74,7 +74,7 @@ When a test fails, look for:
 - browser or device logs
 - console output produced with your configured log level
 
-For visual testing, the most relevant setup and naming rules are documented in [RunningVisualTests-README.md](RunningVisualTests-README.md).
+For visual testing, the most relevant setup and naming rules are documented in [RunningVisualTests-README.md](../features/RunningVisualTests-README.md).
 
 ## 6. Use the failure mode intentionally
 
@@ -90,7 +90,7 @@ If you are validating the pass-path, run with failing tests excluded:
 SET_HARD_GATE=true IS_FAILING_TEST_SUITE=false ./gradlew run
 ```
 
-See [HardGate.md](HardGate.md) for details.
+See [HardGate.md](../features/HardGate.md) for details.
 
 ## 7. If the problem is in test wiring
 
@@ -101,7 +101,7 @@ If the test fails before the app flow even starts, check:
 - browser config values under `configs/`
 - any overridden `BASE_URL_FOR_WEB` or `BROWSER_CONFIG_FILE`
 
-The override pattern is documented in [ConfigurationParameters-README.md](ConfigurationParameters-README.md).
+The override pattern is documented in [ConfigurationParameters-README.md](../features/ConfigurationParameters-README.md).
 
 ## 8. If you need a starting checklist
 

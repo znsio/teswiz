@@ -127,7 +127,7 @@ For client projects, the intent is:
 * treat the packages above as internal implementation packages that may evolve as dual-engine support grows
 * keep user-authored sample/app test assets in `src/test`, while framework runtime and user-invokable verification/reporting infrastructure ship from `src/main`
 
-The architecture diagram and flow are documented in [`docs/Architecture-README.md`](docs/Architecture-README.md).
+The architecture diagram and flow are documented in [`docs/internals/Architecture-README.md`](docs/internals/Architecture-README.md).
 
 To explicitly validate discovered screen implementations against their shared contracts, run:
 
@@ -236,36 +236,46 @@ Example for GitHub Actions:
 * Build tool: gradle v8
 * cucumber-reporting (https://github.com/damianszczepanik/cucumber-reporting)
 
-## [Prerequisites](docs/Prerequisites-README.md)
+## [Prerequisites](docs/guides/Prerequisites-README.md)
 
-## [Getting started using teswiz](docs/GettingStartedUsingTeswiz-README.md)
+## [Getting started using teswiz](docs/guides/GettingStartedUsingTeswiz-README.md)
 
-## [Configuring the test execution](docs/ConfiguringTestExecution-README.md)
+## [Configuring the test execution](docs/guides/ConfiguringTestExecution-README.md)
 
-## [Running the sample tests](docs/SampleTests-README.md)
+## [Running the sample tests](docs/guides/SampleTests-README.md)
 
-## [Writing the first test](docs/WritingFirstTest-README.md)
+## [Writing the first test](docs/guides/WritingFirstTest-README.md)
 
-## [Setting up the Hard Gate](./docs/HardGate.md)
+## [Setting up the Hard Gate](./docs/features/HardGate.md)
+
+## Concrete Implementation Examples
+
+### [Android Appium Example](docs/examples/Android-Example.md)
+### [iOS Appium Example](docs/examples/iOS-Example.md)
+### [Web Selenium Example](docs/examples/Web-Selenium-Example.md)
+### [Web Playwright-TS Example](docs/examples/Web-Playwright-TS-Example.md)
+### [Web Playwright-Java Example](docs/examples/Web-Playwright-Java-Example.md)
+### [API Integration Example](docs/examples/API-Example.md)
+### [PDF Validation Example](docs/examples/PDF-Example.md)
 
 ## Additional configurations
 
-### [Running Visual Tests using Applitools Visual AI](docs/RunningVisualTests-README.md)
+### [Running Visual Tests using Applitools Visual AI](docs/features/RunningVisualTests-README.md)
 
-### [Functional/Feature Coverage](docs/FeatureCoverage-README.md)
+### [Functional/Feature Coverage](docs/internals/FeatureCoverage-README.md)
 
-### [Configuration parameters](docs/ConfigurationParameters-README.md)
+### [Configuration parameters](docs/features/ConfigurationParameters-README.md)
 
-### [Add Auto Logging Using AspectJ](docs/AspectJLogging-README.md)
+### [Add Auto Logging Using AspectJ](docs/features/AspectJLogging-README.md)
 
-### [Setting up docker containers](docs/DockerSetup-README.md)
+### [Setting up docker containers](docs/features/DockerSetup-README.md)
 
-### [Logging to ReportPortal](docs/ReportPortal-README.md)
+### [Logging to ReportPortal](docs/features/ReportPortal-README.md)
 
-## [BREAKING CHANGES from v0.0.81](docs/BreakingChanges-README.md)
+## [BREAKING CHANGES from v0.0.81](docs/internals/BreakingChanges-README.md)
 
-## [Troubleshooting / FAQs](docs/FAQs-README.md)
+## [Troubleshooting / FAQs](docs/internals/FAQs-README.md)
 
-## [Trouble downloading teswiz from jitpack.io?](docs/teswizDownloadIssue.md)
+## [Trouble downloading teswiz from jitpack.io?](docs/internals/teswizDownloadIssue.md)
 
 ### Contact [Anand Bagmar](https://twitter.com/BagmarAnand) for help or if you face issues using teswiz

@@ -79,7 +79,7 @@ Notes:
 ### Android tests
   Example:
 
-![ClearIntent-annotated.png](ClearIntent-annotated.png)
+![ClearIntent-annotated.png](../images/ClearIntent-annotated.png)
 
     CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @single-user" PLATFORM=android ./gradlew run 
 
@@ -90,7 +90,7 @@ Notes:
 ### Web tests
 Example:
 
-![ClearIntent-annotated.png](ClearIntent-annotated.png)
+![ClearIntent-annotated.png](../images/ClearIntent-annotated.png)
 
     CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @single-user" PLATFORM=web ./gradlew run 
 
@@ -101,7 +101,7 @@ Example:
 ### Multiuser Android tests
   Example:
 
-![Multiuser-android-annotated.png](Multiuser-android-annotated.png)
+![Multiuser-android-annotated.png](../images/Multiuser-android-annotated.png)
 
     CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android and @single-app" ./gradlew run
 
@@ -112,7 +112,7 @@ Example:
 ### Multiuser Android-web tests
   Example:
 
-![Multiuser-android-web-annotated.png](Multiuser-android-web-annotated.png)
+![Multiuser-android-web-annotated.png](../images/Multiuser-android-web-annotated.png)
 
     CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android-web and @single-app" ./gradlew run
 
@@ -123,7 +123,7 @@ Example:
 ### Multiuser-Multiapp Android-web tests
 Example:
 
-![Multiapp-Multiuser-android-web-annotated.png](Multiapp-Multiuser-android-web-annotated.png)
+![Multiapp-Multiuser-android-web-annotated.png](../images/Multiapp-Multiuser-android-web-annotated.png)
 
     CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android-web and @multi-app" ./gradlew run
 

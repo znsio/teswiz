@@ -16,8 +16,8 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Playwright TS test-owned screen modules: `src/test/resources/playwright/screens`
 - Execution configs: `configs/<app>/...`
 - Capability files: `caps/<app>/...`
-- Visual-testing docs: `docs/RunningVisualTests-README.md`
-- Architecture notes: `docs/Architecture-README.md`
+- Visual-testing docs: `docs/features/RunningVisualTests-README.md`
+- Architecture notes: `docs/internals/Architecture-README.md`
 
 ## Working conventions
 
@@ -73,7 +73,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Mobile cloud upload/parsing helpers should also prefer `com.znsio.teswiz.mobile.provider` when they can be extracted as pure provider logic.
 - If a change affects these boundaries, update:
   - `README.md`
-  - `docs/Architecture-README.md`
+  - `docs/internals/Architecture-README.md`
   - this skill file
 
 ## Visual testing rules
@@ -128,10 +128,10 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 
 - If behavior changes for visual testing, update both:
   - `README.md`
-  - `docs/RunningVisualTests-README.md`
+  - `docs/features/RunningVisualTests-README.md`
 - If architecture boundaries or stable-vs-internal package intent changes, update:
   - `README.md`
-  - `docs/Architecture-README.md`
+  - `docs/internals/Architecture-README.md`
   - `.codex/skills/teswiz-project/SKILL.md`
 - Keep docs aligned with the current supported flow; remove stale references rather than documenting both old and new patterns.
 

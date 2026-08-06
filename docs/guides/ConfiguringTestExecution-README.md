@@ -2,7 +2,7 @@
 
 Test execution using teswiz is highly configurable. This enables you to control what type of tests you want to execute, and where (environment, local/cloud), etc.
 
-See all the [Configuration parameters here](ConfigurationParameters-README.md)
+See all the [Configuration parameters here](../features/ConfigurationParameters-README.md)
 
 ### Run Android app tests
 
@@ -83,7 +83,7 @@ The framework now supports running multiuser scenarios. This means 1 cucumber sc
 
 Example:
 
-![multi-user-example-annotated.png](Multiuser-example-annotated.png)
+![multi-user-example-annotated.png](../images/Multiuser-example-annotated.png)
 
 In the above example
 You can run these tests as below:
@@ -110,7 +110,7 @@ These informative parameters refer to Browser Config json file for actual device
 
 Example:
 
-![mobile-emulation-on-web-browser.png](mobile-emulation-on-web-browser.png)
+![mobile-emulation-on-web-browser.png](../images/mobile-emulation-on-web-browser.png)
 
 ### Using a different apk for execution (Android):
 

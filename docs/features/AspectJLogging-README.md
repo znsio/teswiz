@@ -33,6 +33,6 @@ For more detail regarding pointcut visit: https://docs.spring.io/spring-framewor
 
 ### Test Result
 Once the AspectJ implementation is done execute a simple test case then observe the loggers in the console.
-![AspectJAutoLoggingResult.png](AspectJAutoLoggingResult.png)
+![AspectJAutoLoggingResult.png](../images/AspectJAutoLoggingResult.png)
 
 Implementation Reference: https://github.com/znsio/teswiz/blob/main/src/test/java/com/znsio/teswiz/aspect/AspectLogging.java
