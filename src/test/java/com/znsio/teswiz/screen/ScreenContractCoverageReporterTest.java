@@ -131,6 +131,42 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldTreatScreenshotPlaywrightJavaScreenAsImplementedTarget() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.ScreenShotScreenPlaywrightJava");
+    }
+
+    @Test
+    void shouldTreatDineoutPlaywrightJavaScreenAsImplementedTarget() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.dineout.DineoutLandingScreenPlaywrightJava");
+    }
+
+    @Test
+    void shouldTreatGeneratedDemoPlaywrightJavaScreenAsImplementedTarget() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.generateddemo.GeneratedPlaywrightTsTestScreenPlaywrightJava");
+    }
+
+    @Test
+    void shouldTreatConfEnginePlaywrightJavaScreenAsImplementedTarget() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("com.znsio.teswiz.screen.web.playwrightjava.confengine.ConfEngineLandingScreenPlaywrightJava");
+    }
+
+    @Test
     void shouldReportMissingTargetsForContract() {
         ScreenContractCoverageReporter.CoverageReport report = new ScreenContractCoverageReporter.CoverageReport(List.of(
                 new ScreenContractCoverageReporter.ContractCoverage(

@@ -51,6 +51,12 @@ class GeneratedScreenParityTest {
         assertGeneratedScreenContract(tempDir, WebEngine.SELENIUM, new SeleniumWebDriverFixture());
     }
 
+    @Test
+    void shouldExecuteGeneratedScreenContractThroughPlaywrightJavaImplementation(@TempDir Path tempDir)
+            throws Exception {
+        assertGeneratedScreenContract(tempDir, WebEngine.PLAYWRIGHT_JAVA, new PlaywrightWebDriverFixture());
+    }
+
     private void assertGeneratedScreenContract(Path tempDir, WebEngine webEngine, SharedWebDriverFixture nextFixture)
             throws Exception {
         fixture = nextFixture;
