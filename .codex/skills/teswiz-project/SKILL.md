@@ -47,6 +47,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Prefer internal dual-engine support classes in:
   - `com.znsio.teswiz.session`
   - `com.znsio.teswiz.config.browser`
+  - `com.znsio.teswiz.config.app`
   - `com.znsio.teswiz.mobile.session`
   - `com.znsio.teswiz.mobile.device`
   - `com.znsio.teswiz.mobile.server`
@@ -59,6 +60,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
   - `com.znsio.teswiz.web.playwright`
   - `com.znsio.teswiz.visual`
 - When adding new Playwright, browser-config, session, or visual-helper code, do not place it in `runner` by default.
+- Shared app-path resolution and download handling belongs in `com.znsio.teswiz.config.app`; keep `runner` compatibility wrappers only when they help avoid a breaking change.
 - When adding Selenium web engine runtime code, prefer `com.znsio.teswiz.web.selenium`.
 - When adding browser-engine orchestration code, prefer `com.znsio.teswiz.web.browser`.
 - Mobile device-session state and registries belong in `com.znsio.teswiz.mobile.session`; keep `runner` compatibility wrappers only when they help avoid a breaking change.

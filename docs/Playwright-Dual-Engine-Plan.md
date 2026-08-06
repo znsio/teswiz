@@ -146,6 +146,7 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Extract local mobile device and simulator setup behind `mobile.device` while keeping `runner.LocalDevicesSetup` as a compatibility facade
 - [x] Extract Appium server lifecycle behind `mobile.server` while keeping `runner.AppiumServerManager` as a compatibility facade
 - [x] Extract mobile cloud setup and cleanup routing behind `mobile.provider` while keeping `runner.DeviceSetup` as the stable orchestration delegate
+- [x] Extract shared app artifact path resolution behind `config.app` while keeping `runner.DeviceSetup` as the stable orchestration delegate
 
 ## Notes
 

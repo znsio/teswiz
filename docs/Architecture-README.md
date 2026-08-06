@@ -185,6 +185,15 @@ Current examples:
 * `PlaywrightBrowserConfigMigrator`
 * `PlaywrightBrowserConfigMigrationReporter`
 
+### `com.znsio.teswiz.config.app`
+
+Owns shared app artifact path resolution and download handling so Android, iOS, and Windows setup flows can
+reuse the same behavior without keeping the implementation inside `runner`.
+
+Current examples:
+
+* `AppPathResolver`
+
 ### `com.znsio.teswiz.mobile.provider`
 
 Owns provider-aware mobile execution behavior extracted from Appium orchestration, including cloud setup,
@@ -213,13 +222,6 @@ out of `runner` while stable orchestration delegates remain intact.
 Current examples:
 
 * `AppiumServerController`
-
-### `com.znsio.teswiz.mobile.provider`
-
-Owns provider-aware mobile execution behavior extracted from Appium orchestration, starting with cloud report-link publication.
-
-Current examples:
-
 * `MobileExecutionProviderResolver`
 * `LocalMobileExecutionProvider`
 * `BrowserStackMobileExecutionProvider`
@@ -350,6 +352,7 @@ When adding new code for the dual-engine architecture:
 * prefer Appium server lifecycle and hub URL normalization under `mobile.server`
 * prefer provider-specific Appium/mobile cloud behavior under `mobile.provider`
 * prefer reporting adaptation code under `reporting`
+* prefer shared app-path resolution and download handling under `config.app`
 * prefer browser-config evolution code under `config.browser`
 * prefer visual-engine adaptation code under `visual`
 
