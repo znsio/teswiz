@@ -12,7 +12,7 @@ When working in this repository:
 - Prefer small, meaningfully named methods, variables, and classes.
 - Keep encapsulation tight; do not widen visibility unless there is a clear framework-facing need.
 - For `playwright-ts`, keep test-owned `.ts` screen modules under `src/test/resources/playwright/screens`.
-- Prefer shared app-path resolution and download handling under `com.znsio.teswiz.config.app` instead of growing `runner`.
+- Prefer shared app-path resolution, version detection, and download handling under `com.znsio.teswiz.config.app` instead of growing `runner`.
 - Prefer internal mobile device-session state under `com.znsio.teswiz.mobile.session` instead of growing `runner`.
 - Prefer local mobile device and simulator setup under `com.znsio.teswiz.mobile.device` instead of growing `runner`.
 - Prefer internal Appium server lifecycle code under `com.znsio.teswiz.mobile.server` instead of growing `runner`.

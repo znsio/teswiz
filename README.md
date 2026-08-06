@@ -87,7 +87,7 @@ The dual-engine web support is intentionally organized behind internal support p
 * `com.znsio.teswiz.config.browser`
   * browser config loading, Playwright config resolution, and migration reporting
 * `com.znsio.teswiz.config.app`
-  * app artifact path resolution and download handling shared by Android, iOS, and Windows setup flows
+  * app artifact path resolution, version detection, and download handling shared by Android, iOS, and Windows setup flows
 * `com.znsio.teswiz.mobile.session`
   * Appium device-session registry and internal mobile session state
 * `com.znsio.teswiz.mobile.device`
@@ -169,7 +169,7 @@ On the mobile side, extraction has started the same way:
 * local mobile device and simulator setup is now owned by the internal mobile device package
 * Appium server lifecycle and remote hub URL normalization are now owned by the internal mobile server package
 * `AppiumDriverManager` and runner setup classes still remain the stable orchestration-facing delegates
-* app artifact path resolution and download handling are now owned by the internal config app package while `runner.DeviceSetup` remains the stable delegate
+* app artifact path resolution, version detection, and download handling are now owned by the internal config app package while `runner.DeviceSetup` remains the stable delegate
 
 Reports will be uploaded to reportportal.io, that you would need to setup separately, and provide the server details in
 src/test/resources/reportportal.properties file or provide the path to the file using this environment

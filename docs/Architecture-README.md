@@ -187,12 +187,13 @@ Current examples:
 
 ### `com.znsio.teswiz.config.app`
 
-Owns shared app artifact path resolution and download handling so Android, iOS, and Windows setup flows can
+Owns shared app artifact path resolution, version detection, and download handling so Android, iOS, and Windows setup flows can
 reuse the same behavior without keeping the implementation inside `runner`.
 
 Current examples:
 
 * `AppPathResolver`
+* `AppVersionDetector`
 
 ### `com.znsio.teswiz.mobile.provider`
 
@@ -352,7 +353,7 @@ When adding new code for the dual-engine architecture:
 * prefer Appium server lifecycle and hub URL normalization under `mobile.server`
 * prefer provider-specific Appium/mobile cloud behavior under `mobile.provider`
 * prefer reporting adaptation code under `reporting`
-* prefer shared app-path resolution and download handling under `config.app`
+* prefer shared app-path resolution, version detection, and download handling under `config.app`
 * prefer browser-config evolution code under `config.browser`
 * prefer visual-engine adaptation code under `visual`
 

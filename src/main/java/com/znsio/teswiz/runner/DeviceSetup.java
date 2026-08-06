@@ -2,6 +2,7 @@ package com.znsio.teswiz.runner;
 
 import com.google.gson.internal.LinkedTreeMap;
 import com.znsio.teswiz.config.app.AppPathResolver;
+import com.znsio.teswiz.config.app.AppVersionDetector;
 import com.znsio.teswiz.mobile.device.LocalMobileDeviceSetup;
 import com.znsio.teswiz.mobile.provider.MobileCloudExecutionManager;
 import com.znsio.teswiz.entities.Platform;
@@ -19,15 +20,11 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
 import static com.znsio.teswiz.runner.Setup.*;
@@ -39,6 +36,7 @@ class DeviceSetup {
                     "temp" + File.separator + "sampleApps";
     private static final String CUCUMBER_SCENARIO_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioListener";
     private static final String CUCUMBER_SCENARIO_REPORTER_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioReporterListener";
+    private static final AppVersionDetector APP_VERSION_DETECTOR = new AppVersionDetector();
     private static final MobileCloudExecutionManager MOBILE_CLOUD_EXECUTION_MANAGER =
             new MobileCloudExecutionManager(
                     BrowserStackSetup::updateBrowserStackCapabilities,
@@ -118,26 +116,12 @@ class DeviceSetup {
     }
 
     private static void fetchAndroidAppVersion() {
-        Pattern versionNamePattern = Pattern.compile("versionName='(\\d+(\\.\\d+)+)'",
-                Pattern.MULTILINE);
-        String searchPattern = "grep";
-        if (OsUtils.isWindows()) {
-            searchPattern = "findstr";
-        }
-
         try {
             File appFile = new File(Setup.getFromConfigs(APP_PATH));
             if (!isAppPathAUrl(appFile.getPath())) {
-                String appFilePath = appFile.getCanonicalPath();
-                String androidHomePath = System.getenv("ANDROID_HOME");
-                File buildToolsFolder = new File(androidHomePath, "build-tools");
-                File buildVersionFolder = Objects.requireNonNull(buildToolsFolder.listFiles())[0];
-                File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
-
-                String[] commandToGetAppVersion = new String[]{aaptExecutable.toString(), "dump",
-                        "badging", appFilePath, "|",
-                        searchPattern, "versionName"};
-                fetchAppVersion(commandToGetAppVersion, versionNamePattern);
+                APP_VERSION_DETECTOR.detectAndroidAppVersion(appFile.getPath(), System.getenv("ANDROID_HOME"),
+                                OsUtils.isWindows())
+                        .ifPresent(DeviceSetup::setAppVersion);
             }
         } catch (Exception e) {
             LOGGER.info(
@@ -192,21 +176,6 @@ class DeviceSetup {
         LOGGER.info(String.format("'%s' is a valid URL.", appPathUrl));
     }
 
-    private static void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {
-        CommandLineResponse commandResponse = CommandLineExecutor.execCommand(
-                commandToGetAppVersion);
-        String commandOutput = commandResponse.getStdOut();
-        if (!(null == commandOutput || commandOutput.isEmpty())) {
-            Matcher matcher = pattern.matcher(commandOutput);
-            if (matcher.find()) {
-                Setup.addToConfigs(APP_VERSION, matcher.group(1));
-                LOGGER.info(String.format("APP_VERSION: %s", matcher.group(1)));
-            }
-        } else {
-            LOGGER.info("fetchAppVersion: " + commandResponse.getErrOut());
-        }
-    }
-
     static String getCloudNameFromCapabilities() {
         if (Runner.isRunningInCI() && !Runner.isAPI() && !Runner.isCLI() && !Runner.isPDF()) {
             String capabilityFile = Setup.getFromConfigs(CAPS);
@@ -247,19 +216,18 @@ class DeviceSetup {
     }
 
     private static void fetchWindowsAppVersion() {
-        Pattern versionNamePattern = Pattern.compile("Version=(\\d+(\\.\\d+)+)", Pattern.MULTILINE);
         try {
-            File appFile = new File(Setup.getFromConfigs(APP_PATH));
-            String nameVariable = "name=\"" + appFile.getCanonicalPath()
-                    .replace("\\", "\\\\") + "\"";
-            String[] commandToGetAppVersion = new String[]{"wmic", "datafile", "where",
-                    nameVariable, "get", "Version",
-                    "/value"};
-            fetchAppVersion(commandToGetAppVersion, versionNamePattern);
+            APP_VERSION_DETECTOR.detectWindowsAppVersion(Setup.getFromConfigs(APP_PATH))
+                    .ifPresent(DeviceSetup::setAppVersion);
         } catch (IOException e) {
             LOGGER.info(
                     String.format("fetchWindowsAppVersion: Exception: %s", e.getLocalizedMessage()));
         }
+    }
+
+    private static void setAppVersion(String appVersion) {
+        Setup.addToConfigs(APP_VERSION, appVersion);
+        LOGGER.info(String.format("APP_VERSION: %s", appVersion));
     }
 
     static void cleanupCloudExecution() {
