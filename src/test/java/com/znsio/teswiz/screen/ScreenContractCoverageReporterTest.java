@@ -109,6 +109,24 @@ class ScreenContractCoverageReporterTest {
     }
 
     @Test
+    void shouldTreatDineoutTsModuleAsImplementedTarget() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("src/test/resources/playwright/screens/dineout/dineout-landing.screen.ts");
+    }
+
+    @Test
+    void shouldTreatConfEngineTsModuleAsImplementedTarget() throws IOException {
+        ScreenContractCoverageReporter.CoverageReport report =
+                new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();
+
+        assertThat(report.toDisplayString())
+                .doesNotContain("src/test/resources/playwright/screens/confengine/conf-engine-landing.screen.ts");
+    }
+
+    @Test
     void shouldTreatJioMeetPlaywrightJavaScreensAsImplementedTargets() throws IOException {
         ScreenContractCoverageReporter.CoverageReport report =
                 new ScreenContractCoverageReporter(Path.of("src/test/java/com/znsio/teswiz/screen")).buildReport();

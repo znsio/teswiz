@@ -14,6 +14,8 @@ This checklist tracks the remaining implementation for the dual-engine web archi
 - [x] Indigo web contracts use real worker-side TypeScript screen modules instead of Selenium web screens
 - [x] Jiomeet web contracts use real worker-side TypeScript screen modules instead of Selenium web screens
 - [x] Shared `ScreenShotScreen` web contract uses a real worker-side TypeScript screen module
+- [x] Dineout web contract uses a real worker-side TypeScript screen module
+- [x] ConfEngine web contract uses a real worker-side TypeScript screen module
 - [x] TheApp local single-user Playwright-TS validation passes through the first-class screen path
 - [x] TheApp local multi-user Playwright-TS validation passes through the first-class screen path
 - [x] TheApp local single-user Playwright-Java validation passes through the first-class screen path
