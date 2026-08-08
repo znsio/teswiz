@@ -4,7 +4,7 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.runner.UserPersonaDetails;
+import com.znsio.teswiz.session.UserPersonaDetails;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.ReportPortalLogger;
 import com.znsio.teswiz.tools.ScreenShotManager;

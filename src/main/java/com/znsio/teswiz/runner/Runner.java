@@ -5,6 +5,7 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.web.WebEngine;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
 import io.cucumber.core.cli.Main;
@@ -167,6 +168,10 @@ public class Runner {
         return Setup.getBooleanValueFromConfigs(Setup.IS_VISUAL);
     }
 
+    public static boolean isRunningInHeadlessMode() {
+        return Setup.getBooleanValueFromConfigs(Setup.HEADLESS);
+    }
+
     public static boolean shouldFailTestOnVisualDifference() {
         return Setup.getBooleanValueFromConfigs(Setup.FAIL_TEST_ON_VISUAL_DIFFERENCE);
     }
@@ -267,6 +272,10 @@ public class Runner {
 
     public static String getBrowser() {
         return Setup.getFromConfigs(Setup.BROWSER);
+    }
+
+    public static WebEngine getWebEngine() {
+        return WebEngine.from(Setup.getFromConfigs(Setup.WEB_ENGINE));
     }
 
     public static String getProxyURL() {

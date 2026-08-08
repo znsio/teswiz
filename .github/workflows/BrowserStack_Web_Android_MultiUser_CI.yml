@@ -2,7 +2,7 @@ name: BrowserStack_Web_Android_MultiUser_CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, pw-ts]
   pull_request:
     branches: [main]
 

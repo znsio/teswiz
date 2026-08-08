@@ -1,0 +1,143 @@
+# Running the sample tests
+
+All checked-in sample `config.properties` files now include `WEB_ENGINE=selenium`.
+This keeps the default checked-in experience stable and explicit, while letting you opt into either Playwright engine only when you want that behavior.
+For web runs, you can override from the command line with either `WEB_ENGINE=playwright-java` or `WEB_ENGINE=playwright-ts`.
+
+## Playwright TS Phase 1 local feedback path
+
+Use the existing TheApp feature for the first local Playwright feedback loop:
+
+### 1. Single-user web
+
+```bash
+WEB_ENGINE=playwright-ts CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@theapp2 and @invalidLogin1 and @playwright-phase1" ./gradlew run
+```
+
+Scenario:
+
+* [`src/test/resources/com/znsio/teswiz/features/theapp.feature`](../src/test/resources/com/znsio/teswiz/features/theapp.feature)
+  * `@theapp2 @invalidLogin1 @playwright-phase1`
+
+### 2. Multi-user web
+
+```bash
+WEB_ENGINE=playwright-ts CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@multiuser-web and @theapp7 and @playwright-phase1" ./gradlew run
+```
+
+Scenario:
+
+* [`src/test/resources/com/znsio/teswiz/features/theapp.feature`](../src/test/resources/com/znsio/teswiz/features/theapp.feature)
+  * `@multiuser-web @theapp7 @playwright-phase1`
+
+### 3. Mixed platform (Appium Android + Playwright web)
+
+```bash
+WEB_ENGINE=playwright-ts CONFIG=./configs/theapp/theapp_local_android_config.properties TAG="@multiuser-android-web and @theapp5 and @playwright-phase1" ./gradlew run
+```
+
+Scenario:
+
+* [`src/test/resources/com/znsio/teswiz/features/theapp.feature`](../src/test/resources/com/znsio/teswiz/features/theapp.feature)
+  * `@multiuser-android-web @theapp5 @playwright-phase1`
+
+Notes:
+
+* `HEADLESS=true` is recommended for local Playwright framework verification.
+* The mixed-platform scenario still requires the Android/Appium local prerequisites to be available.
+* These are the recommended first scenarios before enabling visual validation or cloud execution.
+* If you omit `WEB_ENGINE`, the checked-in sample configs use Selenium.
+
+## Playwright Java local feedback path
+
+Use the same TheApp scenarios to validate the first-class Playwright-Java engine:
+
+### 1. Single-user web
+
+```bash
+WEB_ENGINE=playwright-java HEADLESS=true CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@theapp2 and @invalidLogin1" ./gradlew run
+```
+
+### 2. Multi-user web
+
+```bash
+WEB_ENGINE=playwright-java HEADLESS=true CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@multiuser-web and @theapp7" ./gradlew run
+```
+
+### 3. Mixed platform (Appium Android + Playwright-Java web)
+
+```bash
+WEB_ENGINE=playwright-java HEADLESS=true CONFIG=./configs/theapp/theapp_local_android_config.properties TAG="@multiuser-android-web and @theapp5" ./gradlew run
+```
+
+Notes:
+
+* These use the same feature file and BL contract as Selenium and `playwright-ts`.
+* `HEADLESS=true` is recommended for local verification to avoid unmanaged browser windows during framework checks.
+* The Android + web path requires the Android/Appium local prerequisites to be available.
+
+### Android tests
+  Example:
+
+![ClearIntent-annotated.png](../images/ClearIntent-annotated.png)
+
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @single-user" PLATFORM=android ./gradlew run 
+
+  With Visual Testing enabled:
+
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @single-user" PLATFORM=android IS_VISUAL=true ./gradlew run
+
+### Web tests
+Example:
+
+![ClearIntent-annotated.png](../images/ClearIntent-annotated.png)
+
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @single-user" PLATFORM=web ./gradlew run 
+
+  With Visual Testing enabled:
+
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @single-user" PLATFORM=web IS_VISUAL=true ./gradlew run
+
+### Multiuser Android tests
+  Example:
+
+![Multiuser-android-annotated.png](../images/Multiuser-android-annotated.png)
+
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android and @single-app" ./gradlew run
+
+  With Visual Testing enabled:
+
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android and @single-app" IS_VISUAL=true ./gradlew run
+
+### Multiuser Android-web tests
+  Example:
+
+![Multiuser-android-web-annotated.png](../images/Multiuser-android-web-annotated.png)
+
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android-web and @single-app" ./gradlew run
+
+  With Visual Testing enabled:
+
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android-web and @single-app" IS_VISUAL=true ./gradlew run
+
+### Multiuser-Multiapp Android-web tests
+Example:
+
+![Multiapp-Multiuser-android-web-annotated.png](../images/Multiapp-Multiuser-android-web-annotated.png)
+
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android-web and @multi-app" ./gradlew run
+
+With Visual Testing enabled:
+
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android-web and @multi-app" IS_VISUAL=true ./gradlew run
+
+### Multiuser-Multiapp Android tests
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android and @multi-app" ./gradlew run
+
+  With Visual Testing enabled:
+
+    CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @multiuser-android and @multi-app" IS_VISUAL=true ./gradlew run
+
+### Electron tests
+
+    IS_VISUAL=false CONFIG=./configs/jio/jiomeet_local_config.properties TAG="@jiomeet and @single-user" PLATFORM=electron ./gradlew run

@@ -13,9 +13,9 @@ import com.znsio.teswiz.screen.theapp.LoginScreen;
 
 public class AppLaunchScreenWeb
         extends AppLaunchScreen {
-    private static final String NOT_YET_IMPLEMENTED = "NOT_YET_IMPLEMENTED";
     private static final Logger LOGGER = LogManager.getLogger(AppLaunchScreenWeb.class.getName());
     private static final By loginFormLinkText = By.linkText("Form Authentication");
+    private static final String ENGINE_NAME = "selenium";
     private final Driver driver;
     private final Visual visually;
     private final String SCREEN_NAME = AppLaunchScreenWeb.class.getSimpleName();
@@ -41,12 +41,17 @@ public class AppLaunchScreenWeb
 
     @Override
     public EchoScreen selectEcho() {
-        LOGGER.info("Skipping this step for Web");
-        return EchoScreen.get();
+        throw unsupported("Echo");
     }
 
     @Override
     public ClipboardDemoScreen goToClipboardDemo() {
-        return null;
+        throw unsupported("Clipboard Demo");
+    }
+
+    private UnsupportedOperationException unsupported(String screenName) {
+        return new UnsupportedOperationException(String.format(
+                "TheApp %s screen is not supported on web for WEB_ENGINE=%s.",
+                screenName, ENGINE_NAME));
     }
 }

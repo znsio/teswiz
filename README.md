@@ -4,6 +4,10 @@
 [![GitHub forks](https://img.shields.io/github/forks/anandbagmar/teswiz.svg?style=social&label=Fork)](https://github.com/anandbagmar/teswiz/network)
 
 
+> [!IMPORTANT]
+> **This repository has temporarily moved to [anandbagmar/teswiz](https://github.com/anandbagmar/teswiz)**. Please refer to the fork for active updates, branches, and submissions.
+
+
 ## Latest release status:
 [![1.0.26](https://jitpack.io/v/anandbagmar/teswiz.svg)](https://jitpack.io/#anandbagmar/teswiz)
 [![CI](https://github.com/anandbagmar/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml/badge.svg)](https://github.com/anandbagmar/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml)
@@ -12,9 +16,15 @@
 ## Latest successful build id:
 [![Latest Commit](https://img.shields.io/badge/commit-f9aa68b-blue.svg)](https://jitpack.io/#anandbagmar/teswiz)
 
-## 🚨 Breaking Changes
+## 🚨 Breaking Changes & Migration Guides
 
-### From Version `1.0.13` onward
+### 🚀 **[Playwright Migration & Dual-Engine Implementation Guide](docs/internals/Playwright-Migration-Guide.md)**
+
+Refer to this guide to migrate existing Selenium/Appium tests or build new test screens using the dual-engine model (Selenium, Playwright-Java, and Playwright-TS).
+
+---
+
+### Package Restructuring (From Version `1.0.13` onward)
 
 As part of package restructuring, context-related classes have moved to a new package.
 
@@ -61,12 +71,132 @@ Visual AI testing as part of functional automation.
 
 teswiz also supports:
 * Applitools Native Mobile Layout through `useNML`
+* Applitools visual validation for web on Selenium Java and the Playwright web engines
 * Verifying application with Figma designs using the explicit step
   `I have my Figma design with app name "...", test name "..." and baseline name "..." available in Applitools`
+* Explicit web-engine selection through `WEB_ENGINE`:
+  * web engines are first-class and explicit
+  * Selenium Java continues to work as before
+  * Playwright web execution is selectable through the configured web engine and the matching screen implementation
+
+## Architecture Notes
+
+teswiz keeps a small stable Java orchestration surface in `com.znsio.teswiz.runner`:
+
+* `Driver`
+* `Drivers`
+* `Runner`
+* `Setup`
+* `Visual`
+
+These remain the main framework entry points for orchestration, scenario lifecycle, and framework-facing behavior.
+
+The dual-engine web support is intentionally organized behind internal support packages:
+
+* `com.znsio.teswiz.session`
+  * persona session metadata and registries
+* `com.znsio.teswiz.config.browser`
+  * browser config loading, Playwright config resolution, and migration reporting
+* `com.znsio.teswiz.config.app`
+  * app artifact path resolution, version detection, and download handling shared by Android, iOS, and Windows setup flows
+* `com.znsio.teswiz.config.capability`
+  * capability lookup and device-farm capability-file persistence shared by runner and provider setup flows
+* `com.znsio.teswiz.mobile.session`
+  * Appium device-session registry and internal mobile session state
+* `com.znsio.teswiz.mobile.device`
+  * local mobile device and simulator availability setup used by Appium orchestration
+* `com.znsio.teswiz.mobile.server`
+  * Appium local server lifecycle and remote hub URL normalization
+* `com.znsio.teswiz.mobile.provider`
+  * mobile cloud provider adapters for setup, cleanup, report-link, and provider-specific Appium behavior
+* `com.znsio.teswiz.web`
+  * shared web engine concepts such as `WebEngine`
+* `com.znsio.teswiz.web.browser`
+  * browser-engine orchestration that routes between Selenium and Playwright web engines
+* `com.znsio.teswiz.web.provider`
+  * provider-aware web session adapters for local and cloud execution metadata
+* `com.znsio.teswiz.web.provider.selenium`
+  * Selenium-specific cloud capability builders extracted from `runner` while keeping `runner` as the stable orchestration delegate
+* `com.znsio.teswiz.web.selenium`
+  * Selenium web engine runtime internals
+* `com.znsio.teswiz.web.playwright`
+  * Playwright TS worker bridge, driver, and session internals
+* `com.znsio.teswiz.screen`
+  * runtime screen resolution and user-invokable screen contract verification/reporting infrastructure
+
+For `WEB_ENGINE=playwright-ts`, teswiz uses the same Java BL and screen contracts, while the framework-owned `playwright-ts` module bridge delegates to worker-side TypeScript screen modules for Playwright-native behavior.
+Those test-owned TypeScript screen modules belong under `src/test/resources/playwright/screens`.
+
+* `com.znsio.teswiz.reporting`
+  * scenario metadata publishing and engine-specific artifact reporting helpers
+* `com.znsio.teswiz.visual`
+  * Playwright-specific visual support helpers
+
+For client projects, the intent is:
+
+* keep depending on the stable `runner` entry points unless explicitly documented otherwise
+* treat the packages above as internal implementation packages that may evolve as dual-engine support grows
+* keep user-authored sample/app test assets in `src/test`, while framework runtime and user-invokable verification/reporting infrastructure ship from `src/main`
+
+The architecture diagram and flow are documented in [`docs/internals/Architecture-README.md`](docs/internals/Architecture-README.md).
+
+To explicitly validate discovered screen implementations against their shared contracts, run:
+
+`./gradlew verifyScreenContracts`
+
+This command is intentionally separate from normal test execution so teams can check screen compliance on demand while adding new Selenium, Playwright, or mobile screen implementations.
+For `playwright-ts`, this verification now calls out missing TypeScript screen modules separately from missing Java screen implementations.
+To also flag missing target combinations more explicitly, run:
+
+`./gradlew verifyScreenContracts -PincludeMissingScreenTargets=true`
+
+That stricter mode is opt-in so the default verification stays focused on implementation correctness instead of every uncovered platform/engine combination.
+Run focused Gradle verification commands serially on the same checkout. Parallel independent Gradle invocations against the same workspace can produce misleading compile/test failures because they share build outputs and intermediate state.
+
+To report missing screen implementations for the currently supported target combinations, run:
+
+`./gradlew reportMissingScreenContracts`
+
+For Selenium, Playwright, and mixed-platform runs, teswiz now publishes shared scenario artifacts into the same report flow:
+
+* session metadata as `scenario-session-metadata.json`
+* Selenium browser logs when they are registered for the session
+* Playwright trace archives
+* Playwright console logs
+* Playwright HAR files when generated by the worker
+* Appium device logs when they are registered for the session
+
+Web cloud/session handling is also now routed through provider adapters so BrowserStack, LambdaTest, HeadSpin, and local execution can be represented consistently in session metadata without changing user-facing scenario style.
+For BrowserStack and LambdaTest web runs, teswiz now normalizes provider-native session ids and report URLs through the shared web session metadata path so Selenium and Playwright web sessions can feed the same reporting flow.
+
+On the mobile side, extraction has started the same way:
+
+* cloud report-link publication is provider-based
+* mobile cloud setup and cleanup routing are now owned by the internal mobile provider package
+* LambdaTest mobile capability shaping is now owned by the internal mobile provider package
+* LambdaTest mobile app upload command/response handling is now owned by the internal mobile provider package
+* BrowserStack mobile capability shaping is now owned by the internal mobile provider package
+* HeadSpin mobile capability shaping is now owned by the internal mobile provider package
+* pCloudy mobile capability shaping is now owned by the internal mobile provider package
+* Appium device-session registry and preferred mobile session model are now owned by the internal mobile session package
+* local mobile device and simulator setup is now owned by the internal mobile device package
+* Appium server lifecycle and remote hub URL normalization are now owned by the internal mobile server package
+* `AppiumDriverManager` and runner setup classes still remain the stable orchestration-facing delegates
+* app artifact path resolution, version detection, and download handling are now owned by the internal config app package while `runner.DeviceSetup` remains the stable delegate
+* capability lookup and device-farm capability-file persistence are now owned by the internal config capability package while `runner.DeviceSetup` remains the stable delegate
 
 Reports will be uploaded to reportportal.io, that you would need to setup separately, and provide the server details in
 src/test/resources/reportportal.properties file or provide the path to the file using this environment
 variable: `REPORT_PORTAL_FILE`
+
+For web cloud runs, teswiz now also emits provider report-link messages into ReportPortal when the session metadata
+contains provider-native report details, so BrowserStack and LambdaTest Playwright runs expose direct execution links
+alongside the shared scenario/session artifacts.
+
+The generated Cucumber HTML report includes `WEB_ENGINE` in its execution metadata so the selected web engine is visible in the report.
+For runs that publish `scenario-session-metadata.json`, the HTML report also aggregates session personas/platforms/engines/providers,
+and when available, provider-native cloud session ids, report URLs, and normalized artifact URLs such as console logs,
+network logs, video links, Playwright logs, command logs, and screenshots.
 
 Test can run on local browsers / devices, or against any cloud provider, such as TestMu AI (formerly LambdaTest), HeadSpin, BrowserStack, SauceLabs, pCloudy.
 
@@ -117,36 +247,48 @@ Example for GitHub Actions:
 * Build tool: gradle v8
 * cucumber-reporting (https://github.com/damianszczepanik/cucumber-reporting)
 
-## [Prerequisites](docs/Prerequisites-README.md)
+## [Prerequisites](docs/guides/Prerequisites-README.md)
 
-## [Getting started using teswiz](docs/GettingStartedUsingTeswiz-README.md)
+## [Getting started using teswiz](docs/guides/GettingStartedUsingTeswiz-README.md)
 
-## [Configuring the test execution](docs/ConfiguringTestExecution-README.md)
+## [Configuring the test execution](docs/guides/ConfiguringTestExecution-README.md)
 
-## [Running the sample tests](docs/SampleTests-README.md)
+## [Running the sample tests](docs/guides/SampleTests-README.md)
 
-## [Writing the first test](docs/WritingFirstTest-README.md)
+## [Writing the first test](docs/guides/WritingFirstTest-README.md)
 
-## [Setting up the Hard Gate](./docs/HardGate.md)
+## 🚀 **[Playwright Migration & Dual-Engine Implementation Guide](docs/internals/Playwright-Migration-Guide.md)**
+
+## [Setting up the Hard Gate](./docs/features/HardGate.md)
+
+## Concrete Implementation Examples
+
+### [Android Appium Example](docs/examples/Android-Example.md)
+### [iOS Appium Example](docs/examples/iOS-Example.md)
+### [Web Selenium Example](docs/examples/Web-Selenium-Example.md)
+### [Web Playwright-TS Example](docs/examples/Web-Playwright-TS-Example.md)
+### [Web Playwright-Java Example](docs/examples/Web-Playwright-Java-Example.md)
+### [API Integration Example](docs/examples/API-Example.md)
+### [PDF Validation Example](docs/examples/PDF-Example.md)
 
 ## Additional configurations
 
-### [Running Visual Tests using Applitools Visual AI](docs/RunningVisualTests-README.md)
+### [Running Visual Tests using Applitools Visual AI](docs/features/RunningVisualTests-README.md)
 
-### [Functional/Feature Coverage](docs/FeatureCoverage-README.md)
+### [Functional/Feature Coverage](docs/internals/FeatureCoverage-README.md)
 
-### [Configuration parameters](docs/ConfigurationParameters-README.md)
+### [Configuration parameters](docs/features/ConfigurationParameters-README.md)
 
-### [Add Auto Logging Using AspectJ](docs/AspectJLogging-README.md)
+### [Add Auto Logging Using AspectJ](docs/features/AspectJLogging-README.md)
 
-### [Setting up docker containers](docs/DockerSetup-README.md)
+### [Setting up docker containers](docs/features/DockerSetup-README.md)
 
-### [Logging to ReportPortal](docs/ReportPortal-README.md)
+### [Logging to ReportPortal](docs/features/ReportPortal-README.md)
 
-## [BREAKING CHANGES from v0.0.81](docs/BreakingChanges-README.md)
+## [BREAKING CHANGES from v0.0.81](docs/internals/BreakingChanges-README.md)
 
-## [Troubleshooting / FAQs](docs/FAQs-README.md)
+## [Troubleshooting / FAQs](docs/internals/FAQs-README.md)
 
-## [Trouble downloading teswiz from jitpack.io?](docs/teswizDownloadIssue.md)
+## [Trouble downloading teswiz from jitpack.io?](docs/internals/teswizDownloadIssue.md)
 
 ### Contact [Anand Bagmar](https://twitter.com/BagmarAnand) for help or if you face issues using teswiz

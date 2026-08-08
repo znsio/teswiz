@@ -24,12 +24,17 @@ import com.epam.reportportal.service.ReportPortal;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.znsio.teswiz.mobile.session.AppiumDeviceSessionRegistry;
+import com.znsio.teswiz.mobile.session.MobileDriverSession;
+import com.znsio.teswiz.mobile.provider.MobileExecutionProvider;
+import com.znsio.teswiz.mobile.provider.MobileExecutionProviderResolver;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.EnvironmentSetupException;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.session.UserPersonaDetails;
 import static com.znsio.teswiz.runner.FileLocations.SERVER_CONFIG_JSON;
 import static com.znsio.teswiz.runner.Runner.DEFAULT;
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
@@ -56,6 +61,8 @@ public class AppiumDriverManager {
     private static final ThreadLocal<AppiumDriver> appiumDriver = new ThreadLocal<>();
     private static AppiumServerManager appiumServerManager = null;
     private static AppiumDriverManager appiumDriverManager = null;
+    private static final MobileExecutionProviderResolver MOBILE_EXECUTION_PROVIDER_RESOLVER =
+            new MobileExecutionProviderResolver();
 
     @NotNull
     static Driver createAndroidDriverForUser(String userPersona, Platform forPlatform, TestExecutionContext context) {
@@ -142,11 +149,11 @@ public class AppiumDriverManager {
         Integer scenarioCount = (Integer) testExecutionContext.getTestState(TEST_CONTEXT.EXAMPLE_RUN_COUNT);
         String deviceLogDirectory = testExecutionContext.getTestStateAsString(TEST_CONTEXT.DEVICE_LOGS_DIRECTORY);
         String fileName = String.format("%s-Device-%s-run-%s.log", scenarioCount, numberOfAppiumDriversUsed + 1,
-                AppiumDeviceManager.getAppiumDevice().getUdid());
+                AppiumDeviceSessionRegistry.getCurrentDevice().getUdid());
         if (!Runner.getCloudName().equalsIgnoreCase(NOT_SET)) {
             LOGGER.warn("Skipping logcat capture for cloud devices");
         } else {
-            if ("android".equalsIgnoreCase(AppiumDeviceManager.getAppiumDevice().getPlatformName())) {
+            if ("android".equalsIgnoreCase(AppiumDeviceSessionRegistry.getCurrentDevice().getPlatformName())) {
                 try {
                     File logFile = new File(deviceLogDirectory, fileName);
                     fileName = logFile.getAbsolutePath();
@@ -205,13 +212,13 @@ public class AppiumDriverManager {
         AppiumDriver appiumDriver = allocateDeviceAndStartDriver(testExecutionContext.getTestName());
         String deviceLogFileName = startDataCapture();
         testExecutionContext.addTestState(TEST_CONTEXT.APPIUM_DRIVER, appiumDriver);
-        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ID, AppiumDeviceManager.getAppiumDevice().getUdid());
-        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_INFO, AppiumDeviceManager.getAppiumDevice());
+        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ID, AppiumDeviceSessionRegistry.getCurrentDevice().getUdid());
+        testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_INFO, AppiumDeviceSessionRegistry.getCurrentDevice());
         testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_LOG, deviceLogFileName);
 
         Capabilities appiumDriverCapabilities = appiumDriver.getCapabilities();
         if (isCloudExecution()) {
-            testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ON, getCloudName());
+            testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ON, Runner.getCloudName());
         } else {
             testExecutionContext.addTestState(TEST_CONTEXT.DEVICE_ON, "localDevice");
         }
@@ -231,122 +238,32 @@ public class AppiumDriverManager {
     }
 
     private static void disableNotificationsAndToastsOnDevice(Driver currentDriver, String deviceOn, String udid) {
-        if (Runner.isRunningInCI()) {
-            LOGGER.debug("Running in CI. No need to disable notifications.");
-            // disableNotificationsForDeviceInDeviceFarm(currentDriver, deviceOn);
-        } else {
-            disableNotificationsForLocalDevice(udid);
+        if (Runner.getPlatform().equals(Platform.android)) {
+            if (Runner.isRunningInCI()) {
+                LOGGER.debug("Running in CI. No need to disable notifications.");
+            } else {
+                MobileExecutionProvider provider = MOBILE_EXECUTION_PROVIDER_RESOLVER.resolve(Runner.getCloudName());
+                provider.disableNotifications(currentDriver, udid);
+            }
         }
-    }
-
-    private static void disableNotificationsForLocalDevice(String udid) {
-        String[] disableToastsCommand = new String[] { "adb", "-s", udid, "shell", "appops", "set",
-                Runner.getAppPackageName(), "TOAST_WINDOW", "deny" };
-        String[] disableNotificationsCommand = new String[] { "adb", "-s", udid, "shell", "settings", "put", "global",
-                "heads_up_notifications_enabled", "0" };
-
-        CommandLineResponse disableToastsCommandResponse = CommandLineExecutor.execCommand(disableToastsCommand);
-        LOGGER.info(String.format("disableToastsCommandResponse: %s", disableToastsCommandResponse));
-        CommandLineResponse disableNotificationsCommandResponse = CommandLineExecutor
-                .execCommand(disableNotificationsCommand);
-        LOGGER.info(String.format("disableNotificationsCommandResponse: %s", disableNotificationsCommandResponse));
-    }
-
-    private static void disableNotificationsForDeviceInDeviceFarm(Driver currentDriver, String deviceOn) {
-        if (deviceOn.equalsIgnoreCase("pCloudy")) {
-            Object disableToasts = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript(
-                    "pCloudy_executeAdbCommand",
-                    "adb shell appops set " + Runner.getAppPackageName() + " TOAST_WINDOW " + "deny");
-            LOGGER.info(String.format("@disableToastsCommandResponse: %s", disableToasts));
-            Object disableNotifications = ((AppiumDriver) currentDriver.getInnerDriver()).executeScript(
-                    "pCloudy_executeAdbCommand", "adb shell settings put global heads_up_notifications_enabled 0");
-            LOGGER.info("@disableNotificationsCommandResponse: " + disableNotifications);
-        }
-    }
-
-    private static boolean isRunningOnpCloudy() {
-        boolean isPCloudy = getCloudName().equalsIgnoreCase("pCloudy");
-        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
-        return isPCloudy;
-    }
-
-    private static String getCloudName() {
-        return Runner.getCloudName();
-    }
-
-    private static boolean isRunningOnBrowserStack() {
-        boolean isBrowserStack = getCloudName().equalsIgnoreCase("browserstack");
-        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
-        return isBrowserStack;
-    }
-
-    private static boolean isRunningOnHeadspin() {
-        boolean isHeadspin = getCloudName().equalsIgnoreCase("headspin");
-        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
-        return isHeadspin;
-    }
-
-    private static boolean isRunningOnLambdaTest() {
-        boolean isLambdaTest = getCloudName().equalsIgnoreCase("lambdatest");
-        LOGGER.info(AppiumDeviceManager.getAppiumDevice().getUdid() + ": running on: " + getCloudName());
-        return isLambdaTest;
-    }
-
-    static String getCurlProxyCommand() {
-        String curlProxyCommand = "";
-        if (null != getOverriddenStringValue("PROXY_URL")) {
-            curlProxyCommand = " --proxy " + System.getProperty("PROXY_URL");
-        }
-        return curlProxyCommand;
-    }
-
-    private static String getReportLinkFromBrowserStack(String sessionId) {
-        String browserStackTestResultUrl = "";
-        String cloudUser = getOverriddenStringValue("CLOUD_USERNAME");
-        String cloudPassword = getOverriddenStringValue("CLOUD_KEY");
-        try {
-            String[] curlCommand = new String[] { "curl --in" + "secure " + getCurlProxyCommand() + " -u \"" + cloudUser
-                    + ":" + cloudPassword + "\" -X GET \"https://api-cloud.browserstack.com/app-automate/sessions/"
-                    + sessionId + ".json\"" };
-            CommandLineResponse commandLineResponse = CommandLineExecutor.execCommand(curlCommand);
-            LOGGER.info("Response from BrowserStack - '{}'",
-                    JsonPrettyPrinter.prettyPrint(SensitiveDataMasker.maskSecret(commandLineResponse.getStdOut())));
-            JSONObject pr = new JSONObject(commandLineResponse.getStdOut());
-            JSONObject automation_session = pr.getJSONObject("automation_session");
-            browserStackTestResultUrl = automation_session.getString("browser_url");
-            LOGGER.info("BrowserStack execution link: {}", browserStackTestResultUrl);
-        } catch (Exception e) {
-            LOGGER.info("Unable to get test execution link from BrowserStack: {}", e.getMessage());
-            ExceptionUtils.getStackTrace(e);
-        }
-        return browserStackTestResultUrl;
     }
 
     private static void attachCloudExecutionReportLinkToReportPortal(AppiumDriver driver) {
-        if (isCloudExecution() && isRunningOnpCloudy()) {
-            String link = (String) driver.executeScript("pCloudy_getReportLink");
-            String message = "pCloudy Report link available here: " + link;
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
-        } else if (isCloudExecution() && isRunningOnHeadspin()) {
-            String sessionId = driver.getSessionId().toString();
-            String link = "https://ui-dev.headspin.io/sessions/" + sessionId + "/waterfall";
-            String message = "Headspin Report link available here: " + link;
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
-        } else if (isCloudExecution() && isRunningOnBrowserStack()) {
-            String sessionId = driver.getSessionId().toString();
-            String link = getReportLinkFromBrowserStack(sessionId);
-            String message = "BrowserStack Report link available here: " + link;
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
-        } else if (isCloudExecution() && isRunningOnLambdaTest()) {
-            String sessionId = driver.getSessionId().toString();
-            String link = "https://automation.lambdatest.com/logs/?sessionID=" + sessionId;
-            String message = "LambdaTest Report link available here: " + link;
-            LOGGER.info(message);
-            ReportPortal.emitLog(message, "DEBUG", new Date());
+        if (!isCloudExecution()) {
+            return;
         }
+        String sessionId = driver.getSessionId().toString();
+        MobileExecutionProvider provider = MOBILE_EXECUTION_PROVIDER_RESOLVER.resolve(Runner.getCloudName());
+        provider.buildReportMessage(sessionId, () -> resolveProviderLink(driver, sessionId))
+                .ifPresent(message -> {
+                    LOGGER.info(message);
+                    ReportPortal.emitLog(message, "DEBUG", new Date());
+                });
+    }
+
+    private static java.util.Optional<String> resolveProviderLink(AppiumDriver driver, String sessionId) {
+        MobileExecutionProvider provider = MOBILE_EXECUTION_PROVIDER_RESOLVER.resolve(Runner.getCloudName());
+        return provider.getProviderReportLink(sessionId, driver);
     }
 
     static void closeAppiumDriver(String userPersona, Driver driver) {
@@ -408,7 +325,6 @@ public class AppiumDriverManager {
             ReportPortalLogger.logDebugMessage(logMessage);
         } else {
             LOGGER.info("Quit driver for persona: '{}'", userPersona);
-            attachDeviceLogsToReportPortal(userPersona);
             terminateAndroidAppOnDevice(appPackageName, appiumDriver);
         }
     }
@@ -426,12 +342,11 @@ public class AppiumDriverManager {
             LOGGER.info(logMessage);
             ReportPortalLogger.logDebugMessage(logMessage);
 
-            androidDriver.terminateApp(appPackageName);
-            stopAppiumDriver();
-            applicationState = androidDriver.queryAppState(appPackageName);
+            applicationState = terminateAndroidApp(androidDriver, appPackageName);
             logMessage = String.format("App: '%s' Application state after closing app: '%s'%n", appPackageName,
                     applicationState);
             LOGGER.info(logMessage);
+            stopAppiumDriver();
         } catch (NoSuchSessionException e) {
             logMessage = e.getMessage();
             LOGGER.info(logMessage);
@@ -439,14 +354,9 @@ public class AppiumDriverManager {
         ReportPortalLogger.logDebugMessage(logMessage);
     }
 
-    private static void attachDeviceLogsToReportPortal(String userPersona) {
-        String deviceLogFileName = getDeviceLogFileNameFor(userPersona, Runner.getPlatform().toString());
-        File destinationFile = new File(deviceLogFileName);
-
-        String adbLogMessage = String.format("ADB Logs for %s, file name: %s",
-                Drivers.getNameOfDeviceUsedByUser(userPersona), destinationFile.getName());
-        LOGGER.info(adbLogMessage);
-        ReportPortalLogger.attachFileInReportPortal(adbLogMessage, destinationFile);
+    static ApplicationState terminateAndroidApp(AndroidDriver androidDriver, String appPackageName) {
+        androidDriver.terminateApp(appPackageName);
+        return androidDriver.queryAppState(appPackageName);
     }
 
     private static String getDeviceLogFileNameFor(String userPersona, String forPlatform) {
@@ -560,7 +470,6 @@ public class AppiumDriverManager {
                 iosDriver.terminateApp(appBundleId);
             } else {
                 quitDriver(appiumDriver, userPersona);
-                attachDeviceLogsToReportPortal(userPersona);
                 terminateIOSAppOnDevice(appBundleId, appiumDriver);
             }
         }
@@ -634,13 +543,13 @@ public class AppiumDriverManager {
         LOGGER.info("Session Created for " + platform.name() + "\n\tSession Id: " + currentDriverSession.getSessionId()
                 + "\n\tUDID: " + currentDriverSessionCapabilities.getCapability("udid"));
         String json = new Gson().toJson(currentDriverSessionCapabilities.asMap());
-        DriverSession driverSessions = null;
+        MobileDriverSession driverSessions = null;
         try {
             driverSessions = (new ObjectMapper().readValue(json, DriverSession.class));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        AppiumDeviceManager.setDevice(driverSessions);
+        AppiumDeviceSessionRegistry.setCurrentDevice(driverSessions);
         return currentDriverSession;
     }
 
