@@ -3,6 +3,10 @@
 [ ![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=flat )](https://github.com/znsio/teswiz/pulls)
 [![GitHub forks](https://img.shields.io/github/forks/znsio/teswiz.svg?style=social&label=Fork)](https://github.com/znsio/teswiz/network)
 
+> [!IMPORTANT]
+> **This repository has temporarily moved to [anandbagmar/teswiz](https://github.com/anandbagmar/teswiz)**. Please refer to the fork for active updates, branches, and submissions.
+
+
 ## Latest release status:
 [![0.0.86](https://jitpack.io/v/znsio/teswiz.svg)](https://jitpack.io/#znsio/teswiz)
 [![CI](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml/badge.svg)](https://github.com/znsio/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml)
@@ -11,9 +15,15 @@
 ## Latest successful build id:
 [![Latest Commit](https://img.shields.io/badge/commit-f9aa68b-blue.svg)](https://jitpack.io/#znsio/teswiz)
 
-## 🚨 Breaking Changes
+## 🚨 Breaking Changes & Migration Guides
 
-### From Version `1.0.13` onward
+### 🚀 **[Playwright Migration & Dual-Engine Implementation Guide](docs/internals/Playwright-Migration-Guide.md)**
+
+Refer to this guide to migrate existing Selenium/Appium tests or build new test screens using the dual-engine model (Selenium, Playwright-Java, and Playwright-TS).
+
+---
+
+### Package Restructuring (From Version `1.0.13` onward)
 
 As part of package restructuring, context-related classes have moved to a new package.
 
@@ -245,6 +255,8 @@ Example for GitHub Actions:
 ## [Running the sample tests](docs/guides/SampleTests-README.md)
 
 ## [Writing the first test](docs/guides/WritingFirstTest-README.md)
+
+## 🚀 **[Playwright Migration & Dual-Engine Implementation Guide](docs/internals/Playwright-Migration-Guide.md)**
 
 ## [Setting up the Hard Gate](./docs/features/HardGate.md)
 
