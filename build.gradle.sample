@@ -24,7 +24,7 @@ static String normalizeReleaseTag(String tagName) {
 }
 
 def loadTeswizReleases() {
-    def releasesJson = new URL("https://api.github.com/repos/znsio/teswiz/releases").text
+    def releasesJson = new URL("https://api.github.com/repos/anandbagmar/teswiz/releases").text
     def releases = new JsonSlurper().parseText(releasesJson)
     if (!(releases instanceof List)) {
         throw new GradleException("Unable to read teswiz releases from GitHub.")
@@ -83,7 +83,7 @@ def resolveTeswizVersion(String versionChoice) {
 
 def teswizVersion = resolveTeswizVersion(teswizVersionChoice)
 
-group = "com.github.znsio"
+group = "com.github.anandbagmar"
 version = "$teswizVersion"
 
 def minimumSupportedJavaVersion = JavaVersion.VERSION_17
@@ -244,8 +244,8 @@ tasks.register('downloadDependencies') {
                         name  : "teswiz",
                         type  : "github",
                         params: [
-                                repoUrl       : "https://api.github.com/repos/znsio/teswiz/releases",
-                                group         : "com.github.znsio",
+                                repoUrl       : "https://api.github.com/repos/anandbagmar/teswiz/releases",
+                                group         : "com.github.anandbagmar",
                                 artifact      : "teswiz",
                                 version       : "$teswizVersion",
                                 fileNameSuffix: "",
@@ -275,7 +275,7 @@ dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
     implementation files(layout.buildDirectory.files("/classes/main"))
     implementation files(layout.buildDirectory.files("/classes/test"))
-//    implementation("com.github.znsio:teswiz:${teswizVersion}") {
+//    implementation("com.github.anandbagmar:teswiz:${teswizVersion}") {
 //        transitive = false
 //    }
 }

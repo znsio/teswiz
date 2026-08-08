@@ -19,7 +19,7 @@ def teswizVersion = "1.0.26"
 def aspectJVersion = "1.9.25.1"
 def jadbVersion = "1.3.0"
 
-group = "com.github.znsio"
+group = "com.github.anandbagmar"
 version = "$teswizVersion"
 
 def minimumSupportedJavaVersion = JavaVersion.VERSION_17
