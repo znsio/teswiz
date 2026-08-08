@@ -3,16 +3,13 @@
 [ ![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=flat )](https://github.com/anandbagmar/teswiz/pulls)
 [![GitHub forks](https://img.shields.io/github/forks/anandbagmar/teswiz.svg?style=social&label=Fork)](https://github.com/anandbagmar/teswiz/network)
 
-> [!IMPORTANT]
-> **This repository has temporarily moved to [anandbagmar/teswiz](https://github.com/anandbagmar/teswiz)**. Please refer to the fork for active updates, branches, and submissions.
-
 
 > [!IMPORTANT]
 > **This repository has temporarily moved to [anandbagmar/teswiz](https://github.com/anandbagmar/teswiz)**. Please refer to the fork for active updates, branches, and submissions.
 
 
 ## Latest release status:
-[![0.0.86](https://jitpack.io/v/anandbagmar/teswiz.svg)](https://jitpack.io/#anandbagmar/teswiz)
+[![1.0.26](https://jitpack.io/v/anandbagmar/teswiz.svg)](https://jitpack.io/#anandbagmar/teswiz)
 [![CI](https://github.com/anandbagmar/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml/badge.svg)](https://github.com/anandbagmar/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml)
 [![CodeQL](https://github.com/anandbagmar/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/anandbagmar/teswiz/actions/workflows/codeql-analysis.yml)
 
