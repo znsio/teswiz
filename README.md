@@ -3,9 +3,6 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=flat)](https://github.com/anandbagmar/teswiz/pulls)
 [![GitHub forks](https://img.shields.io/github/forks/anandbagmar/teswiz.svg?style=social&label=Fork)](https://github.com/anandbagmar/teswiz/network)
 
-> [!IMPORTANT]
-> **This repository has temporarily moved to [anandbagmar/teswiz](https://github.com/anandbagmar/teswiz)**. Please use that fork for active updates, branches, and submissions.
-
 ## Status
 
 [![1.0.26](https://jitpack.io/v/anandbagmar/teswiz.svg)](https://jitpack.io/#anandbagmar/teswiz)
