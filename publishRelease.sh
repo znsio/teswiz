@@ -4,38 +4,6 @@ set -eo pipefail
 
 RUN_UNIT_TESTS=true
 
-print_usage() {
-  cat <<'EOF'
-Usage: ./publishRelease.sh [--skip-unit-tests] [--help]
-
-Options:
-  --skip-unit-tests  Build and publish the release without running Gradle tests
-  --help             Show this help message
-EOF
-}
-
-parse_args() {
-  while [ $# -gt 0 ]; do
-    case "$1" in
-      --skip-unit-tests)
-        RUN_UNIT_TESTS=false
-        ;;
-      --help)
-        print_usage
-        exit 0
-        ;;
-      *)
-        echo "❌ Error: Unknown option '$1'"
-        print_usage
-        exit 1
-        ;;
-    esac
-    shift
-  done
-}
-
-parse_args "$@"
-
 # Safety check for uncommitted changes
 if [ -n "$(git status --porcelain)" ]; then
   echo "⚠️ Warning: You have uncommitted changes. Please commit or stash them before releasing."
@@ -57,6 +25,11 @@ SUGGESTED_VERSION="$major.$minor.$NEXT_PATCH"
 echo "Current version: $CURRENT_VERSION"
 read -p "Enter version to use [$SUGGESTED_VERSION]: " USER_VERSION
 VERSION=${USER_VERSION:-$SUGGESTED_VERSION}
+
+read -p "Run unit tests before release? [Y/n]: " RUN_TESTS_CONFIRMATION
+if [[ "$RUN_TESTS_CONFIRMATION" == "n" || "$RUN_TESTS_CONFIRMATION" == "N" ]]; then
+  RUN_UNIT_TESTS=false
+fi
 
 # 3. Build release notes from git commits since last tag
 LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
