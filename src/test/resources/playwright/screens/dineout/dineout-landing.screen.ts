@@ -2,14 +2,14 @@ import type { ScreenContext } from "../screen-context.ts";
 import { stayOnCurrentScreen, unsupportedScreenAction } from "../screen-route.ts";
 
 const LOCATORS = {
-  defaultCity: '//a[@aria-label="Mumbai"]',
+  defaultCity: "a[aria-label='Mumbai']",
   restaurantSearch: "#restaurantSearch",
-  locationFilter: '//li[text()="Location"]',
-  submitCity: '//section//button[@value="Submit"]',
+  locationFilter: "li:has-text('Location')",
+  submitCity: "section button[value='Submit']",
 } as const;
 
 export async function selectDefaultCity(screen: ScreenContext): Promise<object> {
-  await screen.page.locator(`xpath=${LOCATORS.defaultCity}`).click();
+  await screen.page.locator(LOCATORS.defaultCity).click();
   return stayOnCurrentScreen();
 }
 
@@ -17,8 +17,8 @@ export async function selectCity(screen: ScreenContext, city: string): Promise<o
   const restaurantSearch = screen.page.locator(LOCATORS.restaurantSearch);
   await restaurantSearch.clear();
   await restaurantSearch.fill(city);
-  await screen.page.locator(`xpath=${LOCATORS.locationFilter}`).click();
-  await screen.page.locator(`xpath=${LOCATORS.submitCity}`).click();
+  await screen.page.locator(LOCATORS.locationFilter).click();
+  await screen.page.locator(LOCATORS.submitCity).click();
   return stayOnCurrentScreen();
 }
 

@@ -8,8 +8,8 @@ const LOCATORS = {
   personaliseCheckbox: "#chkPersonal",
   recipientName: "#Per_Fname",
   customMessage: "#Message",
-  previewButton: "//input[@class='preview-btn']",
-  previewVoucherHeading: "//div[@class='heading']/h2[contains(text(),'Preview Your Voucher')]",
+  previewButton: "input.preview-btn",
+  previewVoucherHeading: "div.heading h2:has-text(\"Preview Your Voucher\")",
 } as const;
 
 async function selectDropdownValue(screen: ScreenContext, locator: string, value: string): Promise<void> {
@@ -41,7 +41,7 @@ export async function getTotalPrice(screen: ScreenContext): Promise<number> {
 }
 
 export async function preview(screen: ScreenContext): Promise<object> {
-  await screen.page.locator(`xpath=${LOCATORS.previewButton}`).click();
-  await screen.page.locator(`xpath=${LOCATORS.previewVoucherHeading}`).waitFor();
+  await screen.page.locator(LOCATORS.previewButton).click();
+  await screen.page.locator(LOCATORS.previewVoucherHeading).waitFor();
   return stayOnCurrentScreen();
 }
