@@ -2,9 +2,9 @@ name: HardGate_CI
 
 on:
   push:
-    branches: [ main, pw-ts ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   APPLITOOLS_BATCH_NAME_SUFFIX: " - #${{ github.run_number }}"
@@ -29,7 +29,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: "17"
           distribution: temurin
 
       - name: Install npm dependencies

@@ -2,7 +2,7 @@ name: Build_And_Run_Unit_Tests
 
 on:
   push:
-    branches: [main, pw-ts]
+    branches: [main]
   pull_request:
     branches: [main]
 
