@@ -1,6 +1,6 @@
 # Web Playwright-Java Test Implementation Example
 
-This guide provides a concrete example of implementing a Playwright-Java test screen.
+This guide provides a concrete example of implementing a Playwright-Java screen using native Playwright Java APIs while keeping the teswiz screen-contract pattern.
 
 ---
 
@@ -35,29 +35,29 @@ Resides under `src/test/java/com/znsio/teswiz/screen/web/playwrightjava/<app_nam
 ```java
 package com.znsio.teswiz.screen.web.playwrightjava.ajio;
 
-import com.znsio.teswiz.runner.Driver;
-import com.znsio.teswiz.runner.Visual;
+import com.microsoft.playwright.Locator;
 import com.znsio.teswiz.screen.ajio.HomeScreen;
 import com.znsio.teswiz.screen.ajio.SearchScreen;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
+import com.znsio.teswiz.web.playwright.screen.PlaywrightJavaScreenContext;
 
 public class HomeScreenPlaywrightJava extends HomeScreen {
-    private final Driver driver;
-    private final Visual visually;
-    private static final By SEARCH_INPUT = By.name("searchVal");
+    private final Locator searchInput;
 
-    public HomeScreenPlaywrightJava(Driver driver, Visual visually) {
-        this.driver = driver;
-        this.visually = visually;
+    public HomeScreenPlaywrightJava(PlaywrightJavaScreenContext context) {
+        this.searchInput = context.page().locator("input[name='searchVal']");
     }
 
     @Override
     public SearchScreen searchForTheProduct(String productName) {
-        // Leverages the custom Driver compatibility adapter class
-        driver.waitTillElementIsPresent(SEARCH_INPUT);
-        driver.findElement(SEARCH_INPUT).sendKeys(productName, Keys.ENTER);
+        searchInput.fill(productName);
+        searchInput.press("Enter");
         return SearchScreen.get();
     }
 }
 ```
+
+Use this model for `playwright-java` screens:
+
+- author screens with Playwright Java `Page`, `Locator`, and Playwright-native actions
+- keep the shared teswiz screen contract unchanged
+- do not author new `playwright-java` screens with Selenium `By` locators

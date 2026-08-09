@@ -1,55 +1,54 @@
 package com.znsio.teswiz.screen.web.playwrightjava.theapp;
 
-import static com.znsio.teswiz.tools.Wait.waitFor;
+import com.microsoft.playwright.Locator;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-
-import com.znsio.teswiz.runner.Driver;
-import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.theapp.LoginScreen;
+import com.znsio.teswiz.web.playwright.screen.PlaywrightJavaScreenContext;
 
 public class LoginScreenPlaywrightJava extends LoginScreen {
-    private static final By USER_NAME = By.id("username");
-    private static final By PASSWORD = By.id("password");
-    private static final By LOGIN_BUTTON = By.xpath("//button/i[contains(text(),\"Login\")]");
-    private static final By ERROR_MESSAGE = By.id("flash");
-    private final Driver driver;
-    private final Visual visually;
+    private static final String USER_NAME = "#username";
+    private static final String PASSWORD = "#password";
+    private static final String LOGIN_BUTTON = "button:has-text(\"Login\")";
+    private static final String ERROR_MESSAGE = "#flash";
+    private final com.znsio.teswiz.runner.Visual visually;
+    private final Locator userName;
+    private final Locator password;
+    private final Locator loginButton;
+    private final Locator errorMessage;
     private final String screenName = LoginScreenPlaywrightJava.class.getSimpleName();
 
-    public LoginScreenPlaywrightJava(Driver driver, Visual visually) {
-        this.driver = driver;
-        this.visually = visually;
+    public LoginScreenPlaywrightJava(PlaywrightJavaScreenContext context) {
+        this.visually = context.visual();
+        this.userName = context.page().locator(USER_NAME);
+        this.password = context.page().locator(PASSWORD);
+        this.loginButton = context.page().locator(LOGIN_BUTTON);
+        this.errorMessage = context.page().locator(ERROR_MESSAGE);
     }
 
     @Override
     public LoginScreen enterLoginDetails(String username, String password) {
-        waitFor(2);
-        driver.findElement(USER_NAME).sendKeys(username);
-        driver.findElement(PASSWORD).sendKeys(password);
+        userName.fill(username);
+        this.password.fill(password);
         visually.checkWindow(screenName, "Entered login details");
         return this;
     }
 
     @Override
     public LoginScreen login() {
-        driver.findElement(LOGIN_BUTTON).click();
-        waitFor(2);
+        loginButton.click();
         visually.checkWindow(screenName, "Clicked on Login");
         return this;
     }
 
     @Override
     public String getInvalidLoginError() {
-        WebElement alertText = driver.waitForClickabilityOf(ERROR_MESSAGE);
         visually.checkWindow(screenName, "Invalid Login alert");
-        return alertText.getText().trim();
+        String alertText = errorMessage.textContent();
+        return null == alertText ? "" : alertText.trim();
     }
 
     @Override
     public LoginScreen dismissAlert() {
-        waitFor(2);
         visually.checkWindow(screenName, "Invalid Login alert dismissed");
         return this;
     }

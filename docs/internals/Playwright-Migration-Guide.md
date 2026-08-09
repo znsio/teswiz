@@ -1,6 +1,6 @@
 # Playwright Migration & Implementation Guide
 
-This guide describes how to migrate existing Selenium/Appium tests or build new test screens using the dual-engine model in Teswiz (supporting Selenium, Playwright-Java, and Playwright-TS).
+This guide describes how to implement web screens in teswiz using Selenium, Playwright-Java, and Playwright-TS while keeping the shared screen-contract pattern.
 
 ---
 
@@ -77,32 +77,32 @@ The Playwright-Java Web implementation resides under `src/test/java/com/znsio/te
 ```java
 package com.znsio.teswiz.screen.web.playwrightjava.ajio;
 
-import com.znsio.teswiz.runner.Driver;
-import com.znsio.teswiz.runner.Visual;
+import com.microsoft.playwright.Locator;
 import com.znsio.teswiz.screen.ajio.HomeScreen;
 import com.znsio.teswiz.screen.ajio.SearchScreen;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
+import com.znsio.teswiz.web.playwright.screen.PlaywrightJavaScreenContext;
 
 public class HomeScreenPlaywrightJava extends HomeScreen {
-    private final Driver driver;
-    private final Visual visually;
-    private static final By SEARCH_INPUT = By.name("searchVal");
+    private final Locator searchInput;
 
-    public HomeScreenPlaywrightJava(Driver driver, Visual visually) {
-        this.driver = driver;
-        this.visually = visually;
+    public HomeScreenPlaywrightJava(PlaywrightJavaScreenContext context) {
+        this.searchInput = context.page().locator("input[name='searchVal']");
     }
 
     @Override
     public SearchScreen searchForTheProduct(String productName) {
-        // Uses the Driver compatibility layer, making locator syntax identical to Selenium
-        driver.waitTillElementIsPresent(SEARCH_INPUT);
-        driver.findElement(SEARCH_INPUT).sendKeys(productName, Keys.ENTER);
+        searchInput.fill(productName);
+        searchInput.press("Enter");
         return SearchScreen.get();
     }
 }
 ```
+
+Important:
+
+- `playwright-java` screens should be authored with native Playwright Java APIs
+- use `Page`, `Locator`, and Playwright-native actions/waits inside the screen implementation
+- do not treat Selenium `By` locators as the intended long-term authoring model for `playwright-java`
 
 ---
 

@@ -115,6 +115,8 @@ Assumptions used by this architecture:
 * Playwright-TS remains a Java-owned orchestration path with a TS worker at the execution boundary
 * test-owned Playwright-TS screen modules live under `src/test/resources/playwright/screens`
 * `playwright-ts` screen resolution is module-based rather than Java-class-based
+* `playwright-java` and `playwright-ts` should both be authored with native Playwright APIs in their engine-specific screen implementations
+* Selenium-style locators and Selenium-style screen code are not the target authoring model for Playwright engines
 * Selenium Java continues to work as it does today
 * multi-user and multi-platform routing remains persona/session-driven
 * engine-specific behavior belongs in engine-specific screen implementations, not in BL
@@ -153,7 +155,7 @@ Patterns teswiz is intentionally moving away from:
 * Existing Selenium Java tests continue to run unchanged
 * No migration script is required for Selenium-only suites
 * Playwright Java and Playwright TS adoption is opt-in
-* If a suite wants to use a Playwright engine, it must select the engine explicitly and use the corresponding screen implementation once introduced
+* If a suite wants to use a Playwright engine, it must select the engine explicitly and use the corresponding native Playwright screen implementation
 * If a suite stays on Selenium Java, no code or configuration migration is needed beyond keeping its current config in place
 
 ## Stable framework-facing package

@@ -5,11 +5,14 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.Test;
 
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.Page;
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.web.playwrightjava.theapp.ClipboardDemoScreenPlaywrightJava;
 import com.znsio.teswiz.screen.web.playwrightjava.theapp.EchoScreenPlaywrightJava;
 import com.znsio.teswiz.screen.web.playwrightjava.theapp.AppLaunchScreenPlaywrightJava;
+import com.znsio.teswiz.web.playwright.screen.PlaywrightJavaScreenContext;
 
 class TheAppUnsupportedWebActionsTest {
     @Test
@@ -35,7 +38,7 @@ class TheAppUnsupportedWebActionsTest {
     @Test
     void shouldFailFastForClipboardDemoOnPlaywrightJavaWeb() {
         AppLaunchScreenPlaywrightJava screen =
-                new AppLaunchScreenPlaywrightJava(mock(Driver.class), mock(Visual.class));
+                new AppLaunchScreenPlaywrightJava(playwrightJavaScreenContext());
 
         assertThatThrownBy(screen::goToClipboardDemo)
                 .isInstanceOf(UnsupportedOperationException.class)
@@ -46,7 +49,7 @@ class TheAppUnsupportedWebActionsTest {
     @Test
     void shouldFailFastForEchoOnPlaywrightJavaWeb() {
         AppLaunchScreenPlaywrightJava screen =
-                new AppLaunchScreenPlaywrightJava(mock(Driver.class), mock(Visual.class));
+                new AppLaunchScreenPlaywrightJava(playwrightJavaScreenContext());
 
         assertThatThrownBy(screen::selectEcho)
                 .isInstanceOf(UnsupportedOperationException.class)
@@ -94,5 +97,14 @@ class TheAppUnsupportedWebActionsTest {
                 .isInstanceOf(UnsupportedOperationException.class)
                 .hasMessageContaining("Echo")
                 .hasMessageContaining("playwright-java");
+    }
+
+    private PlaywrightJavaScreenContext playwrightJavaScreenContext() {
+        return new PlaywrightJavaScreenContext(
+                mock(Driver.class),
+                mock(Visual.class),
+                null,
+                mock(BrowserContext.class),
+                mock(Page.class));
     }
 }

@@ -1,6 +1,41 @@
 # teswiz Dual-Engine Web Plan
 
-This checklist tracks the remaining implementation for the dual-engine web architecture.
+This checklist tracks the current implementation direction for native Playwright authoring in teswiz.
+
+## Current Direction
+
+- `selenium` screens remain Selenium-authored
+- `playwright-java` screens must move to native Playwright Java authoring
+- `playwright-ts` screens remain native Playwright TS modules
+- the teswiz structure stays: `feature -> steps -> BL -> shared screen contract`
+- BL and shared screen contracts remain engine-agnostic
+- engine-specific behavior belongs only inside engine-specific screen implementations
+
+## Native Playwright Authoring Work
+
+### Milestone A: Correct the user-facing model
+
+- [ ] Update docs so `playwright-java` is described as a native Playwright Java authoring model
+- [ ] Remove guidance that positions Selenium `By` locators as the Playwright-Java pattern
+- [ ] Keep architecture docs explicit that Selenium and Playwright engines share contracts, not authoring APIs
+
+### Milestone B: Add Playwright-Java native screen context
+
+- [ ] Provide a framework-owned `PlaywrightJavaScreenContext`
+- [ ] Allow screen instantiation to inject native Playwright Java context without changing BL contracts
+- [ ] Keep legacy Selenium screen instantiation unchanged
+
+### Milestone C: Convert first reference flow
+
+- [ ] Convert TheApp Playwright-Java launch/login flow to native Playwright Java `Page` / `Locator`
+- [ ] Add focused tests proving native context instantiation works
+- [ ] Use this flow as the reference pattern for future Playwright-Java screens
+
+### Milestone D: Expand native Playwright-Java coverage
+
+- [ ] Convert remaining Playwright-Java example and sample screens away from Selenium-style `By`
+- [ ] Add guardrails so docs and examples do not drift back to compatibility-layer authoring
+- [ ] Decide when to retire the remaining Playwright-Java compatibility path entirely
 
 ## Current State
 

@@ -29,9 +29,12 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Page.NavigateOptions;
 import com.microsoft.playwright.Tracing;
 import com.microsoft.playwright.options.WaitUntilState;
+import com.znsio.teswiz.runner.Driver;
+import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.visual.PlaywrightVisualDriver;
 import com.znsio.teswiz.visual.PlaywrightVisualSessionRequest;
 import com.znsio.teswiz.visual.PlaywrightVisualResults;
+import com.znsio.teswiz.web.playwright.screen.PlaywrightJavaScreenContext;
 
 public final class PlaywrightJavaWebDriver implements WebDriver, org.openqa.selenium.JavascriptExecutor,
         org.openqa.selenium.TakesScreenshot, PlaywrightVisualDriver {
@@ -49,6 +52,10 @@ public final class PlaywrightJavaWebDriver implements WebDriver, org.openqa.sele
 
     public PlaywrightJavaWebDriver(PlaywrightJavaSession session) {
         this.session = session;
+    }
+
+    public PlaywrightJavaScreenContext createScreenContext(Driver driver, Visual visual) {
+        return new PlaywrightJavaScreenContext(driver, visual, this, session.browserContext(), session.page());
     }
 
     @Override
