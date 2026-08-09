@@ -72,14 +72,9 @@ echo "🔄 Updating version to $VERSION in project files..."
 # Update build.gradle
 sed -i '' -E 's/(def teswizVersion = ")[^"]*(")/\1'"$VERSION"'\2/' build.gradle
 
-# Update package.json
+# Update package.json and package-lock.json using npm version
 if [ -f package.json ]; then
-  sed -i '' -E 's/("version": ")[^"]*(")/\1'"$VERSION"'\2/' package.json
-fi
-
-# Update package-lock.json
-if [ -f package-lock.json ]; then
-  sed -i '' -E 's/("version": ")[^"]*(")/\1'"$VERSION"'\2/' package-lock.json
+  npm version "$VERSION" --no-git-tag-version
 fi
 
 # Update README.md badge version
