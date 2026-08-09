@@ -1,0 +1,85 @@
+name: Cleanup Branch Artifacts
+
+description: >
+  Keep only the current workflow run's artifact set for the given branch by deleting
+  artifacts produced by older runs of the same workflow on that branch.
+
+inputs:
+  workflow-file:
+    required: true
+    description: Workflow file name under .github/workflows
+  branch-name:
+    required: true
+    description: Branch name whose older workflow artifacts should be removed
+  current-run-id:
+    required: true
+    description: Current workflow run id to preserve
+
+runs:
+  using: composite
+  steps:
+    - name: Delete older artifacts for this workflow and branch
+      uses: actions/github-script@v8
+      env:
+        INPUT_WORKFLOW_FILE: ${{ inputs.workflow-file }}
+        INPUT_BRANCH_NAME: ${{ inputs.branch-name }}
+        INPUT_CURRENT_RUN_ID: ${{ inputs.current-run-id }}
+      with:
+        script: |
+          const actor = context.actor;
+          const branchName = process.env.INPUT_BRANCH_NAME ?? "";
+          const isDependencyBotActor = actor === "dependabot[bot]" || actor === "renovate[bot]";
+          const isDependencyBotBranch = branchName.startsWith("dependabot/") || branchName.startsWith("renovate/");
+
+          if (isDependencyBotActor || isDependencyBotBranch) {
+            core.info(`Skipping artifact cleanup for dependency-management run. actor=${actor}, branch=${branchName}`);
+            return;
+          }
+
+          const workflowFile = process.env.INPUT_WORKFLOW_FILE ?? "";
+          const currentRunId = Number(process.env.INPUT_CURRENT_RUN_ID ?? "0");
+          const owner = context.repo.owner;
+          const repo = context.repo.repo;
+
+          if (!workflowFile || !branchName || !Number.isFinite(currentRunId) || currentRunId <= 0) {
+            core.warning(
+              `Skipping artifact cleanup because required inputs were not resolved. workflow='${workflowFile}', branch='${branchName}', runId='${currentRunId}'`
+            );
+            return;
+          }
+
+          core.info(`Keeping artifacts for run ${currentRunId} in workflow ${workflowFile} on branch ${branchName}`);
+
+          const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+            owner,
+            repo,
+            workflow_id: workflowFile,
+            branch: branchName,
+            per_page: 100
+          });
+
+          const olderRuns = runs
+            .filter((run) => run.id !== currentRunId)
+            .sort((left, right) => right.run_number - left.run_number);
+
+          for (const run of olderRuns) {
+            const artifacts = await github.paginate(github.rest.actions.listWorkflowRunArtifacts, {
+              owner,
+              repo,
+              run_id: run.id,
+              per_page: 100
+            });
+
+            for (const artifact of artifacts) {
+              if (artifact.expired) {
+                continue;
+              }
+
+              core.info(`Deleting artifact '${artifact.name}' (${artifact.id}) from run ${run.id}`);
+              await github.rest.actions.deleteArtifact({
+                owner,
+                repo,
+                artifact_id: artifact.id
+              });
+            }
+          }

@@ -1,78 +1,62 @@
 package com.znsio.teswiz.runner;
 
-import com.google.gson.internal.LinkedTreeMap;
+import com.znsio.teswiz.config.app.AppPathResolver;
+import com.znsio.teswiz.config.app.AppVersionDetector;
+import com.znsio.teswiz.config.capability.CapabilityConfigResolver;
+import com.znsio.teswiz.config.capability.CapabilityFileManager;
+import com.znsio.teswiz.mobile.device.LocalMobileDeviceSetup;
+import com.znsio.teswiz.mobile.provider.MobileCloudExecutionManager;
 import com.znsio.teswiz.entities.Platform;
-import com.znsio.teswiz.exceptions.InvalidTestDataException;
-import com.znsio.teswiz.tools.JsonFile;
-import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.OsUtils;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
-import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
-import com.znsio.teswiz.tools.cmd.CommandLineResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.text.DecimalFormat;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.znsio.teswiz.runner.Runner.NOT_SET;
+import com.znsio.teswiz.mobile.provider.BrowserStackMobileSetup;
+import com.znsio.teswiz.mobile.provider.LambdaTestMobileSetup;
+import com.znsio.teswiz.mobile.provider.HeadSpinMobileSetup;
+import com.znsio.teswiz.mobile.provider.PCloudyMobileSetup;
+
 import static com.znsio.teswiz.runner.Setup.*;
 
-class DeviceSetup {
+public class DeviceSetup {
     private static final Logger LOGGER = LogManager.getLogger(DeviceSetup.class.getName());
-    private static final String LAMBDATEST_APP_PREFIX = "lt://";
-    private static final String BROWSERSTACK_APP_PREFIX = "bs://";
     private static final String DEFAULT_TEMP_SAMPLE_APP_DIRECTORY =
             System.getProperty("user.dir") + File.separator +
                     "temp" + File.separator + "sampleApps";
-    private static final String CLOUD_NAME_NOT_SUPPORTED_MESSAGE = "Provided cloudName: '%s' is not supported";
     private static final String CUCUMBER_SCENARIO_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioListener";
     private static final String CUCUMBER_SCENARIO_REPORTER_LISTENER = "com.znsio.teswiz.listener.CucumberScenarioReporterListener";
+    private static final AppVersionDetector APP_VERSION_DETECTOR = new AppVersionDetector();
+    private static final MobileCloudExecutionManager MOBILE_CLOUD_EXECUTION_MANAGER =
+            new MobileCloudExecutionManager(
+                    BrowserStackMobileSetup::updateBrowserStackCapabilities,
+                    LambdaTestMobileSetup::updateLambdaTestCapabilities,
+                    HeadSpinMobileSetup::updateHeadspinCapabilities,
+                    PCloudyMobileSetup::updatePCloudyCapabilities,
+                    BrowserStackMobileSetup::cleanUp);
 
     private DeviceSetup() {
         LOGGER.debug("DeviceSetup - private constructor");
     }
 
-    static void saveNewCapabilitiesFile(String platformName, String capabilityFile,
+    public static void saveNewCapabilitiesFile(String platformName, String capabilityFile,
                                         Map<String, Map> loadedCapabilityFile,
                                         ArrayList listOfDevices) {
-        Object pluginConfig = ((LinkedTreeMap) loadedCapabilityFile.get("serverConfig").get("server")).get(
-                "plugin");
-        Map cloudConfig = (Map) ((LinkedTreeMap) ((LinkedTreeMap) pluginConfig).get("device-farm")).get(
-                "cloud");
-        cloudConfig.put("devices", listOfDevices);
-
-        LOGGER.info(String.format("Updated Device Lab Capabilities file: %n%s", JsonPrettyPrinter.prettyPrint(loadedCapabilityFile)));
-
-        String updatedCapabilitiesFile = getPathForFileInLogDir(capabilityFile);
-        JsonFile.saveJsonToFile(loadedCapabilityFile, updatedCapabilitiesFile);
+        String updatedCapabilitiesFile = CapabilityFileManager.saveDeviceFarmCapabilities(
+                capabilityFile,
+                loadedCapabilityFile,
+                listOfDevices,
+                Setup.getFromConfigs(LOG_DIR));
         Setup.addToConfigs(CAPS, updatedCapabilitiesFile);
     }
 
     static String getPathForFileInLogDir(String fullFilePath) {
-        LOGGER.info(String.format("\tgetPathForFileInLogDir: fullFilePath: %s", fullFilePath));
-        Path path = Paths.get(fullFilePath);
-        String fileName = path.getFileName().toString();
-        String newFileName = new File(
-                Setup.getFromConfigs(LOG_DIR) + File.separator + fileName).getAbsolutePath();
-        LOGGER.info(String.format("\tNew file available here: %s", newFileName));
-        return newFileName;
+        return CapabilityFileManager.getPathForFileInLogDir(fullFilePath, Setup.getFromConfigs(LOG_DIR));
     }
 
     static ArrayList<String> setupAndroidExecution() {
@@ -83,7 +67,7 @@ class DeviceSetup {
             if (Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
-                LocalDevicesSetup.setupLocalExecution();
+                LocalMobileDeviceSetup.setupLocalExecution();
             }
             androidCukeArgs.add("--threads");
             androidCukeArgs.add(Setup.getIntegerValueAsStringFromConfigs(PARALLEL));
@@ -112,130 +96,16 @@ class DeviceSetup {
     }
 
     public static String downloadAppToDirectoryIfNeeded(String appPath, String saveToLocalDirectory) {
-        if (isCloudHostedAppReference(appPath)) {
-            LOGGER.info(String.format("Cloud hosted app reference '%s' provided. Skipping local file validation.",
-                    SensitiveDataMasker.mask(appPath)));
-            return appPath;
-        }
-        String fileName = new File(appPath).getName();
-        String localFilePath = saveToLocalDirectory + File.separator + fileName;
-        if (isAppPathAUrl(appPath)) {
-            LOGGER.info(String.format("App url '%s' is provided in capabilities. Download it, if " +
-                                              "not already available at '%s'",
-                    SensitiveDataMasker.mask(appPath), SensitiveDataMasker.mask(localFilePath)));
-            downloadFileIfDoesNotExist(appPath, localFilePath, saveToLocalDirectory);
-            LOGGER.info("Changing value of appPath from URL to file path");
-            LOGGER.info(String.format("Before change, appPath value: %s", SensitiveDataMasker.mask(appPath)));
-            appPath = localFilePath;
-            LOGGER.info(String.format("After change, appPath value: %s", SensitiveDataMasker.mask(localFilePath)));
-        } else {
-            LOGGER.info(String.format("App file path '%s' is provided in capabilities.",
-                    SensitiveDataMasker.mask(appPath)));
-            if (!(new File(appPath).exists())) {
-                throw new InvalidTestDataException(String.format("App file path '%s' provided in capabilities is incorrect", appPath));
-            }
-        }
-        LOGGER.info(String.format("App file path '%s' is provided in capabilities.",
-                SensitiveDataMasker.mask(appPath)));
-        LOGGER.info(String.format("File available at App file path '%s'", SensitiveDataMasker.mask(appPath)));
-        return appPath;
-    }
-
-    static boolean isCloudHostedAppReference(String appPath) {
-        if (null == appPath) {
-            return false;
-        }
-        return appPath.startsWith(LAMBDATEST_APP_PREFIX) || appPath.startsWith(BROWSERSTACK_APP_PREFIX);
-    }
-
-    private static void downloadFile(String url, String filePath, String saveToDirectory) {
-        LOGGER.info(String.format("Downloading App from url: '%s'", url));
-        try {
-            URL fileUrl = new URL(url);
-            HttpURLConnection connection = getHttpURLConnection(fileUrl);
-            downloadFileFromHttpURL(filePath, saveToDirectory, connection);
-            String formattedSize = getDownloadedAppSize(Path.of(filePath));
-            LOGGER.info(String.format("App downloaded at path: '%s', having size: '%s MB'", filePath, formattedSize));
-        } catch (IOException e) {
-            throw new InvalidTestDataException("An error occurred while opening the URL/downloading file: " + e.getMessage());
-        }
-    }
-
-    private static String getDownloadedAppSize(Path filePath) {
-        long fileSizeBytes = 0;
-        try {
-            fileSizeBytes = Files.size(filePath);
-        } catch (IOException e) {
-            throw new InvalidTestDataException("Unable to get downloaded app file size. Download " +
-                                                       "may be corrupt. Check and fix before " +
-                                                       "rerunning the test.", e);
-        }
-        double fileSizeMB = (double) fileSizeBytes / (1024 * 1024);
-        return new DecimalFormat("#.##").format(fileSizeMB);
-    }
-
-    private static void downloadFileFromHttpURL(String filePath, String saveToDirectory, HttpURLConnection connection)  {
-        try (InputStream inputStream = connection.getInputStream()) {
-            createDirectoryIfNotExists(saveToDirectory);
-            Files.copy(inputStream, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new InvalidTestDataException(String.format("Unable to download file '%s'", connection.getURL().toString()), e);
-        }
-    }
-
-    @NotNull
-    private static HttpURLConnection getHttpURLConnection(URL fileUrl) {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) fileUrl.openConnection();
-            connection.setRequestMethod("GET");
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                throw new InvalidTestDataException(String.format("Unable to connect to url: '%s'. Got connection error '%d'", fileUrl, responseCode));
-            }
-            return connection;
-        } catch (IOException e) {
-            throw new InvalidTestDataException(String.format("Unable to connect to url: '%s'.", fileUrl));
-        }
-    }
-
-    private static void createDirectoryIfNotExists(String directory) throws IOException {
-        Path directoryPath = Path.of(directory);
-        if (!Files.exists(directoryPath)) {
-            Files.createDirectories(directoryPath);
-        }
-    }
-
-    private static void downloadFileIfDoesNotExist(String appPath, String filePath, String saveToDirectory){
-        if (!(new File(filePath).exists())) {
-            LOGGER.info(String.format("App is not available at path: '%s'. Download it.", appPath));
-            downloadFile(appPath, filePath, saveToDirectory);
-        } else {
-            LOGGER.info(String.format("App is already available at path: '%s'. No need to download it.", appPath));
-        }
+        return AppPathResolver.resolveAppPath(appPath, saveToLocalDirectory);
     }
 
     private static void fetchAndroidAppVersion() {
-        Pattern versionNamePattern = Pattern.compile("versionName='(\\d+(\\.\\d+)+)'",
-                Pattern.MULTILINE);
-        String searchPattern = "grep";
-        if (OsUtils.isWindows()) {
-            searchPattern = "findstr";
-        }
-
         try {
             File appFile = new File(Setup.getFromConfigs(APP_PATH));
-            if (!isAppPathAUrl(appFile.getPath())) {
-                String appFilePath = appFile.getCanonicalPath();
-                String androidHomePath = System.getenv("ANDROID_HOME");
-                File buildToolsFolder = new File(androidHomePath, "build-tools");
-                File buildVersionFolder = Objects.requireNonNull(buildToolsFolder.listFiles())[0];
-                File aaptExecutable = new File(buildVersionFolder, "aapt").getAbsoluteFile();
-
-                String[] commandToGetAppVersion = new String[]{aaptExecutable.toString(), "dump",
-                        "badging", appFilePath, "|",
-                        searchPattern, "versionName"};
-                fetchAppVersion(commandToGetAppVersion, versionNamePattern);
+            if (!AppPathResolver.isAppPathUrl(appFile.getPath())) {
+                APP_VERSION_DETECTOR.detectAndroidAppVersion(appFile.getPath(), System.getenv("ANDROID_HOME"),
+                                OsUtils.isWindows())
+                        .ifPresent(DeviceSetup::setAppVersion);
             }
         } catch (Exception e) {
             LOGGER.info(
@@ -245,110 +115,34 @@ class DeviceSetup {
 
     static void setupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
-        String deviceLabURL;
-        switch (cloudName.toLowerCase()) {
-            case "headspin":
-                deviceLabURL = getCloudApiUrlFromCapabilities();
-                HeadSpinSetup.updateHeadspinCapabilities(deviceLabURL);
-                break;
-            case "pcloudy":
-                deviceLabURL = getCloudApiUrlFromCapabilities();
-                PCloudySetup.updatePCloudyCapabilities(deviceLabURL);
-                break;
-            case "browserstack":
-                deviceLabURL = getCloudApiUrlFromCapabilities();
-                BrowserStackSetup.updateBrowserStackCapabilities(deviceLabURL);
-                break;
-            case "lambdatest":
-                deviceLabURL = getCloudApiUrlFromCapabilities();
-                LambdaTestSetup.updateLambdaTestCapabilities(deviceLabURL);
-                break;
-            default:
-                throw new InvalidTestDataException(
-                    String.format(CLOUD_NAME_NOT_SUPPORTED_MESSAGE, cloudName));
-        }
+        MOBILE_CLOUD_EXECUTION_MANAGER.setupCloudExecution(cloudName, getCloudApiUrlFromCapabilities());
         Setup.addToConfigs(EXECUTED_ON, cloudName);
     }
 
     private static String getAppPathFromCapabilities() {
-        String capabilityFile = Setup.getFromConfigs(CAPS);
-        return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
-                new String[]{Setup.getPlatform().name(), "app"}, Setup.getLoadedCapabilities());
-    }
-
-    private static boolean isAppPathAUrl(String appPathUrl) {
-        try {
-            new URL(appPathUrl);
-            LOGGER.info(String.format("'%s' is a URL.", appPathUrl));
-            isAppUrlValid(appPathUrl);
-            return true;
-        } catch (MalformedURLException e) {
-            LOGGER.info(String.format("'%s' is not a URL.", appPathUrl));
-            return false;
-        }
-    }
-
-    private static void isAppUrlValid(String appPathUrl) {
-        int responseCode=999;
-        String responseMessage=NOT_SET;
-        HttpURLConnection connection;
-        try {
-            connection = (HttpURLConnection) new URL(appPathUrl).openConnection();
-            connection.setRequestMethod("HEAD");
-            responseMessage = connection.getResponseMessage();
-            responseCode = connection.getResponseCode();
-            connection.disconnect();
-        } catch (IOException e) {
-            LOGGER.info(MessageFormat.format("isAppUrlValid response message: {0}'', responseCode: {1}",
-                    SensitiveDataMasker.mask(responseMessage), responseCode));
-            throw new InvalidTestDataException(String.format("Failed to make a connection using url: '%s'", appPathUrl) + e);
-        }
-
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            LOGGER.info(String.format("'%s' is an invalid URL.", appPathUrl));
-            throw new InvalidTestDataException("URL is not accessible: " + appPathUrl);
-        }
-        LOGGER.info(String.format("'%s' is a valid URL.", appPathUrl));
-    }
-
-    private static void fetchAppVersion(String[] commandToGetAppVersion, Pattern pattern) {
-        CommandLineResponse commandResponse = CommandLineExecutor.execCommand(
-                commandToGetAppVersion);
-        String commandOutput = commandResponse.getStdOut();
-        if (!(null == commandOutput || commandOutput.isEmpty())) {
-            Matcher matcher = pattern.matcher(commandOutput);
-            if (matcher.find()) {
-                Setup.addToConfigs(APP_VERSION, matcher.group(1));
-                LOGGER.info(String.format("APP_VERSION: %s", matcher.group(1)));
-            }
-        } else {
-            LOGGER.info("fetchAppVersion: " + commandResponse.getErrOut());
-        }
+        return CapabilityConfigResolver.getAppPath(
+                Setup.getFromConfigs(CAPS),
+                Setup.getPlatform().name(),
+                Setup.getLoadedCapabilities());
     }
 
     static String getCloudNameFromCapabilities() {
-        if (Runner.isRunningInCI() && !Runner.isAPI() && !Runner.isCLI() && !Runner.isPDF()) {
-            String capabilityFile = Setup.getFromConfigs(CAPS);
-            return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
-                    new String[]{"serverConfig", "server", "plugin",
-                            "device-farm", "cloud", "cloudName"}, Setup.getLoadedCapabilities());
-        } else {
-            return NOT_SET;
-        }
+        return CapabilityConfigResolver.getCloudName(
+                Runner.isRunningInCI(),
+                Runner.isAPI(),
+                Runner.isCLI(),
+                Runner.isPDF(),
+                Setup.getFromConfigs(CAPS),
+                Setup.getLoadedCapabilities(),
+                NOT_SET);
     }
 
     static String getCloudUrlFromCapabilities() {
-        String capabilityFile = Setup.getFromConfigs(CAPS);
-        return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
-                new String[]{"serverConfig", "server", "plugin",
-                        "device-farm", "cloud", "url"}, Setup.getLoadedCapabilities());
+        return CapabilityConfigResolver.getCloudUrl(Setup.getFromConfigs(CAPS), Setup.getLoadedCapabilities());
     }
 
     static String getCloudApiUrlFromCapabilities() {
-        String capabilityFile = Setup.getFromConfigs(CAPS);
-        return JsonFile.getValueFromLoadedJsonMap(capabilityFile,
-                new String[]{"serverConfig", "server", "plugin",
-                        "device-farm", "cloud", "apiUrl"}, Setup.getLoadedCapabilities());
+        return CapabilityConfigResolver.getCloudApiUrl(Setup.getFromConfigs(CAPS), Setup.getLoadedCapabilities());
     }
 
     static ArrayList<String> setupWindowsExecution() {
@@ -366,40 +160,23 @@ class DeviceSetup {
     }
 
     private static void fetchWindowsAppVersion() {
-        Pattern versionNamePattern = Pattern.compile("Version=(\\d+(\\.\\d+)+)", Pattern.MULTILINE);
         try {
-            File appFile = new File(Setup.getFromConfigs(APP_PATH));
-            String nameVariable = "name=\"" + appFile.getCanonicalPath()
-                    .replace("\\", "\\\\") + "\"";
-            String[] commandToGetAppVersion = new String[]{"wmic", "datafile", "where",
-                    nameVariable, "get", "Version",
-                    "/value"};
-            fetchAppVersion(commandToGetAppVersion, versionNamePattern);
+            APP_VERSION_DETECTOR.detectWindowsAppVersion(Setup.getFromConfigs(APP_PATH))
+                    .ifPresent(DeviceSetup::setAppVersion);
         } catch (IOException e) {
             LOGGER.info(
                     String.format("fetchWindowsAppVersion: Exception: %s", e.getLocalizedMessage()));
         }
     }
 
+    private static void setAppVersion(String appVersion) {
+        Setup.addToConfigs(APP_VERSION, appVersion);
+        LOGGER.info(String.format("APP_VERSION: %s", appVersion));
+    }
+
     static void cleanupCloudExecution() {
         String cloudName = getCloudNameFromCapabilities();
-        switch (cloudName.toLowerCase()) {
-            case "browserstack":
-                BrowserStackSetup.cleanUp();
-                break;
-            case "headspin":
-            case "pcloudy":
-            case "lambdatest":
-            case "saucelabs":
-                LOGGER.info(String.format("No cleanup required for cloud: '%s'", cloudName));
-                break;
-            case "docker":
-                LOGGER.info(String.format("No cleanup required for: '%s'", cloudName));
-                break;
-            default:
-                throw new InvalidTestDataException(
-                        String.format(CLOUD_NAME_NOT_SUPPORTED_MESSAGE, cloudName));
-        }
+        MOBILE_CLOUD_EXECUTION_MANAGER.cleanupCloudExecution(cloudName);
     }
 
     static ArrayList<String> setupIOSExecution()  {
@@ -411,7 +188,7 @@ class DeviceSetup {
             if (Setup.getBooleanValueFromConfigs(RUN_IN_CI)) {
                 setupCloudExecution();
             } else {
-                LocalDevicesSetup.setupLocalIOSExecution();
+                LocalMobileDeviceSetup.setupLocalIOSExecution();
             }
             iOSCukeArgs.add("--threads");
             iOSCukeArgs.add(Setup.getIntegerValueAsStringFromConfigs(PARALLEL));

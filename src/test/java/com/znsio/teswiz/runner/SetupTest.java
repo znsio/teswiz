@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Map;
 
@@ -26,6 +28,7 @@ class SetupTest {
         System.clearProperty(APPLITOOLS.PROXY_KEY);
         System.clearProperty(APPLITOOLS.PROXY_URL);
         System.clearProperty(Setup.APPLITOOLS_BATCH_NAME_SUFFIX);
+        System.clearProperty("rp.attributes");
     }
 
     @Test
@@ -155,5 +158,41 @@ class SetupTest {
         Map applitoolsConfiguration = Runner.getApplitoolsConfiguration();
         BatchInfo batchInfo = (BatchInfo) applitoolsConfiguration.get(APPLITOOLS.BATCH_INFO);
         assertThat(batchInfo.getName()).as("Applitools Batch name suffix is not set as expected").endsWith(batchNameSuffix);
+    }
+
+    @Test
+    void shouldMakeApplitoolsBatchNameAndPropertiesEngineAwareForWebRuns() {
+        String webConfigFilePath = "./configs/theapp/theapp_local_web_config.properties";
+        System.setProperty(Setup.WEB_ENGINE, "playwright-ts");
+        Setup.load(webConfigFilePath);
+        Setup.loadAndUpdateConfigParameters(webConfigFilePath);
+        Setup.initialiseApplitoolsConfiguration();
+
+        Map applitoolsConfiguration = Runner.getApplitoolsConfiguration();
+        BatchInfo batchInfo = (BatchInfo) applitoolsConfiguration.get(APPLITOOLS.BATCH_INFO);
+
+        assertThat(batchInfo.getName()).contains("-web-playwright-ts");
+        assertThat(batchInfo.getProperties())
+                .anySatisfy(property -> assertThat(property)
+                        .containsEntry("name", Setup.WEB_ENGINE)
+                        .containsEntry("value", "playwright-ts"))
+                .anySatisfy(property -> assertThat(property)
+                        .containsEntry("name", Setup.PLATFORM)
+                        .containsEntry("value", "web"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"selenium", "playwright-java", "playwright-ts"})
+    void shouldIncludeProviderAndWebEngineInReportPortalAttributesForWebRuns(String webEngine) {
+        String webConfigFilePath = "./configs/theapp/theapp_local_web_config.properties";
+        System.setProperty(Setup.WEB_ENGINE, webEngine);
+        Setup.load(webConfigFilePath);
+        Setup.loadAndUpdateConfigParameters(webConfigFilePath);
+        Setup.getExecutionArguments();
+
+        assertThat(System.getProperty("rp.attributes"))
+                .contains("Platform:web;")
+                .contains("WebEngine:" + webEngine + ";")
+                .contains("Provider:local;");
     }
 }

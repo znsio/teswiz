@@ -71,8 +71,9 @@ runs:
         echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
 
     - name: Upload ${{ inputs.display-name }} Results
-      if: always()
+      if: ${{ always() && github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]' && !startsWith(github.head_ref || github.ref_name, 'dependabot/') && !startsWith(github.head_ref || github.ref_name, 'renovate/') }}
       uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.artifact-name }}
         path: target
+        retention-days: 4

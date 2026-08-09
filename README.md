@@ -1,152 +1,179 @@
 [![](https://badges.frapsoft.com/os/v3/open-source.svg)](https://github.com/anandbagmar/teswiz)
 [![GitHub stars](https://img.shields.io/github/stars/anandbagmar/teswiz.svg?style=flat)](https://github.com/anandbagmar/teswiz/stargazers)
-[ ![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=flat )](https://github.com/anandbagmar/teswiz/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=flat)](https://github.com/anandbagmar/teswiz/pulls)
 [![GitHub forks](https://img.shields.io/github/forks/anandbagmar/teswiz.svg?style=social&label=Fork)](https://github.com/anandbagmar/teswiz/network)
 
+> [!IMPORTANT]
+> **This repository has temporarily moved to [anandbagmar/teswiz](https://github.com/anandbagmar/teswiz)**. Please use that fork for active updates, branches, and submissions.
 
-## Latest release status:
+## Status
+
 [![1.0.26](https://jitpack.io/v/anandbagmar/teswiz.svg)](https://jitpack.io/#anandbagmar/teswiz)
 [![CI](https://github.com/anandbagmar/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml/badge.svg)](https://github.com/anandbagmar/teswiz/actions/workflows/Build_And_Run_Unit_Tests_CI.yml)
 [![CodeQL](https://github.com/anandbagmar/teswiz/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/anandbagmar/teswiz/actions/workflows/codeql-analysis.yml)
-
-## Latest successful build id:
 [![Latest Commit](https://img.shields.io/badge/commit-407d445-blue.svg)](https://jitpack.io/#anandbagmar/teswiz)
 
-## 🚨 Breaking Changes
+# teswiz
 
-### From Version `1.0.13` onward
+teswiz is a Java-first automation framework for:
 
-As part of package restructuring, context-related classes have moved to a new package.
+- web: Selenium, Playwright-Java, Playwright-TS
+- mobile: Appium Java for Android and iOS
+- desktop/web-adjacent: Electron, Windows apps, PDF validation
+- visual testing: Applitools Eyes and Ultrafast Grid
+- reporting: Cucumber HTML, ReportPortal, engine-aware artifacts
 
-#### ❗ Required Update in Imports
+The test authoring style stays the same:
 
-Replace:
+`feature -> steps -> business layer -> screen contract`
 
-```java
-import com.context.SessionContext;
-import com.context.TestExecutionContext;
+teswiz handles persona routing, session lifecycle, platform selection, cloud execution, and reporting underneath that flow.
+
+## Important upgrade notes
+
+Read these before upgrading or enabling Playwright:
+
+1. Web engine selection is explicit.
+   `WEB_ENGINE` now supports `selenium`, `playwright-java`, and `playwright-ts`.
+   Checked-in sample web configs should set this explicitly, even though the runtime still defaults to `selenium` when omitted.
+2. Playwright is opt-in, not a replacement.
+   Existing Selenium suites continue to work. To use Playwright, choose the engine and add the matching screen implementation.
+3. Playwright screen model differs by engine.
+   `playwright-java` uses Java screen implementations.
+   `playwright-ts` uses TypeScript screen modules under `src/test/resources/playwright/screens`.
+4. Older context imports changed in `1.0.13+`.
+   Replace `com.context.*` imports with `com.znsio.teswiz.context.*`.
+5. Playwright web on HeadSpin is intentionally unsupported.
+   teswiz now fails fast with an explicit message if that combination is selected.
+
+Detailed guidance:
+
+- [Breaking changes](/Users/anand.bagmar/projects/znsio/teswiz/docs/internals/BreakingChanges-README.md)
+- [Playwright migration guide](/Users/anand.bagmar/projects/znsio/teswiz/docs/internals/Playwright-Migration-Guide.md)
+- [Architecture notes](/Users/anand.bagmar/projects/znsio/teswiz/docs/internals/Architecture-README.md)
+
+## Get started
+
+```mermaid
+flowchart TD
+    A["Install prerequisites"] --> B["Create or update config.properties"]
+    B --> C{"Platform?"}
+    C -->|Web| D["Set PLATFORM=web and WEB_ENGINE"]
+    C -->|Mobile| E["Set PLATFORM=android or PLATFORM=iOS"]
+    D --> F["Implement shared screen contract"]
+    E --> F
+    F --> G{"Web engine?"}
+    G -->|selenium| H["Add Selenium web screen"]
+    G -->|playwright-java| I["Add Playwright-Java web screen"]
+    G -->|playwright-ts| J["Add TypeScript screen module"]
+    H --> K["Run tests"]
+    I --> K
+    J --> K
+    K --> L["Optional: visual checks and ReportPortal"]
 ```
 
-With:
+Recommended reading order:
 
-```java
-import com.znsio.teswiz.context.SessionContext;
-import com.znsio.teswiz.context.TestExecutionContext;
+1. [Prerequisites](/Users/anand.bagmar/projects/znsio/teswiz/docs/guides/Prerequisites-README.md)
+2. [Getting started](/Users/anand.bagmar/projects/znsio/teswiz/docs/guides/GettingStartedUsingTeswiz-README.md)
+3. [Configure test execution](/Users/anand.bagmar/projects/znsio/teswiz/docs/guides/ConfiguringTestExecution-README.md)
+4. [Write your first test](/Users/anand.bagmar/projects/znsio/teswiz/docs/guides/WritingFirstTest-README.md)
+5. [Sample tests](/Users/anand.bagmar/projects/znsio/teswiz/docs/guides/SampleTests-README.md)
+
+## Choose your web engine
+
+Set this in your suite config:
+
+```properties
+WEB_ENGINE=selenium
 ```
 
-# NOTE
+Valid values:
 
-    Use JDK v17 or higher
+- `selenium`
+- `playwright-java`
+- `playwright-ts`
 
-# To Build
-`./gradlew clean build`
+Use:
 
-If you need to force a fresh dependency download, pass the Gradle property:
+- `selenium` when you want the current Selenium web path
+- `playwright-java` when you want Playwright web with Java screen implementations
+- `playwright-ts` when you want Playwright web with TypeScript screen modules
 
-`./gradlew clean build -PforceUpdate=true`
+Examples:
 
-# What is this repository about?
+- [Selenium web example](/Users/anand.bagmar/projects/znsio/teswiz/docs/examples/Web-Selenium-Example.md)
+- [Playwright-Java web example](/Users/anand.bagmar/projects/znsio/teswiz/docs/examples/Web-Playwright-Java-Example.md)
+- [Playwright-TS web example](/Users/anand.bagmar/projects/znsio/teswiz/docs/examples/Web-Playwright-TS-Example.md)
+- [Android example](/Users/anand.bagmar/projects/znsio/teswiz/docs/examples/Android-Example.md)
+- [iOS example](/Users/anand.bagmar/projects/znsio/teswiz/docs/examples/iOS-Example.md)
 
-This repository implements automated tests for Android & iOS apps, specified using cucumber-jvm and intelligently run
-them against
+## Common commands
 
-* Android
-* iOS
-* Windows Apps
-* Web 
-* Electron
+```bash
+./gradlew clean build
+./gradlew verifyScreenContracts
+./gradlew reportMissingScreenContracts
+```
 
-Applitools (https://applitools.com/) Visual AI, and Applitools Ultrafast Grid (https://applitools.com/product-ultrafast-test-cloud/) is integrated with this framework, to provide
-Visual AI testing as part of functional automation.
+If you need a fresh dependency resolution:
 
-teswiz also supports:
-* Applitools Native Mobile Layout through `useNML`
-* Verifying application with Figma designs using the explicit step
-  `I have my Figma design with app name "...", test name "..." and baseline name "..." available in Applitools`
+```bash
+./gradlew clean build -PforceUpdate=true
+```
 
-Reports will be uploaded to reportportal.io, that you would need to setup separately, and provide the server details in
-src/test/resources/reportportal.properties file or provide the path to the file using this environment
-variable: `REPORT_PORTAL_FILE`
+Notes:
 
-Test can run on local browsers / devices, or against any cloud provider, such as TestMu AI (formerly LambdaTest), HeadSpin, BrowserStack, SauceLabs, pCloudy.
+- use JDK 17 or higher
+- run `verifyScreenContracts` explicitly when adding or migrating screens
+- use `-PincludeMissingScreenTargets=true` with `verifyScreenContracts` when you want stricter coverage reporting
 
-## CI Batch Name Suffix for Applitools
+## Visual testing and reporting
 
-To append a CI-specific suffix to the Applitools batch name, set `APPLITOOLS_BATCH_NAME_SUFFIX`.
+teswiz supports:
 
-Example for GitHub Actions:
+- Applitools Eyes for Selenium web, Playwright-Java web, Playwright-TS web, and mobile visual flows
+- Applitools Ultrafast Grid for web visual runs
+- ReportPortal publishing with engine, platform, provider, persona, and session metadata
+- unified scenario artifacts such as screenshots, traces, console logs, HARs, and provider links
 
-`additional-env: "APPLITOOLS_BATCH_NAME_SUFFIX=' - #${{ github.run_number }}'"`
+Read more:
 
-## Cloud provider notes
+- [Running visual tests](/Users/anand.bagmar/projects/znsio/teswiz/docs/features/RunningVisualTests-README.md)
+- [ReportPortal setup](/Users/anand.bagmar/projects/znsio/teswiz/docs/features/ReportPortal-README.md)
+- [Configuration parameters](/Users/anand.bagmar/projects/znsio/teswiz/docs/features/ConfigurationParameters-README.md)
 
-### TestMu AI (formerly LambdaTest)
+## Architecture
 
-* Supported config/capability samples in this repo:
-  * `configs/theapp/theapp_lambdatest_web_config.properties`
-  * `configs/theapp/theapp_lambdatest_android_config.properties`
-  * `configs/theapp/theapp_lambdatest_ios_config.properties`
-  * `caps/theapp/theapp_lambdatest_web_capabilities.json`
-  * `caps/theapp/theapp_lambdatest_android_capabilities.json`
-  * `caps/theapp/theapp_lambdatest_ios_capabilities.json`
-* Web runs use W3C-safe capabilities, with LambdaTest-specific keys inside `LT:Options`.
-* Mobile runs use LambdaTest-specific keys inside `lt:options`.
-* `network` and `appProfiling` are read from capability files (not hardcoded by framework).
-* Native app uploads:
-  * If `CLOUD_UPLOAD_APP=true`, teswiz uploads the app to LambdaTest and uses the returned `lt://...` app id automatically.
-  * If `CLOUD_UPLOAD_APP=false`, you must provide `APP_PATH=lt://...` as an environment variable, system property, or in the config file.
-  * Do not use a local file path such as `temp/sampleApps/TheApp.ipa` when `CLOUD_UPLOAD_APP=false`.
+The high-level architecture is documented separately in:
 
-### BrowserStack
+- [Architecture notes](/Users/anand.bagmar/projects/znsio/teswiz/docs/internals/Architecture-README.md)
 
-* Web runs use `bstack:options` / `browserstackOptions` mapping for BrowserStack-specific options.
-* Native app uploads:
-  * For iOS uploads (`.ipa` and `.zip`), upload command includes `ios_keychain_support=true`.
-  * For non-iOS uploads (for example `.apk`), that flag is not added.
+That doc covers:
 
-## Tech stack used
+- Java orchestration layer
+- Selenium, Playwright-Java, and Playwright-TS web engines
+- Appium mobile execution
+- screen resolution and contract verification
+- cloud/provider adapters
+- reporting and visual integration
 
-* **JDK 17**
-* cucumber-jvm (https://cucumber.io)
-* Appium 2.x (https://appium.io) 
-  * https://javadoc.io/doc/io.appium/java-client/8.0.0-beta/deprecated-list.html
-* Selenium WebDriver 4.x (https://selenium.dev)
-  * https://www.selenium.dev/selenium/docs/api/java/deprecated-list.html 
-* reportportal.io (https://reportportal.io)
-* Applitools (https://applitools.com)
-* Build tool: gradle v8
-* cucumber-reporting (https://github.com/damianszczepanik/cucumber-reporting)
+## CI notes
 
-## [Prerequisites](docs/Prerequisites-README.md)
+For GitHub Actions in this repo:
 
-## [Getting started using teswiz](docs/GettingStartedUsingTeswiz-README.md)
+- use `actions/setup-node` before Node-based installs
+- use `npm ci` in CI workflows
+- commit `package-lock.json` whenever `package.json` dependencies or overrides change
+- install Playwright browsers only in workflows that actually execute Playwright
+- keep only the latest artifact set per workflow for user-created branches
+- do not retain artifacts for dependency-management branches such as `dependabot/*` or `renovate/*`
 
-## [Configuring the test execution](docs/ConfiguringTestExecution-README.md)
+## Contributing
 
-## [Running the sample tests](docs/SampleTests-README.md)
+If you are adding or migrating screen implementations:
 
-## [Writing the first test](docs/WritingFirstTest-README.md)
-
-## [Setting up the Hard Gate](./docs/HardGate.md)
-
-## Additional configurations
-
-### [Running Visual Tests using Applitools Visual AI](docs/RunningVisualTests-README.md)
-
-### [Functional/Feature Coverage](docs/FeatureCoverage-README.md)
-
-### [Configuration parameters](docs/ConfigurationParameters-README.md)
-
-### [Add Auto Logging Using AspectJ](docs/AspectJLogging-README.md)
-
-### [Setting up docker containers](docs/DockerSetup-README.md)
-
-### [Logging to ReportPortal](docs/ReportPortal-README.md)
-
-## [BREAKING CHANGES from v0.0.81](docs/BreakingChanges-README.md)
-
-## [Troubleshooting / FAQs](docs/FAQs-README.md)
-
-## [Trouble downloading teswiz from jitpack.io?](docs/teswizDownloadIssue.md)
-
-### Contact [Anand Bagmar](https://twitter.com/BagmarAnand) for help or if you face issues using teswiz
+1. keep the screen contract stable
+2. add the engine/platform-specific implementation
+3. run `./gradlew verifyScreenContracts`
+4. add or update the relevant sample/docs if user-facing behavior changed

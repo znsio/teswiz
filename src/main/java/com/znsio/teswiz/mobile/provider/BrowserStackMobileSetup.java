@@ -1,0 +1,311 @@
+package com.znsio.teswiz.mobile.provider;
+
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.browserstack.local.Local;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import com.znsio.teswiz.exceptions.EnvironmentSetupException;
+import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.runner.Runner;
+import com.znsio.teswiz.runner.Setup;
+import com.znsio.teswiz.tools.JsonFile;
+import com.znsio.teswiz.tools.JsonPrettyPrinter;
+import com.znsio.teswiz.tools.Randomizer;
+import com.znsio.teswiz.tools.SensitiveDataMasker;
+import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
+import com.znsio.teswiz.tools.cmd.CommandLineResponse;
+
+public class BrowserStackMobileSetup {
+    private static final Logger LOGGER = LogManager.getLogger(BrowserStackMobileSetup.class.getName());
+    private static final String DEVICE = "device";
+    private static Local bsLocal;
+    private static final String BROWSERSTACK_LOCAL_IDENTIFIER = Randomizer.randomize(10);
+
+    private BrowserStackMobileSetup() {
+        LOGGER.debug("BrowserStackMobileSetup - private constructor");
+    }
+
+    public static void updateBrowserStackCapabilities(String deviceLabURL) {
+        String authenticationUser = Setup.getFromConfigs(Setup.CLOUD_USERNAME);
+        String authenticationKey = Setup.getFromConfigs(Setup.CLOUD_KEY);
+        String platformName = Setup.getPlatform().name();
+        String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
+
+        Map<String, Map> loadedCapabilityFile = JsonFile.loadJsonFile(capabilityFile);
+        Map<String, Object> loadedPlatformCapability = loadedCapabilityFile.get(platformName);
+
+        addAppOrBrowserNameToBrowserStackCapabilities(deviceLabURL, loadedPlatformCapability,
+                                                      authenticationUser, authenticationKey);
+        Object appiumVersion = loadedPlatformCapability.get("browserstack.appiumVersion");
+        boolean useLocalTesting = Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING);
+        if (useLocalTesting) {
+            LOGGER.info(String.format(
+                    "CLOUD_USE_LOCAL_TESTING=true. Setting up BrowserStackLocal testing using identified: '%s'",
+                    BROWSERSTACK_LOCAL_IDENTIFIER));
+            startBrowserStackLocal(authenticationKey, BROWSERSTACK_LOCAL_IDENTIFIER);
+        }
+        BrowserStackMobileCapabilitySetup.prepareCapabilities(
+                loadedPlatformCapability,
+                authenticationUser,
+                authenticationKey,
+                Setup.getFromConfigs(Setup.APP_NAME),
+                Setup.getFromConfigs(Setup.LAUNCH_NAME),
+                Setup.getFromConfigs(Setup.LOG_DIR),
+                getSessionName(),
+                appiumVersion,
+                useLocalTesting,
+                BROWSERSTACK_LOCAL_IDENTIFIER);
+        updateBrowserStackDevicesInCapabilities(authenticationUser, authenticationKey,
+                                                loadedCapabilityFile);
+    }
+
+    private static void addAppOrBrowserNameToBrowserStackCapabilities(String deviceLabURL,
+                                                                      Map<String, Object> loadedPlatformCapability,
+                                                                      String authenticationUser,
+                                                                      String authenticationKey) {
+        Object browserName = loadedPlatformCapability.get("browserName");
+        if (null != browserName) {
+            LOGGER.info(String.format("app Id retrieved from browser stack is: %s", browserName));
+            loadedPlatformCapability.put("browserstack.browserName", browserName);
+        } else {
+            String appPath = new File(Setup.getFromConfigs(Setup.APP_PATH)).getAbsolutePath();
+            String appIdFromBrowserStack = getAppIdFromBrowserStack(authenticationUser,
+                    authenticationKey, appPath, deviceLabURL);
+            LOGGER.info(String.format("app Id retrieved from browser stack is: %s", appIdFromBrowserStack));
+            loadedPlatformCapability.put("app", appIdFromBrowserStack);
+        }
+    }
+
+    private static String getSessionName() {
+        try {
+            return Runner.getTestExecutionContext(Thread.currentThread().getId()).getTestName();
+        } catch (RuntimeException e) {
+            String fallbackSessionName = Setup.getFromConfigs(Setup.LAUNCH_NAME);
+            LOGGER.warn(String.format(
+                    "Unable to resolve test context name. Falling back to launch name for sessionName: '%s'",
+                    fallbackSessionName));
+            return fallbackSessionName;
+        }
+    }
+
+    private static String getAppIdFromBrowserStack(String authenticationUser,
+                                                   String authenticationKey, String appPath,
+                                                   String apiUrl) {
+        LOGGER.info(String.format("getAppIdFromBrowserStack: for %s", appPath));
+        String appIdFromBrowserStack;
+        if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_UPLOAD_APP)) {
+            appIdFromBrowserStack = uploadToBrowserStack(
+                    authenticationUser + ":" + authenticationKey, appPath, apiUrl);
+        } else {
+            LOGGER.info("Skip uploading the apk to Device Farm");
+            appIdFromBrowserStack = getAppIdFromBrowserStack(
+                    authenticationUser + ":" + authenticationKey, appPath, apiUrl);
+        }
+        LOGGER.info("Using appId: " + appIdFromBrowserStack);
+        return appIdFromBrowserStack;
+    }
+
+    private static void startBrowserStackLocal(String authenticationKey, String id) {
+        bsLocal = new Local();
+
+        HashMap<String, String> bsLocalArgs = new HashMap<>();
+        bsLocalArgs.put("key", authenticationKey);
+        bsLocalArgs.put("v", "true");
+        bsLocalArgs.put("localIdentifier", id);
+        bsLocalArgs.put("forcelocal", "true");
+        bsLocalArgs.put("verbose", "3");
+        bsLocalArgs.put("force", "true");
+        try {
+            LOGGER.info("Is BrowserStackLocal running? - " + bsLocal.isRunning());
+            if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_PROXY)) {
+                String proxyUrl = Setup.getFromConfigs(Setup.PROXY_URL);
+                URL url = new URL(proxyUrl);
+                String host = url.getHost();
+                int port = url.getPort() == -1 ? url.getDefaultPort() : url.getPort();
+                LOGGER.info(String.format("Using proxyHost: %s", host));
+                LOGGER.info(String.format("Using proxyPort: %d", port));
+                bsLocalArgs.put("proxyHost", host);
+                bsLocalArgs.put("proxyPort", String.valueOf(port));
+            }
+
+            LOGGER.info(String.format("Start BrowserStackLocal using: %s",
+                    SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(bsLocalArgs))));
+            bsLocal.start(bsLocalArgs);
+            LOGGER.info(String.format("Is BrowserStackLocal started? - %s", bsLocal.isRunning()));
+        } catch(Exception e) {
+            throw new EnvironmentSetupException("Error starting BrowserStackLocal", e);
+        }
+    }
+
+    private static void updateBrowserStackDevicesInCapabilities(String authenticationUser,
+                                                                String authenticationKey,
+                                                                Map<String, Map> loadedCapabilityFile) {
+        String capabilityFile = Setup.getFromConfigs(Setup.CAPS);
+        String platformName = Setup.getPlatform().name();
+        ArrayList<Map<String, String>> listOfDevices = new ArrayList<>();
+
+        String platformVersion = String.valueOf(
+                loadedCapabilityFile.get(platformName).getOrDefault("platformVersion", ""));
+        String deviceName =
+                String.valueOf(loadedCapabilityFile.get(platformName).getOrDefault(DEVICE, ""));
+        loadedCapabilityFile.get(platformName).remove(DEVICE);
+
+        Map<String, String> filters = new LinkedHashMap<>();
+        filters.put("Platform", "mobile");// mobile-desktop
+        filters.put("Os", platformName); // ios-android-Windows-OS X
+        filters.put("Device", deviceName); // ios-android-Windows-OS X
+        filters.put("Os_version", platformVersion); // os versions
+
+        List<BrowserStackDevice> availableDevices = BrowserStackDeviceFilter.getFilteredDevices(
+                authenticationUser, authenticationKey, filters,
+                Setup.getFromConfigs(Setup.LOG_DIR));
+
+        int deviceCount = Math.min(availableDevices.size(), Setup.getIntegerValueFromConfigs(
+                Setup.MAX_NUMBER_OF_APPIUM_DRIVERS));
+        LOGGER.info(String.format("Adding '%d' available devices for executing on BrowserStack",
+                                  deviceCount));
+        for(int numDevices = 0; numDevices < deviceCount; numDevices++) {
+            Map<String, String> deviceInfo = new HashMap<>();
+            deviceInfo.put("platform", platformName.toLowerCase());
+            deviceInfo.put("os_version", availableDevices.get(numDevices).getOs_version());
+            deviceInfo.put("deviceName", availableDevices.get(numDevices).getDevice());
+            listOfDevices.add(deviceInfo);
+        }
+        // Save using helper in Runner package
+        // Note: DeviceSetup has package-private access to saveNewCapabilitiesFile, so we might need to expose it or call it if it's package-private.
+        // Wait, DeviceSetup is class DeviceSetup, so it is package-private. If we need to call it from another package, we can make it public or move it, or let's check its visibility.
+        // DeviceSetup has: static void saveNewCapabilitiesFile(...). Since it's in com.znsio.teswiz.runner, a class in com.znsio.teswiz.mobile.provider cannot access a package-private method.
+        // We will make saveNewCapabilitiesFile public in DeviceSetup!
+        com.znsio.teswiz.runner.DeviceSetup.saveNewCapabilitiesFile(platformName, capabilityFile, loadedCapabilityFile,
+                listOfDevices);
+    }
+
+    private static String uploadToBrowserStack(String authenticationKey, String appPath,
+                                                   String uploadUrl) {
+        LOGGER.info(String.format("uploadToBrowserStack for: '%s'%n",
+                SensitiveDataMasker.maskSecret(authenticationKey)));
+
+        String[] curlCommand = buildUploadAppCurlCommand(authenticationKey, appPath, uploadUrl,
+                Setup.getCurlProxyCommand());
+        CommandLineResponse uploadToBrowserStackResponse = CommandLineExecutor.execCommand(
+                curlCommand);
+
+        JsonObject uploadResponse;
+        try {
+            uploadResponse = JsonFile.convertToMap(uploadToBrowserStackResponse.getStdOut())
+                                     .getAsJsonObject();
+        } catch(IllegalStateException | JsonSyntaxException e) {
+            throw new InvalidTestDataException(String.format(
+                    "Failed to parse BrowserStack upload response for app: '%s'. ExitCode: %d, StdOut: '%s', StdErr: '%s'",
+                    appPath, uploadToBrowserStackResponse.getExitCode(),
+                    uploadToBrowserStackResponse.getStdOut(),
+                    uploadToBrowserStackResponse.getErrOut()), e);
+        }
+
+        JsonElement appUrl = uploadResponse.get("app_url");
+        if (null == appUrl || appUrl.isJsonNull()) {
+            JsonElement error = uploadResponse.get("error");
+            String errorMessage = null != error && !error.isJsonNull()
+                    ? error.getAsString()
+                    : String.format("Missing 'app_url' in response: %s", uploadResponse);
+            throw new InvalidTestDataException(String.format(
+                    "Failed to upload app '%s' to BrowserStack. %s", appPath, errorMessage));
+        }
+        String uploadedApkId = appUrl.getAsString();
+        LOGGER.info(String.format("App: '%s' uploaded to BrowserStack. Response: '%s'", appPath,
+                SensitiveDataMasker.mask(JsonPrettyPrinter.prettyPrint(uploadResponse))));
+        Setup.addToConfigs(Setup.APP_PATH, uploadedApkId);
+        return uploadedApkId;
+    }
+
+    public static String[] buildUploadAppCurlCommand(String authenticationKey,
+                                              String appPath,
+                                              String uploadUrl,
+                                              String curlProxyCommand) {
+        List<String> curlCommand = new ArrayList<>();
+        curlCommand.add("curl --insecure " + curlProxyCommand + " -u \"" + authenticationKey + "\"");
+        curlCommand.add("-X POST \"" + uploadUrl + "upload\"");
+        curlCommand.add("-F \"file=@" + appPath + "\"");
+        curlCommand.add("-F \"custom_id=" + getAppName(appPath) + "\"");
+        if (isIOSAppUpload(appPath)) {
+            curlCommand.add("-F \"ios_keychain_support=true\"");
+        }
+        return curlCommand.toArray(new String[0]);
+    }
+
+    private static boolean isIOSAppUpload(String appPath) {
+        if (null == appPath) {
+            return false;
+        }
+        String normalizedPath = appPath.toLowerCase();
+        return normalizedPath.endsWith(".ipa") || normalizedPath.endsWith(".zip");
+    }
+
+    private static String getAppIdFromBrowserStack(String authenticationKey, String appPath,
+                                                   String apiUrl) {
+        String appName = getAppName(appPath);
+        LOGGER.info(String.format("getAppIdFromBrowserStack for: '%s' and appName: '%s'%n",
+                SensitiveDataMasker.maskSecret(authenticationKey), appName));
+        String[] curlCommand = new String[]{
+                "curl --insecure " + Setup.getCurlProxyCommand() + " -u \"" + authenticationKey + "\"",
+                "-X GET \"" + apiUrl + "recent_apps/" + appName + "\""};
+        String uploadedAppIdFromBrowserStack;
+        try {
+            CommandLineResponse uploadToBrowserStackResponse = CommandLineExecutor.execCommand(
+                    curlCommand);
+            LOGGER.debug("uploadToBrowserStackResponse: {}",
+                    SensitiveDataMasker.mask(String.valueOf(uploadToBrowserStackResponse)));
+
+            JsonArray uploadResponse = JsonFile.convertToArray(
+                    uploadToBrowserStackResponse.getStdOut());
+            uploadedAppIdFromBrowserStack = uploadResponse.get(0).getAsJsonObject().get("app_url")
+                                                          .getAsString();
+        } catch(IllegalStateException | NullPointerException | JsonSyntaxException e) {
+            throw new InvalidTestDataException(String.format(
+                    "App with id: '%s' is not uploaded to BrowserStack. %nError: '%s'", appName,
+                    e.getMessage()));
+        }
+        LOGGER.info(String.format("getAppIdFromBrowserStack: AppId: '%s'%n",
+                                  uploadedAppIdFromBrowserStack));
+        return uploadedAppIdFromBrowserStack;
+    }
+
+    private static String getAppName(String appPath) {
+        return new File(appPath).getName();
+    }
+
+    public static void cleanUp() {
+        stopBrowserStackLocal();
+    }
+
+    private static void stopBrowserStackLocal() {
+        LOGGER.info(String.format("stopBrowserStackLocal: CLOUD_USE_LOCAL_TESTING=%s",
+                                  Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)));
+        if(Setup.getBooleanValueFromConfigs(Setup.CLOUD_USE_LOCAL_TESTING)) {
+            try {
+                LOGGER.info(
+                        String.format("Is BrowserStackLocal running? - %s", bsLocal.isRunning()));
+                if(bsLocal.isRunning()) {
+                    LOGGER.info("Stopping BrowserStackLocal");
+                    bsLocal.stop();
+                    LOGGER.info(String.format("Is BrowserStackLocal stopped? - %s",
+                                              !bsLocal.isRunning()));
+                }
+            } catch(Exception e) {
+                throw new EnvironmentSetupException("Exception in stopping BrowserStackLocal", e);
+            }
+        }
+    }
+}

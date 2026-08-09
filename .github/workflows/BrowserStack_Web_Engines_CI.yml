@@ -1,0 +1,131 @@
+name: BrowserStack_Web_Engines_CI
+
+on:
+  push:
+    branches: [main, pw-ts]
+  pull_request:
+    branches: [main]
+
+env:
+  APPLITOOLS_BATCH_NAME_SUFFIX: " - #${{ github.run_number }}"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      actions: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: "17"
+          distribution: temurin
+
+      - name: Install Appium and Playwright dependencies
+        run: |
+          node -v
+          npm ci
+          npx playwright install chromium
+          npm list
+
+      - name: Run TheApp Web tests with Selenium Java
+        id: theapp_web
+        uses: ./.github/actions/run-and-collect-tests
+        with:
+          id: theapp-web
+          display-name: "TheApp Web"
+          config-path: "./configs/theapp/theapp_browserstack_web_config.properties"
+          platform: "web"
+          tag: "@theapp2 and @invalidLogin1 and @browserstack"
+          artifact-name: "test-results-theapp-web"
+          is-visual: "true"
+          additional-env: "WEB_ENGINE=selenium APPLITOOLS_BATCH_NAME_SUFFIX=' - #${{ github.run_number }}'"
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
+
+      - name: Run TheApp Web tests with Playwright Java
+        id: theapp_web_playwright_java
+        uses: ./.github/actions/run-and-collect-tests
+        with:
+          id: theapp-web-playwright-java
+          display-name: "TheApp Web (Playwright Java)"
+          config-path: "./configs/theapp/theapp_browserstack_web_config.properties"
+          platform: "web"
+          tag: "@theapp2 and @invalidLogin1 and @browserstack and @playwright-phase1"
+          artifact-name: "test-results-theapp-web-playwright-java"
+          is-visual: "true"
+          additional-env: "WEB_ENGINE=playwright-java APPLITOOLS_BATCH_NAME_SUFFIX=' - #${{ github.run_number }}'"
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
+
+      - name: Run TheApp Web tests with Playwright TS
+        id: theapp_web_playwright_ts
+        uses: ./.github/actions/run-and-collect-tests
+        with:
+          id: theapp-web-playwright-ts
+          display-name: "TheApp Web (Playwright TS)"
+          config-path: "./configs/theapp/theapp_browserstack_web_config.properties"
+          platform: "web"
+          tag: "@theapp2 and @invalidLogin1 and @browserstack and @playwright-phase1"
+          artifact-name: "test-results-theapp-web-playwright-ts"
+          is-visual: "true"
+          additional-env: "WEB_ENGINE=playwright-ts APPLITOOLS_BATCH_NAME_SUFFIX=' - #${{ github.run_number }}'"
+          applitools_api_key: ${{ secrets.TESWIZ_APPLITOOLS_API_KEY }}
+          browserstack_username: ${{ secrets.BROWSERSTACK_CLOUD_USERNAME }}
+          browserstack_key: ${{ secrets.BROWSERSTACK_CLOUD_KEY }}
+
+      - name: Check for Failures and Add Summary
+        run: |
+          echo "Checking exit codes for BrowserStack web-engine test runs..."
+          fail=0
+          summary="### ❌ BrowserStack Web Engines CI Test Failures\n"
+
+          THEAPP_WEB_CODE="${{ steps.theapp_web.outputs.exit_code }}"
+          THEAPP_WEB_PLAYWRIGHT_JAVA_CODE="${{ steps.theapp_web_playwright_java.outputs.exit_code }}"
+          THEAPP_WEB_PLAYWRIGHT_TS_CODE="${{ steps.theapp_web_playwright_ts.outputs.exit_code }}"
+
+          if [ "$THEAPP_WEB_CODE" != "0" ]; then
+            summary="${summary}- TheApp Web (exit code: $THEAPP_WEB_CODE)\n"
+            fail=1
+          fi
+
+          if [ "$THEAPP_WEB_PLAYWRIGHT_JAVA_CODE" != "0" ]; then
+            summary="${summary}- TheApp Web (Playwright Java) (exit code: $THEAPP_WEB_PLAYWRIGHT_JAVA_CODE)\n"
+            fail=1
+          fi
+
+          if [ "$THEAPP_WEB_PLAYWRIGHT_TS_CODE" != "0" ]; then
+            summary="${summary}- TheApp Web (Playwright TS) (exit code: $THEAPP_WEB_PLAYWRIGHT_TS_CODE)\n"
+            fail=1
+          fi
+
+          if [ "$fail" -ne 0 ]; then
+            summary="${summary}\n**Commit:** ${{ github.sha }}\n"
+            summary="${summary}**Triggered by:** ${{ github.actor }}\n"
+            summary="${summary}**Workflow:** [View Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n"
+            echo -e "$summary" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          else
+            echo "✅ All BrowserStack web-engine suites passed"
+          fi
+
+      - name: Keep latest BrowserStack web-engine artifacts for this branch
+        if: always()
+        uses: ./.github/actions/cleanup-branch-artifacts
+        with:
+          workflow-file: BrowserStack_Web_Engines_CI.yml
+          branch-name: ${{ github.head_ref || github.ref_name }}
+          current-run-id: ${{ github.run_id }}

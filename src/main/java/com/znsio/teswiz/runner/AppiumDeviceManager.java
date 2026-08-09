@@ -1,21 +1,18 @@
 package com.znsio.teswiz.runner;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.znsio.teswiz.mobile.session.AppiumDeviceSessionRegistry;
+import com.znsio.teswiz.mobile.session.MobileDriverSession;
 
 /**
  * Device Manager - Handles all device related information's e.g UDID, Model, etc
  */
+@Deprecated(forRemoval = false)
 public class AppiumDeviceManager {
-    private static final Logger LOGGER = LogManager.getLogger(AppiumDeviceManager.class.getName());
-    private static final ThreadLocal<DriverSession> appiumDevice = new ThreadLocal<>();
-
-
     public static DriverSession getAppiumDevice() {
-        return appiumDevice.get();
+        return DriverSession.from(AppiumDeviceSessionRegistry.getCurrentDevice());
     }
 
     protected static void setDevice(DriverSession device) {
-        appiumDevice.set(device);
+        AppiumDeviceSessionRegistry.setCurrentDevice(device);
     }
 }
