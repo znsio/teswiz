@@ -55,12 +55,12 @@ echo "$RELEASE_NOTES" > "$TEMP_NOTES"
 
 # 5. Show summary and ask for user confirmation
 echo -e "\n========================================"
-echo "Proposed Release Version: v$VERSION"
+echo "Proposed Release Version: $VERSION"
 echo "Run unit tests before release: $RUN_UNIT_TESTS"
 echo -e "Proposed Release Notes:\n$RELEASE_NOTES"
 echo "========================================\n"
 
-read -p "Do you want to proceed with building and publishing release v$VERSION? (y/n): " CONFIRM
+read -p "Do you want to proceed with building and publishing release $VERSION? (y/n): " CONFIRM
 if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
   echo "Release process aborted."
   rm -f "$TEMP_NOTES"
@@ -90,7 +90,7 @@ fi
 # Update Changelog.MD
 if [ -f Changelog.MD ]; then
   TEMP_CHANGELOG=$(mktemp)
-  echo -e "## v$VERSION\n$RELEASE_NOTES\n" > "$TEMP_CHANGELOG"
+  echo -e "## $VERSION\n$RELEASE_NOTES\n" > "$TEMP_CHANGELOG"
   cat Changelog.MD >> "$TEMP_CHANGELOG"
   mv "$TEMP_CHANGELOG" Changelog.MD
 fi
@@ -114,14 +114,14 @@ fi
 
 echo "📦 Committing, tagging, and pushing changes to GitHub..."
 git add build.gradle package.json package-lock.json README.md Changelog.MD
-git commit -m "Release v$VERSION"
+git commit -m "Release $VERSION"
 git push origin main
-git tag "v$VERSION"
-git push origin "v$VERSION"
+git tag "$VERSION"
+git push origin "$VERSION"
 
-echo "🚀 Creating GitHub Release v$VERSION and uploading artifacts..."
-gh release create "v$VERSION" "$JAR_FILE" "$SOURCES_JAR_FILE" \
-  --title "v$VERSION" \
+echo "🚀 Creating GitHub Release $VERSION and uploading artifacts..."
+gh release create "$VERSION" "$JAR_FILE" "$SOURCES_JAR_FILE" \
+  --title "$VERSION" \
   --notes-file "$TEMP_NOTES"
 
 # 6. Prune artifacts of older releases (keep the last 3)
@@ -140,9 +140,9 @@ gh release list --limit 100 --json tagName --jq '.[].tagName' | while read -r ta
 done
 
 # 7. Trigger Jitpack build
-echo "🔗 Triggering Jitpack build for com.github.anandbagmar/teswiz v$VERSION..."
-curl -s -o /dev/null -w "%{http_code}" "https://jitpack.io/api/builds/com.github.anandbagmar/teswiz/v$VERSION" || true
-echo -e "\n✅ Release v$VERSION successfully published!"
-echo "You can monitor the Jitpack build at: https://jitpack.io/#com.github.anandbagmar/teswiz/v$VERSION"
+echo "🔗 Triggering Jitpack build for com.github.anandbagmar/teswiz $VERSION..."
+curl -s -o /dev/null -w "%{http_code}" "https://jitpack.io/api/builds/com.github.anandbagmar/teswiz/$VERSION" || true
+echo -e "\n✅ Release $VERSION successfully published!"
+echo "You can monitor the Jitpack build at: https://jitpack.io/#com.github.anandbagmar/teswiz/$VERSION"
 
 rm -f "$TEMP_NOTES"
