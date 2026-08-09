@@ -2,6 +2,40 @@
 
 set -eo pipefail
 
+RUN_UNIT_TESTS=true
+
+print_usage() {
+  cat <<'EOF'
+Usage: ./publishRelease.sh [--skip-unit-tests] [--help]
+
+Options:
+  --skip-unit-tests  Build and publish the release without running Gradle tests
+  --help             Show this help message
+EOF
+}
+
+parse_args() {
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --skip-unit-tests)
+        RUN_UNIT_TESTS=false
+        ;;
+      --help)
+        print_usage
+        exit 0
+        ;;
+      *)
+        echo "❌ Error: Unknown option '$1'"
+        print_usage
+        exit 1
+        ;;
+    esac
+    shift
+  done
+}
+
+parse_args "$@"
+
 # Safety check for uncommitted changes
 if [ -n "$(git status --porcelain)" ]; then
   echo "⚠️ Warning: You have uncommitted changes. Please commit or stash them before releasing."
@@ -49,6 +83,7 @@ echo "$RELEASE_NOTES" > "$TEMP_NOTES"
 # 5. Show summary and ask for user confirmation
 echo -e "\n========================================"
 echo "Proposed Release Version: v$VERSION"
+echo "Run unit tests before release: $RUN_UNIT_TESTS"
 echo -e "Proposed Release Notes:\n$RELEASE_NOTES"
 echo "========================================\n"
 
@@ -87,8 +122,13 @@ if [ -f Changelog.MD ]; then
   mv "$TEMP_CHANGELOG" Changelog.MD
 fi
 
-echo "⚙️ Building project and running tests..."
-./gradlew clean build
+if [ "$RUN_UNIT_TESTS" = true ]; then
+  echo "⚙️ Building project and running tests..."
+  ./gradlew clean build
+else
+  echo "⚙️ Building project without running tests..."
+  ./gradlew clean build -x test
+fi
 
 # Verify build outputs exist
 JAR_FILE="build/libs/teswiz-$VERSION.jar"
