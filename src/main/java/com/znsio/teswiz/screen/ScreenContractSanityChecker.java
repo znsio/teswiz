@@ -133,7 +133,11 @@ public final class ScreenContractSanityChecker {
         try {
             implementationClass.getConstructor(Driver.class, Visual.class);
         } catch (NoSuchMethodException exception) {
-            violations.add("missing public constructor (Driver, Visual)");
+            try {
+                implementationClass.getConstructor(com.znsio.teswiz.web.playwright.screen.PlaywrightJavaScreenContext.class);
+            } catch (NoSuchMethodException e) {
+                violations.add("missing public constructor (Driver, Visual) or (PlaywrightJavaScreenContext)");
+            }
         }
 
         for (Method contractMethod : ScreenContractReflection.publicAbstractMethods(contractClass)) {

@@ -2,33 +2,29 @@ package com.znsio.teswiz.screen.web.playwrightjava.jiomeet;
 
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
-import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Runner;
 import com.znsio.teswiz.runner.Visual;
 import com.znsio.teswiz.screen.jiomeet.InAMeetingScreen;
+import com.znsio.teswiz.web.playwright.screen.PlaywrightJavaScreenContext;
 import org.apache.commons.lang3.NotImplementedException;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 
 public class InAMeetingScreenPlaywrightJava extends InAMeetingScreen {
     private static final String SCREEN_NAME = InAMeetingScreenPlaywrightJava.class.getSimpleName();
 
-    private static final By MEETING_INFO_ICON = By.xpath("//div[@class='icon pointer']");
-    private static final By MIC_LABEL = By.xpath("//div[contains(@class, 'mic-section')]//img");
-    private static final By CURRENT_MEETING_NUMBER = By.xpath("//div[text()='Meeting ID']/following-sibling::div");
-    private static final By CURRENT_MEETING_PASSWORD = By.xpath("//div[text()='Password']/following-sibling::div");
-    private static final By MICROPHONE_BUTTON = By.xpath("//div[@id = 'toggleMicButton']//div[contains(@class, 'img-holder')]");
+    private static final String MEETING_INFO_ICON = "div.icon.pointer";
+    private static final String MIC_LABEL = "div[class*='mic-section'] img";
+    private static final String CURRENT_MEETING_NUMBER = "xpath=//div[text()='Meeting ID']/following-sibling::div";
+    private static final String CURRENT_MEETING_PASSWORD = "xpath=//div[text()='Password']/following-sibling::div";
+    private static final String MICROPHONE_BUTTON = "#toggleMicButton div[class*='img-holder']";
 
-    private final Driver driver;
+    private final PlaywrightJavaScreenContext context;
     private final Visual visually;
-    private final TestExecutionContext context;
+    private final TestExecutionContext testExecutionContext;
 
-    public InAMeetingScreenPlaywrightJava(Driver driver, Visual visually) {
-        this.driver = driver;
-        this.visually = visually;
-        this.context = Runner.getTestExecutionContext(Thread.currentThread().getId());
+    public InAMeetingScreenPlaywrightJava(PlaywrightJavaScreenContext context) {
+        this.context = context;
+        this.visually = context.visual();
+        this.testExecutionContext = Runner.getTestExecutionContext(Thread.currentThread().getId());
     }
 
     @Override
@@ -40,21 +36,21 @@ public class InAMeetingScreenPlaywrightJava extends InAMeetingScreen {
     @Override
     public String getMeetingId() {
         String meetingId = readMeetingDetail(CURRENT_MEETING_NUMBER);
-        context.addTestState(SAMPLE_TEST_CONTEXT.MEETING_ID, meetingId);
+        testExecutionContext.addTestState(SAMPLE_TEST_CONTEXT.MEETING_ID, meetingId);
         return meetingId;
     }
 
     @Override
     public String getMeetingPassword() {
         String meetingPassword = readMeetingDetail(CURRENT_MEETING_PASSWORD);
-        context.addTestState(SAMPLE_TEST_CONTEXT.MEETING_PASSWORD, meetingPassword);
+        testExecutionContext.addTestState(SAMPLE_TEST_CONTEXT.MEETING_PASSWORD, meetingPassword);
         return meetingPassword;
     }
 
     @Override
     public InAMeetingScreen unmute() {
         revealMeetingControls();
-        driver.waitTillElementIsPresent(MICROPHONE_BUTTON).click();
+        context.page().locator(MICROPHONE_BUTTON).click();
         visually.checkWindow(SCREEN_NAME, "Mic is unmuted");
         return this;
     }
@@ -62,7 +58,7 @@ public class InAMeetingScreenPlaywrightJava extends InAMeetingScreen {
     @Override
     public InAMeetingScreen mute() {
         revealMeetingControls();
-        driver.waitTillElementIsPresent(MICROPHONE_BUTTON).click();
+        context.page().locator(MICROPHONE_BUTTON).click();
         visually.checkWindow(SCREEN_NAME, "Mic is muted");
         return this;
     }
@@ -70,7 +66,11 @@ public class InAMeetingScreenPlaywrightJava extends InAMeetingScreen {
     @Override
     public String getMicLabelText() {
         revealMeetingControls();
-        String micLabelText = driver.waitTillElementIsPresent(MIC_LABEL).getText().trim();
+        String micLabelText = context.page().locator(MIC_LABEL).getAttribute("src");
+        if (null == micLabelText) {
+            micLabelText = "";
+        }
+        micLabelText = micLabelText.trim();
         visually.takeScreenshot(SCREEN_NAME, "in a meeting after micLabel text");
         return micLabelText;
     }
@@ -80,22 +80,16 @@ public class InAMeetingScreenPlaywrightJava extends InAMeetingScreen {
         throw new NotImplementedException("Jio Meet Device Notification of Meeting is not available for Web");
     }
 
-    private String readMeetingDetail(By locator) {
-        WebElement infoIcon = driver.waitTillElementIsPresent(MEETING_INFO_ICON, 20);
-        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver.getInnerDriver();
-        javascriptExecutor.executeScript("arguments[0].click()", infoIcon);
+    private String readMeetingDetail(String selector) {
+        context.page().locator(MEETING_INFO_ICON).click();
         visually.takeScreenshot(SCREEN_NAME, "getCurrentMeetingDetails");
-        String detail = (String) javascriptExecutor.executeScript("return arguments[0].innerText",
-                driver.waitTillElementIsPresent(locator));
-        javascriptExecutor.executeScript("arguments[0].click()", infoIcon);
+        String detail = context.page().locator(selector).innerText();
+        context.page().locator(MEETING_INFO_ICON).click();
         visually.takeScreenshot(SCREEN_NAME, "After closing meeting info icon");
         return detail.replaceAll("\\s", "");
     }
 
     private void revealMeetingControls() {
-        new Actions(driver.getInnerDriver())
-                .moveToElement(driver.waitForClickabilityOf(MEETING_INFO_ICON))
-                .moveByOffset(25, 25)
-                .perform();
+        context.page().locator(MEETING_INFO_ICON).hover();
     }
 }

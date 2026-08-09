@@ -22,7 +22,7 @@ class ScreenContractSanityCheckerTest {
         List<String> violations = ScreenContractSanityChecker.validateImplementation(
                 ExampleContract.class, MissingConstructorImplementation.class);
 
-        assertThat(violations).contains("missing public constructor (Driver, Visual)");
+        assertThat(violations).contains("missing public constructor (Driver, Visual) or (PlaywrightJavaScreenContext)");
     }
 
     @Test
@@ -55,14 +55,14 @@ class ScreenContractSanityCheckerTest {
                         "com.znsio.teswiz.screen.theapp.LoginScreen",
                         List.of("com.znsio.teswiz.screen.web.theapp.LoginScreenWeb"),
                         List.of(
-                                "missing public constructor (Driver, Visual)",
+                                "missing public constructor (Driver, Visual) or (PlaywrightJavaScreenContext)",
                                 "missing playwright-ts module: src/test/resources/playwright/screens/theapp/login.screen.ts",
                                 "src/test/resources/playwright/screens/theapp/login.screen.ts: missing exported function: dismissAlert()"))));
 
         assertThat(report.toDisplayString())
                 .contains("Java implementations: com.znsio.teswiz.screen.web.theapp.LoginScreenWeb")
                 .contains("Java issues:")
-                .contains("missing public constructor (Driver, Visual)")
+                .contains("missing public constructor (Driver, Visual) or (PlaywrightJavaScreenContext)")
                 .contains("Playwright-TS module issues:")
                 .contains("missing playwright-ts module: src/test/resources/playwright/screens/theapp/login.screen.ts")
                 .contains("src/test/resources/playwright/screens/theapp/login.screen.ts: missing exported function: dismissAlert()");
@@ -171,7 +171,7 @@ class ScreenContractSanityCheckerTest {
                         "com.znsio.teswiz.screen.theapp.LoginScreen",
                         List.of("com.znsio.teswiz.screen.web.theapp.LoginScreenWeb"),
                         List.of(
-                                "missing public constructor (Driver, Visual)",
+                                "missing public constructor (Driver, Visual) or (PlaywrightJavaScreenContext)",
                                 "missing target coverage: android -> com.znsio.teswiz.screen.android.theapp.LoginScreenAndroid",
                                 "missing playwright-ts module: src/test/resources/playwright/screens/theapp/login.screen.ts"))));
 

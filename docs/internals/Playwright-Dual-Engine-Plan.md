@@ -15,27 +15,27 @@ This checklist tracks the current implementation direction for native Playwright
 
 ### Milestone A: Correct the user-facing model
 
-- [ ] Update docs so `playwright-java` is described as a native Playwright Java authoring model
-- [ ] Remove guidance that positions Selenium `By` locators as the Playwright-Java pattern
-- [ ] Keep architecture docs explicit that Selenium and Playwright engines share contracts, not authoring APIs
+- [x] Update docs so `playwright-java` is described as a native Playwright Java authoring model
+- [x] Remove guidance that positions Selenium `By` locators as the Playwright-Java pattern
+- [x] Keep architecture docs explicit that Selenium and Playwright engines share contracts, not authoring APIs
 
 ### Milestone B: Add Playwright-Java native screen context
 
-- [ ] Provide a framework-owned `PlaywrightJavaScreenContext`
-- [ ] Allow screen instantiation to inject native Playwright Java context without changing BL contracts
-- [ ] Keep legacy Selenium screen instantiation unchanged
+- [x] Provide a framework-owned `PlaywrightJavaScreenContext`
+- [x] Allow screen instantiation to inject native Playwright Java context without changing BL contracts
+- [x] Keep legacy Selenium screen instantiation unchanged
 
 ### Milestone C: Convert first reference flow
 
-- [ ] Convert TheApp Playwright-Java launch/login flow to native Playwright Java `Page` / `Locator`
-- [ ] Add focused tests proving native context instantiation works
-- [ ] Use this flow as the reference pattern for future Playwright-Java screens
+- [x] Convert TheApp Playwright-Java launch/login flow to native Playwright Java `Page` / `Locator`
+- [x] Add focused tests proving native context instantiation works
+- [x] Use this flow as the reference pattern for future Playwright-Java screens
 
 ### Milestone D: Expand native Playwright-Java coverage
 
-- [ ] Convert remaining Playwright-Java example and sample screens away from Selenium-style `By`
-- [ ] Add guardrails so docs and examples do not drift back to compatibility-layer authoring
-- [ ] Decide when to retire the remaining Playwright-Java compatibility path entirely
+- [x] Convert remaining Playwright-Java example and sample screens away from Selenium-style `By`
+- [x] Add guardrails so docs and examples do not drift back to compatibility-layer authoring
+- [x] Decide when to retire the remaining Playwright-Java compatibility path entirely
 
 ## Current State
 
