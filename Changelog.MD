@@ -1,3 +1,24 @@
+## v1.0.27
+- refactor: prompt for unit-test execution in publishRelease
+- docs: remove outdated repository notice from README
+- feat: add skip-unit-tests flag to publishRelease script
+- Update CI workflows to restrict push events to the main branch only
+- 🔄 Update README with latest commit ID - 83d51a9
+- Add first-class Playwright Java and Playwright TS web engines to teswiz (#2)
+- 🔄 Update README with latest commit ID - 407d445
+- Update environment variable for Applitools API key in build.gradle
+- 🔄 Update README with latest commit ID - a237f60
+- Create codeql.yml
+- 🔄 Update README with latest commit ID - db402e1
+- Fix GitHub Action permission issues
+- Add publishRelease.sh automation script
+- Point GitHub workflows, badges, and build configs to anandbagmar fork
+- Add temporarily moved notice to README.md
+- fix(deps): patch @appium/support, ajv, @babel/core, diff transitive vulnerabilities
+- Remove JioMeet-Lite binary path from browser configuration for Electron apps
+- fix(deps): reduce vulnerability backlog in teswiz
+- fix(deps): reduce high and critical npm vulnerabilities in teswiz
+
 # Changelog
 
 ## v1.0.26
