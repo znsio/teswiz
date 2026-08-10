@@ -1,3 +1,8 @@
+## 1.0.29
+- 🔄 Update README with latest commit ID - 238ffe7
+- Fix screen resolver to support consumer-defined package namespaces Update Playwright docs to reflect configurable screen-contract package convention
+- 🔄 Update README with latest commit ID - c5cf675
+
 ## 1.0.28
 - 🔄 Update README with latest commit ID - c07f8f3
 - Align Playwright version and fix BrowserStack capabilities
