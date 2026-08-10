@@ -558,8 +558,8 @@ public class SeleniumDriverManager {
     private static void quitWebDriver(WebDriver webDriver) {
         try {
             webDriver.quit();
-        } catch (NoSuchSessionException e) {
-            LOGGER.debug("Exception while quiting WebDriver", e);
+        } catch (WebDriverException e) {
+            LOGGER.debug("Exception while quitting WebDriver", e);
         }
     }
 

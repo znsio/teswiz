@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.NoSuchSessionException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -305,7 +306,11 @@ public class AppiumDriverManager {
                 LOGGER.info(String.format("ATD will quit the driver for persona: '%s'", userPersona));
             } else {
                 LOGGER.info(String.format("Quit driver for persona: '%s'", userPersona));
-                appiumDriver.quit();
+                try {
+                    appiumDriver.quit();
+                } catch (WebDriverException e) {
+                    LOGGER.debug("Exception while quitting AppiumDriver", e);
+                }
             }
             logMessage = String.format("App: '%s' terminated", appPackageName);
             LOGGER.info(logMessage);
@@ -347,7 +352,7 @@ public class AppiumDriverManager {
                     applicationState);
             LOGGER.info(logMessage);
             stopAppiumDriver();
-        } catch (NoSuchSessionException e) {
+        } catch (WebDriverException e) {
             logMessage = e.getMessage();
             LOGGER.info(logMessage);
         }
@@ -588,7 +593,11 @@ public class AppiumDriverManager {
         if (getDriver() != null && getDriver().getSessionId() != null) {
             LOGGER.info("Session Deleting ---- " + getDriver().getSessionId() + "---"
                     + getDriver().getCapabilities().getCapability("udid"));
-            getDriver().quit();
+            try {
+                getDriver().quit();
+            } catch (WebDriverException e) {
+                LOGGER.debug("Exception while quitting AppiumDriver", e);
+            }
         }
     }
 }
