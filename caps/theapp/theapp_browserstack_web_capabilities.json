@@ -20,7 +20,6 @@
       "os": "Windows",
       "osVersion": "11",
       "browserVersion": "latest",
-      "playwrightVersion": "1.61.1",
       "debug": "true",
       "networkLogs": "true"
     }
