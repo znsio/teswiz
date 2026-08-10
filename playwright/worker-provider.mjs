@@ -1,3 +1,7 @@
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const playwrightVersion = require("playwright/package.json").version;
+
 function normalizeRequestedBrowserName(browserName) {
   switch ((browserName || "chromium").toLowerCase()) {
     case "chrome":
@@ -87,6 +91,9 @@ function buildBrowserStackCapabilities(browserName, browserConfig, provider, use
     const mappedKey = mapBrowserStackCapabilityKey(key);
     caps[mappedKey] = value;
   }
+
+  caps["browserstack.playwrightVersion"] = browserstackOptions.playwrightVersion || playwrightVersion;
+  caps["client.playwrightVersion"] = playwrightVersion;
 
   if (browserConfig.headless !== undefined) {
     caps["browserstack.playwrightLogs"] = browserstackOptions.playwrightLogs ?? "true";
