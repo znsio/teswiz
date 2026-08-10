@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import com.znsio.teswiz.screen.ScreenPackageConvention;
+
 public class PlaywrightTsScreenModuleResolver {
-    private static final String SCREEN_ROOT_PACKAGE = "com.znsio.teswiz.screen";
     private final List<Path> screenRootDirectories;
 
     public PlaywrightTsScreenModuleResolver() {
@@ -35,9 +36,7 @@ public class PlaywrightTsScreenModuleResolver {
 
     String modulePathFor(Class<?> screenContract) {
         String packageName = screenContract.getPackageName();
-        String domain = packageName.equals(SCREEN_ROOT_PACKAGE)
-                ? ""
-                : packageName.substring((SCREEN_ROOT_PACKAGE + ".").length()).replace('.', '/');
+        String domain = ScreenPackageConvention.domainOf(packageName).replace('.', '/');
         String fileName = toKebabCase(trimScreenSuffix(screenContract.getSimpleName())) + ".screen.ts";
         return domain.isBlank() ? fileName : domain + "/" + fileName;
     }

@@ -261,7 +261,10 @@ class ScreenContractCoverageReporterTest {
 
     @Test
     void shouldDiscoverCoverageFromSourceTree() throws IOException {
-        Path sourceRoot = Files.createTempDirectory("screen-coverage");
+        // Nested under the real com.znsio.teswiz.screen package path so the class names
+        // ScreenClassCatalog reconstructs from these files resolve to real, loadable classes.
+        Path sourceRoot = Files.createTempDirectory("screen-coverage")
+                .resolve("src/test/java/com/znsio/teswiz/screen");
         Files.createDirectories(sourceRoot.resolve("theapp"));
         Files.createDirectories(sourceRoot.resolve("android/theapp"));
         Files.createDirectories(sourceRoot.resolve("web/theapp"));

@@ -11,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 final class PlaywrightTsScreenModuleSupport {
-    private static final String SCREEN_ROOT_PACKAGE = "com.znsio.teswiz.screen";
     private static final Pattern EXPORTED_FUNCTION_PATTERN = Pattern.compile(
             "export\\s+(?:async\\s+)?function\\s+([A-Za-z0-9_]+)\\s*\\(");
 
@@ -69,9 +68,7 @@ final class PlaywrightTsScreenModuleSupport {
 
     private String deriveModulePath(Class<?> contractClass) {
         String packageName = contractClass.getPackageName();
-        String domain = packageName.equals(SCREEN_ROOT_PACKAGE)
-                ? ""
-                : packageName.substring((SCREEN_ROOT_PACKAGE + ".").length()).replace('.', '/');
+        String domain = ScreenPackageConvention.domainOf(packageName).replace('.', '/');
         String fileName = toKebabCase(trimScreenSuffix(contractClass.getSimpleName())) + ".screen.ts";
         return domain.isBlank() ? fileName : domain + "/" + fileName;
     }

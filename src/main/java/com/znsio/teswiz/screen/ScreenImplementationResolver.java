@@ -10,7 +10,6 @@ import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.web.WebEngine;
 
 public final class ScreenImplementationResolver {
-    private static final String ROOT_PACKAGE = "com.znsio.teswiz.screen";
     private static final Map<ScreenKey, Class<?>> OVERRIDES = Map.of();
 
     private ScreenImplementationResolver() {
@@ -46,16 +45,15 @@ public final class ScreenImplementationResolver {
     private static <T> String resolveByConvention(Class<T> screenContract, Platform platform, WebEngine webEngine) {
         String contractPackage = screenContract.getPackageName();
         String screenName = screenContract.getSimpleName();
-        String domain = contractPackage.equals(ROOT_PACKAGE)
-                ? ""
-                : contractPackage.substring((ROOT_PACKAGE + ".").length());
+        String rootPackage = ScreenPackageConvention.rootPackageOf(contractPackage);
+        String domain = ScreenPackageConvention.domainOf(contractPackage);
 
         String implementationPackage = switch (platform) {
-            case android -> joinPackage(ROOT_PACKAGE, "android", domain);
-            case iOS -> joinPackage(ROOT_PACKAGE, "ios", domain);
-            case windows -> joinPackage(ROOT_PACKAGE, "windows", domain);
-            case pdf -> joinPackage(ROOT_PACKAGE, "pdf", domain);
-            case web, electron -> joinPackage(ROOT_PACKAGE, webPackageSegment(webEngine), domain);
+            case android -> joinPackage(rootPackage, "android", domain);
+            case iOS -> joinPackage(rootPackage, "ios", domain);
+            case windows -> joinPackage(rootPackage, "windows", domain);
+            case pdf -> joinPackage(rootPackage, "pdf", domain);
+            case web, electron -> joinPackage(rootPackage, webPackageSegment(webEngine), domain);
             default -> throw new NotImplementedException(
                     "Unsupported screen platform for " + screenName + ": " + platform);
         };

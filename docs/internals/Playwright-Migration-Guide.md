@@ -19,10 +19,18 @@ If not specified, Teswiz defaults to `selenium`.
 
 ## 2. Defining the Screen Contract
 
-All platform and engine implementations must implement a single shared Java contract. This contract lives under `src/test/java/com/znsio/teswiz/screen/<app_name>/`:
+All platform and engine implementations must implement a single shared Java contract. `ScreenRegistry`
+resolves implementation classes (and Playwright-TS modules) by convention from the **contract class's own
+package** — it does not require that package to be `com.znsio.teswiz.screen`. The only rule is that the
+contract's package must contain a segment literally named `screen`; everything before that segment is your
+project's own namespace, and everything after it (if anything) is treated as the "domain" (e.g. `ajio`) that
+gets reused for every platform/engine implementation package.
+
+For example, in your own project the contract might live under
+`src/test/java/com/acme/tests/screen/ajio/`:
 
 ```java
-package com.znsio.teswiz.screen.ajio;
+package com.acme.tests.screen.ajio;
 
 public abstract class HomeScreen {
     public static HomeScreen get() {
@@ -33,19 +41,23 @@ public abstract class HomeScreen {
 }
 ```
 
+(`com.znsio.teswiz.screen.ScreenRegistry` itself is always the framework class from the teswiz JAR — only the
+*contract's* package is up to you.)
+
 ---
 
 ## 3. Implementing for Selenium Web
 
-The Selenium Web implementation resides under `src/test/java/com/znsio/teswiz/screen/web/<app_name>/`. The class name must append `Web` to the contract class name:
+The Selenium Web implementation resides under `<contract-root-package>/web/<app_name>/` — i.e. sibling to the
+contract's own package, under a `web` segment. The class name must append `Web` to the contract class name:
 
 ```java
-package com.znsio.teswiz.screen.web.ajio;
+package com.acme.tests.screen.web.ajio;
 
 import com.znsio.teswiz.runner.Driver;
 import com.znsio.teswiz.runner.Visual;
-import com.znsio.teswiz.screen.ajio.HomeScreen;
-import com.znsio.teswiz.screen.ajio.SearchScreen;
+import com.acme.tests.screen.ajio.HomeScreen;
+import com.acme.tests.screen.ajio.SearchScreen;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 
@@ -72,14 +84,15 @@ public class HomeScreenWeb extends HomeScreen {
 
 ## 4. Implementing for Playwright-Java Web
 
-The Playwright-Java Web implementation resides under `src/test/java/com/znsio/teswiz/screen/web/playwrightjava/<app_name>/`. The class name must append `PlaywrightJava` to the contract class name:
+The Playwright-Java Web implementation resides under `<contract-root-package>/web/playwrightjava/<app_name>/`.
+The class name must append `PlaywrightJava` to the contract class name:
 
 ```java
-package com.znsio.teswiz.screen.web.playwrightjava.ajio;
+package com.acme.tests.screen.web.playwrightjava.ajio;
 
 import com.microsoft.playwright.Locator;
-import com.znsio.teswiz.screen.ajio.HomeScreen;
-import com.znsio.teswiz.screen.ajio.SearchScreen;
+import com.acme.tests.screen.ajio.HomeScreen;
+import com.acme.tests.screen.ajio.SearchScreen;
 import com.znsio.teswiz.web.playwright.screen.PlaywrightJavaScreenContext;
 
 public class HomeScreenPlaywrightJava extends HomeScreen {
@@ -110,7 +123,9 @@ Important:
 
 When using `playwright-ts`, **you do not write any Java implementation class**. The framework uses ByteBuddy at runtime to dynamically subclass your Java contract (`HomeScreen.java`) and intercept all calls, proxying them over IPC to a node worker running your TypeScript screen module.
 
-The TypeScript module resides under `src/test/resources/playwright/screens/<app_name>/` and the file name must be `kebab-case.screen.ts` (matching the `CamelCase` contract name, e.g. `home.screen.ts`):
+The TypeScript module resides under `src/test/resources/playwright/screens/<app_name>/` (this path is fixed,
+regardless of your contract's Java package) and the file name must be `kebab-case.screen.ts` (matching the
+`CamelCase` contract name, e.g. `home.screen.ts`):
 
 ```typescript
 import type { ScreenContext } from "../screen-context.ts";
@@ -129,10 +144,18 @@ export async function searchForTheProduct(screen: ScreenContext, productName: st
 
 ## 6. Verifying Screen Parity and Compliance
 
-Teswiz provides a built-in Gradle task to verify that all screen contracts have matching compliant implementations for all supported platforms and engines:
+Teswiz's own build defines a `verifyScreenContracts` Gradle task (see `build.gradle`) that checks teswiz's own
+screen contracts under `src/test/java/com/znsio/teswiz/screen` for missing classes, missing TypeScript modules,
+or method mismatches. It is not a task the teswiz JAR publishes for consumers to use automatically.
 
-```bash
-./gradlew verifyScreenContracts
+To get the same check in your own project, register an equivalent task pointing at your own screen source root
+(`com.znsio.teswiz.screen.ScreenContractSanityChecker` takes the source root as its first argument):
+
+```groovy
+tasks.register('verifyScreenContracts', JavaExec) {
+    group = "verification"
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = "com.znsio.teswiz.screen.ScreenContractSanityChecker"
+    args "src/test/java/com/acme/tests/screen"
+}
 ```
-
-This task will automatically check for any missing classes, missing TypeScript modules, or method mismatches, reporting compliance errors and generating a detailed parity report.

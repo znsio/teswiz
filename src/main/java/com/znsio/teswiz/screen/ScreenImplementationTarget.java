@@ -11,8 +11,6 @@ enum ScreenImplementationTarget {
     WEB_PLAYWRIGHT_JAVA("web-playwright-java", "web.playwrightjava", "PlaywrightJava"),
     WEB_PLAYWRIGHT_TS("web-playwright-ts", null, null);
 
-    private static final String ROOT_PACKAGE = "com.znsio.teswiz.screen";
-
     private final String displayName;
     private final String packageSegment;
     private final String classSuffix;
@@ -31,8 +29,10 @@ enum ScreenImplementationTarget {
         if (isPlaywrightTsModuleTarget()) {
             throw new IllegalStateException("playwright-ts uses TypeScript screen modules, not Java implementation classes");
         }
-        String domain = domainOf(contractClassName);
-        String implementationPackage = joinPackage(packageSegment, domain);
+        String contractPackage = packageNameOf(contractClassName);
+        String rootPackage = ScreenPackageConvention.rootPackageOf(contractPackage);
+        String domain = ScreenPackageConvention.domainOf(contractPackage);
+        String implementationPackage = joinPackage(rootPackage, packageSegment, domain);
         return implementationPackage + "." + simpleNameOf(contractClassName) + classSuffix;
     }
 
@@ -56,17 +56,13 @@ enum ScreenImplementationTarget {
         return className.substring(className.lastIndexOf('.') + 1);
     }
 
-    private static String domainOf(String contractClassName) {
-        String contractPackage = contractClassName.substring(0, contractClassName.lastIndexOf('.'));
-        if (contractPackage.equals(ROOT_PACKAGE)) {
-            return "";
-        }
-        return contractPackage.substring((ROOT_PACKAGE + ".").length());
+    private static String packageNameOf(String className) {
+        return className.substring(0, className.lastIndexOf('.'));
     }
 
-    private static String joinPackage(String packageSegment, String domain) {
+    private static String joinPackage(String rootPackage, String packageSegment, String domain) {
         return domain.isBlank()
-                ? ROOT_PACKAGE + "." + packageSegment
-                : ROOT_PACKAGE + "." + packageSegment + "." + domain;
+                ? rootPackage + "." + packageSegment
+                : rootPackage + "." + packageSegment + "." + domain;
     }
 }

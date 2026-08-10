@@ -3,6 +3,7 @@ package com.znsio.teswiz.screen;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,7 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class ScreenClassCatalog {
-    private static final String ROOT_PACKAGE = "com.znsio.teswiz.screen";
     private static final Set<String> IMPLEMENTATION_ROOTS = Set.of(
             "android",
             "ios",
@@ -19,9 +19,24 @@ final class ScreenClassCatalog {
             "pdf");
 
     private final Path sourceRoot;
+    private final String rootPackage;
 
     ScreenClassCatalog(Path sourceRoot) {
         this.sourceRoot = sourceRoot;
+        this.rootPackage = derivePackageFromPath(sourceRoot);
+    }
+
+    private static String derivePackageFromPath(Path sourceRoot) {
+        List<String> segments = new ArrayList<>();
+        for (Path segment : sourceRoot) {
+            segments.add(segment.toString());
+        }
+        int javaIndex = segments.lastIndexOf("java");
+        boolean hasStandardLayout = javaIndex != -1 && javaIndex < segments.size() - 1;
+        List<String> packageSegments = hasStandardLayout
+                ? segments.subList(javaIndex + 1, segments.size())
+                : segments;
+        return String.join(".", packageSegments);
     }
 
     List<String> discoverContractClassNames() throws IOException {
@@ -55,7 +70,7 @@ final class ScreenClassCatalog {
         Path relativePath = sourceRoot.relativize(path);
         String suffix = relativePath.toString().replace('/', '.').replace('\\', '.');
         suffix = suffix.substring(0, suffix.length() - ".java".length());
-        return ROOT_PACKAGE + "." + suffix;
+        return rootPackage + "." + suffix;
     }
 
     private boolean isContractFile(Path path) {

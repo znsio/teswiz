@@ -13,8 +13,13 @@ WEB_ENGINE=playwright-ts
 ---
 
 ## 2. Shared Contract (`HomeScreen.java`)
+
+The contract's package can be anything in your own project, as long as it contains a segment literally named
+`screen` (see the [Migration Guide](../internals/Playwright-Migration-Guide.md#2-defining-the-screen-contract)
+for how the rest of the package is used to resolve implementations):
+
 ```java
-package com.znsio.teswiz.screen.ajio;
+package com.acme.tests.screen.ajio;
 
 import com.znsio.teswiz.screen.ScreenRegistry;
 
