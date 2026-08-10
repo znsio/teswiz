@@ -639,7 +639,10 @@ rl.on("line", async (line) => {
       }
       case "navigateTo": {
         const session = getSession(payload.sessionId);
-        await getCurrentPage(session).goto(payload.url, { waitUntil: "load" });
+        await getCurrentPage(session).goto(payload.url, {
+          waitUntil: "load",
+          timeout: session.navigationTimeoutMs || 30000,
+        });
         process.stdout.write(`${okResponse(requestId, action, { status: "ok" })}\n`);
         break;
       }
