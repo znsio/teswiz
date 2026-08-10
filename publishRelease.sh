@@ -79,7 +79,7 @@ fi
 
 # Update README.md badge version
 if [ -f README.md ]; then
-  sed -i '' -E 's/(\[!\[)[^]]*(\]\(https:\/\/jitpack\.io\/v\/anandbagmar\/teswiz\.svg\))/\1'"$VERSION"'\2/' README.md
+  sed -i '' -E 's/(release-)[^-]+(-blue.svg\))/\1'"$VERSION"'\2/' README.md
 fi
 
 # Update Changelog.MD
