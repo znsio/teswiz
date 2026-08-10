@@ -1,3 +1,23 @@
+## 1.0.28
+- 🔄 Update README with latest commit ID - c07f8f3
+- Align Playwright version and fix BrowserStack capabilities
+- 🔄 Update README with latest commit ID - 011650c
+- Use layout algo to compare the "Vertical Swiping Screen After Scroll" screen
+- Gracefully handle WebDriverException during teardown
+- BrowserStack requires both browserstack.playwrightVersion and client.playwrightVersion to match the local client's Playwright library version exactly
+- Align BrowserStack Playwright capabilities version and add diagnostics
+- Improve release badge styling and add worker diagnostics
+- 🔄 Update README with latest commit ID - ab5305a
+- Fix Playwright TS worker page.goto timeout error
+- 🔄 Update README with latest commit ID - 7788d4c
+- Fix release version script and sync package-lock.json
+- Sync package-lock.json with package.json
+- Migrate Playwright-TS screens to native selectors
+- Migrate GoogleSearch and Indigo Playwright-Java screens to native APIs
+- Migrate JioMeet Playwright-Java screens to native APIs
+- feat: add native playwright-java screen context and convert theapp screens
+- fix: use plain version tags in publishRelease
+
 ## v1.0.27
 - refactor: prompt for unit-test execution in publishRelease
 - docs: remove outdated repository notice from README
