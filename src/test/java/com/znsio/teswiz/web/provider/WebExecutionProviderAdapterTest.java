@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.JavascriptExecutor;
@@ -86,10 +87,20 @@ class WebExecutionProviderAdapterTest {
         new BrowserStackWebExecutionProvider().updateSessionName(executor, "sample-test");
         new BrowserStackWebExecutionProvider().updateSessionStatus(executor, "passed", "Scenario passed");
 
-        assertThat(executor.commands())
-                .containsExactly(
-                        "browserstack_executor: {\"action\":\"setSessionName\",\"arguments\":{\"name\":\"sample-test\"}}",
-                        "browserstack_executor: {\"action\":\"setSessionStatus\",\"arguments\":{\"status\":\"passed\",\"reason\":\"Scenario passed\"}}");
+        List<String> commands = executor.commands();
+        assertThat(commands).hasSize(2);
+        assertBrowserStackExecutorCommand(commands.get(0),
+                "{\"action\":\"setSessionName\",\"arguments\":{\"name\":\"sample-test\"}}");
+        assertBrowserStackExecutorCommand(commands.get(1),
+                "{\"action\":\"setSessionStatus\",\"arguments\":{\"status\":\"passed\",\"reason\":\"Scenario passed\"}}");
+    }
+
+    // JSONObject does not guarantee key order (backed by a plain HashMap), and BrowserStack's
+    // own parser doesn't care about it either, so commands are compared as JSON, not as strings.
+    private static void assertBrowserStackExecutorCommand(String actualCommand, String expectedJson) {
+        assertThat(actualCommand).startsWith("browserstack_executor: ");
+        JSONObject actual = new JSONObject(actualCommand.substring("browserstack_executor: ".length()));
+        assertThat(actual.similar(new JSONObject(expectedJson))).as(actualCommand).isTrue();
     }
 
     @Test
