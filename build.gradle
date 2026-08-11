@@ -265,7 +265,6 @@ tasks.register('sourcesJar', Jar) {
 
 artifacts {
     archives sourcesJar
-    archives shadowJar
 }
 
 wrapper {
@@ -449,3 +448,19 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 shadowJar.finalizedBy sourcesJar
+
+// shadowJar bundles native driver/browser binaries for every OS (Playwright driver-bundle,
+// Applitools eyes-universal-core-binaries), producing a 400MB+ artifact. Nothing consumes it -
+// publishing uses the plain "java" component, and no CI workflow references it - so keep it out
+// of the default build/assemble lifecycle. The shadow plugin registers "shadowRuntimeElements" as
+// a consumable configuration, which Gradle's base plugin auto-wires into assemble; marking it
+// non-consumable detaches it while leaving `./gradlew shadowJar` available on demand.
+configurations.shadowRuntimeElements {
+    canBeConsumed = false
+}
+configurations.shadow {
+    canBeConsumed = false
+}
+afterEvaluate {
+    assemble.dependsOn.removeIf { it.toString().contains('shadowJar') }
+}
