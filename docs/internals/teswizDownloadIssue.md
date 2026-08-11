@@ -1,6 +1,8 @@
 # Trouble downloading teswiz from jitpack.io?
 
-If you are getting an error similar to one shown below when downloading teswiz from jitpack.io, follow these instructions to change your build.gradle file to download it directly from GitHub instead.
+If you are getting an error similar to the one shown below when downloading teswiz from jitpack.io, the fix is
+almost always to declare teswiz as a normal Gradle dependency — via JitPack's Maven repository — rather than
+trying to download the jar file directly.
 
 ### Error when downloading teswiz from jitpack.io as part of your build:
 
@@ -8,69 +10,66 @@ If you are getting an error similar to one shown below when downloading teswiz f
 * What went wrong:
 Execution failed for task ':compileTestJava'.
 > Could not resolve all files for configuration ':testCompileClasspath'.
-    > Could not find com.github.znsio:teswiz:1.0.10.
+    > Could not find com.github.anandbagmar:teswiz:1.0.10.
       Searched in the following locations:
-        - file:/home/runner/.m2/repository/com/github/znsio/teswiz/1.0.10/teswiz-1.0.10.pom
-        - https://jitpack.io/com/github/znsio/teswiz/1.0.10/teswiz-1.0.10.pom
+        - file:/home/runner/.m2/repository/com/github/anandbagmar/teswiz/1.0.10/teswiz-1.0.10.pom
+        - https://jitpack.io/com/github/anandbagmar/teswiz/1.0.10/teswiz-1.0.10.pom
       Required by:
           root project :
 ```
 
-## Refer to [build.gradle.sample](../../build.gradle.sample) for reference
+This almost always means either the version doesn't exist (check [teswiz releases](https://github.com/anandbagmar/teswiz/releases))
+or the JitPack repository isn't declared in your `repositories` block.
 
-## [getting-started-with-teswiz](https://github.com/znsio/getting-started-with-teswiz/blob/main/build.gradle) already has this change implemented for your reference
+## Refer to [build.gradle.sample](../../build.gradle.sample) for a complete reference
+
+## [getting-started-with-teswiz](https://github.com/anandbagmar/getting-started-with-teswiz/blob/main/build.gradle) already has this set up for your reference
 
 ## Changes required in build.gradle:
-### 1. Specify the teswiz version you want to use
+
+### 1. Declare the JitPack repository
+
+```groovy
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://jitpack.io'
+    }
+    mavenLocal()
+}
+```
+
+### 2. Specify the teswiz version you want to use
 
 Example:
-```
-    def teswizVersion = '1.0.23'
-```
-
-If you do not set a version explicitly, the scaffold now resolves to the latest tagged teswiz release.
-
-If you want the latest teswiz snapshot build instead of a tagged release, use:
-
-```
-    def teswizVersion = 'SNAPSHOT'
+```groovy
+def teswizVersion = '1.0.31'
 ```
 
-That choice resolves to the latest prerelease published in the `znsio/teswiz` GitHub releases.
+If you want the latest teswiz snapshot build instead of a tagged release, resolve the version from teswiz's
+GitHub releases API first — see `build.gradle.sample` for a worked example that resolves either the latest
+tagged release or a `SNAPSHOT` prerelease automatically.
 
-### 2. Define the folder where you want to download the teswiz as a jar dependency
+### 3. Declare teswiz as a normal dependency
 
-Example:
-```
-    // Define the libs directory in the project root
-    ext.libsDir = file("$projectDir/libs")
-```
-
-### 3. Define a new task that will use the teswizVersion specified in Step 1, and download it from the [teswiz release in Github](https://github.com/znsio/teswiz/releases)
-
-Example: See the `downloadDependencies` task in [build.gradle](../../build.gradle)
-
-### 4. Ensure dependencies are downloaded before compiling
-
-```
-    tasks.compileJava {
-        dependsOn downloadDependencies
-        options.encoding = "UTF-8"
-    }
+```groovy
+dependencies {
+    implementation "com.github.anandbagmar:teswiz:${teswizVersion}"
+}
 ```
 
-### 5. Use the downloaded jar as a dependency for your gradle project
+JitPack publishes proper POM/module metadata for teswiz, so this pulls in teswiz's full transitive dependency
+graph automatically — no manual jar download or `fileTree` needed.
 
-```
-    dependencies {
-        implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    }
-```
+**Note:** teswiz only exposes a dependency transitively when its own public API needs it (see the
+`api`/`implementation` split in teswiz's own `build.gradle`). If your project uses a library like log4j,
+unirest, or the ReportPortal client directly in your own code — not just through teswiz — declare it as a
+direct dependency in your own project too.
 
-### 6. Support Multi-release JARs
+### 4. Support Multi-release JARs
 You may need to add the following in your build.gradle file:
 
-```
+```groovy
     java {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -90,12 +89,12 @@ You may need to add the following in your build.gradle file:
     }
 ```
 
-## To force re-download of teswiz jar:
+## Still stuck?
 
-* Run the build with the `forceUpdate` Gradle property set to `true`:
-
-```bash
-./gradlew clean run -PforceUpdate=true
-```
-
-* If you omit the property, teswiz will reuse the downloaded jar when it already exists in `libs/`.
+* Confirm the version actually exists as a [teswiz release](https://github.com/anandbagmar/teswiz/releases) or
+  tag — JitPack can only build versions that exist as git tags.
+* Try building the version on JitPack directly first: `https://jitpack.io/com/github/anandbagmar/teswiz/<version>/build.log`
+  will show the build log if JitPack failed to build that tag.
+* As a last resort for local development, you can build and publish teswiz to your local Maven cache yourself:
+  `./gradlew publishToMavenLocal` from a local teswiz checkout, with `mavenLocal()` declared in your
+  `repositories` block.

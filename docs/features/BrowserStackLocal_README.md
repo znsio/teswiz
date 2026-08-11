@@ -2,13 +2,13 @@
 
 With below BrowserStack Local configurations, we can test the mobile apps those hosted on localhost, behind proxies and firewalls efficiently.
 
-### Use the Teswiz version: [![0.0.86](https://jitpack.io/v/znsio/teswiz.svg)](https://jitpack.io/#znsio/teswiz) or latest testwiz version from [![Latest Commit](https://img.shields.io/badge/commit-568dd4ffb4-blue.svg)](https://jitpack.io/#znsio/teswiz)
+### Use the Teswiz version: [![Release](https://jitpack.io/v/anandbagmar/teswiz.svg)](https://jitpack.io/#anandbagmar/teswiz) or the latest teswiz commit from [teswiz releases](https://github.com/anandbagmar/teswiz/releases)
 
 #### Put these capabilities and config files in capabilities and config folder as per the project requirements.
 
-* browserstack_capabilities.json(https://github.com/znsio/teswiz/blob/main/caps/theapp_browserstack_android_capabilities.json) 
+* [browserstack_capabilities.json](https://github.com/anandbagmar/teswiz/blob/main/caps/theapp/theapp_browserstack_android_capabilities.json)
 
-* browserstack_config.properties(https://github.com/znsio/teswiz/blob/main/configs/theapp_browserstack_android_config.properties)
+* [browserstack_config.properties](https://github.com/anandbagmar/teswiz/blob/main/configs/theapp/theapp_browserstack_android_config.properties)
 
 * [setupBrowserStackLocalTestingArtifact.sh](../internals/setupBrowserStackLocalTestingArtifact.sh)
 
