@@ -11,6 +11,9 @@ out/
 *.png
 *.jpeg
 *.jpg
+!docs/images/*.png
+!docs/images/*.jpeg
+!docs/images/*.jpg
 temp/
 test-output/
 target/
