@@ -120,12 +120,24 @@ git push origin main
 git tag "$VERSION"
 git push origin "$VERSION"
 
-echo "🚀 Creating GitHub Release $VERSION and uploading artifacts..."
-gh release create "$VERSION" "$JAR_FILE" "$SOURCES_JAR_FILE" "$FAT_JAR_FILE" \
+# 6. Trigger Jitpack build as soon as the tag is pushed, before uploading release artifacts.
+# Jitpack builds directly from the git tag - it doesn't depend on GitHub Release assets at all -
+# so kicking it off now lets it build in the background while the (slow, ~500MB) fat jar upload
+# happens next. A short wait guards against Jitpack querying GitHub before the tag has propagated.
+echo "🔗 Triggering Jitpack build for com.github.anandbagmar/teswiz $VERSION..."
+sleep 5
+curl -s -o /dev/null -w "%{http_code}" "https://jitpack.io/api/builds/com.github.anandbagmar/teswiz/$VERSION" || true
+echo -e "\nJitpack build queued: https://jitpack.io/#com.github.anandbagmar/teswiz/$VERSION"
+
+echo "🚀 Creating GitHub Release $VERSION with the thin and sources jars..."
+gh release create "$VERSION" "$JAR_FILE" "$SOURCES_JAR_FILE" \
   --title "$VERSION" \
   --notes-file "$TEMP_NOTES"
 
-# 6. Prune artifacts of older releases (keep the last 3)
+echo "📤 Uploading fat jar (this can take a while)..."
+gh release upload "$VERSION" "$FAT_JAR_FILE"
+
+# 7. Prune artifacts of older releases (keep the last 3)
 echo "🧹 Pruning older release artifacts (keeping top 3)..."
 idx=0
 gh release list --limit 100 --json tagName --jq '.[].tagName' | while read -r tag; do
@@ -140,10 +152,6 @@ gh release list --limit 100 --json tagName --jq '.[].tagName' | while read -r ta
   idx=$((idx+1))
 done
 
-# 7. Trigger Jitpack build
-echo "🔗 Triggering Jitpack build for com.github.anandbagmar/teswiz $VERSION..."
-curl -s -o /dev/null -w "%{http_code}" "https://jitpack.io/api/builds/com.github.anandbagmar/teswiz/$VERSION" || true
 echo -e "\n✅ Release $VERSION successfully published!"
-echo "You can monitor the Jitpack build at: https://jitpack.io/#com.github.anandbagmar/teswiz/$VERSION"
 
 rm -f "$TEMP_NOTES"
