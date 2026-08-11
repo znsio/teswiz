@@ -247,7 +247,7 @@ dependencies {
 
 shadowJar {
     archiveBaseName.set("$project.name")
-    archiveClassifier.set('')
+    archiveClassifier.set('all')
     archiveVersion.set("$project.version")
     zip64 = true
     manifest {
@@ -279,6 +279,9 @@ publishing {
 
 afterEvaluate {
     publishing.publications.named("testing", MavenPublication).configure {
+        // components.java already includes the shadow plugin's "all"-classified variant, so
+        // this publishes both the thin jar (default) and the shaded fat jar (classifier "all").
+        // Consumers opt into the fat jar with "com.github.anandbagmar:teswiz:$version:all".
         from(components.named("java").get())
         artifact(tasks.named("sourcesJar").get())
     }
