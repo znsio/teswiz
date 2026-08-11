@@ -16,7 +16,7 @@ Execution failed for task ':compileTestJava'.
           root project :
 ```
 
-## Refer to [build.gradle.sample](../build.gradle.sample) for reference
+## Refer to [build.gradle.sample](../../build.gradle.sample) for reference
 
 ## [getting-started-with-teswiz](https://github.com/znsio/getting-started-with-teswiz/blob/main/build.gradle) already has this change implemented for your reference
 
@@ -48,7 +48,7 @@ Example:
 
 ### 3. Define a new task that will use the teswizVersion specified in Step 1, and download it from the [teswiz release in Github](https://github.com/znsio/teswiz/releases)
 
-Example: See the `downloadDependencies` task in [build.gradle](../build.gradle)
+Example: See the `downloadDependencies` task in [build.gradle](../../build.gradle)
 
 ### 4. Ensure dependencies are downloaded before compiling
 

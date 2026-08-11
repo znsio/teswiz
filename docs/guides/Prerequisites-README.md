@@ -13,7 +13,7 @@
   https://nodejs.org
 
 ### Install Appium 2
-  * You can install Appium 2.x and all relevant drivers, plugins and utilities using the [package.json](../package.json)
+  * You can install Appium 2.x and all relevant drivers, plugins and utilities using the [package.json](../../package.json)
 
         npm install
   * Wait for the installation process to complete. npm will download and install the required packages into a folder named node_modules in your project's directory.

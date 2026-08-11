@@ -147,7 +147,7 @@ If all three values are valid, teswiz uses them when creating the Applitools ses
 If any one of the three values is missing or blank, the test fails with a `VisualTestSetupException`.
 
 See the sample feature for a working end-to-end example:
-[`src/test/resources/com/znsio/teswiz/features/applitools.feature`](../src/test/resources/com/znsio/teswiz/features/applitools.feature)
+[`src/test/resources/com/znsio/teswiz/features/applitools.feature`](../../src/test/resources/com/znsio/teswiz/features/applitools.feature)
 
 Example from that feature:
 

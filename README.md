@@ -45,9 +45,9 @@ Read these before upgrading or enabling Playwright:
 
 Detailed guidance:
 
-- [Breaking changes](/Users/anand.bagmar/projects/znsio/teswiz/docs/internals/BreakingChanges-README.md)
-- [Playwright migration guide](/Users/anand.bagmar/projects/znsio/teswiz/docs/internals/Playwright-Migration-Guide.md)
-- [Architecture notes](/Users/anand.bagmar/projects/znsio/teswiz/docs/internals/Architecture-README.md)
+- [Breaking changes](docs/internals/BreakingChanges-README.md)
+- [Playwright migration guide](docs/internals/Playwright-Migration-Guide.md)
+- [Architecture notes](docs/internals/Architecture-README.md)
 
 ## Get started
 
@@ -71,11 +71,11 @@ flowchart TD
 
 Recommended reading order:
 
-1. [Prerequisites](/Users/anand.bagmar/projects/znsio/teswiz/docs/guides/Prerequisites-README.md)
-2. [Getting started](/Users/anand.bagmar/projects/znsio/teswiz/docs/guides/GettingStartedUsingTeswiz-README.md)
-3. [Configure test execution](/Users/anand.bagmar/projects/znsio/teswiz/docs/guides/ConfiguringTestExecution-README.md)
-4. [Write your first test](/Users/anand.bagmar/projects/znsio/teswiz/docs/guides/WritingFirstTest-README.md)
-5. [Sample tests](/Users/anand.bagmar/projects/znsio/teswiz/docs/guides/SampleTests-README.md)
+1. [Prerequisites](docs/guides/Prerequisites-README.md)
+2. [Getting started](docs/guides/GettingStartedUsingTeswiz-README.md)
+3. [Configure test execution](docs/guides/ConfiguringTestExecution-README.md)
+4. [Write your first test](docs/guides/WritingFirstTest-README.md)
+5. [Sample tests](docs/guides/SampleTests-README.md)
 
 ## Choose your web engine
 
@@ -99,11 +99,11 @@ Use:
 
 Examples:
 
-- [Selenium web example](/Users/anand.bagmar/projects/znsio/teswiz/docs/examples/Web-Selenium-Example.md)
-- [Playwright-Java web example](/Users/anand.bagmar/projects/znsio/teswiz/docs/examples/Web-Playwright-Java-Example.md)
-- [Playwright-TS web example](/Users/anand.bagmar/projects/znsio/teswiz/docs/examples/Web-Playwright-TS-Example.md)
-- [Android example](/Users/anand.bagmar/projects/znsio/teswiz/docs/examples/Android-Example.md)
-- [iOS example](/Users/anand.bagmar/projects/znsio/teswiz/docs/examples/iOS-Example.md)
+- [Selenium web example](docs/examples/Web-Selenium-Example.md)
+- [Playwright-Java web example](docs/examples/Web-Playwright-Java-Example.md)
+- [Playwright-TS web example](docs/examples/Web-Playwright-TS-Example.md)
+- [Android example](docs/examples/Android-Example.md)
+- [iOS example](docs/examples/iOS-Example.md)
 
 ## Common commands
 
@@ -136,15 +136,15 @@ teswiz supports:
 
 Read more:
 
-- [Running visual tests](/Users/anand.bagmar/projects/znsio/teswiz/docs/features/RunningVisualTests-README.md)
-- [ReportPortal setup](/Users/anand.bagmar/projects/znsio/teswiz/docs/features/ReportPortal-README.md)
-- [Configuration parameters](/Users/anand.bagmar/projects/znsio/teswiz/docs/features/ConfigurationParameters-README.md)
+- [Running visual tests](docs/features/RunningVisualTests-README.md)
+- [ReportPortal setup](docs/features/ReportPortal-README.md)
+- [Configuration parameters](docs/features/ConfigurationParameters-README.md)
 
 ## Architecture
 
 The high-level architecture is documented separately in:
 
-- [Architecture notes](/Users/anand.bagmar/projects/znsio/teswiz/docs/internals/Architecture-README.md)
+- [Architecture notes](docs/internals/Architecture-README.md)
 
 That doc covers:
 

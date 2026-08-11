@@ -16,7 +16,7 @@ WEB_ENGINE=playwright-ts CONFIG=./configs/theapp/theapp_local_web_config.propert
 
 Scenario:
 
-* [`src/test/resources/com/znsio/teswiz/features/theapp.feature`](../src/test/resources/com/znsio/teswiz/features/theapp.feature)
+* [`src/test/resources/com/znsio/teswiz/features/theapp.feature`](../../src/test/resources/com/znsio/teswiz/features/theapp.feature)
   * `@theapp2 @invalidLogin1 @playwright-phase1`
 
 ### 2. Multi-user web
@@ -27,7 +27,7 @@ WEB_ENGINE=playwright-ts CONFIG=./configs/theapp/theapp_local_web_config.propert
 
 Scenario:
 
-* [`src/test/resources/com/znsio/teswiz/features/theapp.feature`](../src/test/resources/com/znsio/teswiz/features/theapp.feature)
+* [`src/test/resources/com/znsio/teswiz/features/theapp.feature`](../../src/test/resources/com/znsio/teswiz/features/theapp.feature)
   * `@multiuser-web @theapp7 @playwright-phase1`
 
 ### 3. Mixed platform (Appium Android + Playwright web)
@@ -38,7 +38,7 @@ WEB_ENGINE=playwright-ts CONFIG=./configs/theapp/theapp_local_android_config.pro
 
 Scenario:
 
-* [`src/test/resources/com/znsio/teswiz/features/theapp.feature`](../src/test/resources/com/znsio/teswiz/features/theapp.feature)
+* [`src/test/resources/com/znsio/teswiz/features/theapp.feature`](../../src/test/resources/com/znsio/teswiz/features/theapp.feature)
   * `@multiuser-android-web @theapp5 @playwright-phase1`
 
 Notes:

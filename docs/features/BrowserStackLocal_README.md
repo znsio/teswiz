@@ -10,7 +10,7 @@ With below BrowserStack Local configurations, we can test the mobile apps those 
 
 * browserstack_config.properties(https://github.com/znsio/teswiz/blob/main/configs/theapp_browserstack_android_config.properties)
 
-* [setupBrowserStackLocalTestingArtifact.sh](setupBrowserStackLocalTestingArtifact.sh)
+* [setupBrowserStackLocalTestingArtifact.sh](../internals/setupBrowserStackLocalTestingArtifact.sh)
 
 Update the data (app package, app activity, project, app Name) according to your project in capabilities file.
 
