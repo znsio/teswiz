@@ -1,6 +1,6 @@
 # API Test Implementation Example
 
-This guide provides a concrete example of implementing an API-level test in Teswiz using the integrated `UnirestService`.
+This guide provides a concrete example of implementing an API-level test in Teswiz using the integrated `RestAssuredService`.
 
 ---
 
@@ -23,7 +23,7 @@ package com.znsio.teswiz.steps;
 import com.znsio.teswiz.businessLayer.weatherAPI.WeatherAPIBL;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import kong.unirest.json.JSONObject;
+import org.json.JSONObject;
 
 public class WeatherAPISteps {
     private JSONObject jsonObject;
@@ -47,10 +47,9 @@ public class WeatherAPISteps {
 package com.znsio.teswiz.businessLayer.weatherAPI;
 
 import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.services.UnirestService;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.json.JSONObject;
+import com.znsio.teswiz.services.RestAssuredService;
+import io.restassured.response.Response;
+import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,14 +65,14 @@ public class WeatherAPIBL {
             put("current_weather", true);
         }};
         
-        // Execute HTTP GET using the built-in UnirestService wrapper
-        HttpResponse<JsonNode> jsonResponse = UnirestService.getHttpResponseWithQueryMap(baseUrl, queryParams);
+        // Execute HTTP GET using the built-in RestAssuredService wrapper
+        Response jsonResponse = RestAssuredService.getHttpResponseWithQueryMap(baseUrl, queryParams);
         
-        assertThat(jsonResponse.getStatus())
+        assertThat(jsonResponse.getStatusCode())
                 .as("Failed weather check API status code")
                 .isEqualTo(200);
                 
-        return jsonResponse.getBody().getObject().getJSONObject("current_weather");
+        return new JSONObject(jsonResponse.getBody().asString()).getJSONObject("current_weather");
     }
 
     public void verifyCurrentTemperature(JSONObject response, int minTemp, int maxTemp) {

@@ -5,14 +5,13 @@ import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
+import io.restassured.response.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class CryptoAPISteps {
 
-    private HttpResponse<JsonNode> jsonResponse;
+    private Response jsonResponse;
     private static final Logger LOGGER = LogManager.getLogger(CryptoAPISteps.class.getName());
     private final TestExecutionContext context;
 

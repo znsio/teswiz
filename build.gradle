@@ -221,14 +221,13 @@ dependencies {
     implementation "com.github.erosb:everit-json-schema:1.14.6"
     implementation "com.github.vidstige:jadb:$jadbVersion"
     implementation 'com.jayway.jsonpath:json-path:3.0.0'
-    // TODO - migrate to restassured
-    implementation "com.konghq:unirest-java:3.14.5"
     implementation "com.microsoft.playwright:playwright:1.49.0"
     implementation "com.squareup.okhttp3:okhttp:5.4.0"
     implementation "io.appium:java-client:10.1.1"
     implementation 'io.cucumber:cucumber-java:7.34.4'
     implementation 'io.cucumber:cucumber-testng:7.34.4'
     implementation "io.github.bonigarcia:webdrivermanager:6.3.4"
+    implementation "io.rest-assured:rest-assured:5.5.1"
     implementation "net.masterthought:cucumber-reporting:5.11.0"
     implementation "net.bytebuddy:byte-buddy:1.17.8"
     implementation "org.apache.commons:commons-lang3:3.20.0"

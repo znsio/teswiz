@@ -1,6 +1,6 @@
 package com.znsio.teswiz.web.provider;
 
-import kong.unirest.json.JSONObject;
+import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

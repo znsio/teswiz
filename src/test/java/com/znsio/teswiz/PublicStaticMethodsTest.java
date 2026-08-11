@@ -4,7 +4,7 @@ import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.runner.*;
-import com.znsio.teswiz.services.UnirestService;
+import com.znsio.teswiz.services.RestAssuredService;
 import com.znsio.teswiz.tools.*;
 import io.cucumber.java.Scenario;
 import org.apache.logging.log4j.LogManager;
@@ -104,12 +104,12 @@ class PublicStaticMethodsTest {
         ReportPortalLogger.logWarningMessage("logWarningMessage");
         ReportPortalLogger.attachFileInReportPortal("attachFileInReportPortal", new File("build.gradle"));
 
-        UnirestService.getHttpResponse("");
-        UnirestService.getHttpResponseWithQueryParameter("", "", "");
-        UnirestService.getHttpResponseWithQueryMap("", new HashMap<>());
-        UnirestService.postHttpRequest("", "");
-        UnirestService.patchHttpRequest("", "");
-        UnirestService.deleteHttpRequest("");
+        RestAssuredService.getHttpResponse("");
+        RestAssuredService.getHttpResponseWithQueryParameter("", "", "");
+        RestAssuredService.getHttpResponseWithQueryMap("", new HashMap<>());
+        RestAssuredService.postHttpRequest("", "");
+        RestAssuredService.patchHttpRequest("", "");
+        RestAssuredService.deleteHttpRequest("");
 
         DateTime.getFormattedMeetingTime(5);
 

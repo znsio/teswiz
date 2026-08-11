@@ -15,7 +15,6 @@ import com.znsio.teswiz.web.provider.WebExecutionProvider;
 import com.znsio.teswiz.web.provider.WebExecutionProviderResolver;
 import io.cucumber.java.Scenario;
 import io.cucumber.java.Status;
-import kong.unirest.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;

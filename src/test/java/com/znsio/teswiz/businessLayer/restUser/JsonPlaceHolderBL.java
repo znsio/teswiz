@@ -2,11 +2,10 @@ package com.znsio.teswiz.businessLayer.restUser;
 
 import com.znsio.teswiz.businessLayer.weatherAPI.WeatherAPIBL;
 import com.znsio.teswiz.runner.Runner;
-import com.znsio.teswiz.services.UnirestService;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.json.JSONObject;
+import com.znsio.teswiz.services.RestAssuredService;
+import io.restassured.response.Response;
 import org.apache.logging.log4j.LogManager;
+import org.json.JSONObject;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
@@ -22,11 +21,11 @@ public class JsonPlaceHolderBL {
     public JsonPlaceHolderBL createPost() {
         Object jsonBody = testData.get("postBody");
         LOGGER.info("Creating a post");
-        HttpResponse<JsonNode> jsonResponse = UnirestService.postHttpRequest(base_URL,jsonBody);
-        assertThat(jsonResponse.getStatus()).as("Received API status code for POST method incorrect!")
+        Response jsonResponse = RestAssuredService.postHttpRequest(base_URL,jsonBody);
+        assertThat(jsonResponse.getStatusCode()).as("Received API status code for POST method incorrect!")
                 .isEqualTo(201);
         LOGGER.info("Verifying post is created successfully");
-        assertThat(jsonResponse.getBody().getObject().get("id")).as("API status code for POST method incorrect!")
+        assertThat(jsonResponse.jsonPath().getInt("id")).as("API status code for POST method incorrect!")
                 .isEqualTo(101);
         return this;
     }
@@ -34,10 +33,10 @@ public class JsonPlaceHolderBL {
     public JSONObject updatePost() {
         LOGGER.info("Updating a post");
         Object jsonBody = testData.get("patchBody");
-        HttpResponse<JsonNode> jsonResponse = UnirestService.patchHttpRequest(base_URL+"/1", jsonBody);
-        assertThat(jsonResponse.getStatus()).as("Received API status code for PATCH method incorrect!")
+        Response jsonResponse = RestAssuredService.patchHttpRequest(base_URL+"/1", jsonBody);
+        assertThat(jsonResponse.getStatusCode()).as("Received API status code for PATCH method incorrect!")
                 .isEqualTo(200);
-        return jsonResponse.getBody().getObject();
+        return new JSONObject(jsonResponse.getBody().asString());
     }
 
     public JsonPlaceHolderBL verifyPostUpdatedSuccessfully(JSONObject jsonResponse) {
@@ -50,10 +49,10 @@ public class JsonPlaceHolderBL {
 
     public int deletePost() {
         LOGGER.info("Verifying post is deleted successfully");
-        HttpResponse<JsonNode> jsonResponse = UnirestService.deleteHttpRequest(base_URL+"/1");
-        assertThat(jsonResponse.getStatus()).as("Received API status code for Delete method incorrect!")
+        Response jsonResponse = RestAssuredService.deleteHttpRequest(base_URL+"/1");
+        assertThat(jsonResponse.getStatusCode()).as("Received API status code for Delete method incorrect!")
                 .isEqualTo(200);
-        return jsonResponse.getStatus();
+        return jsonResponse.getStatusCode();
     }
 
     public JsonPlaceHolderBL verifyIfPostDeleted(int status){

@@ -110,7 +110,7 @@ public class RunTestCukes
             LOGGER.info("Checking health of environment from: %s".formatted(healthCheckUrl));
 
             // TODO - replace logic as per application's health check and observability capability
-            // HttpResponse<JsonNode> healthCheckResponse = UnirestService.getHttpResponse(healthCheckUrl);
+            // Response healthCheckResponse = RestAssuredService.getHttpResponse(healthCheckUrl);
             // LOGGER.info("Health check response: %s", healthCheckResponse.getBody());
 
             boolean isEnvironmentHealthy = true;
