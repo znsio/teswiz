@@ -1,3 +1,7 @@
+## 1.0.31
+- Correct api/implementation split: reflection/weaving isn't a real API leak
+- 🔄 Update README with latest commit ID - c25dadc
+
 ## 1.0.30
 - 🔄 Update README with latest commit ID - 4b96e86
 - Fix flaky BrowserStack executor command test after RestAssured migration
