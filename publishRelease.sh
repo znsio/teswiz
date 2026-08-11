@@ -123,10 +123,22 @@ git push origin "$VERSION"
 # 6. Trigger Jitpack build as soon as the tag is pushed, before uploading release artifacts.
 # Jitpack builds directly from the git tag - it doesn't depend on GitHub Release assets at all -
 # so kicking it off now lets it build in the background while the (slow, ~500MB) fat jar upload
-# happens next. A short wait guards against Jitpack querying GitHub before the tag has propagated.
+# happens next. A short wait guards against Jitpack querying GitHub before the tag has propagated;
+# if Jitpack still doesn't recognize the tag ("isTag": false) on the first try, retry once after a
+# longer delay. Either way this is best-effort - Jitpack builds lazily on first real consumer
+# request regardless, so a failed trigger here doesn't block the release.
+JITPACK_URL="https://jitpack.io/api/builds/com.github.anandbagmar/teswiz/$VERSION"
 echo "🔗 Triggering Jitpack build for com.github.anandbagmar/teswiz $VERSION..."
 sleep 5
-curl -s -o /dev/null -w "%{http_code}" "https://jitpack.io/api/builds/com.github.anandbagmar/teswiz/$VERSION" || true
+JITPACK_RESPONSE=$(curl -s "$JITPACK_URL" || echo '{}')
+if [ "$(echo "$JITPACK_RESPONSE" | jq -r '.isTag // false')" != "true" ]; then
+  echo "  Tag not yet visible to Jitpack, retrying in 20s..."
+  sleep 20
+  JITPACK_RESPONSE=$(curl -s "$JITPACK_URL" || echo '{}')
+  if [ "$(echo "$JITPACK_RESPONSE" | jq -r '.isTag // false')" != "true" ]; then
+    echo "  ⚠️ Jitpack still hasn't picked up the tag - it will build lazily on first consumer request instead."
+  fi
+fi
 echo -e "\nJitpack build queued: https://jitpack.io/#com.github.anandbagmar/teswiz/$VERSION"
 
 echo "🚀 Creating GitHub Release $VERSION with the thin and sources jars..."
