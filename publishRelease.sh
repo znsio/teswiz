@@ -92,17 +92,23 @@ fi
 
 if [ "$RUN_UNIT_TESTS" = true ]; then
   echo "⚙️ Building project and running tests..."
-  ./gradlew clean build
+  ./gradlew clean build shadowJar
 else
   echo "⚙️ Building project without running tests..."
-  ./gradlew clean build -x test
+  ./gradlew clean build shadowJar -x test
 fi
 
 # Verify build outputs exist
 JAR_FILE="build/libs/teswiz-$VERSION.jar"
 SOURCES_JAR_FILE="build/libs/teswiz-$VERSION-sources.jar"
+FAT_JAR_FILE="build/libs/teswiz-$VERSION-all.jar"
 if [ ! -f "$JAR_FILE" ]; then
   echo "❌ Error: Built JAR file not found at $JAR_FILE"
+  rm -f "$TEMP_NOTES"
+  exit 1
+fi
+if [ ! -f "$FAT_JAR_FILE" ]; then
+  echo "❌ Error: Built fat JAR file not found at $FAT_JAR_FILE"
   rm -f "$TEMP_NOTES"
   exit 1
 fi
@@ -115,7 +121,7 @@ git tag "$VERSION"
 git push origin "$VERSION"
 
 echo "🚀 Creating GitHub Release $VERSION and uploading artifacts..."
-gh release create "$VERSION" "$JAR_FILE" "$SOURCES_JAR_FILE" \
+gh release create "$VERSION" "$JAR_FILE" "$SOURCES_JAR_FILE" "$FAT_JAR_FILE" \
   --title "$VERSION" \
   --notes-file "$TEMP_NOTES"
 

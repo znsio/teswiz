@@ -8,7 +8,7 @@ buildscript {
 
 plugins {
     id "org.sonarqube" version "7.3.1.8318"
-    id "java"
+    id "java-library"
     id "idea"
     id 'com.gradleup.shadow' version '9.5.1'
     id "maven-publish"
@@ -204,30 +204,42 @@ tasks.compileJava {
 
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    implementation "com.applitools:eyes-images-java5:5.81.35"
-    implementation "com.applitools:eyes-playwright-java5:5.84.9"
-    implementation ("com.applitools:eyes-appium-java5:5.79.35") {
+
+    // api: types from these leak into teswiz's own public method signatures/fields/extends
+    // clauses, so downstream consumers need them on their compile classpath too. See
+    // https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:api_vs_implementation
+    api "com.applitools:eyes-images-java5:5.81.35"
+    api "com.applitools:eyes-playwright-java5:5.84.9"
+    api ("com.applitools:eyes-appium-java5:5.79.35") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-remote-driver'
         exclude group: 'io.appium', module: 'java-client'
     }
+    api "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.1"
+    api "com.microsoft.playwright:playwright:1.49.0"
+    api "io.appium:java-client:10.1.1"
+    api 'io.cucumber:cucumber-java:7.34.4'
+    api 'io.cucumber:cucumber-testng:7.34.4'
+    api "io.rest-assured:rest-assured:5.5.1"
+    api "org.assertj:assertj-core:3.27.7"
+    api "org.json:json:20250107"
+    api "org.seleniumhq.selenium:selenium-java:4.46.0"
+
+    // implementation: used only internally, or only reachable through reflection/AspectJ
+    // weaving (Cucumber's --plugin loader, AspectLogging's advice methods) rather than any
+    // type a consumer's own source code would need to compile against - not part of the
+    // public API surface even though the classes involved happen to be public.
     implementation "com.browserstack:browserstack-local-java:1.1.9"
     implementation 'com.epam.reportportal:agent-java-cucumber6:5.5.7'
     implementation 'com.epam.reportportal:client-java:5.4.15'
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.1"
     implementation "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
     implementation "com.github.erosb:everit-json-schema:1.14.6"
     implementation "com.github.vidstige:jadb:$jadbVersion"
     implementation 'com.jayway.jsonpath:json-path:3.0.0'
-    implementation "com.microsoft.playwright:playwright:1.49.0"
     implementation "com.squareup.okhttp3:okhttp:5.4.0"
-    implementation "io.appium:java-client:10.1.1"
-    implementation 'io.cucumber:cucumber-java:7.34.4'
-    implementation 'io.cucumber:cucumber-testng:7.34.4'
     implementation "io.github.bonigarcia:webdrivermanager:6.3.4"
-    implementation "io.rest-assured:rest-assured:5.5.1"
     implementation "net.masterthought:cucumber-reporting:5.11.0"
     implementation "net.bytebuddy:byte-buddy:1.17.8"
     implementation "org.apache.commons:commons-lang3:3.20.0"
@@ -235,14 +247,13 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-1.2-api:2.26.1'
     implementation 'org.apache.logging.log4j:log4j-core:2.26.1'
     implementation "org.apache.pdfbox:pdfbox:3.0.8"
-    implementation "org.assertj:assertj-core:3.27.7"
     implementation "org.aspectj:aspectjrt:$aspectJVersion"
     implementation "org.jetbrains:annotations:26.1.0"
+    implementation "org.yaml:snakeyaml:2.6"
+
     testImplementation "org.junit.jupiter:junit-jupiter:6.1.2"
     testImplementation "org.mockito:mockito-core:5.20.0"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation "org.seleniumhq.selenium:selenium-java:4.46.0"
-    implementation "org.yaml:snakeyaml:2.6"
 }
 
 shadowJar {
