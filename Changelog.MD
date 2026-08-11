@@ -1,3 +1,11 @@
+## 1.0.30
+- 🔄 Update README with latest commit ID - 4b96e86
+- Fix flaky BrowserStack executor command test after RestAssured migration
+- Publish teswiz as both a thin jar and a shaded "all" fat jar
+- Stop building the 486MB shadow jar as part of assemble/build
+- Migrate HTTP client from Unirest to RestAssured
+- 🔄 Update README with latest commit ID - f8c27a6
+
 ## 1.0.29
 - 🔄 Update README with latest commit ID - 238ffe7
 - Fix screen resolver to support consumer-defined package namespaces Update Playwright docs to reflect configurable screen-contract package convention
