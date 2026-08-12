@@ -1,5 +1,7 @@
 package com.znsio.teswiz.services;
 
+import com.znsio.teswiz.filters.EnvironmentIssueFilter;
+import com.znsio.teswiz.tools.OverriddenVariable;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -12,9 +14,14 @@ import java.util.Map;
 public class RestAssuredService {
 
     private static final Logger LOGGER = LogManager.getLogger(RestAssuredService.class);
+    private static final String DISABLE_ENVIRONMENT_ISSUE_FILTER = "DISABLE_ENVIRONMENT_ISSUE_FILTER";
 
     private static RequestSpecification getRequestSpec() {
-        return RestAssured.given().relaxedHTTPSValidation().headers(getHeadersWithoutAuthorization());
+        RequestSpecification requestSpec = RestAssured.given().relaxedHTTPSValidation().headers(getHeadersWithoutAuthorization());
+        if (!OverriddenVariable.getOverriddenBooleanValue(DISABLE_ENVIRONMENT_ISSUE_FILTER, false)) {
+            requestSpec.filter(new EnvironmentIssueFilter());
+        }
+        return requestSpec;
     }
 
     public static Response getHttpResponse(String completeURLPath) {

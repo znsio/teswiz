@@ -4,6 +4,16 @@ This guide provides a concrete example of implementing an API-level test in Tesw
 
 ---
 
+## Environment Issue Detection
+
+Every request made through `RestAssuredService` is automatically checked for `502`, `503`, and `504` responses by `EnvironmentIssueFilter`. These status codes are never a valid test expectation — they mean the target service is unavailable — so the filter throws `EnvironmentSetupException` immediately, before the response reaches your business layer or step definitions. This keeps environment outages from being misreported as test/assertion failures.
+
+If a specific run genuinely needs to bypass this (e.g. a test that intentionally exercises a mocked gateway returning one of these codes), disable it via an environment variable or system property:
+
+    DISABLE_ENVIRONMENT_ISSUE_FILTER=true
+
+---
+
 ## 1. Feature File (`weather-api.feature`)
 ```gherkin
 @api
