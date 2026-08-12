@@ -1,3 +1,18 @@
+## 1.0.32
+- Add tests for EnvironmentIssueFilter and its opt-out flag
+- 🔄 Update README with latest commit ID - 0c574e4
+- Wire EnvironmentIssueFilter into RestAssuredService, on by default
+- 🔄 Update README with latest commit ID - a83cb28
+- Track docs/images/ despite the blanket *.png gitignore rule
+- Fix stale org references and broken dependency guidance across docs
+- Add DocumentationLinksTest to guard against broken doc links
+- Fix broken links across README and docs
+- 🔄 Update README with latest commit ID - 3c7981e
+- Refactor publishRelease.sh into small, named functions
+- Retry Jitpack build trigger once if the tag isn't visible yet
+- Trigger Jitpack build right after tag push, before the slow fat jar upload
+- 🔄 Update README with latest commit ID - 5fa27c1
+
 ## 1.0.31
 - Correct api/implementation split: reflection/weaving isn't a real API leak
 - 🔄 Update README with latest commit ID - c25dadc
