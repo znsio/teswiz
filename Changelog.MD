@@ -1,3 +1,7 @@
+## 1.0.33
+- Fix duplicated URL in EnvironmentIssueFilter error message
+- 🔄 Update README with latest commit ID - 47400ac
+
 ## 1.0.32
 - Add tests for EnvironmentIssueFilter and its opt-out flag
 - 🔄 Update README with latest commit ID - 0c574e4
