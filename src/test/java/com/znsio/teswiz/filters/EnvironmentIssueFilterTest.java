@@ -31,8 +31,7 @@ class EnvironmentIssueFilterTest {
         ctx = mock(FilterContext.class);
         response = mock(Response.class);
 
-        when(requestSpec.getBaseUri()).thenReturn("https://example.com");
-        when(requestSpec.getURI()).thenReturn("/health");
+        when(requestSpec.getURI()).thenReturn("https://example.com/health");
         when(ctx.next(any(), any())).thenReturn(response);
     }
 
@@ -48,6 +47,16 @@ class EnvironmentIssueFilterTest {
                 .hasMessageContaining(String.valueOf(statusCode))
                 .hasMessageContaining("https://example.com/health")
                 .hasMessageContaining("Bad Gateway");
+    }
+
+    @Test
+    void doesNotDuplicateBaseUriInExceptionMessage() {
+        when(response.getStatusCode()).thenReturn(502);
+        when(response.getBody()).thenReturn(mock(io.restassured.response.ResponseBody.class));
+        when(response.getBody().asString()).thenReturn("Bad Gateway");
+
+        assertThatThrownBy(() -> filter.filter(requestSpec, responseSpec, ctx))
+                .hasMessageNotContaining("https://example.comhttps://example.com");
     }
 
     @ParameterizedTest

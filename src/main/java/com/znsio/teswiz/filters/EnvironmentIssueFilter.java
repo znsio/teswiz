@@ -30,7 +30,7 @@ public class EnvironmentIssueFilter implements Filter {
         int status = response.getStatusCode();
 
         if (status == HTTP_BAD_GATEWAY || status == HTTP_SERVICE_UNAVAILABLE || status == HTTP_GATEWAY_TIMEOUT) {
-            String url = requestSpec.getBaseUri() + requestSpec.getURI();
+            String url = requestSpec.getURI();
             String body = response.getBody().asString();
             String truncatedBody = body.length() <= 200 ? body : body.substring(0, 200) + "...";
 
