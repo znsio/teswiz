@@ -5,7 +5,9 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.testng.TestNgGroupSelection;
 import com.znsio.teswiz.testng.TestNgRunner;
+import com.znsio.teswiz.testng.TestNgTagExpressionParser;
 import com.znsio.teswiz.testng.TestNgTestClassDiscovery;
 import com.znsio.teswiz.web.WebEngine;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
@@ -75,7 +77,8 @@ public class Runner {
         String testClassesPackage = testClassesPackageDir.replace('/', '.');
         List<String> testClasses = TestNgTestClassDiscovery.discoverTestClassesIn(testClassesPackage);
         LOGGER.info("Begin running {} TestNG test class(es) discovered in package '{}'", testClasses.size(), testClassesPackage);
-        boolean allTestsPassed = TestNgRunner.run(testClasses, Setup.getTestNgGroups(),
+        TestNgGroupSelection groupSelection = TestNgTagExpressionParser.parse(Setup.getRawTagBeforeCucumberInference());
+        boolean allTestsPassed = TestNgRunner.run(testClasses, groupSelection,
                 Setup.getIntegerValueFromConfigs(PARALLEL));
         LOGGER.info("TestNG execution passed: {}", allTestsPassed);
         Setup.cleanUpExecutionEnvironment();

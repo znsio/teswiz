@@ -235,7 +235,6 @@ dependencies {
     // public API surface even though the classes involved happen to be public.
     implementation "com.browserstack:browserstack-local-java:1.1.9"
     implementation 'com.epam.reportportal:agent-java-cucumber6:5.5.7'
-    implementation 'com.epam.reportportal:client-java:5.4.15'
     implementation "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
     implementation "com.github.erosb:everit-json-schema:1.14.6"
     implementation "com.github.vidstige:jadb:$jadbVersion"

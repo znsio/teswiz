@@ -1,5 +1,6 @@
 package com.znsio.teswiz.testng;
 
+import com.znsio.teswiz.testng.fixtures.AlwaysFailingButExcludableTestNgTest;
 import com.znsio.teswiz.testng.fixtures.AlwaysFailingTestNgTest;
 import com.znsio.teswiz.testng.fixtures.AlwaysPassingTestNgTest;
 import com.znsio.teswiz.testng.fixtures.ThreadRecordingTestNgTest;
@@ -19,6 +20,7 @@ class TestNgTestClassDiscoveryTest {
         assertThat(discovered).containsExactlyInAnyOrder(
                 AlwaysPassingTestNgTest.class.getName(),
                 AlwaysFailingTestNgTest.class.getName(),
+                AlwaysFailingButExcludableTestNgTest.class.getName(),
                 ThreadRecordingTestNgTest.class.getName());
     }
 

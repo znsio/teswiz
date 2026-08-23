@@ -1,6 +1,7 @@
 package com.znsio.teswiz.testng;
 
 import com.znsio.teswiz.runner.Setup;
+import com.znsio.teswiz.testng.fixtures.AlwaysFailingButExcludableTestNgTest;
 import com.znsio.teswiz.testng.fixtures.AlwaysFailingTestNgTest;
 import com.znsio.teswiz.testng.fixtures.AlwaysPassingTestNgTest;
 import com.znsio.teswiz.testng.fixtures.ThreadRecordingTestNgTest;
@@ -25,7 +26,7 @@ class TestNgRunnerTest {
     void shouldReportSuccessWhenAllTestsPass() {
         boolean result = TestNgRunner.run(
                 List.of(AlwaysPassingTestNgTest.class.getName()),
-                List.of("fixture"),
+                includedOnly("fixture"),
                 1);
 
         assertThat(result).isTrue();
@@ -35,10 +36,20 @@ class TestNgRunnerTest {
     void shouldReportFailureWhenAnyTestFails() {
         boolean result = TestNgRunner.run(
                 List.of(AlwaysFailingTestNgTest.class.getName()),
-                List.of("fixture"),
+                includedOnly("fixture"),
                 1);
 
         assertThat(result).isFalse();
+    }
+
+    @Test
+    void shouldSkipExcludedGroupEvenWhenItAlsoMatchesAnIncludedGroup() {
+        boolean result = TestNgRunner.run(
+                List.of(AlwaysPassingTestNgTest.class.getName(), AlwaysFailingButExcludableTestNgTest.class.getName()),
+                new TestNgGroupSelection(List.of("fixture"), List.of("excludeme")),
+                1);
+
+        assertThat(result).as("The excluded, always-failing test should not have run").isTrue();
     }
 
     @Test
@@ -47,11 +58,15 @@ class TestNgRunnerTest {
 
         TestNgRunner.run(
                 List.of(ThreadRecordingTestNgTest.class.getName()),
-                List.of("fixture"),
+                includedOnly("fixture"),
                 2);
 
         Set<Long> distinctThreadIds = Set.copyOf(ThreadRecordingTestNgTest.observedThreadIds);
         assertThat(distinctThreadIds).as("Expected test methods to run on more than one thread")
                 .hasSizeGreaterThan(1);
+    }
+
+    private static TestNgGroupSelection includedOnly(String... groups) {
+        return new TestNgGroupSelection(List.of(groups), List.of());
     }
 }

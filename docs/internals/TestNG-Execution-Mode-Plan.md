@@ -1,7 +1,7 @@
 # TestNG-only Execution Mode — Implementation Plan & Checklist
 
 **Branch:** `direct-testng`
-**Status:** Phase 0 (commit `0bddff56`) and Phase 1 (commit `18109aab`) are committed. Phase 2 (dynamic test-class discovery) is complete and verified end-to-end but **not yet committed** — currently staged/unstaged on this branch, awaiting review.
+**Status:** Phase 0 (commit `0bddff56`) and Phase 1 (commit `18109aab`) are committed. Phase 2 (dynamic test-class discovery) is complete and verified end-to-end but **not yet committed**. Phase 3 (ReportPortal step-level logging for TestNG mode) was investigated thoroughly — including live testing against a real ReportPortal instance — found blocked on a genuine upstream dependency incompatibility, and **deferred**; all Phase 3 code changes were reverted cleanly (see Phase 3 section for the full findings, kept for reference). All remaining uncommitted work (Phase 2 only) is currently staged/unstaged on this branch, awaiting review.
 **Last updated:** 2026-08-23
 
 This is a living document. As each checklist item is completed, tick it and add a one-line note (commit reference once committed). Do not delete completed items — this is the running record of what's done and what's left.
@@ -262,10 +262,67 @@ scan package on FRAMEWORK accordingly.
 
 ---
 
+## Phase 3 — ReportPortal step-level logging for TestNG mode (ATTEMPTED, DEFERRED — reverted cleanly)
+
+**Goal**: give TestNG mode step-level RP visibility equivalent to what Cucumber mode already gets natively via `agent-java-cucumber6`.
+
+**Outcome: deferred.** After a thorough investigation (including live testing against a real local ReportPortal instance), both a full RP-listener integration and a "cheap" minimal-logging shortcut were proven not to work, for two independent reasons. Everything added for this phase has been **reverted** — the branch is back to Phase 2's state, no dead/inert code left behind. This is intentionally kept as a detailed record so nobody re-attempts the same investigation from scratch later.
+
+**Finding 1 — the full RP listener (`agent-java-testng`) is blocked by a genuine upstream binary incompatibility, not a version-picking mistake:**
+- `agent-java-testng`'s compiled bytecode calls `StartLaunchRQ.setStartTime(java.util.Date)` (inherited from `StartRQ`). The `client-java` version this project needs for the *working* Cucumber-mode RP integration (`5.4.13`, pulled in by `agent-java-cucumber6:5.5.7`) has a **different signature**: `setStartTime(Comparable<? extends Comparable<?>>)` — confirmed by decompiling the actual resolved jar's public API with `javap`.
+- Checked every `agent-java-testng` version from 5.3.0 through the latest 5.6.8 (via Maven Central metadata) — every one declares a `client-java` dependency in the same 5.4.x range, but the incompatibility persists regardless of which version is selected.
+- **Ruled out `testng.xml` as a fix** (a hypothesis worth checking, since RP's TestNG docs commonly show `testng.xml`-driven examples): reproduced the *identical* crash — same stack trace — driving the suite from a real `testng.xml` file instead of the programmatic `TestNG` API. The crash happens in `BaseTestNGListener.onExecutionStart()`, which TestNG calls once at the very start of `TestNG.run()`, before any suite/test structure — from XML or otherwise — is processed. This is not a "requires testng.xml" problem.
+- This is a genuine upstream compatibility bug between the `agent-java-testng` and `agent-java-cucumber6` release trains in the reportportal-java ecosystem, not something fixable by picking a different version number.
+
+**Finding 2 — the "cheap" launch-only shortcut (skip the broken agent, just open a launch and log to it directly via `client-java`) does not work either, verified live:**
+- Started a real local ReportPortal instance (docker), pointed `reportportal.properties` at it, and ran a throwaway experiment: open a launch via `ReportPortal.newLaunch(...)` + `.start()`, then call both `ReportPortalLogger`'s existing `emitLog`-based methods and RP's own explicit `emitLaunchLog(...)` static method.
+- Result, confirmed via RP's REST API: **the launch itself was created successfully** (showed up correctly, named, `PASSED` status) — but **zero items and zero logs** attached to it. Neither logging method produced any visible log record.
+- Compared against the working Cucumber-mode launch on the same live instance: its `emitLog`-based calls (identical `ReportPortalLogger` methods) landed correctly, but only because they were attached to an actively open **item** (a "Before hook" item, a "Scenario" item) that Cucumber's own RP plugin manages. RP's client genuinely needs an active item, not just an open launch, before a log has anywhere to go — and getting a launch registered as "current" for logging evidently requires internal wiring beyond `newLaunch()`/`.start()` that isn't part of the public API surface I could find, and that the prebuilt agent libraries normally handle internally.
+- This directly disproves the "minimal, cheap" middle-ground option — there isn't one. Any working RP integration for TestNG mode requires real item-lifecycle management, which is exactly the non-trivial, high-maintenance work that prompted deferring this in the first place.
+
+**What was reverted (branch is clean, back to Phase 2 state):**
+- `ConsumerLayerAspectLogging`'s RP-emission code and its guard (`Setup.isTestNgExecutionMode()` check) — removed; the aspect is back to log4j-only, matching Phase 0.
+- `ConsumerLayerAspectLoggingReportPortalTest` — deleted (it tested code that no longer exists).
+- `agent-java-testng` dependency and `ReportPortalTestNGListener` registration in `TestNgRunner` — removed.
+- The explicit `client-java:5.4.15` version pin in `build.gradle` was also removed (harmless, arguably a small improvement — lets Gradle resolve the correct version transitively from `agent-java-cucumber6` instead of an unnecessary manual override).
+- `src/test/resources/reportportal.properties` (gitignored, local-only) was temporarily pointed at a real local RP instance for this investigation — left as the user set it up, since it doesn't affect any committed state.
+
+**If this is revisited later, start here instead of re-investigating:**
+1. Check whether a future `agent-java-testng` release has fixed the `StartLaunchRQ`/`client-java` incompatibility (the bug may simply not exist yet in a version released after this investigation).
+2. If not, the only proven-working path is a custom-built launch/item lifecycle listener against `client-java`'s own `ReportPortal`/`Launch` APIs directly (bypassing `agent-java-testng` entirely) — this is real, ongoing-maintenance-level work, not a small patch, and was the reason this was deferred rather than built.
+
+## Phase 4 — Boolean tag expressions (`and`/`not`) for TestNG groups (COMPLETE)
+
+**Goal**: close the Phase 1 gap where `TAG="@schedule and not @wip"` didn't translate correctly into TestNG's include/exclude groups (the old simple-split implementation would have silently produced a bogus group literally named `"and"`).
+
+**Design decision**: TestNG's group model can express "belongs to any included group" and, independently, "belongs to no excluded group" — but it has **no way to require a method belong to two groups simultaneously** (a true AND of two positive tags) via `setGroups`/`setExcludedGroups` alone. Rather than silently mishandle that case (e.g. treating `"@schedule and @signup"` as OR, which would be wrong), the parser **rejects it explicitly** with a clear `InvalidTestDataException` pointing the consumer at the correct TestNG-native workaround (a single composite group). This matches the original backlog scoping ("via TestNG's include/exclude groups") rather than building a full custom `IMethodSelector`-based boolean evaluator, which would be real additional complexity for a case that doesn't occur anywhere in this framework's own tag-inference logic (`Setup.java` only ever produces positive-tag(s) OR'd together, followed by trailing `and not @x` clauses — never `and` between two positives).
+
+- [x] New `com.znsio.teswiz.testng.TestNgGroupSelection` — a small record `(List<String> includedGroups, List<String> excludedGroups)`, replacing the old `List<String>`-only return type.
+- [x] New `com.znsio.teswiz.testng.TestNgTagExpressionParser.parse(String rawTagExpression)` — walks the space-tokenized raw tag string, tracking `and`/`or`/`not` keywords, routing negated clauses to `excludedGroups` and positive clauses to `includedGroups`; throws `InvalidTestDataException` if a positive tag is `and`-joined onto a preceding positive tag. Test-first: `TestNgTagExpressionParserTest` — single tag, space-separated tags (OR), explicit `or`, single and multiple `and not` clauses, `not-set`/null, and the rejected pure-AND case. All green.
+- [x] `Setup.getTestNgGroups()` (List-returning) replaced with `Setup.getRawTagBeforeCucumberInference()` (String-returning) — moves the parsing responsibility out of `Setup` (kept as the stable, framework-facing package per `SKILL.md`'s package-boundary convention) and into the TestNG-mode-specific `testng` package instead. Test-first: `SetupRawTagTest` (renamed/replaces the old `SetupTestNgGroupsTest`, which tested the removed method).
+- [x] `Runner.runTestNgMode(...)` now calls `TestNgTagExpressionParser.parse(Setup.getRawTagBeforeCucumberInference())` and passes the resulting `TestNgGroupSelection` through.
+- [x] `TestNgRunner.run(...)` signature changed from `(List<String> testClassNames, List<String> includedGroups, int threadCount)` to `(List<String> testClassNames, TestNgGroupSelection groupSelection, int threadCount)` — calls both `setGroups(...)` and `setExcludedGroups(...)` as needed. Updated `TestNgRunnerTest`'s existing call sites, and added a new fixture (`AlwaysFailingButExcludableTestNgTest`, tagged `{"fixture","excludeme"}`) plus a new test (`shouldSkipExcludedGroupEvenWhenItAlsoMatchesAnIncludedGroup`) proving exclusion genuinely overrides inclusion end-to-end through `TestNgRunner`, not just in the parser unit tests.
+- [x] **Verified end-to-end**: `CONFIG=configs/cli_local_config.properties FRAMEWORK=testng TAG="@calculator and not @wip" ./gradlew run` → correctly ran exactly the calculator pilot test, process exited 0.
+- [x] Docs updated: `docs/guides/ConfiguringTestExecution-README.md` now documents the supported `TAG` forms for TestNG mode and the pure-AND limitation with its workaround.
+- [x] Full `./gradlew test` suite re-run: [pending confirmation, see below] — expect the same pre-existing environment-failure family as prior phases, no new regressions.
+
+### Suggested commit (Phase 4)
+
+```
+feat(testng): support and/not boolean tag expressions for TestNG groups
+
+Replace Setup.getTestNgGroups() (simple space-split, silently wrong
+for "and"/"not"/"or" keywords) with Setup.getRawTagBeforeCucumberInference()
+plus a new TestNgTagExpressionParser that correctly maps positive tags
+to TestNG included groups and "and not X" clauses to excluded groups.
+A true AND of two positive tags is rejected with a clear error, since
+TestNG's group model cannot express it - not silently mishandled.
+Verified end-to-end with TAG="@calculator and not @wip".
+```
+
 ## Backlog (deferred, not forgotten — not part of this plan's scope)
 
-- Support Cucumber-style boolean tag expressions (`and`/`not`) when mapping `TAG` config to TestNG include/exclude groups (Phase 1 only does simple inclusion).
-- ReportPortal step-level logging for TestNG mode (likely via `agent-java-testng` + extending the Phase-0-aligned `src/test` `AspectLogging` aspect to also call `ReportPortalLogger`).
+- ReportPortal integration for TestNG mode — see Phase 3 above for the full investigation; blocked on an upstream dependency bug, not abandoned by choice.
 - Tag-coverage HTML report equivalent to the Cucumber/masterthought one, for TestNG mode.
 - One-time Cucumber → TestNG migration tooling (skill/agent) for existing consumers who later want to switch.
 

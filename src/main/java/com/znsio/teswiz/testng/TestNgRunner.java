@@ -8,15 +8,18 @@ import java.util.List;
 public final class TestNgRunner {
     private TestNgRunner() { }
 
-    public static boolean run(List<String> testClassNames, List<String> includedGroups, int threadCount) {
+    public static boolean run(List<String> testClassNames, TestNgGroupSelection groupSelection, int threadCount) {
         TestNG testNg = new TestNG();
         testNg.setTestClasses(resolveTestClasses(testClassNames));
         testNg.setParallel(XmlSuite.ParallelMode.METHODS);
         testNg.setThreadCount(threadCount);
         testNg.setUseDefaultListeners(false);
         testNg.addListener(new TeswizTestNgListener());
-        if (!includedGroups.isEmpty()) {
-            testNg.setGroups(String.join(",", includedGroups));
+        if (!groupSelection.includedGroups().isEmpty()) {
+            testNg.setGroups(String.join(",", groupSelection.includedGroups()));
+        }
+        if (!groupSelection.excludedGroups().isEmpty()) {
+            testNg.setExcludedGroups(String.join(",", groupSelection.excludedGroups()));
         }
 
         testNg.run();

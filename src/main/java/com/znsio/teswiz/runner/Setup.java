@@ -740,16 +740,8 @@ public class Setup {
         return FRAMEWORK_TESTNG.equalsIgnoreCase(configs.get(FRAMEWORK));
     }
 
-    public static List<String> getTestNgGroups() {
-        String rawTag = configs.get(RAW_TAG_BEFORE_CUCUMBER_INFERENCE);
-        if (null == rawTag || rawTag.isEmpty() || rawTag.equalsIgnoreCase(NOT_SET)) {
-            return List.of();
-        }
-        List<String> groups = new ArrayList<>();
-        for (String tag : rawTag.split("\\s+")) {
-            groups.add(tag.startsWith("@") ? tag.substring(1) : tag);
-        }
-        return groups;
+    public static String getRawTagBeforeCucumberInference() {
+        return configs.get(RAW_TAG_BEFORE_CUCUMBER_INFERENCE);
     }
 
     public static String getIntegerValueAsStringFromConfigs(String key) {
