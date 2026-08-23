@@ -223,6 +223,7 @@ dependencies {
     api 'io.cucumber:cucumber-java:7.34.4'
     api 'io.cucumber:cucumber-testng:7.34.4'
     api "org.testng:testng:7.12.0"
+    api "org.reflections:reflections:0.10.2"
     api "io.rest-assured:rest-assured:5.5.1"
     api "org.assertj:assertj-core:3.27.7"
     api "org.json:json:20250107"
@@ -386,9 +387,12 @@ tasks.register('run', JavaExec) {
 //        configFile = System.getenv("CONFIG") ? System.getenv("CONFIG") : configFile
 
         systemProperties = System.properties as Map<String, ?>
+        def testClassesOrStepDefsPackage = "testng".equalsIgnoreCase(System.getenv("FRAMEWORK"))
+                ? "com/znsio/teswiz/testng"
+                : "com/znsio/teswiz/steps"
         def runnerArgs = [
                 "${configFile}",
-                "com/znsio/teswiz/steps",
+                testClassesOrStepDefsPackage,
                 "./src/test/resources/com/znsio/teswiz/features"
         ]
         args = runnerArgs

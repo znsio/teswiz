@@ -1,7 +1,7 @@
 # TestNG-only Execution Mode — Implementation Plan & Checklist
 
 **Branch:** `direct-testng`
-**Status:** Phase 0 and Phase 1 (walking skeleton) complete and verified end-to-end
+**Status:** Phase 0, Phase 1 (walking skeleton), and Phase 2 (dynamic test-class discovery) complete and verified end-to-end
 **Last updated:** 2026-08-23
 
 This is a living document. As each checklist item is completed, tick it and add a one-line note (commit reference once committed). Do not delete completed items — this is the running record of what's done and what's left.
@@ -216,6 +216,50 @@ CONFIG=configs/cli_local_config.properties FRAMEWORK=testng TAG=@calculator ./gr
 ```
 Success criteria: log4j output shows the pilot and data-driven tests executing (data-driven test running 4 times, once per crypto symbol), evidence of more than one thread ID (parallelism), `TeswizTestNgListener` firing `Hooks` setup/teardown around each test, process exit status correctly reflecting pass/fail, no ReportPortal calls in this phase.
 
+**Phase 2:**
+```bash
+./gradlew test --tests "com.znsio.teswiz.testng.TestNgTestClassDiscoveryTest"
+```
+Same end-to-end command as Phase 1 — now backed by discovery instead of a hardcoded list.
+
+---
+
+## Phase 2 — Dynamic test-class discovery (Cucumber `--glue` equivalent)
+
+**Goal**: replace Phase 1's hardcoded two-class pilot list in `Runner.runTestNgMode(...)` with classpath scanning, so TestNG mode can run a consumer's actual test suite, not just the walking-skeleton pilots.
+
+Decisions (confirmed):
+- Scanning mechanism: **`org.reflections:reflections:0.10.2`** (new dependency) rather than a hand-rolled scanner — well-established, purpose-built for exactly this, handles jar/classpath edge cases we'd otherwise have to get right ourselves.
+- Scan-package config: **reuses the existing `Runner` constructor's second arg** (`args[1]`, today the Cucumber `--glue` package, e.g. `com/znsio/teswiz/steps`) — no new config surface. When `FRAMEWORK=testng`, this same arg is reinterpreted as the TestNG scan package (slash-to-dot converted). teswiz's own `build.gradle` `run` task now branches this value on `FRAMEWORK` (`com/znsio/teswiz/testng` for TestNG mode, unchanged `com/znsio/teswiz/steps` for Cucumber mode) purely for its own dogfooding runs — a real consumer passes their own package via their own invocation.
+
+- [x] Added `org.reflections` dependency (`build.gradle`).
+- [x] New `src/main/java/com/znsio/teswiz/testng/TestNgTestClassDiscovery.java` — `discoverTestClassesIn(String packageName)` returns every class with at least one `@org.testng.annotations.Test`-annotated method, found via `Reflections(packageName, Scanners.MethodsAnnotated)`. Test-first: `TestNgTestClassDiscoveryTest` (discovers the 3 existing `testng.fixtures` classes; returns empty for a package with none). Green.
+- [x] `Runner.runTestNgMode(...)` now takes the scan-package arg, converts `/` to `.`, calls the discovery class instead of the removed `TESTNG_PILOT_TEST_CLASSES` constant.
+- [x] `build.gradle`'s `run` task branches the scan-package arg on `FRAMEWORK` for teswiz's own dogfood runs.
+- [x] **Verified end-to-end**, same command as Phase 1 (`FRAMEWORK=testng TAG=@calculator ./gradlew run`): log confirms `"Begin running 5 TestNG test class(es) discovered in package 'com.znsio.teswiz.testng'"` (the 2 real pilots + the 3 `fixtures` classes used by `TestNgRunnerTest`/`TestNgTestClassDiscoveryTest`), but group filtering correctly narrowed execution to just the 1 matching test (`Total tests run: 1, Passes: 1`) — same result as Phase 1's hardcoded-list run.
+- [x] Full `./gradlew test` suite re-run: same pre-existing failure family as Phase 0/1's baseline (Playwright browser binaries missing locally, one network timeout) — no new regressions.
+
+**Known characteristic, not a bug**: `Reflections` scans a package **and all its subpackages**, so scanning `com.znsio.teswiz.testng` also picks up `com.znsio.teswiz.testng.fixtures` (teswiz's own test-support fixtures, tagged `groups = "fixture"`). Group-based `TAG` filtering keeps this harmless in practice (fixtures never match a real group unless someone explicitly runs `TAG=@fixture`), but it does mean "discovered" counts include incidental fixture/support classes living under the scanned package tree — worth keeping test-only fixtures out of a consumer's main scan package if that noise matters to them.
+
+### Suggested commits (Phase 2)
+
+```
+feat(testng): add org.reflections-based TestNG test-class discovery
+
+Add TestNgTestClassDiscovery.discoverTestClassesIn(package), scanning
+for @Test-annotated methods via org.reflections. Replaces Phase 1's
+hardcoded two-class pilot list, letting TestNG mode run a consumer's
+actual test suite.
+```
+```
+feat(runner): wire dynamic test-class discovery into Runner.runTestNgMode
+
+Reinterpret the existing Cucumber --glue package arg as the TestNG
+scan package when FRAMEWORK=testng (slash-to-dot converted) - no new
+config surface. build.gradle's run task branches its own dogfood-run
+scan package on FRAMEWORK accordingly.
+```
+
 ---
 
 ## Backlog (deferred, not forgotten — not part of this plan's scope)
@@ -223,7 +267,6 @@ Success criteria: log4j output shows the pilot and data-driven tests executing (
 - Support Cucumber-style boolean tag expressions (`and`/`not`) when mapping `TAG` config to TestNG include/exclude groups (Phase 1 only does simple inclusion).
 - ReportPortal step-level logging for TestNG mode (likely via `agent-java-testng` + extending the Phase-0-aligned `src/test` `AspectLogging` aspect to also call `ReportPortalLogger`).
 - Tag-coverage HTML report equivalent to the Cucumber/masterthought one, for TestNG mode.
-- Dynamic classpath discovery of TestNG test classes (Cucumber's `--glue` equivalent) — Phase 1 uses a fixed, hardcoded pilot test class list.
 - One-time Cucumber → TestNG migration tooling (skill/agent) for existing consumers who later want to switch.
 
 ## Open items

@@ -6,6 +6,7 @@ import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
 import com.znsio.teswiz.testng.TestNgRunner;
+import com.znsio.teswiz.testng.TestNgTestClassDiscovery;
 import com.znsio.teswiz.web.WebEngine;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
@@ -36,11 +37,6 @@ public class Runner {
     public static final String WARN = "WARN";
 
     private static final String TESWIZ_STEPS_PACKAGE = "com.znsio.teswiz.steps";
-    // Phase 1 walking skeleton: fixed pilot test classes, not dynamic classpath discovery.
-    // A future phase adds a Cucumber --glue equivalent for TestNG mode.
-    private static final List<String> TESTNG_PILOT_TEST_CLASSES = List.of(
-            "com.znsio.teswiz.testng.InteractiveCalculatorCliTestNgTest",
-            "com.znsio.teswiz.testng.CryptoApiPriceChangeDataDrivenTestNgTest");
     private static final Logger LOGGER = LogManager.getLogger(Runner.class.getName());
     private static final String INVALID_KEY_MESSAGE = "Invalid key name ('%s') provided";
 
@@ -69,15 +65,17 @@ public class Runner {
 
     private void run(List<String> args, String stepDefsDir, String featuresDir) {
         if (Setup.isTestNgExecutionMode()) {
-            runTestNgMode();
+            runTestNgMode(stepDefsDir);
         } else {
             runCucumberMode(args, stepDefsDir, featuresDir);
         }
     }
 
-    private void runTestNgMode() {
-        LOGGER.info("Begin running tests using TestNG");
-        boolean allTestsPassed = TestNgRunner.run(TESTNG_PILOT_TEST_CLASSES, Setup.getTestNgGroups(),
+    private void runTestNgMode(String testClassesPackageDir) {
+        String testClassesPackage = testClassesPackageDir.replace('/', '.');
+        List<String> testClasses = TestNgTestClassDiscovery.discoverTestClassesIn(testClassesPackage);
+        LOGGER.info("Begin running {} TestNG test class(es) discovered in package '{}'", testClasses.size(), testClassesPackage);
+        boolean allTestsPassed = TestNgRunner.run(testClasses, Setup.getTestNgGroups(),
                 Setup.getIntegerValueFromConfigs(PARALLEL));
         LOGGER.info("TestNG execution passed: {}", allTestsPassed);
         Setup.cleanUpExecutionEnvironment();
