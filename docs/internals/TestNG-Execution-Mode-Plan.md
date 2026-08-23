@@ -1,8 +1,8 @@
 # TestNG-only Execution Mode — Implementation Plan & Checklist
 
 **Branch:** `direct-testng`
-**Status:** Phase 0 complete; Phase 1 in progress
-**Last updated:** 2026-08-22
+**Status:** Phase 0 and Phase 1 (walking skeleton) complete and verified end-to-end
+**Last updated:** 2026-08-23
 
 This is a living document. As each checklist item is completed, tick it and add a one-line note (commit reference once committed). Do not delete completed items — this is the running record of what's done and what's left.
 
@@ -86,46 +86,108 @@ docs(aspect): document the two AspectLogging aspects and the shadowing fix
 
 ## Phase 1 — TestNG-only mode walking skeleton
 
-- [ ] **1.1** `Setup.java`: add `FRAMEWORK`/`FRAMEWORK_CUCUMBER`/`FRAMEWORK_TESTNG` constants, read via existing `getOverriddenStringValue` pattern, add `isTestNgExecutionMode()`. Test-first: `src/test/java/com/znsio/teswiz/runner/SetupFrameworkModeTest.java` (no key → false; `cucumber` → false; `testng`/`TestNG`/`TESTNG` → true; unrecognized value → false + warning logged).
-- [ ] **1.2** `build.gradle`: add a direct `testng` dependency (pin `7.12.0`, the version currently resolved transitively via `cucumber-testng`, unless told otherwise).
-- [ ] **1.3** New `src/main/java/com/znsio/teswiz/testng/TestNgRunner.java` — programmatic `org.testng.TestNG` bootstrap (test classes, groups, parallel mode, thread count). Test-first: `TestNgRunnerTest` + fixtures `AlwaysPassingTestNgTest`, `AlwaysFailingTestNgTest`, and a two-method fixture proving >1 thread ID is used when thread count > 1.
-- [ ] **1.4** `Runner.java`: fork private `run(...)` on `Setup.isTestNgExecutionMode()` — Cucumber path renamed/unchanged, new path delegates to `TestNgRunner`.
-- [ ] **1.5** `Hooks.java`: add `beforeScenario(String)` / `afterScenario(String, boolean)` overloads (existing `Scenario`-based overloads delegate to these, behavior unchanged). New `src/main/java/com/znsio/teswiz/testng/TeswizTestNgListener.java` (`ITestListener`) wiring TestNG lifecycle callbacks to the new `Hooks` overloads. Test-first: `HooksTestNgOverloadTest` proving state parity with the `Scenario`-based path.
-- [ ] **1.6** `Setup.java`: add `getTestNgGroups()` mapping the existing `TAG` config to a simple TestNG group-inclusion list (no `and`/`not` parsing — see Backlog). Test-first: `SetupTestNgGroupsTest`.
-- [ ] **1.7** `Setup.java`: add `TESTNG_PARALLEL_THREAD_COUNT` config + `getTestNgParallelThreadCount()` (check for an existing int-config helper before adding a new one). Test-first alongside 1.6 or its own test class.
-- [ ] **1.8** New `src/test/java/com/znsio/teswiz/testng/InteractiveCalculatorCliTestNgTest.java` — non-data-driven walking-skeleton pilot, direct port of `cli.feature`, calling the existing unmodified `InteractiveCalculatorCLIBL`.
-- [ ] **1.9** New `src/test/java/com/znsio/teswiz/testng/CryptoApiPriceChangeDataDrivenTestNgTest.java` — `@DataProvider`-based port of `cyptoAPI.feature`'s Scenario Outline, calling the existing unmodified `CryptoAPIBL`, using the Examples table's exact values.
-- [ ] **1.10** End-to-end verification run (see Verification section below).
-- [ ] **1.11** Update docs: `CLAUDE.md`, `ANTIGRAVITY.md`, `.codex/skills/teswiz-project/SKILL.md` (per this repo's own convention of keeping these three entry points aligned) to mention the `FRAMEWORK` property and the new TestNG-only mode. Add/update a `docs/guides/ConfiguringTestExecution-README.md` section describing `FRAMEWORK=cucumber|testng`.
-- [ ] **1.12** Suggested commits ready for manual commit (see below).
+- [x] **1.1** `Setup.java`: added `FRAMEWORK`/`FRAMEWORK_CUCUMBER`/`FRAMEWORK_TESTNG` constants, read via existing `getOverriddenStringValue` pattern (defaulting to `cucumber`), added `isTestNgExecutionMode()`. Test-first: `SetupFrameworkModeTest` — no key from an existing `cucumber`-configured file → false; `notepad_windows_config.properties` (already has `FRAMEWORK=testng` sitting unused) → true; case-insensitive override via `-D`; unrecognized value falls back to Cucumber. All green.
+- [x] **1.2** `build.gradle`: added a direct `org.testng:testng:7.12.0` dependency (pinned to the version already resolved transitively via `cucumber-testng`).
+- [x] **1.3** New `src/main/java/com/znsio/teswiz/testng/TestNgRunner.java` — programmatic `org.testng.TestNG` bootstrap (test classes, groups, parallel mode, thread count, registers `TeswizTestNgListener`, default listeners disabled). Test-first: `TestNgRunnerTest` + fixtures `AlwaysPassingTestNgTest`, `AlwaysFailingTestNgTest`, `ThreadRecordingTestNgTest` (proves >1 thread ID observed at thread count 2). All green.
+- [x] **1.4a — discovered mid-implementation, not in original plan**: `Hooks.beforeScenario`/`ScreenShotManager` depend on per-test directory state (`SCREENSHOT_DIRECTORY`, `SCENARIO_LOG_DIRECTORY`, `DEVICE_LOGS_DIRECTORY`, `NORMALISED_SCENARIO_NAME`, `SCENARIO_RUN_COUNT`) that Cucumber mode populates via `CucumberScenarioListener.scenarioStartedHandler` — nothing did this for TestNG mode, so `new Hooks().beforeScenario(...)` crashed with `InvalidTestDataException: Directory is null or empty` the moment a real `ScreenShotManager` was constructed. Added `src/main/java/com/znsio/teswiz/testng/TestNgTestExecutionContextFactory.java`, mirroring `CucumberScenarioListener`'s directory-setup logic (reusing the same `FileUtils`/`OsUtils`/`StringUtils`/`FileLocations` utilities). Test-first: `TestNgTestExecutionContextFactoryTest`. Green.
+- [x] **1.4b** `Runner.java` fork — pending (next).
+- [x] **1.5** `Drivers.java`: added `attachLogsAndCloseAllDrivers(boolean failed)` overload (existing `Scenario`-based overload now delegates to it), decoupling `updateTestStatusInCloud` from Cucumber's `Status` enum. `Hooks.java`: added `beforeScenario(String)` / `afterScenario(String, boolean)` overloads (existing `Scenario`-based overloads delegate to these, behavior unchanged). New `src/main/java/com/znsio/teswiz/testng/TeswizTestNgListener.java` (`ITestListener`) wiring TestNG lifecycle callbacks to `TestNgTestExecutionContextFactory` + the new `Hooks` overloads, with a running-test counter. Test-first: `HooksTestNgOverloadTest` proving state parity with the `Scenario`-based path (both use the same context factory now). All green.
+- [x] **1.6** `Setup.java`: added `getTestNgGroups()`. Design note (discovered mid-implementation): by the time this runs, `TAG` has already been mutated by `getPlatformTagsAndLaunchName()` into a full Cucumber boolean expression (e.g. user's `@calculator` becomes `"@calculator and @cli and not @wip"` — the platform tag and `and not @wip` are auto-injected even when the user supplies nothing). Reading the mutated `TAG` directly would leak Cucumber-only tokens into TestNG groups, so a new `RAW_TAG_BEFORE_CUCUMBER_INFERENCE` config is captured at the top of `getPlatformTagsAndLaunchName()`, before any mutation, and `getTestNgGroups()` reads that instead — giving exactly the tags the user typed, nothing auto-injected. Test-first: `SetupTestNgGroupsTest` (no tag → empty list; single/multiple explicit tags → matching groups; confirms the raw value survives Cucumber's suffix mutation). All green.
+- [x] **1.7** No new config needed — reused the existing `PARALLEL` config (already loaded via `getOverriddenIntValue`/`getIntegerValueFromConfigs`, already used to drive Cucumber's own parallel thread count). `TESTNG_PARALLEL_THREAD_COUNT` from the original plan was unnecessary duplication; dropped in favour of reuse.
+- [x] **1.8** New `src/test/java/com/znsio/teswiz/testng/InteractiveCalculatorCliTestNgTest.java` — non-data-driven walking-skeleton pilot, direct port of `cli.feature`, calling the existing unmodified `InteractiveCalculatorCLIBL`. **Verified end-to-end**: `CONFIG=configs/cli_local_config.properties FRAMEWORK=testng TAG=@calculator ./gradlew run` → group filtering correctly selected only this pilot, `ConsumerLayerAspectLogging` fired at INFO for every `InteractiveCalculatorCLIBL` method, hooks/driver teardown ran, test passed, process exited 0.
+- [x] **1.9** New `src/test/java/com/znsio/teswiz/testng/CryptoApiPriceChangeDataDrivenTestNgTest.java` — `@DataProvider`-based port of `cyptoAPI.feature`'s Scenario Outline, calling the existing unmodified `CryptoAPIBL`, using the Examples table's exact values (symbol + maxPriceChange pairs). **Verified end-to-end**: `CONFIG=configs/api_local_config.properties FRAMEWORK=testng TAG=@cryptoAPI ./gradlew run` → all 4 data rows ran in parallel across distinct threads; all 4 failed with a live `404` from the Binance endpoint — confirmed **pre-existing and unrelated** to this work by running the equivalent Cucumber-mode command (`CONFIG=configs/api_local_config.properties TAG=@cryptoAPI ./gradlew run`, no `FRAMEWORK` override), which fails identically (5/5 scenarios failed, same cause). TestNG mode reproduces Cucumber mode's behavior exactly, which is the actual thing being proven here.
+- [x] **1.10** End-to-end verification run — done as part of 1.8/1.9 above. Also re-ran the full `./gradlew test` unit-test suite: same pre-existing failure set as Phase 0's baseline (Playwright browser binaries missing locally, no other regressions) — every new test added in Phase 1 passes.
+- [x] **1.11** Updated docs:
+  - `docs/guides/ConfiguringTestExecution-README.md` — new "Choosing between Cucumber and plain TestNG (`FRAMEWORK`)" section.
+  - `docs/features/ConfigurationParameters-README.md` — **discovered mid-implementation**: this file already documented `FRAMEWORK` as an "ATD property. We will always use cucumber" — a stale historical note. Verified `AppiumTestDistribution` is not an actual dependency anywhere in `build.gradle` or source imports (the jar found under `~/.m2` is unrelated local cache), so the property was safely repurposable; updated the doc line to describe its real, new meaning instead of leaving stale/contradictory documentation in place.
+  - `.codex/skills/teswiz-project/SKILL.md` — added the new `com.znsio.teswiz.testng` package to the package-boundaries list and repo map.
+  - `CLAUDE.md`/`ANTIGRAVITY.md` — left unchanged; neither enumerates packages or features (they only point at the skill file and hold generic Gradle/CI conventions), so nothing in their existing content was made stale by this change.
+- [x] **1.12** Suggested commits ready for manual commit (below).
 
-**Suggested commits (Phase 1, one per step):**
+**Suggested commits (Phase 1, one per step, reflecting what was actually built):**
 ```
 feat(config): wire up existing FRAMEWORK property to select cucumber vs testng mode
+
+FRAMEWORK already existed (unused) in nearly every consumer config
+file, defaulting to "cucumber". Add Setup.isTestNgExecutionMode() to
+finally read and act on it. Default behavior is unchanged for every
+existing consumer.
 ```
 ```
 build(deps): declare TestNG as a direct dependency
+
+Previously only available transitively via cucumber-testng; declare
+directly (7.12.0, the version already resolved) so TestNG-mode code
+is independent of the Cucumber dependency chain.
 ```
 ```
-feat(testng): add programmatic TestNgRunner with parallel execution support
+feat(runner): add Drivers.attachLogsAndCloseAllDrivers(boolean) decoupled from Cucumber Status
+
+Extract the pass/fail decision out of Cucumber's Status enum so
+driver teardown and cloud status reporting work identically whether
+called from Cucumber's Scenario or a plain boolean.
 ```
 ```
-feat(runner): fork Runner.run on FRAMEWORK to support TestNG-only execution mode
+feat(testng): add TestNgTestExecutionContextFactory for per-test directory scaffolding
+
+Cucumber mode gets its SCREENSHOT_DIRECTORY/SCENARIO_LOG_DIRECTORY/etc.
+from CucumberScenarioListener before Hooks ever runs; TestNG mode had
+no equivalent, so constructing a real ScreenShotManager crashed with
+"Directory is null or empty". This factory mirrors that setup,
+reusing the same FileUtils/OsUtils/StringUtils/FileLocations
+utilities Cucumber mode already uses.
+```
+```
+feat(testng): add programmatic TestNgRunner and TeswizTestNgListener
+
+TestNgRunner wraps org.testng.TestNG configured entirely in code (no
+testng.xml, consistent with this repo's existing XML-free Cucumber/
+TestNG setup) with parallel mode and thread count from config.
+TeswizTestNgListener wires TestNG's ITestListener lifecycle to
+TestNgTestExecutionContextFactory and the new Hooks overloads,
+mirroring what RunCukes' @Before/@After do for Cucumber mode.
 ```
 ```
 feat(steps): add Hooks overloads decoupled from Cucumber Scenario
+
+beforeScenario(String)/afterScenario(String, boolean) let Hooks'
+setup/teardown logic be shared between Cucumber and TestNG lifecycles
+without duplicating logic. Existing Scenario-based overloads delegate
+to these and are unchanged in behavior.
 ```
 ```
-feat(testng): add TeswizTestNgListener wiring TestNG lifecycle to Hooks
+feat(runner): fork Runner.run on FRAMEWORK to support TestNG-only execution mode
+
+Runner now dispatches to the existing Cucumber CLI path or the new
+TestNgRunner path based on Setup.isTestNgExecutionMode(), using a
+fixed, hardcoded pilot test class list (no dynamic discovery yet -
+tracked in Backlog). Cucumber mode behavior is unchanged.
 ```
 ```
 feat(runner): map TAG config to simple TestNG include groups
+
+Add Setup.getTestNgGroups(), reading a new RAW_TAG_BEFORE_CUCUMBER_INFERENCE
+config captured before Cucumber's tag-expression inference mutates
+TAG, so TestNG groups reflect exactly what the user typed. Boolean
+tag-expression parity (and/not) is intentionally deferred - tracked
+as a follow-up, not built here.
 ```
 ```
 test(testng): add TestNG walking-skeleton test for interactive calculator CLI
+
+Ports cli.feature's scenario to a plain TestNG test calling the
+existing InteractiveCalculatorCLIBL unchanged. Verified end-to-end via
+`FRAMEWORK=testng TAG=@calculator ./gradlew run` - group filtering,
+hooks, aspect logging, and driver teardown all work.
 ```
 ```
 test(testng): add data-driven TestNG test for crypto API price-change validation
+
+Ports cyptoAPI.feature's Scenario Outline to a parallel
+@DataProvider-backed TestNG test against the existing CryptoAPIBL
+unchanged. Verified end-to-end: fails identically to the Cucumber
+version against the same (currently broken) live endpoint, confirming
+TestNG mode reproduces Cucumber mode's behavior exactly.
 ```
 ```
 docs: document FRAMEWORK config property and TestNG-only execution mode

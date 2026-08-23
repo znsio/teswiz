@@ -77,6 +77,9 @@ public class Setup {
     public static final String SET_HARD_GATE = "SET_HARD_GATE";
     public static final String HEADLESS = "HEADLESS";
     public static final String SHOW_SENSITIVE_DATA = "SHOW_SENSITIVE_DATA";
+    public static final String FRAMEWORK = "FRAMEWORK";
+    public static final String FRAMEWORK_CUCUMBER = "cucumber";
+    public static final String FRAMEWORK_TESTNG = "testng";
     private static final Map<String, String> configs = new HashMap<>();
     private static final Map<String, Boolean> configsBoolean = new HashMap<>();
     private static final Map<String, Integer> configsInteger = new HashMap<>();
@@ -109,6 +112,7 @@ public class Setup {
     private static Properties properties;
     private static String configFilePath;
     private static Platform currentPlatform = Platform.android;
+    private static final String RAW_TAG_BEFORE_CUCUMBER_INFERENCE = "RAW_TAG_BEFORE_CUCUMBER_INFERENCE";
     private static final String AND_NOT_WIP = " and not @wip";
     private static final String AND_NOT_FAILING = " and not @failing";
     private static final String AND_FAILING = " and @failing";
@@ -387,6 +391,7 @@ public class Setup {
         configs.put(REMOTE_WEBDRIVER_GRID_PORT, getOverriddenStringValue(configs.get(REMOTE_WEBDRIVER_GRID_PORT_KEY), DEFAULT_WEBDRIVER_GRID_PORT));
         configsBoolean.put(RUN_IN_CI, getOverriddenBooleanValue(RUN_IN_CI, getBooleanValueFromPropertiesIfAvailable(RUN_IN_CI, false)));
         configs.put(TAG, getOverriddenStringValue(TAG, getStringValueFromPropertiesIfAvailable(TAG, NOT_SET)));
+        configs.put(FRAMEWORK, getOverriddenStringValue(FRAMEWORK, getStringValueFromPropertiesIfAvailable(FRAMEWORK, FRAMEWORK_CUCUMBER)));
         configs.put(TARGET_ENVIRONMENT, getOverriddenStringValue(TARGET_ENVIRONMENT, getStringValueFromPropertiesIfAvailable(TARGET_ENVIRONMENT, NOT_SET)));
         configs.put(TEST_DATA_FILE, getOverriddenStringValue(TEST_DATA_FILE, getStringValueFromPropertiesIfAvailable(TEST_DATA_FILE, NOT_SET)));
         configs.put(LAUNCH_NAME_SUFFIX, getOverriddenStringValue(LAUNCH_NAME_SUFFIX, getStringValueFromPropertiesIfAvailable(LAUNCH_NAME_SUFFIX, "")));
@@ -425,6 +430,7 @@ public class Setup {
         }
         String inferredTags = getCustomTags();
         String providedTags = configs.get(TAG);
+        configs.put(RAW_TAG_BEFORE_CUCUMBER_INFERENCE, providedTags);
         if (providedTags.isEmpty() || providedTags.equals(NOT_SET)) {
             LOGGER.info("\tTags not specified");
             launchName += " - " + currentPlatform;
@@ -728,6 +734,22 @@ public class Setup {
 
     public static int getIntegerValueFromConfigs(String key) {
         return configsInteger.get(key);
+    }
+
+    public static boolean isTestNgExecutionMode() {
+        return FRAMEWORK_TESTNG.equalsIgnoreCase(configs.get(FRAMEWORK));
+    }
+
+    public static List<String> getTestNgGroups() {
+        String rawTag = configs.get(RAW_TAG_BEFORE_CUCUMBER_INFERENCE);
+        if (null == rawTag || rawTag.isEmpty() || rawTag.equalsIgnoreCase(NOT_SET)) {
+            return List.of();
+        }
+        List<String> groups = new ArrayList<>();
+        for (String tag : rawTag.split("\\s+")) {
+            groups.add(tag.startsWith("@") ? tag.substring(1) : tag);
+        }
+        return groups;
     }
 
     public static String getIntegerValueAsStringFromConfigs(String key) {

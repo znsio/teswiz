@@ -215,6 +215,10 @@ public class Drivers {
     }
 
     public static void attachLogsAndCloseAllDrivers(Scenario scenario) {
+        attachLogsAndCloseAllDrivers(!scenario.getStatus().equals(Status.PASSED));
+    }
+
+    public static void attachLogsAndCloseAllDrivers(boolean failed) {
         long currentThreadId = Thread.currentThread().getId();
         LOGGER.info("Close all drivers for test on ThreadId: - {}", currentThreadId);
         TestExecutionContext context = getTestExecutionContext(currentThreadId);
@@ -225,7 +229,7 @@ public class Drivers {
         allAssignedUserPersonasAndDrivers.forEach((userPersona, driver) -> {
             LOGGER.info("Closing driver for the userPersonas: {}", userPersona);
             driver.getVisual().takeScreenshot("afterHooks", userPersona);
-            updateTestStatusInCloud(driver.getInnerDriver(), scenario.getStatus());
+            updateTestStatusInCloud(driver.getInnerDriver(), failed);
             validateVisualTestResults(userPersona, driver);
             attachLogsAndCloseDriver(userPersona, driver);
         });
@@ -239,15 +243,15 @@ public class Drivers {
         BrowserDriverManager.shutdownPlaywrightWorker(context);
     }
 
-    private static void updateTestStatusInCloud(WebDriver driver, Status cucumberScenarioStatus) {
-        LOGGER.info("updateTestStatusInCloud for Scenario with status: '{}'", cucumberScenarioStatus.name());
+    private static void updateTestStatusInCloud(WebDriver driver, boolean testFailed) {
+        LOGGER.info("updateTestStatusInCloud for Scenario with failed: '{}'", testFailed);
         long currentThreadId = Thread.currentThread().getId();
         SoftAssertions softly = Runner.getSoftAssertion(currentThreadId);
 
         String scenarioStatus = "passed";
         String scenarioFailureReasons = "Scenario passed";
 
-        if (!cucumberScenarioStatus.equals(Status.PASSED)) {
+        if (testFailed) {
             scenarioStatus = "failed";
             scenarioFailureReasons = "Assertion failure";
         }

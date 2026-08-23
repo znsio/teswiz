@@ -4,6 +4,19 @@ Test execution using teswiz is highly configurable. This enables you to control 
 
 See all the [Configuration parameters here](../features/ConfigurationParameters-README.md)
 
+### Choosing between Cucumber and plain TestNG (`FRAMEWORK`)
+
+By default, teswiz executes Cucumber `.feature` files via step definitions that call into your business/screen layers. If you don't need Gherkin's collaborative/BDD layer, you can instead write plain TestNG tests that call the same business/screen layers directly:
+
+* `FRAMEWORK=cucumber` (default) - runs `.feature` files via Cucumber, as today.
+* `FRAMEWORK=testng` - runs plain TestNG `@Test` classes instead, skipping the step-definition layer entirely.
+
+Sample command:
+
+    CONFIG=configs/cli_local_config.properties FRAMEWORK=testng TAG=@calculator ./gradlew run
+
+A project may contain both Cucumber feature files/step-defs and plain TestNG test classes, but a single execution runs only one mode - whichever `FRAMEWORK` selects. `TAG` filtering works the same way in both modes: in TestNG mode, tags map to TestNG groups (e.g. `@calculator` selects tests declared with `@Test(groups = "calculator")`). Only simple tag inclusion is supported in TestNG mode today - Cucumber's boolean tag expressions (`and`/`or`/`not`) are not yet supported for TestNG mode.
+
 ### Run Android app tests
 
 To run all the tests against the Android platform, run the following command:

@@ -222,6 +222,7 @@ dependencies {
     api "io.appium:java-client:10.1.1"
     api 'io.cucumber:cucumber-java:7.34.4'
     api 'io.cucumber:cucumber-testng:7.34.4'
+    api "org.testng:testng:7.12.0"
     api "io.rest-assured:rest-assured:5.5.1"
     api "org.assertj:assertj-core:3.27.7"
     api "org.json:json:20250107"

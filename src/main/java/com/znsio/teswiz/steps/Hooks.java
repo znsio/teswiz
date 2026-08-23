@@ -11,6 +11,7 @@ import com.znsio.teswiz.tools.ScreenShotManager;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
 import com.znsio.teswiz.tools.cmd.AsyncCommandLineExecutor;
 import io.cucumber.java.Scenario;
+import io.cucumber.java.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.SoftAssertions;
@@ -34,10 +35,14 @@ public class Hooks {
     }
 
     public void beforeScenario(Scenario scenario) {
+        beforeScenario(scenario.getName());
+    }
+
+    public void beforeScenario(String testName) {
         Object isHooksInitialized = testExecutionContext.getTestState(TEST_CONTEXT.HOOKS_INITIALIZED);
         LOGGER.info("Hooks: beforeScenario: isHooksInitialized: " + isHooksInitialized);
         if (null == isHooksInitialized) {
-            LOGGER.info("Hooks: ThreadId : '%d' :: beforeScenario: '%s'".formatted(threadId, scenario.getName()));
+            LOGGER.info("Hooks: ThreadId : '%d' :: beforeScenario: '%s'".formatted(threadId, testName));
             if (!Runner.isAPI() || !Runner.isCLI() || !Runner.isPDF()) {
                 testExecutionContext.addTestState(TEST_CONTEXT.SCREENSHOT_MANAGER, new ScreenShotManager());
             }
@@ -53,12 +58,16 @@ public class Hooks {
     }
 
     public void afterScenario(Scenario scenario) {
+        afterScenario(scenario.getName(), !scenario.getStatus().equals(Status.PASSED));
+    }
+
+    public void afterScenario(String testName, boolean failed) {
         Object isHooksInitialized = testExecutionContext.getTestState(TEST_CONTEXT.HOOKS_INITIALIZED);
         LOGGER.info("Hooks: afterScenario: isHooksInitialized: " + isHooksInitialized);
         if (null != isHooksInitialized) {
-            LOGGER.info("Hooks: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, scenario.getName()));
+            LOGGER.info("Hooks: ThreadId : '%d' :: afterScenario: '%s'".formatted(threadId, testName));
             testExecutionContext.addTestState(TEST_CONTEXT.HOOKS_INITIALIZED, null);
-            Drivers.attachLogsAndCloseAllDrivers(scenario);
+            Drivers.attachLogsAndCloseAllDrivers(failed);
             closeTheAsyncCommandLineExecutor();
             SoftAssertions softly = Runner.getSoftAssertion(threadId);
             LOGGER.info("Hooks: Assert all soft assertions");

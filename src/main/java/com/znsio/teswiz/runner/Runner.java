@@ -5,6 +5,7 @@ import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.testng.TestNgRunner;
 import com.znsio.teswiz.web.WebEngine;
 import com.znsio.teswiz.tools.JsonPrettyPrinter;
 import com.znsio.teswiz.tools.SensitiveDataMasker;
@@ -35,6 +36,11 @@ public class Runner {
     public static final String WARN = "WARN";
 
     private static final String TESWIZ_STEPS_PACKAGE = "com.znsio.teswiz.steps";
+    // Phase 1 walking skeleton: fixed pilot test classes, not dynamic classpath discovery.
+    // A future phase adds a Cucumber --glue equivalent for TestNG mode.
+    private static final List<String> TESTNG_PILOT_TEST_CLASSES = List.of(
+            "com.znsio.teswiz.testng.InteractiveCalculatorCliTestNgTest",
+            "com.znsio.teswiz.testng.CryptoApiPriceChangeDataDrivenTestNgTest");
     private static final Logger LOGGER = LogManager.getLogger(Runner.class.getName());
     private static final String INVALID_KEY_MESSAGE = "Invalid key name ('%s') provided";
 
@@ -62,6 +68,23 @@ public class Runner {
     }
 
     private void run(List<String> args, String stepDefsDir, String featuresDir) {
+        if (Setup.isTestNgExecutionMode()) {
+            runTestNgMode();
+        } else {
+            runCucumberMode(args, stepDefsDir, featuresDir);
+        }
+    }
+
+    private void runTestNgMode() {
+        LOGGER.info("Begin running tests using TestNG");
+        boolean allTestsPassed = TestNgRunner.run(TESTNG_PILOT_TEST_CLASSES, Setup.getTestNgGroups(),
+                Setup.getIntegerValueFromConfigs(PARALLEL));
+        LOGGER.info("TestNG execution passed: {}", allTestsPassed);
+        Setup.cleanUpExecutionEnvironment();
+        System.exit(allTestsPassed ? 0 : 1);
+    }
+
+    private void runCucumberMode(List<String> args, String stepDefsDir, String featuresDir) {
         args.add("--glue");
         args.add(stepDefsDir);
         // Always include teswiz's built-in, reusable step definitions (e.g. FigmaSteps,

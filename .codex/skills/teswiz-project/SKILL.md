@@ -13,6 +13,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
 - Step definitions used by sample tests: `src/main/java/com/znsio/teswiz/steps`
 - Unit tests: `src/test/java/com/znsio/teswiz`
 - Feature files: `src/test/resources/com/znsio/teswiz/features`
+- TestNG-only execution mode (alternative to Cucumber, see `FRAMEWORK` config property): `src/main/java/com/znsio/teswiz/testng`, pilot tests in `src/test/java/com/znsio/teswiz/testng`, docs in `docs/guides/ConfiguringTestExecution-README.md`
 - Playwright TS test-owned screen modules: `src/test/resources/playwright/screens`
 - Execution configs: `configs/<app>/...`
 - Capability files: `caps/<app>/...`
@@ -60,6 +61,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
   - `com.znsio.teswiz.web.provider.selenium`
   - `com.znsio.teswiz.web.playwright`
   - `com.znsio.teswiz.visual`
+  - `com.znsio.teswiz.testng` (TestNG-only execution mode support: `TestNgRunner`, `TeswizTestNgListener`, `TestNgTestExecutionContextFactory` - keeps `Runner`/`Hooks` as thin, mode-agnostic dispatchers)
 - When adding new Playwright, browser-config, session, or visual-helper code, do not place it in `runner` by default.
 - Shared app-path resolution, version detection, and download handling belongs in `com.znsio.teswiz.config.app`; keep `runner` compatibility wrappers only when they help avoid a breaking change.
 - Shared capability lookup and capability-file persistence belongs in `com.znsio.teswiz.config.capability`; keep `runner` compatibility wrappers only when they help avoid a breaking change.
