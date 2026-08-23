@@ -12,6 +12,47 @@ TEMP_NOTES=""
 JAR_FILE=""
 SOURCES_JAR_FILE=""
 FAT_JAR_FILE=""
+REUPLOAD_MISSING_ARTIFACTS=false
+
+print_usage() {
+  cat <<EOF
+Usage: ./publishRelease.sh [--reupload-missing-artifacts] [--version <version>]
+
+Options:
+  --reupload-missing-artifacts  Re-upload only missing artifacts to an existing GitHub release.
+  --version <version>           Use an explicit release version.
+  -h, --help                    Show this help message.
+EOF
+}
+
+parse_args() {
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --reupload-missing-artifacts)
+        REUPLOAD_MISSING_ARTIFACTS=true
+        ;;
+      --version)
+        shift
+        if [ -z "$1" ]; then
+          echo "❌ Error: --version requires a value."
+          print_usage
+          exit 1
+        fi
+        VERSION="$1"
+        ;;
+      -h|--help)
+        print_usage
+        exit 0
+        ;;
+      *)
+        echo "❌ Error: Unknown option '$1'"
+        print_usage
+        exit 1
+        ;;
+    esac
+    shift
+  done
+}
 
 check_working_tree_clean() {
   if [ -n "$(git status --porcelain)" ]; then
@@ -129,6 +170,39 @@ verify_build_outputs() {
   fi
 }
 
+reupload_missing_artifacts() {
+  echo "🔁 Re-uploading missing artifacts for GitHub Release $VERSION..."
+
+  if ! gh release view "$VERSION" >/dev/null 2>&1; then
+    echo "❌ Error: Release '$VERSION' does not exist on GitHub."
+    exit 1
+  fi
+
+  local existing_assets
+  existing_assets=$(gh release view "$VERSION" --json assets --jq '.assets[].name' 2>/dev/null || true)
+  local uploaded_any=false
+
+  for artifact in "$JAR_FILE" "$SOURCES_JAR_FILE" "$FAT_JAR_FILE"; do
+    local artifact_name
+    artifact_name=$(basename "$artifact")
+
+    if echo "$existing_assets" | grep -Fxq "$artifact_name"; then
+      echo "  ✅ Already present: $artifact_name"
+      continue
+    fi
+
+    echo "  📤 Missing artifact found, uploading: $artifact_name"
+    gh release upload "$VERSION" "$artifact" --clobber
+    uploaded_any=true
+  done
+
+  if [ "$uploaded_any" = false ]; then
+    echo "  ✅ No missing artifacts found."
+  else
+    echo "  ✅ Missing artifacts re-upload complete."
+  fi
+}
+
 commit_tag_and_push() {
   echo "📦 Committing, tagging, and pushing changes to GitHub..."
   git add build.gradle package.json package-lock.json README.md Changelog.MD
@@ -196,9 +270,21 @@ prune_old_release_artifacts() {
 }
 
 main() {
+  parse_args "$@"
+
+  if [ -z "$VERSION" ]; then
+    detect_current_version
+    prompt_release_version
+  fi
+
+  if [ "$REUPLOAD_MISSING_ARTIFACTS" = true ]; then
+    verify_build_outputs
+    reupload_missing_artifacts
+    echo -e "\n✅ Artifact re-upload flow completed for release $VERSION!"
+    exit 0
+  fi
+
   check_working_tree_clean
-  detect_current_version
-  prompt_release_version
   prompt_run_tests
   build_release_notes
   confirm_release
@@ -216,4 +302,4 @@ main() {
   echo -e "\n✅ Release $VERSION successfully published!"
 }
 
-main
+main "$@"
