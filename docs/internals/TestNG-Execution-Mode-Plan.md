@@ -1,7 +1,7 @@
 # TestNG-only Execution Mode — Implementation Plan & Checklist
 
 **Branch:** `direct-testng`
-**Status:** Phase 0, Phase 1 (walking skeleton), and Phase 2 (dynamic test-class discovery) complete and verified end-to-end
+**Status:** Phase 0 (commit `0bddff56`) and Phase 1 (commit `18109aab`) are committed. Phase 2 (dynamic test-class discovery) is complete and verified end-to-end but **not yet committed** — currently staged/unstaged on this branch, awaiting review.
 **Last updated:** 2026-08-23
 
 This is a living document. As each checklist item is completed, tick it and add a one-line note (commit reference once committed). Do not delete completed items — this is the running record of what's done and what's left.
@@ -52,9 +52,9 @@ TDD throughout: a failing test before the implementation that makes it pass. Sma
 - [x] **0.3** Renamed `src/test/java/com/znsio/teswiz/aspect/AspectLogging.java` → `ConsumerLayerAspectLogging.java` (via `git mv`, class + file). Pointcut is now `steps.*.*` (broadened from `steps.*Steps.*`), `businessLayer.*.*.*`, `screen.*.*.*.*`; kept `INFO`; removed the unused constructor and its injected `TestExecutionContext`/`SessionContext` fields — the class is now stateless.
 - [x] **0.4** Confirmed green: `AspectLoggingWeavingTest` passes (3/3), and the full `./gradlew test` suite shows 37 pre-existing, unrelated failures (Playwright browser binaries missing locally, GitHub sample-APK download timing out — no network/sandbox access for those in this environment) and 0 failures in the `aspect` package or anywhere touched by this change.
 - [x] **0.5** Updated `docs/features/AspectJLogging-README.md` — added a table describing the two aspects (source set, packages, level), and documented the same-FQN shadowing bug and its fix for anyone reading history.
-- [x] **0.6** Suggested commits ready for manual commit (below) — Phase 0 complete, nothing committed automatically per this repo's standing convention (changes left staged/unstaged for review).
+- [x] **0.6** Committed as `0bddff56` (Phase 0 complete and merged into this branch's history — no longer pending).
 
-**Suggested commits (Phase 0):**
+**Commits (Phase 0) — already committed as `0bddff56`:**
 ```
 test(aspect): add weaving-verification test covering both AspectLogging aspects
 
@@ -102,9 +102,9 @@ docs(aspect): document the two AspectLogging aspects and the shadowing fix
   - `docs/features/ConfigurationParameters-README.md` — **discovered mid-implementation**: this file already documented `FRAMEWORK` as an "ATD property. We will always use cucumber" — a stale historical note. Verified `AppiumTestDistribution` is not an actual dependency anywhere in `build.gradle` or source imports (the jar found under `~/.m2` is unrelated local cache), so the property was safely repurposable; updated the doc line to describe its real, new meaning instead of leaving stale/contradictory documentation in place.
   - `.codex/skills/teswiz-project/SKILL.md` — added the new `com.znsio.teswiz.testng` package to the package-boundaries list and repo map.
   - `CLAUDE.md`/`ANTIGRAVITY.md` — left unchanged; neither enumerates packages or features (they only point at the skill file and hold generic Gradle/CI conventions), so nothing in their existing content was made stale by this change.
-- [x] **1.12** Suggested commits ready for manual commit (below).
+- [x] **1.12** Committed as `18109aab` (single combined commit covering all of Phase 1 — Phase 1 complete and merged into this branch's history, no longer pending).
 
-**Suggested commits (Phase 1, one per step, reflecting what was actually built):**
+**Commits (Phase 1) — squashed into one commit, `18109aab`, covering all steps below:**
 ```
 feat(config): wire up existing FRAMEWORK property to select cucumber vs testng mode
 
@@ -241,7 +241,7 @@ Decisions (confirmed):
 
 **Known characteristic, not a bug**: `Reflections` scans a package **and all its subpackages**, so scanning `com.znsio.teswiz.testng` also picks up `com.znsio.teswiz.testng.fixtures` (teswiz's own test-support fixtures, tagged `groups = "fixture"`). Group-based `TAG` filtering keeps this harmless in practice (fixtures never match a real group unless someone explicitly runs `TAG=@fixture`), but it does mean "discovered" counts include incidental fixture/support classes living under the scanned package tree — worth keeping test-only fixtures out of a consumer's main scan package if that noise matters to them.
 
-### Suggested commits (Phase 2)
+### Suggested commit (Phase 2) — NOT yet committed, still staged/unstaged for review
 
 ```
 feat(testng): add org.reflections-based TestNG test-class discovery
@@ -271,4 +271,4 @@ scan package on FRAMEWORK accordingly.
 
 ## Open items
 
-- Exact TestNG version to pin as a **direct** dependency (1.2) — defaulting to `7.12.0` (currently resolved transitively) unless a newer version is requested.
+None currently. (Resolved: TestNG version to pin as a direct dependency — `7.12.0`, committed in Phase 1 without objection.)
