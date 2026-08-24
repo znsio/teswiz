@@ -61,7 +61,7 @@ Use this skill for changes inside the `znsio/teswiz` repo.
   - `com.znsio.teswiz.web.provider.selenium`
   - `com.znsio.teswiz.web.playwright`
   - `com.znsio.teswiz.visual`
-  - `com.znsio.teswiz.testng` (TestNG-only execution mode support: `TestNgRunner`, `TeswizTestNgListener`, `TestNgTestExecutionContextFactory` - keeps `Runner`/`Hooks` as thin, mode-agnostic dispatchers)
+  - `com.znsio.teswiz.testng` (TestNG-only execution mode support: `TestNgRunner`, `TeswizTestNgListener`, `TestNgTestExecutionContextFactory`, `TestNgTestClassDiscovery`, `TestNgTagExpressionParser`/`TestNgGroupSelection` - keeps `Runner`/`Hooks`/`Setup` as thin, mode-agnostic dispatchers. See `docs/internals/TestNG-Execution-Mode-Plan.md` for the full implementation history and remaining feature-parity task list; ReportPortal integration for this mode is deferred, not built - a real upstream `agent-java-testng` dependency incompatibility, not a gap to silently fill in.)
 - When adding new Playwright, browser-config, session, or visual-helper code, do not place it in `runner` by default.
 - Shared app-path resolution, version detection, and download handling belongs in `com.znsio.teswiz.config.app`; keep `runner` compatibility wrappers only when they help avoid a breaking change.
 - Shared capability lookup and capability-file persistence belongs in `com.znsio.teswiz.config.capability`; keep `runner` compatibility wrappers only when they help avoid a breaking change.

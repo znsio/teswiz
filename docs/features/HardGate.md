@@ -53,4 +53,9 @@ With this parameter, only tests tagged with **@failing** will be executed. If al
    
     **Note:** When all the scenarios with the @failing tag fail, the build succeeds.
 
+## Hard Gate in TestNG mode (`FRAMEWORK=testng`)
+
+Hard Gate works the same way in TestNG mode (`SET_HARD_GATE`, `IS_FAILING_TEST_SUITE`) — the pass/fail decision is computed identically in both modes.
+
+One difference: in Cucumber mode, `IS_FAILING_TEST_SUITE` also automatically *selects* which scenarios run (only `@failing`-tagged ones, or everything except them). In TestNG mode, this only affects how the *result* is judged — it does not automatically filter which tests run. Whatever tests match your `TAG`-selected TestNG groups will run regardless of `IS_FAILING_TEST_SUITE`; Hard Gate then judges the outcome of those tests. If you want a TestNG-mode equivalent of "only run the known-failing tests," tag those tests with your own group (e.g. `@Test(groups = "failing")`) and select it explicitly with `TAG=failing`.
 

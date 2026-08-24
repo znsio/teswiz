@@ -369,6 +369,22 @@ Current examples:
 
 * `PlaywrightVisualCheckSettingsMapper`
 
+### `com.znsio.teswiz.testng`
+
+Owns the alternative, non-Cucumber execution mode: consumers write plain TestNG `@Test` classes that call the same business-layer/screen classes Cucumber step defs call, skipping the Gherkin/step-def translation layer entirely. Selected via the `FRAMEWORK` config property (`cucumber` default, or `testng`); `Runner.run(...)` forks between the two modes based on `Setup.isTestNgExecutionMode()`. A project may contain both Cucumber and TestNG-mode code, but a single execution runs only one mode.
+
+Current examples:
+
+* `TestNgRunner` — programmatic `org.testng.TestNG` bootstrap (test classes, groups, parallel mode, thread count, report output directory), entirely in code with no `testng.xml`
+* `TeswizTestNgListener` — wires TestNG's `ITestListener` lifecycle to `Hooks`, mirroring what `RunCukes`'s Cucumber `@Before`/`@After` do
+* `TestNgTestExecutionContextFactory` — per-test directory scaffolding (screenshot/log directories) equivalent to `CucumberScenarioListener.scenarioStartedHandler`, since `Hooks`/`ScreenShotManager` assume this state exists regardless of mode
+* `TestNgTestClassDiscovery` — `org.reflections`-based classpath scanning for `@Test`-annotated classes, the TestNG-mode equivalent of Cucumber's `--glue` package scanning
+* `TestNgTagExpressionParser` / `TestNgGroupSelection` — translates the same `TAG` config Cucumber mode uses into TestNG include/exclude groups, supporting `and`/`not`/`or`; a true AND of two positive tags is rejected (TestNG's group model can't express it) rather than silently mishandled
+* `TestNgExecutionResult` / `TestNgGroupCoverage` — the outcome of a TestNG-mode run: overall passed/failed counts (feeding the same hard-gate truth table `Runner.getStatus` already uses for Cucumber mode) plus a per-TestNG-group breakdown of which tests passed/failed
+* `TestNgTagCoverageReportWriter` — renders `TestNgGroupCoverage` as a lightweight, dependency-free HTML table (Group | Total | Passed | Failed), written alongside TestNG's own `EmailableReporter2` output
+
+Reporting note: TestNG mode uses TestNG's own built-in `EmailableReporter2` (a flat per-test HTML summary) plus a custom, lightweight coverage-by-tag HTML report (`TestNgTagCoverageReportWriter`) — not the Cucumber/masterthought report, which is entirely driven by Cucumber's JSON output and cannot be reused. Hard-gate semantics (`SET_HARD_GATE`/`IS_FAILING_TEST_SUITE`) work identically in both modes, feeding the same `Runner.getStatus` truth table. ReportPortal integration for TestNG mode was investigated and found blocked on a genuine upstream `agent-java-testng`/`client-java` binary incompatibility — deferred, not built. See `docs/internals/TestNG-Execution-Mode-Plan.md` for the full implementation history, decisions, and open items.
+
 ## Package rules
 
 When adding new code for the dual-engine architecture:

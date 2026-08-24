@@ -24,32 +24,32 @@ class TestNgRunnerTest {
 
     @Test
     void shouldReportSuccessWhenAllTestsPass() {
-        boolean result = TestNgRunner.run(
+        TestNgExecutionResult result = TestNgRunner.run(
                 List.of(AlwaysPassingTestNgTest.class.getName()),
                 includedOnly("fixture"),
                 1);
 
-        assertThat(result).isTrue();
+        assertThat(result.allTestsPassed()).isTrue();
     }
 
     @Test
     void shouldReportFailureWhenAnyTestFails() {
-        boolean result = TestNgRunner.run(
+        TestNgExecutionResult result = TestNgRunner.run(
                 List.of(AlwaysFailingTestNgTest.class.getName()),
                 includedOnly("fixture"),
                 1);
 
-        assertThat(result).isFalse();
+        assertThat(result.allTestsPassed()).isFalse();
     }
 
     @Test
     void shouldSkipExcludedGroupEvenWhenItAlsoMatchesAnIncludedGroup() {
-        boolean result = TestNgRunner.run(
+        TestNgExecutionResult result = TestNgRunner.run(
                 List.of(AlwaysPassingTestNgTest.class.getName(), AlwaysFailingButExcludableTestNgTest.class.getName()),
                 new TestNgGroupSelection(List.of("fixture"), List.of("excludeme")),
                 1);
 
-        assertThat(result).as("The excluded, always-failing test should not have run").isTrue();
+        assertThat(result.allTestsPassed()).as("The excluded, always-failing test should not have run").isTrue();
     }
 
     @Test

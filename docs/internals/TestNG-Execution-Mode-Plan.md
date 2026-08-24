@@ -1,8 +1,8 @@
 # TestNG-only Execution Mode — Implementation Plan & Checklist
 
 **Branch:** `direct-testng`
-**Status:** Phase 0 (commit `0bddff56`) and Phase 1 (commit `18109aab`) are committed. Phase 2 (dynamic test-class discovery) is complete and verified end-to-end but **not yet committed**. Phase 3 (ReportPortal step-level logging for TestNG mode) was investigated thoroughly — including live testing against a real ReportPortal instance — found blocked on a genuine upstream dependency incompatibility, and **deferred**; all Phase 3 code changes were reverted cleanly (see Phase 3 section for the full findings, kept for reference). All remaining uncommitted work (Phase 2 only) is currently staged/unstaged on this branch, awaiting review.
-**Last updated:** 2026-08-23
+**Status:** Phases 0, 1, 2, and 4 are committed (`0bddff56`, `18109aab`, `ee0f5296`, `b74f98ab`). Phase 3 (ReportPortal) was investigated thoroughly and deferred — all its code was reverted cleanly (kept for reference, see Phase 3 section). **Phase 5: 5.1 (hard-gate logic) and 5.2 (flat + tag-coverage HTML reports) are both complete and verified end-to-end, not yet committed.** 5.3's web-Selenium, web-Playwright-Java, and multi-user pilots are also done and verified; Android/iOS/Windows/Electron/PDF/visual pilots remain, each blocked on an external resource (emulator, Windows machine, Electron binary, or Applitools credentials) or a scoping decision (iOS).
+**Last updated:** 2026-08-24
 
 This is a living document. As each checklist item is completed, tick it and add a one-line note (commit reference once committed). Do not delete completed items — this is the running record of what's done and what's left.
 
@@ -320,11 +320,114 @@ TestNG's group model cannot express it - not silently mishandled.
 Verified end-to-end with TAG="@calculator and not @wip".
 ```
 
+## Phase 5 — Feature parity task list (ReportPortal explicitly excluded)
+
+**Context**: after Phase 4, the walking-skeleton mechanics (mode switch, tags/groups, parallel, data-driven, discovery) are solid, but "feature compatible with Cucumber mode" was an overclaim. This phase closes the *other* real gaps found by auditing `Runner.runCucumberMode` against `Runner.runTestNgMode`, and proves multi-user/web/Android/visual scenarios actually work in TestNG mode (today only single-user CLI/API pilots exist). ReportPortal is out of scope per explicit instruction — see Phase 3.
+
+### 5.1 — Hard-gate logic for TestNG mode
+
+**Gap**: `runCucumberMode` computes `isHardGateSet()`/`isRunningFailingTestSuite()` and overrides the exit status via `getStatus(runningFailingTestSuite, totalFeatures, totalScenarios, passedScenarios, failedScenarios)` (`Runner.java:96-97,110-127,139-149`) — a documented feature (`docs/features/HardGate.md`) used to run a suite of *known-failing* tests (`@failing` tag) and only go green if they're *still* failing (catches regressions where a "known bug" silently starts passing). `runTestNgMode` has none of this — it exits purely on raw pass/fail.
+
+**Truth table to replicate** (`Runner.getStatus`, unchanged, already public/testable):
+```
+PASS iff (runningFailingTestSuite && passedScenarios==0) || (!runningFailingTestSuite && failedScenarios==0)
+```
+
+**Good news — no workaround needed, this is straightforward**: unlike the Cucumber path (which has to parse a JSON report file via `CustomReports`/masterthought to get counts), TestNG exposes pass/fail counts natively and immediately via `ITestContext`/`ITestListener` — no report-parsing detour required. This is *easier* to implement for TestNG mode than it was for Cucumber mode.
+
+- [x] `TeswizTestNgListener` now tallies passed/failed counts via `AtomicInteger passedCount`/`failedCount`, incremented in `onTestSuccess`/`onTestFailure`.
+- [x] `TestNgRunner.run(...)` return type changed from `boolean` to `TestNgExecutionResult(int passedCount, int failedCount, List<TestNgGroupCoverage> groupCoverage)` — a small record with `totalCount()`/`allTestsPassed()` helper methods. Updated all existing call sites (`TestNgRunnerTest`) to use `.allTestsPassed()`.
+- [x] `Runner.runTestNgMode(...)` now branches exactly like `runCucumberMode`: calls the *existing*, unchanged `Runner.getStatus(isRunningFailingTestSuite(), totalCount, totalCount, passedCount, failedCount)` when `isHardGateSet()` is true (features/scenarios collapse to "total tests" for TestNG, no separate "feature" concept), else falls back to plain pass/fail.
+- [x] Test-first: `TestNgHardGateTest` — covers the new counting mechanism only (`shouldCountPassedAndFailedTestsSeparately`, `allTestsPassedShouldBeTrueWhenNothingFailed`); the `getStatus` truth table itself is already exhaustively covered by the existing `RunnerTest` (same package, package-private access) and wasn't re-tested. All green.
+- [x] **Verified end-to-end, both directions**:
+  - `SET_HARD_GATE=true IS_FAILING_TEST_SUITE=true FRAMEWORK=testng TAG=@calculator ./gradlew run` against the (actually passing) calculator pilot → correctly reported `SET_HARD_GATE is 'true'. Returning status '1' of hard gate` and `BUILD FAILED` — exactly right: we declared this a known-failing suite, but the test passed, so hard-gate correctly flags the regression ("a known bug silently started passing").
+  - `SET_HARD_GATE=false FRAMEWORK=testng TAG=@calculator ./gradlew run` (normal mode, same passing test) → `Return actual status '0'`, `BUILD SUCCESSFUL` — unaffected by the hard-gate wiring when the flag is off.
+- **Known behavioral difference from Cucumber mode, by design — not a bug**: Cucumber mode's hard-gate does two things at once — it auto-appends `and @failing`/`and not @failing` to the tag expression (`getInferredTagsForHardGate`, `Setup.java`), which *also selects which scenarios run* (only `@failing`-tagged ones when `IS_FAILING_TEST_SUITE=true`), on top of computing the pass/fail status. TestNG mode's `getRawTagBeforeCucumberInference()` is captured *before* that auto-append happens (so TestNG groups reflect only what the user actually typed in `TAG`, per Phase 4's design) — meaning TestNG mode's hard-gate only affects the **status computation**, not automatic test selection. Whatever tests match your `TAG`-derived TestNG groups run regardless of `IS_FAILING_TEST_SUITE`; hard-gate then judges pass/fail against whichever of those actually ran. If a TestNG-mode consumer wants an equivalent "run only known-failing tests" flow, they'd tag those tests with their own group (e.g. `@Test(groups = "failing")`) and select it explicitly via `TAG=failing` — this isn't automatic the way it is in Cucumber mode. Documented in `docs/features/HardGate.md`.
+
+### 5.2 — Coverage/summary report for TestNG mode
+
+**Gap**: `CustomReports.generateReport()` is entirely driven by Cucumber's JSON output (`net.masterthought:cucumber-reporting` globs `cucumber-*.json` files) — confirmed it cannot be reused for TestNG mode at all; with zero JSON files it would silently produce a zero-count report, which would also silently break 5.1's hard-gate math if naively reused. TestNG mode originally produced **no report artifact whatsoever** — `TestNgRunner` explicitly disables TestNG's own default listeners (`setUseDefaultListeners(false)`, chosen in Phase 1 to avoid double console output alongside `TeswizTestNgListener`).
+
+**Two-tier solution, both now shipped**: TestNG's own `EmailableReporter2` (flat per-test HTML, cheap) *and* a genuine TestNG-native coverage-by-tag report (grouping by TestNG group, not just a flat test list) — deliberately lightweight (a single self-contained HTML file, no external CSS/JS/library), matching this framework's stated preference for lightweight reporting over something like Allure.
+
+- [x] `TestNgRunner.run(...)` calls `testNg.setOutputDirectory(...)` pointed at `FileLocations.REPORTS_DIRECTORY + "testngHtmlReport"` — lands under the same `LOG_DIR/reports/` tree Cucumber mode uses, not TestNG's own default `test-output/` at the project root.
+- [x] `testNg.addListener(new EmailableReporter2())` — flat per-test HTML summary. Test-first: `TestNgRunnerReportTest`. Green.
+- [x] **New**: `TeswizTestNgListener` now also tracks outcomes *per TestNG group* (`Map<String, List<TestOutcome>> outcomesByGroup`, populated in `onTestSuccess`/`onTestFailure` from `result.getMethod().getGroups()`), exposed via `TestNgExecutionResult.groupCoverage(): List<TestNgGroupCoverage>` (`record TestNgGroupCoverage(String groupName, List<String> passedTestNames, List<String> failedTestNames)`). Test-first: `TestNgGroupCoverageTest`, running three fixtures across two overlapping groups (`fixture`, `excludeme`), confirming per-group pass/fail test-name lists are correct. Green.
+- [x] New `TestNgTagCoverageReportWriter.write(List<TestNgGroupCoverage>, File)` — renders a plain HTML table (Group | Total | Passed | Failed), no external dependencies. Test-first: `TestNgTagCoverageReportWriterTest` (multi-group table, empty-coverage edge case). Green.
+- [x] Wired into `TestNgRunner.run(...)`: writes `tagCoverageReport.html` alongside `emailable-report.html` in the same output directory, automatically, on every TestNG-mode run. Test-first: `TestNgRunnerReportTest.shouldProduceATagCoverageReportAlongsideTheEmailableReport`. Green.
+- [x] **Verified end-to-end**: `FRAMEWORK=testng TAG=@calculator ./gradlew run` → confirmed `target/.../reports/testngHtmlReport/tagCoverageReport.html` generated with correct content — a real table showing both `cli` and `calculator` groups, each `1` total, the passing test listed under "Passed".
+- **Known limitation, by design**: this coverage report only reflects tests that actually *ran* in this invocation (grouped by whichever TestNG groups matched the current `TAG` filter) — it does not show "0 of N tests in group X ran" for groups that were entirely excluded from this run, since TestNG (unlike Cucumber's static feature-file parsing) has no way to enumerate all *possible* groups across all test classes without a full, separate discovery pass. This is an accepted trade-off for staying lightweight; a "which groups exist but never ran" view would need `TestNgTestClassDiscovery` combined with reflection over every discovered method's `@Test(groups=...)` annotation, independent of what actually executed — not part of this scope.
+
+### 5.3 — Sample TestNG pilots for every supported platform/engine combination
+
+**Goal**: prove the framework-owned mechanics (driver/session management, multi-persona orchestration, visual validation) actually work end-to-end from a plain TestNG test — not just CLI/API — across **every** `Platform` (`android, iOS, windows, web, api, electron, cli, pdf` — `entities/Platform.java:3-11`) and, for `web`, every `WebEngine` (`selenium, playwright-java, playwright-ts` — `web/WebEngine.java:8-10`). All candidates below reuse the exact same business-layer/screen classes Cucumber mode already calls, following the same `BL(userPersona, Platform)` constructor pattern already proven reusable by `InteractiveCalculatorCLIBL`/`CryptoAPIBL`.
+
+**Already covered** (Phase 1): `cli` (`InteractiveCalculatorCLIBL`), `api` (`CryptoAPIBL`).
+
+| # | Platform / engine | Existing Cucumber source | BL/Screen to reuse | Config | Verifiable here? |
+|---|---|---|---|---|---|
+| 5.3a | **web + Selenium** | `googlesearch.feature` (web scenario, run via header-comment command) | `GoogleSearchBL(userPersona, Platform)` → `GoogleSearchLandingScreenWeb` | `configs/googlesearch/googlesearch_local_web_config.properties` (`WEB_ENGINE=selenium`) | ✅ **Done and verified.** |
+| 5.3b | **web + Playwright-Java** | Same feature; header comment documents `WEB_ENGINE=playwright-java` | Same `GoogleSearchBL` → `GoogleSearchLandingScreenPlaywrightJava` | Same config, `WEB_ENGINE=playwright-java` override | ✅ **Done and verified** — same test class as 5.3a, only the config's `WEB_ENGINE` differs. |
+| 5.3c | **web + Playwright-TS** | Same feature; header comment documents `WEB_ENGINE=playwright-ts` | Same `GoogleSearchBL` → TS bridge screen | Same config, `WEB_ENGINE=playwright-ts` override | ⚠️ **Written, fails — confirmed pre-existing/environmental, not a bug.** Fails with `page.goto: Timeout 30000ms exceeded` navigating to `https://github.com/znsio/teswiz`. Verified the *existing Cucumber-mode* run of the same scenario/engine fails identically — the Playwright-TS Node worker is slow/timing out in this sandbox regardless of execution mode. Not something to fix as part of this work. |
+| 5.3d | **android** | `googlesearch.feature` (`@android-chrome @android`) | Same `GoogleSearchBL` → `GoogleSearchLandingScreenAndroid` | `configs/googlesearch/googlesearch_android_chrome_config.properties` + `caps/googlesearch/googlesearch_android_emulator_chrome.json` | ❌ Not started — **requires a booted Android emulator** (UiAutomator2, platform 13), not available here. |
+| 5.3e | **iOS** | **None exists.** Only cloud/simulator configs referenced from `theapp.feature`, plus one local `configs/theapp/theapp_local_ios_config.properties` — no dedicated simplest local iOS-only scenario. | Would need to reuse `theapp.feature`'s shared cross-platform scenario/BL, or write a new minimal one | `configs/theapp/theapp_local_ios_config.properties` | ⚠️ Not started — needs a scoping decision (no existing scenario to directly port). |
+| 5.3f | **windows** | `windows.feature` (`@notepad @windows`) — full example already exists | `WindowsSteps` → `NotepadBL(userPersona, Platform)` | `configs/notepad/notepad_windows_config.properties` (already has `FRAMEWORK=testng` set) | ❌ Not started — needs a real Windows machine with WinAppDriver, not available here (Mac). |
+| 5.3g | **electron** | `jiomeet.feature` (`@electron`) | `JioMeetSteps` → its BL | `configs/jio/jiomeet_local_config.properties` (`PLATFORM=electron`) | ❌ Not started — needs a local Electron app binary via Appium's Electron driver, not confirmed available. |
+| 5.3h | **pdf** | `pdf.feature` (`PLATFORM=pdf`, standalone scenario) | `PDFValidatorBL(userPersona, Platform)` | `configs/pdf/local_pdf_config.properties` | ❌ **Corrected finding**: originally assumed "no external dependency" — **wrong**. Verified `PDFValidatorBL` genuinely calls Applitools Eyes (`visually.validatePdf(...)`, `com.applitools.eyes.TestResults`) for the visual PDF comparison, not plain PDFBox text extraction. Same external-dependency situation as 5.3j — needs a valid Applitools account/API key. Moved into the same bucket as visual testing. |
+| 5.3i | **multi-user (web)** | `multiuser-multidevice.feature` (`@multiuser-web`, "Verify 2 different website orchestration") | `AppLaunchSteps`-style driver launch + `SearchBL(userPersona, Platform)`, two personas (chrome + firefox) | `configs/calculator/calculator_local_config.properties` | ✅ **Done and verified.** Two real browser sessions (Chrome + Firefox), each with its own screenshot/log artifacts, both torn down cleanly. Confirms multi-persona session management (`UserPersonaDetails`) genuinely works under TestNG mode. Note: `SearchBL.searchFor()` is a stub (screenshot only, no real assertion) — fine for proving orchestration mechanics. |
+| 5.3j | **visual (Applitools)** | `applitools.feature` (`@web @figma`) | No dedicated BL — `FigmaSteps` + `CommonSteps.iVisuallyCheck` call `Drivers`/`Driver`/`TestExecutionContext` directly | `configs/applitools/applitools_local_web_config.properties` + `configs/applitools_config.json` | ❌ Not started — **requires a valid Applitools account/API key**, same external-dependency situation as ReportPortal (5.3h joins this bucket too, see above). Needs an explicit go/no-go before starting. |
+
+**Corrected mid-implementation finding — local web does NOT need Docker**: initial static-analysis of the local web capabilities files (`googlesearch_local_web_capabilities.json`, `theapp_local_web_capabilities.json`) showed a `serverConfig.plugin.device-farm` block with `cloudName: docker`, and Docker's daemon isn't running in this environment — this looked like a real blocker. **Verified empirically it is not**: running the actual Cucumber-mode web scenario showed `SeleniumDriverManager` creates a plain local ChromeDriver session directly, never touching the device-farm/Docker path at all (that capabilities block is apparently only exercised by a different code path, not plain local Selenium web). Confirmed by directly running both the existing Cucumber scenario and the new TestNG pilot — both work fine with no Docker running. Lesson: static config inspection was misleading here; empirical verification (matching this whole plan's established practice) caught it before it became a wrongly-documented blocker.
+
+**Task list:**
+- [x] **5.3a (web + Selenium)**: `GoogleSearchWebTestNgTest` in `com.znsio.teswiz.testng`, calling `Drivers.createDriverFor(...)` then `GoogleSearchBL` exactly as `GoogleSearchSteps.iSearchFor` does. Verified end-to-end: `CONFIG=configs/googlesearch/googlesearch_local_web_config.properties FRAMEWORK=testng PLATFORM=web WEB_ENGINE=selenium TAG=@googlesearch ./gradlew run` → real Chrome session, screenshot captured, browser logs collected, driver closed cleanly. `Total tests run: 1, Passes: 1`.
+- [x] **5.3b (web + Playwright-Java)**: same test class as 5.3a — verified end-to-end with `WEB_ENGINE=playwright-java`, real `PlaywrightJavaWebDriver` session, console/network/trace artifacts collected. `Total tests run: 1, Passes: 1`.
+- [x] **5.3c (web + Playwright-TS)**: same test class — written and run; fails on a pre-existing environmental timeout, confirmed identical in Cucumber mode (see above). Nothing further to do here as part of this work.
+- [x] **5.3i (multi-user web)**: `MultiUserWebSearchTestNgTest`, orchestrating two personas (`someone` on Chrome via "images", `someone-else` on Firefox via "bing") through `Drivers.createDriverFor(...)` + `SearchBL`. Verified end-to-end: both real browser sessions created and torn down independently, with per-persona screenshots and browser logs. `Total tests run: 1, Passes: 1`. Note: needed a longer timeout (180s) than the single-browser pilots — two real local browser launches plus Applitools UFG initialization is meaningfully slower.
+- [ ] **5.3h (pdf) / 5.3j (visual)**: needs an explicit go/no-go decision (external Applitools credentials required) before starting — do not assume in scope. Grouped together now that PDF's actual dependency has been corrected.
+- [ ] **5.3d (android)**: write the pilot; flag that live verification needs a booted emulator not assumed present here.
+- [ ] **5.3f (windows)**: write the pilot (the config is already TestNG-primed); flag that live verification needs a real Windows machine.
+- [ ] **5.3g (electron)**: write the pilot; flag that live verification needs a local Electron binary.
+- [ ] **5.3e (iOS)**: needs a scoping decision first — no existing scenario to directly port, would be closer to new authorship than the others.
+- [x] For each pilot built so far: confirmed `Hooks`/`Drivers.attachLogsAndCloseAllDrivers` correctly tears down each persona's driver (screenshot artifacts, session cleanup, browser/Playwright logs) — the part that was previously "never actually exercised with a REAL driver" is now proven working across Selenium, Playwright-Java, and multi-persona orchestration.
+- [x] Docs updated alongside implementation: `docs/internals/Architecture-README.md` and `.codex/skills/teswiz-project/SKILL.md` both updated with the `com.znsio.teswiz.testng` package description, per this repo's own documentation-guidance convention.
+
+### Suggested commit (Phase 5.3, web + multi-user pilots)
+
+```
+test(testng): add web (Selenium/Playwright-Java/-TS) and multi-user pilots
+
+New TestNG pilots reusing existing business-layer classes unchanged:
+- GoogleSearchWebTestNgTest: calls GoogleSearchBL exactly as
+  GoogleSearchSteps.iSearchFor does. Verified with WEB_ENGINE=selenium
+  and =playwright-java (both pass, real driver created/torn down with
+  screenshots and browser/Playwright artifacts collected).
+  WEB_ENGINE=playwright-ts fails on a pre-existing environmental
+  Node-worker timeout, confirmed identical in Cucumber mode - not a
+  regression, nothing to fix here.
+- MultiUserWebSearchTestNgTest: two personas (Chrome + Firefox) via
+  Drivers.createDriverFor + SearchBL, proving multi-persona session
+  management (UserPersonaDetails) works correctly under TestNG mode.
+
+Also corrects two earlier planning assumptions, found by empirical
+verification rather than static config inspection:
+- Local web execution does NOT require Docker (SeleniumDriverManager
+  creates a plain local ChromeDriver session directly) - an initial
+  concern based on capabilities-file inspection turned out wrong.
+- PDF validation (PDFValidatorBL) DOES require a real Applitools
+  account/API key (visual comparison via Eyes), contradicting an
+  earlier "no external dependency" assumption - moved into the same
+  bucket as the visual/Figma pilot, not started.
+
+Also reverted a stray rp.enable=true left in the gitignored
+reportportal.properties from the earlier ReportPortal investigation.
+```
+
 ## Backlog (deferred, not forgotten — not part of this plan's scope)
 
-- ReportPortal integration for TestNG mode — see Phase 3 above for the full investigation; blocked on an upstream dependency bug, not abandoned by choice.
-- Tag-coverage HTML report equivalent to the Cucumber/masterthought one, for TestNG mode.
+- ReportPortal integration for TestNG mode — see Phase 3 above for the full investigation; blocked on an upstream dependency bug, not abandoned by choice, explicitly excluded from Phase 5 per direct instruction.
 - One-time Cucumber → TestNG migration tooling (skill/agent) for existing consumers who later want to switch.
+- 5.3's Android/iOS/Windows/Electron/PDF/visual pilots — each blocked on an external resource or scoping decision, see Phase 5.3's table for specifics.
 
 ## Open items
 
