@@ -15,12 +15,14 @@ public class TeswizTestNgListener implements ITestListener {
     private final AtomicInteger passedCount = new AtomicInteger(0);
     private final AtomicInteger failedCount = new AtomicInteger(0);
     private final Map<String, List<TestOutcome>> outcomesByGroup = new ConcurrentHashMap<>();
+    private final List<TestNgScenarioReportData> scenarioReportData = new CopyOnWriteArrayList<>();
 
     private record TestOutcome(String testName, boolean passed) { }
 
     @Override
     public void onTestStart(ITestResult result) {
         TestNgTestExecutionContextFactory.create(result.getName(), runningTestNumber.incrementAndGet());
+        TestNgStepRecorder.startCapturingStepsForCurrentThread();
         new Hooks().beforeScenario(result.getName());
     }
 
@@ -28,6 +30,7 @@ public class TeswizTestNgListener implements ITestListener {
     public void onTestSuccess(ITestResult result) {
         passedCount.incrementAndGet();
         recordOutcomeByGroup(result, true);
+        recordScenarioReportData(result, TestNgCapturedStep.PASSED);
         new Hooks().afterScenario(result.getName(), false);
     }
 
@@ -35,12 +38,39 @@ public class TeswizTestNgListener implements ITestListener {
     public void onTestFailure(ITestResult result) {
         failedCount.incrementAndGet();
         recordOutcomeByGroup(result, false);
+        recordScenarioReportData(result, TestNgCapturedStep.FAILED);
         new Hooks().afterScenario(result.getName(), true);
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
+        recordScenarioReportData(result, TestNgCapturedStep.FAILED);
         new Hooks().afterScenario(result.getName(), true);
+    }
+
+    private void recordScenarioReportData(ITestResult result, String status) {
+        List<TestNgCapturedStep> steps = TestNgStepRecorder.stopCapturingAndGetStepsForCurrentThread();
+        String featureName = result.getTestClass().getRealClass().getSimpleName();
+        String scenarioName = scenarioNameFor(result);
+        List<String> tags = List.of(result.getMethod().getGroups());
+        long durationMillis = result.getEndMillis() - result.getStartMillis();
+        scenarioReportData.add(new TestNgScenarioReportData(featureName, scenarioName, tags, status, durationMillis, steps));
+    }
+
+    private String scenarioNameFor(ITestResult result) {
+        Object[] parameters = result.getParameters();
+        if (parameters.length == 0) {
+            return result.getName();
+        }
+        String parameterSummary = java.util.Arrays.stream(parameters)
+                .map(String::valueOf)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("");
+        return result.getName() + " [" + parameterSummary + "]";
+    }
+
+    List<TestNgScenarioReportData> getScenarioReportData() {
+        return List.copyOf(scenarioReportData);
     }
 
     private void recordOutcomeByGroup(ITestResult result, boolean passed) {

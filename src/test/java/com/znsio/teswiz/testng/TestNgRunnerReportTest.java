@@ -44,4 +44,17 @@ class TestNgRunnerReportTest {
                 FileLocations.REPORTS_DIRECTORY + "testngHtmlReport" + File.separator + "tagCoverageReport.html");
         assertThat(tagCoverageReport).exists();
     }
+
+    @Test
+    void shouldProduceARichCucumberStyleReportAlongsideTheOtherReports() {
+        TestNgRunner.run(
+                List.of(AlwaysPassingTestNgTest.class.getName()),
+                new TestNgGroupSelection(List.of("fixture"), List.of()),
+                1);
+
+        File overviewFeatures = new File(OsUtils.getUserDirectory(),
+                FileLocations.REPORTS_DIRECTORY + "testngHtmlReport" + File.separator
+                        + "cucumber-html-reports" + File.separator + "overview-features.html");
+        assertThat(overviewFeatures).exists();
+    }
 }

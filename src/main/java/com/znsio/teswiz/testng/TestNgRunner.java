@@ -1,6 +1,7 @@
 package com.znsio.teswiz.testng;
 
 import com.znsio.teswiz.runner.FileLocations;
+import com.znsio.teswiz.runner.Setup;
 import com.znsio.teswiz.tools.FileUtils;
 import com.znsio.teswiz.tools.OsUtils;
 import org.testng.TestNG;
@@ -38,6 +39,8 @@ public final class TestNgRunner {
 
         TestNgExecutionResult executionResult = teswizTestNgListener.getExecutionResult();
         TestNgTagCoverageReportWriter.write(executionResult.groupCoverage(), new File(reportDirectory, TAG_COVERAGE_REPORT_FILE_NAME));
+        TestNgCucumberStyleReportWriter.write(teswizTestNgListener.getScenarioReportData(), reportDirectory,
+                Setup.getFromConfigs(Setup.APP_NAME));
         return executionResult;
     }
 
