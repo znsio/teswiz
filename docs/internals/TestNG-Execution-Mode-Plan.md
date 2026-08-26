@@ -1,8 +1,8 @@
 # TestNG-only Execution Mode — Implementation Plan & Checklist
 
 **Branch:** `direct-testng`
-**Status:** Phases 0, 1, 2, and 4 are committed (`0bddff56`, `18109aab`, `ee0f5296`, `b74f98ab`). Phase 3 (ReportPortal) was investigated thoroughly and deferred — all its code was reverted cleanly (kept for reference, see Phase 3 section). **Phase 5: 5.1 (hard-gate logic) and 5.2 (flat + tag-coverage HTML reports) are both complete and verified end-to-end, not yet committed.** 5.3's web-Selenium, web-Playwright-Java, and multi-user pilots are also done and verified; Android/iOS/Windows/Electron/PDF/visual pilots remain, each blocked on an external resource (emulator, Windows machine, Electron binary, or Applitools credentials) or a scoping decision (iOS).
-**Last updated:** 2026-08-24
+**Status:** Phases 0–4 and Phase 5's 5.1/5.2/5.2b (hard-gate, flat + tag-coverage HTML reports, and the rich masterthought-style report) are complete, verified end-to-end, and committed. 5.3's web-Selenium, web-Playwright-Java, Android, PDF, multi-user, and visual/Applitools pilots are also done and verified. **Remaining**: 5.3e (iOS, needs a scoping decision), 5.3f (Windows, needs a real Windows machine), 5.3g (Electron, needs a local Electron binary) — each blocked on an external resource or decision, not on any code gap. ReportPortal integration and one-time Cucumber→TestNG migration tooling remain in the Backlog, deferred by explicit decision. A small follow-up fix (report/suite-naming + shared test-execution metadata + a `build.gradle` test-JVM directory fix) is complete and awaiting commit — see `git status`.
+**Last updated:** 2026-08-26
 
 This is a living document. As each checklist item is completed, tick it and add a one-line note (commit reference once committed). Do not delete completed items — this is the running record of what's done and what's left.
 
@@ -465,7 +465,7 @@ reportportal.properties from the earlier ReportPortal investigation.
 ## Backlog (deferred, not forgotten — not part of this plan's scope)
 
 - ReportPortal integration for TestNG mode — see Phase 3 above for the full investigation; blocked on an upstream dependency bug, not abandoned by choice, explicitly excluded from Phase 5 per direct instruction.
-- One-time Cucumber → TestNG migration tooling (skill/agent) for existing consumers who later want to switch.
+- Automated one-time Cucumber → TestNG migration tooling (skill/agent) for existing consumers who later want to switch. The manual approach and worked examples are documented in [Cucumber-To-TestNG-Migration-Guide.md](Cucumber-To-TestNG-Migration-Guide.md); an automated generator following the same rules remains unbuilt.
 - 5.3's Android/iOS/Windows/Electron/PDF/visual pilots — each blocked on an external resource or scoping decision, see Phase 5.3's table for specifics.
 
 ## Open items

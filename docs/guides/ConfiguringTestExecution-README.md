@@ -25,6 +25,9 @@ TestNG mode supports the same `TAG` syntax as above, translated to TestNG's incl
 
 One TestNG limitation to be aware of: TestNG's group model can select "any of these groups" and separately exclude "any of these groups", but it cannot require a test belong to two groups at once. So `TAG="@schedule and @signup"` (a true AND of two positive tags) is not supported in TestNG mode and raises a clear error - if you need that combination, give the test a single composite group instead (e.g. `@Test(groups = "scheduleAndSignup")`).
 
+If you have existing Cucumber feature files and want to port some of them to TestNG mode, see the
+[Cucumber to TestNG Migration Guide](../internals/Cucumber-To-TestNG-Migration-Guide.md).
+
 ### Run Android app tests
 
 To run all the tests against the Android platform, run the following command:
