@@ -13,12 +13,17 @@ public class MultiUserWebSearchTestNgTest {
 
     @Test(groups = {"web", "multiuser"})
     public void twoPersonasOrchestrateDifferentWebsites() {
-        TestExecutionContext context = Runner.getTestExecutionContext(Thread.currentThread().getId());
+        createDriversForBothPersonas();
 
+        new SearchBL(PERSONA_ONE, Runner.getPlatformForUser(PERSONA_ONE))
+                .searchFor("bear");
+        new SearchBL(PERSONA_TWO, Runner.getPlatformForUser(PERSONA_TWO))
+                .searchFor("tiger");
+    }
+
+    private void createDriversForBothPersonas() {
+        TestExecutionContext context = Runner.getTestExecutionContext(Thread.currentThread().getId());
         Drivers.createDriverFor(PERSONA_ONE, "images", "chrome", Platform.web, context);
         Drivers.createDriverFor(PERSONA_TWO, "bing", "firefox", Platform.web, context);
-
-        new SearchBL(PERSONA_ONE, Runner.getPlatformForUser(PERSONA_ONE)).searchFor("bear");
-        new SearchBL(PERSONA_TWO, Runner.getPlatformForUser(PERSONA_TWO)).searchFor("tiger");
     }
 }

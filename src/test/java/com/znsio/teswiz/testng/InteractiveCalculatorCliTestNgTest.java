@@ -6,11 +6,11 @@ import org.testng.annotations.Test;
 public class InteractiveCalculatorCliTestNgTest {
     @Test(groups = {"cli", "calculator"})
     public void addAndSubtractUsingInteractiveCli() {
-        InteractiveCalculatorCLIBL calculator = new InteractiveCalculatorCLIBL();
-        calculator.launchInteractiveCLIForCalculator();
-        calculator.add(24, 43);
-        calculator.subtract(43, 24);
-        calculator.seeInvalidMessages();
-        calculator.closeCalculatorCLI();
+        new InteractiveCalculatorCLIBL()
+                .launchInteractiveCLIForCalculator()
+                .add(24, 43)
+                .subtract(43, 24)
+                .seeInvalidMessages()
+                .closeCalculatorCLI();
     }
 }

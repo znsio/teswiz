@@ -10,20 +10,20 @@ import org.testng.annotations.Test;
 public class ApplitoolsFigmaVisualTestNgTest {
     @Test(groups = {"web", "figma", "applitools"})
     public void compareApplitoolsPagesWithFigmaDesign() {
-        TestExecutionContext context = Runner.getTestExecutionContext(Thread.currentThread().getId());
-        addFigmaDesignDetailsToContext(context, "Applitools website", "Applitools Full Pages", "Applitools Full Pages_1506");
-
-        Drivers.createDriverFor(TEST_CONTEXT.I, Runner.getPlatform(), context);
-        Driver driver = Drivers.getDriverForCurrentUser(Thread.currentThread().getId());
+        Driver driver = createDriverWithFigmaDesignDetails();
 
         visuallyCheck(driver, "integrations page", "https://applitools.com/platform/integrations/");
         visuallyCheck(driver, "what's new page", "https://applitools.com/platform/whats-new/");
     }
 
-    private void addFigmaDesignDetailsToContext(TestExecutionContext context, String appName, String testName, String baselineName) {
-        context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_APP_NAME, appName);
-        context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_TEST_NAME, testName);
-        context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_BASELINE_ENV_NAME, baselineName);
+    private Driver createDriverWithFigmaDesignDetails() {
+        TestExecutionContext context = Runner.getTestExecutionContext(Thread.currentThread().getId());
+        context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_APP_NAME, "Applitools website");
+        context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_TEST_NAME, "Applitools Full Pages");
+        context.addTestState(TEST_CONTEXT.APPLITOOLS_FIGMA_BASELINE_ENV_NAME, "Applitools Full Pages_1506");
+
+        Drivers.createDriverFor(TEST_CONTEXT.I, Runner.getPlatform(), context);
+        return Drivers.getDriverForCurrentUser(Thread.currentThread().getId());
     }
 
     private void visuallyCheck(Driver driver, String pageName, String url) {

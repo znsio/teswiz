@@ -11,8 +11,14 @@ import org.testng.annotations.Test;
 public class GoogleSearchWebTestNgTest {
     @Test(groups = {"web", "googlesearch"})
     public void searchForIndiaOnChromeWeb() {
+        createDriverForChromeWeb();
+
+        new GoogleSearchBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform())
+                .searchFor("india");
+    }
+
+    private void createDriverForChromeWeb() {
         TestExecutionContext context = Runner.getTestExecutionContext(Thread.currentThread().getId());
         Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, "chrome-web", "chrome", Platform.web, context);
-        new GoogleSearchBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).searchFor("india");
     }
 }
