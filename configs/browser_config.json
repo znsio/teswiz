@@ -21,7 +21,8 @@
       "jhb": true
     },
     "arguments": [
-      "use-fake-device-for-media-stream"
+      "use-fake-device-for-media-stream",
+      "disable-features=LocalNetworkAccessChecks"
     ],
     "maximize": true,
     "acceptInsecureCerts": true,

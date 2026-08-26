@@ -27,6 +27,7 @@ The complete runtime picture is:
 flowchart LR
     F[Feature file] --> S[Step definitions]
     S --> BL[Java BL]
+    TNG["Plain TestNG @Test class<br/>(FRAMEWORK=testng)"] --> BL
     BL --> SC[Stable screen contract]
     SC --> ROUTER[Runtime screen / engine router]
 
@@ -56,6 +57,8 @@ flowchart LR
     META --> VIS
     META --> CLOUD
 ```
+
+Everything from the screen contract downward is identical regardless of entry point — Cucumber's feature/step-def layer and a plain TestNG `@Test` class both call the same Java BL, so engine routing, persona/session ownership, reporting, and visual validation behave the same either way. See `com.znsio.teswiz.testng` further down for the TestNG-mode-specific plumbing (mode selection, hooks, discovery, tag mapping, reporting).
 
 Execution routing is still persona-scoped, and the same scenario can involve multiple engines or platforms:
 

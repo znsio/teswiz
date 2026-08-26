@@ -2,7 +2,7 @@
   "android": {
     "adbExecTimeout": 45000,
     "browserName": "Chrome",
-    "platformVersion": "13",
+    "platformVersion": "16",
     "appWaitDuration": 45000,
     "automationName": "UiAutomator2",
     "autoGrantPermissions": true,

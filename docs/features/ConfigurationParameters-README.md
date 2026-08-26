@@ -109,6 +109,20 @@ An optional Playwright-specific override block can be added under a browser entr
 
 When a Playwright engine is used with a browser config that does not yet have Playwright blocks, teswiz also generates a Playwright-ready recommended config in the current reports directory and prints a visible end-of-execution message with the generated file path and replacement guidance. The source config is not modified automatically.
 
+## Disabling Chrome's "Local Network Access" permission popup
+
+Chrome shows a permission prompt ("`<site>` wants to Access other apps and services on this device") whenever a page under test tries to reach a private-network/localhost resource — this can interrupt automated runs (including screenshots and visual-testing tools like Applitools) since it renders as a modal on top of the page.
+
+The checked-in `configs/browser_config.json` disables this by default via a Chrome command-line argument in `chrome.arguments`:
+
+    "disable-features=LocalNetworkAccessChecks"
+
+This is applied for both Selenium and Playwright web execution, since both reuse the same `arguments` array (see above).
+
+**To re-enable the prompt** (e.g. if you specifically want to test how your app behaves under it), remove that entry from your `BROWSER_CONFIG_FILE`'s `chrome.arguments` array, or point `BROWSER_CONFIG_FILE` at a copy of the config without it.
+
+**To always-allow it for a specific site instead of disabling the check globally**, you can alternatively use the Chrome enterprise policy `LocalNetworkAccessAllowedForUrls` (outside of teswiz's own config) to allow specific origins without prompting, while leaving the check enabled for everything else.
+
 `WEB_ENGINE` is also added to the generated Cucumber HTML report metadata so report readers can see whether a web scenario ran on Selenium, Playwright-Java, or Playwright-TS.
 
 When teswiz finds `scenario-session-metadata.json` files in the reports directory, it also aggregates the following values into the generated Cucumber HTML report metadata:
