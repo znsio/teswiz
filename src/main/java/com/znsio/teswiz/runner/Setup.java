@@ -406,7 +406,7 @@ public class Setup {
                 getBooleanValueFromPropertiesIfAvailable(SHOW_SENSITIVE_DATA, false)));
     }
 
-    static String getHostMachineName() {
+    public static String getHostMachineName() {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {

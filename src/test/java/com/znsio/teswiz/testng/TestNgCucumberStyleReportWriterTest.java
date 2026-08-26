@@ -1,5 +1,7 @@
 package com.znsio.teswiz.testng;
 
+import com.znsio.teswiz.runner.Setup;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -10,6 +12,13 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TestNgCucumberStyleReportWriterTest {
+    private static final String cliConfigFilePath = "./configs/cli_local_config.properties";
+
+    @BeforeEach
+    void loadTeswizConfig() {
+        Setup.load(cliConfigFilePath);
+        Setup.getExecutionArguments();
+    }
 
     @Test
     void shouldGenerateRichHtmlReportFromScenarioData(@TempDir File outputDirectory) throws Exception {
@@ -30,6 +39,13 @@ class TestNgCucumberStyleReportWriterTest {
         String featureReportContent = Files.readString(featureReport.toPath());
         assertThat(featureReportContent).contains("sampleScenarioName");
         assertThat(featureReportContent).contains("SampleBL.doSomething");
+
+        assertThat(content)
+                .as("the Features overview page should carry test-execution metadata, same as Cucumber mode's report")
+                .contains(Setup.PLATFORM)
+                .contains(Setup.getFromConfigs(Setup.PLATFORM))
+                .contains(Setup.TARGET_ENVIRONMENT)
+                .contains(Setup.HOST_NAME);
     }
 
     private File findGeneratedFeatureReportFile(File outputDirectory) {

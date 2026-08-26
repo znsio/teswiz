@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,5 +57,23 @@ class TestNgRunnerReportTest {
                 FileLocations.REPORTS_DIRECTORY + "testngHtmlReport" + File.separator
                         + "cucumber-html-reports" + File.separator + "overview-features.html");
         assertThat(overviewFeatures).exists();
+    }
+
+    @Test
+    void shouldLabelTheEmailableReportWithTheConfiguredLaunchNameInsteadOfTheTestNgDefault() throws Exception {
+        TestNgRunner.run(
+                List.of(AlwaysPassingTestNgTest.class.getName()),
+                new TestNgGroupSelection(List.of("fixture"), List.of()),
+                1);
+
+        File emailableReport = new File(OsUtils.getUserDirectory(),
+                FileLocations.REPORTS_DIRECTORY + "testngHtmlReport" + File.separator + "emailable-report.html");
+        String content = Files.readString(emailableReport.toPath());
+        String launchNameAsRenderedInHtml = Setup.getFromConfigs(Setup.LAUNCH_NAME).replace("'", "&apos;");
+        assertThat(content)
+                .as("the report should be labelled with the run's LAUNCH_NAME, not TestNG's generic default")
+                .doesNotContain("Command line suite")
+                .doesNotContain("Command line test")
+                .contains(launchNameAsRenderedInHtml);
     }
 }

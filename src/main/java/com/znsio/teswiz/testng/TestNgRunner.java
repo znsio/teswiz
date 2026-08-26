@@ -19,6 +19,9 @@ public final class TestNgRunner {
 
     public static TestNgExecutionResult run(List<String> testClassNames, TestNgGroupSelection groupSelection, int threadCount) {
         TestNG testNg = new TestNG();
+        String launchName = Setup.getFromConfigs(Setup.LAUNCH_NAME);
+        testNg.setDefaultSuiteName(launchName);
+        testNg.setDefaultTestName(launchName);
         testNg.setTestClasses(resolveTestClasses(testClassNames));
         testNg.setParallel(XmlSuite.ParallelMode.METHODS);
         testNg.setThreadCount(threadCount);

@@ -126,7 +126,7 @@ public class DeviceSetup {
                 Setup.getLoadedCapabilities());
     }
 
-    static String getCloudNameFromCapabilities() {
+    public static String getCloudNameFromCapabilities() {
         return CapabilityConfigResolver.getCloudName(
                 Runner.isRunningInCI(),
                 Runner.isAPI(),

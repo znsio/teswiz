@@ -1,6 +1,6 @@
 package com.znsio.teswiz.runner;
 
-import com.znsio.teswiz.reporting.ScenarioSessionMetadataAggregator;
+import com.znsio.teswiz.reporting.TestExecutionMetadataBuilder;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.tools.OsUtils;
 import net.masterthought.cucumber.Configuration;
@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.*;
 
-import static com.znsio.teswiz.runner.DeviceSetup.getCloudNameFromCapabilities;
 import static com.znsio.teswiz.runner.Setup.*;
 
 class CustomReports {
@@ -106,27 +105,6 @@ class CustomReports {
     }
 
     static HashMap<String, Object> buildTestRunMetadata(String reportsDir) {
-        HashMap<String, Object> testRunMetadata = new HashMap<>();
-        testRunMetadata.put(TARGET_ENVIRONMENT, Setup.getFromConfigs(TARGET_ENVIRONMENT));
-        testRunMetadata.put(PLATFORM, Setup.getFromConfigs(PLATFORM));
-        testRunMetadata.put(WEB_ENGINE, Setup.getFromConfigs(WEB_ENGINE));
-        testRunMetadata.put(TAG, Setup.getFromConfigs(TAG_FOR_REPORTPORTAL));
-        testRunMetadata.put(RUN_IN_CI, Setup.getBooleanValueAsStringFromConfigs(RUN_IN_CI));
-        testRunMetadata.put("CLOUD_NAME", getCloudNameFromCapabilities());
-        testRunMetadata.put(EXECUTED_ON, Setup.getFromConfigs(EXECUTED_ON));
-        testRunMetadata.put(IS_VISUAL, Setup.getBooleanValueAsStringFromConfigs(IS_VISUAL));
-        testRunMetadata.put(SET_HARD_GATE, Setup.getBooleanValueAsStringFromConfigs(SET_HARD_GATE));
-        testRunMetadata.put(IS_FAILING_TEST_SUITE, Setup.getBooleanValueAsStringFromConfigs(IS_FAILING_TEST_SUITE));
-        testRunMetadata.put(PARALLEL, Setup.getIntegerValueFromConfigs(PARALLEL));
-        testRunMetadata.put("OS", System.getProperty("os.name"));
-        testRunMetadata.put(HOST_NAME, Setup.getHostMachineName());
-        testRunMetadata.put(BUILD_ID, Setup.getFromConfigs(BUILD_ID));
-        testRunMetadata.put(BUILD_INITIATION_REASON, Setup.getFromConfigs(BUILD_INITIATION_REASON));
-        testRunMetadata.putAll(buildAggregatedSessionMetadata(reportsDir));
-        return testRunMetadata;
-    }
-
-    private static Map<String, String> buildAggregatedSessionMetadata(String reportsDir) {
-        return ScenarioSessionMetadataAggregator.aggregate(reportsDir);
+        return new HashMap<>(TestExecutionMetadataBuilder.build(reportsDir));
     }
 }

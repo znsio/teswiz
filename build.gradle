@@ -431,6 +431,15 @@ tasks.named('test', Test) {
     }
     println "Using LOG_DIR: ${logDir}"
     systemProperty "LOG_DIR", "${logDir}"
+    // Mirrors what Runner.main() does for a real `run` invocation (System.setProperty
+    // "OUTPUT_DIRECTORY", logDir as its first statement) - without this, FileLocations'
+    // OUTPUT_DIRECTORY (a static field, resolved once per JVM) falls back to its
+    // hardcoded "target/" default for every test, since tests call Setup.load(...)
+    // directly rather than going through Runner.main()'s bootstrapping. That fallback
+    // sends per-test artifacts (TestNgRunner's report output, TestNgTestExecutionContextFactory's
+    // scenario directories) to one shared, ever-growing target/reports/ instead of
+    // this run's own timestamped directory.
+    systemProperty "OUTPUT_DIRECTORY", "${logDir}"
     environment "APPLITOOLS_API_KEY", System.getenv("TESWIZ_APPLITOOLS_API_KEY")
     reports {
         html.required.set(true)
