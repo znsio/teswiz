@@ -1,23 +1,45 @@
 package com.znsio.teswiz.testng;
 
+import org.testng.annotations.Test;
+
 import com.znsio.teswiz.businessLayer.theapp.AppBL;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.runner.Drivers;
 import com.znsio.teswiz.runner.Runner;
-import org.testng.annotations.Test;
 
 public class TheAppInvalidLoginTestNgTest {
     private static final String USERNAME = "znsio1";
     private static final String PASSWORD = "invalid password";
 
-    @Test(groups = {"web", "theapp"})
+    @Test(groups = { "web", "theapp" })
     public void verifyErrorMessageOnInvalidLogin() {
         createDriverForInvalidLoginAttempt();
 
         new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform())
                 .provideInvalidDetailsForSignup(USERNAME, PASSWORD);
+    }
+
+    @Test(groups = { "web", "theapp" })
+    public void verifyErrorMessageOnInvalidLogin1() {
+        createDriverForInvalidLoginAttempt();
+
+        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).goToLogin();
+    }
+
+    @Test(groups = { "web", "theapp" })
+    public void verifyErrorMessageOnInvalidLogin3() {
+        createDriverForInvalidLoginAttempt();
+
+        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).goToLogin().goToLogin_fail();
+    }
+
+    @Test(groups = { "web", "theapp" })
+    public void verifyErrorMessageOnInvalidLogin2() {
+        createDriverForInvalidLoginAttempt();
+
+        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).goToLogin_fail();
     }
 
     private void createDriverForInvalidLoginAttempt() {

@@ -1,5 +1,9 @@
 package com.znsio.teswiz.businessLayer.theapp;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.assertj.core.api.SoftAssertions;
+
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.entities.Platform;
 import com.znsio.teswiz.entities.SAMPLE_TEST_CONTEXT;
@@ -8,9 +12,6 @@ import com.znsio.teswiz.screen.ScreenShotScreen;
 import com.znsio.teswiz.screen.theapp.AppLaunchScreen;
 import com.znsio.teswiz.screen.theapp.LoginScreen;
 import com.znsio.teswiz.tools.cmd.CommandLineExecutor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.assertj.core.api.SoftAssertions;
 
 public class AppBL {
     private static final Logger LOGGER = LogManager.getLogger(AppBL.class.getName());
@@ -45,8 +46,7 @@ public class AppBL {
         String errorMessage = "Invalid login credentials error message is incorrect";
         String androidIOSErrorMessage = "Invalid login credentials, please try again";
         String webErrorMessage = "Your username is invalid!";
-        String expectedErrorMessage =
-                currentPlatform.equals(Platform.web) ? webErrorMessage : androidIOSErrorMessage;
+        String expectedErrorMessage = currentPlatform.equals(Platform.web) ? webErrorMessage : androidIOSErrorMessage;
 
         LoginScreen loginScreen = LoginScreen.get().enterLoginDetails(username, password).login();
         String actualErrorMessage = loginScreen.getInvalidLoginError();
@@ -66,7 +66,8 @@ public class AppBL {
     public AppBL stopTheAppAndLaunchItAgain() {
         forceStopTheApp();
         LOGGER.info("Start theapp");
-        String[] startTheApp = new String[] {"adb shell am start com.appiumpro.the_app/com.appiumpro.the_app.MainActivity"};
+        String[] startTheApp = new String[] {
+                "adb shell am start com.appiumpro.the_app/com.appiumpro.the_app.MainActivity" };
         CommandLineExecutor.execCommand(startTheApp);
         ScreenShotScreen.get().takeScreenshot();
         return this;
@@ -74,7 +75,7 @@ public class AppBL {
 
     public AppBL forceStopTheApp() {
         LOGGER.info("ForceStop TheApp");
-        String[] forceStopTheApp = new String[] {"adb shell am force-stop com.appiumpro.the_app"};
+        String[] forceStopTheApp = new String[] { "adb shell am force-stop com.appiumpro.the_app" };
         CommandLineExecutor.execCommand(forceStopTheApp);
         return this;
     }
@@ -87,5 +88,10 @@ public class AppBL {
     public AppBL goToLogin() {
         AppLaunchScreen.get().selectLogin();
         return this;
+    }
+
+    public AppBL goToLogin_fail() {
+        AppLaunchScreen.get().selectLogin();
+        throw new RuntimeException("Failing the test to check screenshot on failure");
     }
 }

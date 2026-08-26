@@ -16,7 +16,8 @@ class TestNgCucumberStyleReportWriterTest {
         TestNgScenarioReportData scenario = new TestNgScenarioReportData(
                 "SampleTestNgTest", "sampleScenarioName", List.of("smoke"),
                 TestNgCapturedStep.PASSED, 42L,
-                List.of(new TestNgCapturedStep("SampleBL.doSomething", TestNgCapturedStep.PASSED, 10_000_000L)));
+                List.of(new TestNgCapturedStep("SampleBL.doSomething", "com.znsio.teswiz.businessLayer.SampleBL.doSomething()",
+                        0, TestNgCapturedStep.PASSED, 10_000_000L)));
 
         TestNgCucumberStyleReportWriter.write(List.of(scenario), outputDirectory, "SampleApp");
 

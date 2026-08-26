@@ -15,16 +15,20 @@ class TestNgCucumberJsonBuilderTest {
         TestNgScenarioReportData passingScenario = new TestNgScenarioReportData(
                 "TheAppInvalidLoginTestNgTest", "invalidLogin", List.of("theapp", "smoke"),
                 TestNgCapturedStep.PASSED, 150L,
-                List.of(new TestNgCapturedStep("AuthBL.signIn", TestNgCapturedStep.PASSED, 100_000_000L),
-                        new TestNgCapturedStep("LandingBL.verifyErrorMessage", TestNgCapturedStep.PASSED, 50_000_000L)));
+                List.of(new TestNgCapturedStep("AuthBL.signIn", "com.znsio.teswiz.businessLayer.AuthBL.signIn(String)",
+                                0, TestNgCapturedStep.PASSED, 100_000_000L),
+                        new TestNgCapturedStep("LoginScreenWeb.enterLoginDetails", "com.znsio.teswiz.screen.web.theapp.LoginScreenWeb.enterLoginDetails()",
+                                1, TestNgCapturedStep.PASSED, 50_000_000L)));
         TestNgScenarioReportData failingScenario = new TestNgScenarioReportData(
                 "TheAppInvalidLoginTestNgTest", "invalidLoginRetry", List.of("theapp"),
                 TestNgCapturedStep.FAILED, 80L,
-                List.of(new TestNgCapturedStep("AuthBL.signIn", TestNgCapturedStep.FAILED, 80_000_000L)));
+                List.of(new TestNgCapturedStep("AuthBL.signIn", "com.znsio.teswiz.businessLayer.AuthBL.signIn(String)",
+                        0, TestNgCapturedStep.FAILED, 80_000_000L)));
         TestNgScenarioReportData otherFeatureScenario = new TestNgScenarioReportData(
                 "GoogleSearchWebTestNgTest", "searchForTeswiz", List.of("web"),
                 TestNgCapturedStep.PASSED, 200L,
-                List.of(new TestNgCapturedStep("SearchBL.search", TestNgCapturedStep.PASSED, 200_000_000L)));
+                List.of(new TestNgCapturedStep("SearchBL.search", "com.znsio.teswiz.businessLayer.SearchBL.search(String)",
+                        0, TestNgCapturedStep.PASSED, 200_000_000L)));
 
         JSONArray features = TestNgCucumberJsonBuilder.build(
                 List.of(passingScenario, failingScenario, otherFeatureScenario));
@@ -52,6 +56,15 @@ class TestNgCucumberJsonBuilderTest {
         assertThat(firstStep.getString("keyword")).isEqualTo("* ");
         assertThat(firstStep.getJSONObject("result").getString("status")).isEqualTo("passed");
         assertThat(firstStep.getJSONObject("result").getLong("duration")).isEqualTo(100_000_000L);
+        assertThat(firstStep.getJSONObject("match").getString("location"))
+                .isEqualTo("com.znsio.teswiz.businessLayer.AuthBL.signIn(String)");
+
+        JSONObject nestedStep = steps.getJSONObject(1);
+        String nestedStepName = nestedStep.getString("name");
+        assertThat(nestedStepName)
+                .as("a depth-1 step should be indented so nesting (BL -> screen) is visible in the report")
+                .isNotEqualTo("LoginScreenWeb.enterLoginDetails")
+                .endsWith("LoginScreenWeb.enterLoginDetails");
 
         JSONObject failingElement = theAppFeature.getJSONArray("elements").getJSONObject(1);
         JSONObject failingStep = failingElement.getJSONArray("steps").getJSONObject(0);

@@ -12,6 +12,13 @@ import java.util.Map;
 // schema) can render TestNG-mode results as a rich HTML report. Each business-layer
 // call captured by TestNgStepCaptureAspect becomes one Cucumber-style step.
 public final class TestNgCucumberJsonBuilder {
+    // Cucumber's JSON step list is flat, so nesting (test -> BL -> screen -> ...)
+    // is conveyed visually by indenting the step name text itself. A real
+    // non-breaking space (U+00A0, not a regular space) is used per indent level so
+    // HTML rendering doesn't collapse it away.
+    private static final String INDENT_UNIT = "    ";
+    private static final String NESTED_MARKER = "↳ ";
+
     private TestNgCucumberJsonBuilder() { }
 
     public static JSONArray build(List<TestNgScenarioReportData> scenarios) {
@@ -66,7 +73,10 @@ public final class TestNgCucumberJsonBuilder {
             JSONObject jsonStep = new JSONObject();
             jsonStep.put("keyword", "* ");
             jsonStep.put("line", line++);
-            jsonStep.put("name", step.stepName());
+            jsonStep.put("name", indentedStepName(step));
+            JSONObject match = new JSONObject();
+            match.put("location", step.matchLocation());
+            jsonStep.put("match", match);
             JSONObject result = new JSONObject();
             result.put("status", step.status());
             result.put("duration", step.durationNanos());
@@ -74,5 +84,12 @@ public final class TestNgCucumberJsonBuilder {
             jsonSteps.put(jsonStep);
         }
         return jsonSteps;
+    }
+
+    private static String indentedStepName(TestNgCapturedStep step) {
+        if (step.depth() == 0) {
+            return step.stepName();
+        }
+        return INDENT_UNIT.repeat(step.depth()) + NESTED_MARKER + step.stepName();
     }
 }
