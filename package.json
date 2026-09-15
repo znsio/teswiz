@@ -11,7 +11,7 @@
   "overrides": {
     "@appium/support": ">=7.0.6",
     "@babel/core": "7.29.6",
-    "@xmldom/xmldom": "0.9.10",
+    "@xmldom/xmldom": "0.9.12",
     "@mapbox/node-pre-gyp": "2.0.3",
     "axios": "1.18.1",
     "diff": ">=5.2.2",
