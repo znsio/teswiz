@@ -223,8 +223,8 @@ dependencies {
     implementation "com.konghq:unirest-java:3.14.5"
     implementation "com.squareup.okhttp3:okhttp:5.4.0"
     implementation "io.appium:java-client:10.1.1"
-    implementation 'io.cucumber:cucumber-java:7.34.3'
-    implementation 'io.cucumber:cucumber-testng:7.34.3'
+    implementation 'io.cucumber:cucumber-java:8.0.4'
+    implementation 'io.cucumber:cucumber-testng:8.0.4'
     implementation "io.github.bonigarcia:webdrivermanager:6.3.4"
     implementation "net.masterthought:cucumber-reporting:5.11.0"
     implementation "org.apache.commons:commons-lang3:3.20.0"
