@@ -1,3 +1,24 @@
+# ⚠️ This repository has temporarily moved
+
+**teswiz** is currently being maintained at **[anandbagmar/teswiz](https://github.com/anandbagmar/teswiz)**.
+
+This repository (`znsio/teswiz`) is temporarily paused — please use the location above for the latest code, releases, and issue tracking until further notice.
+
+- 📦 Latest releases: [anandbagmar/teswiz/releases](https://github.com/anandbagmar/teswiz/releases)
+- 📚 Documentation: [anandbagmar/teswiz/docs](https://github.com/anandbagmar/teswiz/tree/main/docs)
+- 🐛 Issues & feature requests: [anandbagmar/teswiz/issues](https://github.com/anandbagmar/teswiz/issues)
+
+This notice will be updated once the repository is back in active use here.
+
+
+---
+---
+
+# ⚠️
+
+
+
+
 [![](https://badges.frapsoft.com/os/v3/open-source.svg)](https://github.com/anandbagmar/teswiz)
 [![GitHub stars](https://img.shields.io/github/stars/anandbagmar/teswiz.svg?style=flat)](https://github.com/anandbagmar/teswiz/stargazers)
 [ ![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=flat )](https://github.com/anandbagmar/teswiz/pulls)
