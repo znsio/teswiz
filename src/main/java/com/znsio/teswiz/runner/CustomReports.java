@@ -1,5 +1,6 @@
 package com.znsio.teswiz.runner;
 
+import com.znsio.teswiz.reporting.ScenarioSessionMetadataAggregator;
 import com.znsio.teswiz.entities.TEST_CONTEXT;
 import com.znsio.teswiz.tools.OsUtils;
 import net.masterthought.cucumber.Configuration;
@@ -49,7 +50,7 @@ class CustomReports {
         LOGGER.info(String.format("\tCreating rich reports: %s", richReportsPath));
         Configuration config = new Configuration(new File(richReportsPath),
                                                  Setup.getFromConfigs(APP_NAME));
-        return addTestExecutionMetaDataToReportConfig(excludeCustomTagsFromReport(config));
+        return addTestExecutionMetaDataToReportConfig(excludeCustomTagsFromReport(config), reportsDir);
     }
 
     private static Configuration excludeCustomTagsFromReport(Configuration config) {
@@ -62,37 +63,32 @@ class CustomReports {
     }
 
     @NotNull
-    private static List<String> processTestResultJsonFiles(String reportsDir) {
+    static List<String> processTestResultJsonFiles(String reportsDir) {
         Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsDir), new String[]{"json"},
                                                          true);
-        LOGGER.info(String.format("\tFound '%s' result files for processing", jsonFiles.size()));
-        if (jsonFiles.isEmpty()) {
+        List<File> cucumberJsonFiles = jsonFiles.stream()
+                .filter(CustomReports::isCucumberResultJsonFile)
+                .sorted(Comparator.comparing(File::getAbsolutePath))
+                .toList();
+        LOGGER.info(String.format("\tFound '%s' Cucumber result files for processing", cucumberJsonFiles.size()));
+        if (cucumberJsonFiles.isEmpty()) {
             LOGGER.info("Reports not generated");
         }
-        List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
-        jsonFiles.forEach(file -> {
+        List<String> jsonPaths = new ArrayList<>(cucumberJsonFiles.size());
+        cucumberJsonFiles.forEach(file -> {
             LOGGER.info(String.format("\tProcessing result file: %s", file.getAbsolutePath()));
             jsonPaths.add(file.getAbsolutePath());
         });
         return jsonPaths;
     }
 
-    private static Configuration addTestExecutionMetaDataToReportConfig(Configuration config) {
-        HashMap testRunMetadata = new HashMap<>();
-        testRunMetadata.put(TARGET_ENVIRONMENT, Setup.getFromConfigs(TARGET_ENVIRONMENT));
-        testRunMetadata.put(PLATFORM, Setup.getFromConfigs(PLATFORM));
-        testRunMetadata.put(TAG, Setup.getFromConfigs(TAG_FOR_REPORTPORTAL));
-        testRunMetadata.put(RUN_IN_CI, Setup.getBooleanValueAsStringFromConfigs(RUN_IN_CI));
-        testRunMetadata.put("CLOUD_NAME", getCloudNameFromCapabilities());
-        testRunMetadata.put(EXECUTED_ON, Setup.getFromConfigs(EXECUTED_ON));
-        testRunMetadata.put(IS_VISUAL, Setup.getBooleanValueAsStringFromConfigs(IS_VISUAL));
-        testRunMetadata.put(SET_HARD_GATE, Setup.getBooleanValueAsStringFromConfigs(SET_HARD_GATE));
-        testRunMetadata.put(IS_FAILING_TEST_SUITE, Setup.getBooleanValueAsStringFromConfigs(IS_FAILING_TEST_SUITE));
-        testRunMetadata.put(PARALLEL, Setup.getIntegerValueFromConfigs(PARALLEL));
-        testRunMetadata.put("OS", System.getProperty("os.name"));
-        testRunMetadata.put(HOST_NAME, Setup.getHostMachineName());
-        testRunMetadata.put(BUILD_ID, Setup.getFromConfigs(BUILD_ID));
-        testRunMetadata.put(BUILD_INITIATION_REASON, Setup.getFromConfigs(BUILD_INITIATION_REASON));
+    private static boolean isCucumberResultJsonFile(File file) {
+        String fileName = file.getName();
+        return fileName.startsWith("cucumber-") && fileName.endsWith(".json");
+    }
+
+    private static Configuration addTestExecutionMetaDataToReportConfig(Configuration config, String reportsDir) {
+        HashMap testRunMetadata = buildTestRunMetadata(reportsDir);
 
         // Convert hashmap entries to a list
         List<Map.Entry<String, Integer>> sortedTestMetaDataKeys = new ArrayList<>(testRunMetadata.entrySet());
@@ -107,5 +103,30 @@ class CustomReports {
         }
 
         return config;
+    }
+
+    static HashMap<String, Object> buildTestRunMetadata(String reportsDir) {
+        HashMap<String, Object> testRunMetadata = new HashMap<>();
+        testRunMetadata.put(TARGET_ENVIRONMENT, Setup.getFromConfigs(TARGET_ENVIRONMENT));
+        testRunMetadata.put(PLATFORM, Setup.getFromConfigs(PLATFORM));
+        testRunMetadata.put(WEB_ENGINE, Setup.getFromConfigs(WEB_ENGINE));
+        testRunMetadata.put(TAG, Setup.getFromConfigs(TAG_FOR_REPORTPORTAL));
+        testRunMetadata.put(RUN_IN_CI, Setup.getBooleanValueAsStringFromConfigs(RUN_IN_CI));
+        testRunMetadata.put("CLOUD_NAME", getCloudNameFromCapabilities());
+        testRunMetadata.put(EXECUTED_ON, Setup.getFromConfigs(EXECUTED_ON));
+        testRunMetadata.put(IS_VISUAL, Setup.getBooleanValueAsStringFromConfigs(IS_VISUAL));
+        testRunMetadata.put(SET_HARD_GATE, Setup.getBooleanValueAsStringFromConfigs(SET_HARD_GATE));
+        testRunMetadata.put(IS_FAILING_TEST_SUITE, Setup.getBooleanValueAsStringFromConfigs(IS_FAILING_TEST_SUITE));
+        testRunMetadata.put(PARALLEL, Setup.getIntegerValueFromConfigs(PARALLEL));
+        testRunMetadata.put("OS", System.getProperty("os.name"));
+        testRunMetadata.put(HOST_NAME, Setup.getHostMachineName());
+        testRunMetadata.put(BUILD_ID, Setup.getFromConfigs(BUILD_ID));
+        testRunMetadata.put(BUILD_INITIATION_REASON, Setup.getFromConfigs(BUILD_INITIATION_REASON));
+        testRunMetadata.putAll(buildAggregatedSessionMetadata(reportsDir));
+        return testRunMetadata;
+    }
+
+    private static Map<String, String> buildAggregatedSessionMetadata(String reportsDir) {
+        return ScenarioSessionMetadataAggregator.aggregate(reportsDir);
     }
 }

@@ -13,7 +13,7 @@ import java.util.Set;
 
 import static com.znsio.teswiz.runner.ConfigFileManager.CAPS;
 
-public class DesiredCapabilityBuilder {
+class DesiredCapabilityBuilder {
 
     private static final Logger LOGGER = LogManager.getLogger(DesiredCapabilityBuilder.class.getName());
 
@@ -24,7 +24,7 @@ public class DesiredCapabilityBuilder {
             "LT:Options"
     );
 
-    public DesiredCapabilities buildDesiredCapability(String capabilityFilePath, int numberOfAppiumDriversUsed) {
+    DesiredCapabilities buildDesiredCapability(String capabilityFilePath, int numberOfAppiumDriversUsed) {
         String platform = Runner.getPlatform().name();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         JSONObject platformCapabilities;

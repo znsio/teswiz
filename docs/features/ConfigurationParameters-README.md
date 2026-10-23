@@ -1,0 +1,149 @@
+# Configuration parameters
+
+The config.properties file has the following properties. Highlighting the defaults, and options for each here.
+
+These can be overridden by providing the same either as environment variables or system properties.
+
+    # ATD properties
+    RUNNER=distribute -> ATD property. We will always use distributed
+    FRAMEWORK=cucumber -> ATD property. We will always use cucumber
+    RUNNER_LEVEL=methods -> ATD property. We will always use methods
+    CAPS=./caps/capabilities.json -> Path to capabilties.json file
+
+    # teswiz configuration properties. Can be overridden using environment variables or system properties
+
+    APP_NAME=teswiz -> Name of your application
+    APP_PACKAGE_NAME=io.cloudgrey.the_app -> android app package name
+    APP_PATH=./temp/abc.apk -> path to android / windows app name
+    APPLITOOLS_BATCH_NAME_SUFFIX= - #661 -> Optional suffix appended to Applitools batch name (useful in CI runs)
+    APPLITOOLS_CONFIGURATION=./configs/applitools_config.json -> Applitools configuration 
+    BASE_URL_FOR_WEB=BASE_URL -> Key name of the property in TEST_DATA_FILE for environment specific base url
+    BRANCH_NAME -> Key name of environment variable which should be used to get the current Branch name. 
+                   IF this is not specified, then teswiz will try to get the BRANCH_NAME using this command: `git rev-parse --abbrev-ref HEAD`
+    BROWSER=chrome -> Which browser to use for Web execution? Supported: chrome || firefox
+                      Browsers should to be installed. Corresponding WebDriver for the browser will be downloaded automatically
+    WEB_ENGINE=selenium -> Which web engine should be used for Platform.web? Supported: selenium | playwright-java | playwright-ts
+                           Default is selenium. All checked-in sample config.properties files now declare this explicitly.
+    BUILD_ID=BUILDID -> The key name of the environment variable that has the corresponding build id of the test execution
+    CLEANUP_DEVICE_BEFORE_STARTING_EXECUTION=true -> Uninstall app from local Android devices before starting test execution
+    CLOUD_KEY=<auth / api key> for pCloudy / Headspin
+    CLOUD_USERNAME=<username / email> for pCloudy -> Not required for Headspin
+    CLOUD_UPLOAD_APP=false -> Upload the app to pCloudy / headspin before running the tests
+    CLOUD_USE_PROXY=true -> If we need proxy for connecting to the cloud device farm using the curl command. Default: false
+    CLOUD_USE_LOCAL_TESTING=false -> If we want to enable local testing (currently only in BrowserStack) -  
+    ENVIRONMENT_CONFIG_FILE=./src/test/resources/environments.json -> Environment specific configuration file
+    IS_FAILING_TEST_SUITE=false -> Do not run failing tests. Refer to [Hard Gate](HardGate.md) for more information
+    IS_VISUAL=false -> Should enable Applitools Visual Testing? If yes, set to true
+    FAIL_TEST_ON_VISUAL_DIFFERENCE=true -> 
+        If visual testing is enabled, and this is set to true, then the test will fail if there are any visual differences found
+        If this is set to false, then a message will be logged about the visual differences, and the test will not fail for this reason 
+    HEADLESS=false -> If set, run web/electron app tests in HEADLESS mode (overrides the headless value in browser_config.json)
+    LOG_DIR=target -> Where should logs be created?
+    LOG_PROPERTIES_FILE=./src/test/resources/log4j2.properties -> log4j configuration file
+    MAX_NUMBER_OF_APPIUM_DRIVERS -> The max number of drivers on cloud to create for multiuser android tests, default value is 5
+    MAX_NUMBER_OF_WEB_DRIVERS -> The max number of web drivers on cloud to create for multiuser web tests, default value is 5
+    PLATFORM=android -> Run tests against? Supported: android | iOS | windows | web | api
+    PARALLEL=1 -> How many tests should be run in parallel?
+    PROXY_KEY=HTTP_PROXY -> If proxy should be set, what is the environment variable specifying the proxy?
+    PROXY_URL=<proxy_url> -> What is the proxy url to be used if PROXY_KEY is set
+    REMOTE_WEBDRIVER_GRID_PORT=<environment variable name which holds the port to be used for RemoteWebDriver>
+    REMOTE_WEBDRIVER_GRID_HOST_NAME=<environment variable name which holds the host name/ip for RemoteWebDriver>
+    REPORT_PORTAL_FILE=./src/test/resources/reportportal.properties -> ReportPortal.io configuration
+    RP_DESCRIPTION=<description of the test execution to be shown in reportportal's launch description. Default: End-2-End scenarios>
+    RUN_IN_CI=false -> Are tests running in CI?
+    SHOW_SENSITIVE_DATA=false -> If true, do not mask sensitive values in logs. Default is false.
+    SET_HARD_GATE=true -> Enables Hard Gate for test execution. See [Hard Gate](HardGate.md) for more information 
+    TARGET_ENVIRONMENT=prod -> Which environment are the tests running against? Should map to envrionments specified in ENVIRONMENT_CONFIG_FILE
+    TEST_DATA_FILE=./src/test/resources/testData.json -> Environment specific static test data
+    BROWSER_CONFIG_FILE=./src/test/resources/com/znsio/teswiz/features/configs/browser_config.json -> json containing browser configurations for Selenium and Playwright web execution
+
+For Playwright web execution, teswiz reads the same `BROWSER_CONFIG_FILE` and applies engine-specific overrides where present:
+
+    * The same checked-in `browser_config.json` files are used as the input source
+    * Playwright currently reuses compatible legacy fields such as:
+        - `headlessOptions.headless`
+        - `headlessOptions.include`
+        - `arguments`
+        - `acceptInsecureCerts`
+        - proxy-related settings such as `noProxy`
+    * Selenium-specific fields that do not map safely to Playwright are ignored unless explicitly provided in a Playwright override block
+    * The legacy `binary` field is not reused automatically for Playwright because it is often used today for Electron-specific setups
+
+An optional Playwright-specific override block can be added under a browser entry while keeping the current JSON valid:
+
+```json
+{
+  "chrome": {
+    "arguments": [
+      "use-fake-device-for-media-stream"
+    ],
+    "headlessOptions": {
+      "headless": false,
+      "include": [
+        "disable-gpu"
+      ]
+    },
+    "acceptInsecureCerts": true,
+    "playwright": {
+      "launchOptions": {
+        "headless": true,
+        "args": [
+          "lang=en-US"
+        ],
+        "channel": "chrome",
+        "executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+      },
+      "contextOptions": {
+        "ignoreHTTPSErrors": false,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        }
+      }
+    }
+  }
+}
+```
+
+When a Playwright engine is used with a browser config that does not yet have Playwright blocks, teswiz also generates a Playwright-ready recommended config in the current reports directory and prints a visible end-of-execution message with the generated file path and replacement guidance. The source config is not modified automatically.
+
+`WEB_ENGINE` is also added to the generated Cucumber HTML report metadata so report readers can see whether a web scenario ran on Selenium, Playwright-Java, or Playwright-TS.
+
+When teswiz finds `scenario-session-metadata.json` files in the reports directory, it also aggregates the following values into the generated Cucumber HTML report metadata:
+
+* `SESSION_PERSONAS`
+* `SESSION_PLATFORMS`
+* `SESSION_ENGINES`
+* `SESSION_PROVIDERS`
+* `SESSION_PROVIDER_SESSION_IDS`
+* `SESSION_PROVIDER_REPORT_URLS`
+* `SESSION_PROVIDER_CONSOLE_LOG_URLS`
+* `SESSION_PROVIDER_NETWORK_LOG_URLS`
+* `SESSION_PROVIDER_VIDEO_URLS`
+* `SESSION_PROVIDER_PLAYWRIGHT_LOG_URLS`
+* `SESSION_PROVIDER_COMMAND_LOG_URLS`
+* `SESSION_PROVIDER_SCREENSHOT_URLS`
+
+This gives report readers a suite-level view of mixed persona, platform, engine, and provider usage without opening each scenario artifact manually.
+
+# Overriding the BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE for Web execution
+The BASE_URL_FOR_WEB and BROWSER_CONFIG_FILE once set, cannot be changed for the test execution.
+However, there may be reasons when you need to use a different BASE_URL_FOR_WEB or a different BROWSER_CONFIG_FILE for specific tests.
+
+To allow for that, **before the driver is created** for a test, you can add the following data to the TestExecutionContext.  
+
+Example:
+
+    @When("I login with invalid credentials - {string}, {string}")
+    public void iLoginWithInvalidCredentials(String username, String password) {
+        LOGGER.info(System.out.printf(
+                "iLoginWithInvalidCredentials - Persona:'%s', Username: '%s', Password:'%s', " +
+                "Platform: '%s'",
+                SAMPLE_TEST_CONTEXT.ME, username, password, Runner.getPlatform()));
+        context.addTestState(TEST_CONTEXT.UPDATED_BROWSER_CONFIG_FILE_FOR_THIS_TEST, "./configs/browser_headless_config.json");
+        context.addTestState(TEST_CONTEXT.UPDATED_BASE_URL_FOR_WEB, "BASE_URL");
+        Drivers.createDriverFor(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform(), context);
+        context.addTestState(SAMPLE_TEST_CONTEXT.ME, username);
+        new AppBL(SAMPLE_TEST_CONTEXT.ME, Runner.getPlatform()).provideInvalidDetailsForSignup(username,
+                                                                                               password);
+    }

@@ -3,8 +3,11 @@ package com.znsio.teswiz.runner;
 import com.znsio.teswiz.context.SessionContext;
 import com.znsio.teswiz.context.TestExecutionContext;
 import com.znsio.teswiz.exceptions.InvalidTestDataException;
+import com.znsio.teswiz.mobile.provider.LambdaTestMobileSetup;
 import com.znsio.teswiz.tools.JsonFile;
+import com.znsio.teswiz.web.provider.selenium.LambdaTestWebSetup;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -22,11 +25,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class LambdaTestSetupTest {
     private static final String LAMBDATEST_WEB_CONFIG = "./configs/theapp/theapp_lambdatest_web_config.properties";
 
+    @BeforeEach
+    void setUp() {
+        cleanUp();
+    }
+
     @AfterEach
     void cleanUp() {
         SessionContext.remove(Thread.currentThread().getId());
         System.clearProperty(Setup.CLOUD_UPLOAD_APP);
         System.clearProperty(Setup.APP_PATH);
+        System.clearProperty(Setup.CLOUD_USERNAME);
+        System.clearProperty(Setup.CLOUD_KEY);
     }
 
     @Test
@@ -34,7 +44,7 @@ class LambdaTestSetupTest {
         setupConfig(LAMBDATEST_WEB_CONFIG);
         new TestExecutionContext("lambda-web-w3c-cap-test");
 
-        MutableCapabilities capabilities = LambdaTestSetup.updateLambdaTestCapabilities(
+        MutableCapabilities capabilities = LambdaTestWebSetup.updateCapabilities(
                 new DesiredCapabilities());
 
         assertThat(capabilities.getCapability("browserName")).isEqualTo("chrome");
@@ -103,7 +113,7 @@ class LambdaTestSetupTest {
         Files.writeString(tempCaps, tempCapabilities);
         Setup.addToConfigs(Setup.CAPS, tempCaps.toString());
 
-        MutableCapabilities capabilities = LambdaTestSetup.updateLambdaTestCapabilities(
+        MutableCapabilities capabilities = LambdaTestWebSetup.updateCapabilities(
                 new DesiredCapabilities());
 
         assertThat(capabilities.getCapability("browserName")).isEqualTo("Chrome");
@@ -155,7 +165,7 @@ class LambdaTestSetupTest {
         Setup.addToConfigs(Setup.CLOUD_UPLOAD_APP, "false");
         System.setProperty(Setup.CLOUD_UPLOAD_APP, "false");
 
-        LambdaTestSetup.updateLambdaTestCapabilities("https://manual-api.lambdatest.com");
+        LambdaTestMobileSetup.updateLambdaTestCapabilities("https://manual-api.lambdatest.com");
 
         Map<String, Map> updatedCaps = JsonFile.loadJsonFile(Setup.getFromConfigs(Setup.CAPS));
         Map<String, Object> androidCaps = updatedCaps.get("android");
@@ -201,7 +211,7 @@ class LambdaTestSetupTest {
         Files.writeString(tempCaps, tempCapabilities);
         Setup.addToConfigs(Setup.CAPS, tempCaps.toString());
 
-        LambdaTestSetup.updateLambdaTestCapabilities("https://manual-api.lambdatest.com");
+        LambdaTestMobileSetup.updateLambdaTestCapabilities("https://manual-api.lambdatest.com");
 
         Map<String, Map> updatedCaps = JsonFile.loadJsonFile(Setup.getFromConfigs(Setup.CAPS));
         Map<String, Object> iosCaps = updatedCaps.get("iOS");
@@ -243,7 +253,7 @@ class LambdaTestSetupTest {
         Setup.addToConfigs(Setup.CAPS, tempCaps.toString());
 
         InvalidTestDataException exception = assertThrows(InvalidTestDataException.class,
-                () -> LambdaTestSetup.updateLambdaTestCapabilities("https://manual-api.lambdatest.com"));
+                () -> LambdaTestMobileSetup.updateLambdaTestCapabilities("https://manual-api.lambdatest.com"));
 
         assertThat(exception.getMessage()).contains("valid LambdaTest app id");
     }

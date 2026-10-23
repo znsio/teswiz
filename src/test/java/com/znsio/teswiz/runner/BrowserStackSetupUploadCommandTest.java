@@ -1,5 +1,6 @@
 package com.znsio.teswiz.runner;
 
+import com.znsio.teswiz.mobile.provider.BrowserStackMobileSetup;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,7 +9,7 @@ class BrowserStackSetupUploadCommandTest {
 
     @Test
     void shouldAddIosKeychainSupportFlagForIpaUploads() {
-        String[] command = BrowserStackSetup.buildUploadAppCurlCommand(
+        String[] command = BrowserStackMobileSetup.buildUploadAppCurlCommand(
                 "user:key",
                 "/tmp/TheApp.ipa",
                 "https://api-cloud.browserstack.com/app-automate/",
@@ -19,7 +20,7 @@ class BrowserStackSetupUploadCommandTest {
 
     @Test
     void shouldNotAddIosKeychainSupportFlagForNonIpaUploads() {
-        String[] command = BrowserStackSetup.buildUploadAppCurlCommand(
+        String[] command = BrowserStackMobileSetup.buildUploadAppCurlCommand(
                 "user:key",
                 "/tmp/TheApp-release.apk",
                 "https://api-cloud.browserstack.com/app-automate/",
@@ -30,7 +31,7 @@ class BrowserStackSetupUploadCommandTest {
 
     @Test
     void shouldAddIosKeychainSupportFlagForZipUploads() {
-        String[] command = BrowserStackSetup.buildUploadAppCurlCommand(
+        String[] command = BrowserStackMobileSetup.buildUploadAppCurlCommand(
                 "user:key",
                 "/tmp/TheApp.zip",
                 "https://api-cloud.browserstack.com/app-automate/",

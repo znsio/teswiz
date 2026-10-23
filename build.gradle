@@ -10,7 +10,7 @@ plugins {
     id "org.sonarqube" version "7.3.1.8318"
     id "java"
     id "idea"
-    id 'com.gradleup.shadow' version '9.4.2'
+    id 'com.gradleup.shadow' version '9.5.1'
     id "maven-publish"
     id "io.freefair.aspectj.post-compile-weaving" version "9.5.0"
 }
@@ -40,6 +40,7 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    google()
     mavenCentral()
     maven {
         url = 'https://jitpack.io'
@@ -203,8 +204,8 @@ tasks.compileJava {
 
 dependencies {
     implementation fileTree(dir: "$project.projectDir/libs", include: ['*.jar'])
-    implementation "com.applitools:eyes-images-java5:5.81.33"
-    implementation ("com.applitools:eyes-appium-java5:5.79.33") {
+    implementation "com.applitools:eyes-images-java5:5.81.35"
+    implementation ("com.applitools:eyes-appium-java5:5.79.35") {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-api'
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-support'
@@ -214,30 +215,33 @@ dependencies {
     implementation "com.browserstack:browserstack-local-java:1.1.9"
     implementation 'com.epam.reportportal:agent-java-cucumber6:5.5.7'
     implementation 'com.epam.reportportal:client-java:5.4.15'
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.0"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.1"
     implementation "com.flipkart.zjsonpatch:zjsonpatch:0.4.16"
     implementation "com.github.erosb:everit-json-schema:1.14.6"
     implementation "com.github.vidstige:jadb:$jadbVersion"
     implementation 'com.jayway.jsonpath:json-path:3.0.0'
     // TODO - migrate to restassured
     implementation "com.konghq:unirest-java:3.14.5"
+    implementation "com.microsoft.playwright:playwright:1.49.0"
     implementation "com.squareup.okhttp3:okhttp:5.4.0"
     implementation "io.appium:java-client:10.1.1"
-    implementation 'io.cucumber:cucumber-java:7.34.3'
-    implementation 'io.cucumber:cucumber-testng:7.34.3'
+    implementation 'io.cucumber:cucumber-java:7.34.4'
+    implementation 'io.cucumber:cucumber-testng:7.34.4'
     implementation "io.github.bonigarcia:webdrivermanager:6.3.4"
     implementation "net.masterthought:cucumber-reporting:5.11.0"
+    implementation "net.bytebuddy:byte-buddy:1.17.8"
     implementation "org.apache.commons:commons-lang3:3.20.0"
     implementation "org.apache.commons:commons-rng-simple:1.7"
-    implementation 'org.apache.logging.log4j:log4j-1.2-api:2.26.0'
-    implementation 'org.apache.logging.log4j:log4j-core:2.26.0'
-    implementation "org.apache.pdfbox:pdfbox:3.0.7"
+    implementation 'org.apache.logging.log4j:log4j-1.2-api:2.26.1'
+    implementation 'org.apache.logging.log4j:log4j-core:2.26.1'
+    implementation "org.apache.pdfbox:pdfbox:3.0.8"
     implementation "org.assertj:assertj-core:3.27.7"
     implementation "org.aspectj:aspectjrt:$aspectJVersion"
     implementation "org.jetbrains:annotations:26.1.0"
-    testImplementation "org.junit.jupiter:junit-jupiter:6.1.0"
+    testImplementation "org.junit.jupiter:junit-jupiter:6.1.2"
+    testImplementation "org.mockito:mockito-core:5.20.0"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation "org.seleniumhq.selenium:selenium-java:4.45.0"
+    implementation "org.seleniumhq.selenium:selenium-java:4.46.0"
     implementation "org.yaml:snakeyaml:2.6"
 }
 
@@ -265,7 +269,7 @@ artifacts {
 }
 
 wrapper {
-    gradleVersion = "9.6.0"
+    gradleVersion = "9.6.1"
 }
 
 publishing {
@@ -335,7 +339,7 @@ tasks.register('run', JavaExec) {
         println "Using LOG_DIR: ${logDir}"
         System.setProperty "LOG_DIR", "${logDir}"
         environment "APPLITOOLS_LOG_DIR", "${logDir}/applitools_logs"
-        environment "APPLITOOLS_API_KEY", System.getenv("APPLITOOLS_API_KEY")
+        environment "APPLITOOLS_API_KEY", System.getenv("TESWIZ_APPLITOOLS_API_KEY")
 
         def hostname = InetAddress.getLocalHost().getHostName()
         println "Hostname: $hostname"
@@ -410,12 +414,34 @@ tasks.named('test', Test) {
     }
     println "Using LOG_DIR: ${logDir}"
     systemProperty "LOG_DIR", "${logDir}"
+    environment "APPLITOOLS_API_KEY", System.getenv("TESWIZ_APPLITOOLS_API_KEY")
     reports {
         html.required.set(true)
         junitXml.required.set(true)
         html.outputLocation.set(file("$logDir/unit-test-results"))
         junitXml.outputLocation.set(file("$logDir/unit-test-results"))
     }
+}
+
+tasks.register('verifyScreenContracts', JavaExec) {
+    group = "verification"
+    description = "Validate discovered screen implementations against their shared contracts."
+    dependsOn compileTestJava
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = "com.znsio.teswiz.screen.ScreenContractSanityChecker"
+    args "src/test/java/com/znsio/teswiz/screen"
+    if (project.findProperty('includeMissingScreenTargets')?.toString()?.toBoolean()) {
+        args "--include-missing-targets"
+    }
+}
+
+tasks.register('reportMissingScreenContracts', JavaExec) {
+    group = "verification"
+    description = "Report missing screen implementations for the currently supported target combinations."
+    dependsOn compileTestJava
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = "com.znsio.teswiz.screen.ScreenContractCoverageReporter"
+    args "src/test/java/com/znsio/teswiz/screen"
 }
 
 tasks.withType(JavaCompile).configureEach {

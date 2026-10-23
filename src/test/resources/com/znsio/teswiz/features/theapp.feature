@@ -10,6 +10,7 @@ Feature: Scenarios for "The App"
     Then "You" can login again with invalid credentials - "switched user", "switched user invalid password"
 
 #  CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@theapp2 and @invalidLogin1" ./gradlew run
+#  WEB_ENGINE=playwright-ts HEADLESS=true CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@theapp2 and @invalidLogin1 and @playwright-phase1" ./gradlew run
 #  CONFIG=./configs/theapp/theapp_local_android_config.properties PLATFORM=android TAG="@theapp2 and @invalidLogin1" ./gradlew run
 #  CONFIG=./configs/theapp/theapp_local_nml_android_config.properties PLATFORM=android TAG="@theapp2 and @invalidLogin1" ./gradlew run
 #  CONFIG=./configs/theapp/theapp_local_ios_config.properties PLATFORM=iOS TAG="@theapp2 and @invalidLogin1" ./gradlew run
@@ -21,7 +22,7 @@ Feature: Scenarios for "The App"
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_lambdatest_ios_config.properties CLOUD_USERNAME=$LT_CLOUD_USERNAME CLOUD_KEY=$LT_CLOUD_KEY PLATFORM=iOS TAG="@theapp2 and @invalidLogin1 and @lambdatest" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_headspin_android_config.properties CLOUD_KEY=$HEADSPIN_CLOUD_KEY PLATFORM=android TAG="@theapp2 and @invalidLogin1 and @headspin" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_headspin_ios_config.properties CLOUD_KEY=$HEADSPIN_CLOUD_KEY PLATFORM=iOS TAG="@theapp2 and @invalidLogin1 and @headspin" ./gradlew run
-  @android @web @iOS @headspin @browserstack @lambdatest @invalidLogin @invalidLogin1 @theapp2
+  @android @web @iOS @headspin @browserstack @lambdatest @invalidLogin @invalidLogin1 @theapp2 @playwright-phase1
   Scenario: Verify error message on invalid login
     Given I login with invalid credentials - "znsio1", "invalid password"
 #    Then I try to login again with invalid credentials - "znsio2", "another invalid password"
@@ -46,9 +47,10 @@ Feature: Scenarios for "The App"
     Then I can echo "how are you too?" in the message box
 
 #  CONFIG=./configs/theapp/theapp_local_android_config.properties TAG="@multiuser-android-web and @theapp5" ./gradlew run
+#  WEB_ENGINE=playwright-ts HEADLESS=true CONFIG=./configs/theapp/theapp_local_android_config.properties TAG="@multiuser-android-web and @theapp5 and @playwright-phase1" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_browserstack_android_config.properties CLOUD_USERNAME=$BROWSERSTACK_CLOUD_USERNAME CLOUD_KEY=$BROWSERSTACK_CLOUD_KEY TAG="@multiuser-android-web and @theapp5 and @browserstack" ./gradlew run
 #  RUN_IN_CI=true CONFIG=./configs/theapp/theapp_lambdatest_android_config.properties CLOUD_USERNAME=$LT_CLOUD_USERNAME CLOUD_KEY=$LT_CLOUD_KEY PLATFORM=android TAG="@multiuser-android-web and @theapp5 and @lambdatest" ./gradlew run
-  @multiuser-android-web @theapp5 @browserstack @lambdatest
+  @multiuser-android-web @theapp5 @browserstack @lambdatest @playwright-phase1
   Scenario: Orchestrating multiple users on different platforms as part of same test (android-web)
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "android"
     And "You" login with invalid credentials - "znsio2", "invalid password" on "web"
@@ -66,7 +68,8 @@ Feature: Scenarios for "The App"
     Then "They" login again with invalid credentials - "znsio5", "invalid password"
 
 #  CONFIG=./configs/theapp/theapp_local_web_config.properties TAG="@multiuser-web and @theapp7" ./gradlew run
-  @multiuser-web @theapp7
+#  WEB_ENGINE=playwright-ts HEADLESS=true CONFIG=./configs/theapp/theapp_local_web_config.properties PLATFORM=web TAG="@multiuser-web and @theapp7 and @playwright-phase1" ./gradlew run
+  @multiuser-web @theapp7 @playwright-phase1
   Scenario: Orchestrating multiple users on different platforms as part of same test (web-web)
     Given "I" login with invalid credentials - "znsio1", "invalid password" on "web"
     And "You" login with invalid credentials - "znsio2", "invalid password" on "web"

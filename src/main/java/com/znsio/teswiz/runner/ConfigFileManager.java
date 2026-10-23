@@ -12,7 +12,7 @@ import static com.znsio.teswiz.tools.OverriddenVariable.getOverriddenStringValue
 /**
  * ConfigFileManager - Read config file statically into configFileMap
  */
-public enum ConfigFileManager {
+enum ConfigFileManager {
     CAPS("./caps/capabilities.json");
 
     private static final Properties PROPERTIES;
@@ -35,7 +35,7 @@ public enum ConfigFileManager {
         this.defaultValue = defaultValue;
     }
 
-    public String get() {
+    String get() {
         return getOverriddenStringValue(name(), PROPERTIES.getProperty(name(), defaultValue));
     }
 }

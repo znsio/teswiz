@@ -3,6 +3,8 @@ package com.znsio.teswiz.runner;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.znsio.teswiz.mobile.provider.BrowserStackDevice;
+import com.znsio.teswiz.mobile.provider.BrowserStackDeviceFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeAll;

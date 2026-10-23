@@ -1,0 +1,19 @@
+{
+  "web": {},
+  "serverConfig": {
+    "server": {
+      "use-plugins": ["device-farm"],
+      "plugin": {
+        "device-farm": {
+          "platform": "web",
+          "skipChromeDownload": true,
+          "cloud": {
+            "cloudName": "docker",
+            "web": {}
+          }
+        }
+      }
+    }
+  },
+  "appiumServerPath": "./node_modules/appium/build/lib/main.js"
+}

@@ -2,7 +2,7 @@ name: Interactive_CLI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pw-ts ]
   pull_request:
     branches: [ main ]
 
